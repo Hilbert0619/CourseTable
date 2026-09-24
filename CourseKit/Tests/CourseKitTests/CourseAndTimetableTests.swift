@@ -189,6 +189,33 @@ enum Fixture {
         #expect(timetable.refreshMoments(on: Fixture.day("2026-09-29")).count == 1)  // no classes: just midnight
     }
 
+    @Test func currentAndNext() {
+        let during = timetable.currentAndNext(at: Fixture.at("2026-09-28", "10:30"))
+        #expect(during.current?.course.name == "Physics")
+        #expect(during.next?.course.name == "Lab")
+        #expect(during.next?.day == Fixture.day("2026-10-01"))
+
+        let morning = timetable.currentAndNext(at: Fixture.at("2026-09-28", "09:00"))
+        #expect(morning.current?.course.name == "Calculus")
+        #expect(morning.next?.course.name == "Physics")
+
+        let inBreak = timetable.currentAndNext(at: Fixture.at("2026-09-28", "09:50"))
+        #expect(inBreak.current == nil)
+        #expect(inBreak.next?.course.name == "Physics")
+
+        let afterTerm = timetable.currentAndNext(at: Fixture.at("2027-06-01", "09:00"))
+        #expect(afterTerm.current == nil && afterTerm.next == nil)
+    }
+
+    @Test func timelineMomentsStartNowAndEndAtMidnight() {
+        let moments = timetable.timelineMoments(from: Fixture.at("2026-09-28", "09:00"))
+        #expect(moments.map(\.time.description) == ["09:00", "09:40", "10:00", "11:40", "00:00"])
+        #expect(moments.first?.day == Fixture.day("2026-09-28"))
+
+        let evening = timetable.timelineMoments(from: Fixture.at("2026-09-28", "20:00"))
+        #expect(evening.count == 2)  // now, then midnight
+    }
+
     @Test func clashesForCourse() {
         var makeup = Fixture.english
         makeup.id = UUID()

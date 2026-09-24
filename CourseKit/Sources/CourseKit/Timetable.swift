@@ -57,11 +57,22 @@ public struct Timetable: Hashable, Codable, Sendable {
         return nil
     }
 
+    /// The class in progress at `moment` (if any) and the one after it.
+    public func currentAndNext(at moment: Moment, searchingDays days: Int = 14) -> (current: ClassSession?, next: ClassSession?) {
+        let current = sessions(on: moment.day).first { $0.status(at: moment) == .inProgress }
+        let next = currentOrNextSession(at: current?.endMoment ?? moment, searchingDays: days)
+        return (current, next)
+    }
+
     /// Moments on `day` when "current / next class" changes: every class start and end, plus the next midnight.
-    /// A widget refreshes at these points.
     public func refreshMoments(on day: LocalDate) -> [Moment] {
         let times = Set(sessions(on: day).flatMap { [$0.start, $0.end] })
         return times.sorted().map { Moment(day: day, time: $0) } + [Moment(day: day.adding(days: 1), time: .midnight)]
+    }
+
+    /// Widget timeline points: `moment` itself, then each later change today, ending at midnight.
+    public func timelineMoments(from moment: Moment) -> [Moment] {
+        [moment] + refreshMoments(on: moment.day).filter { $0 > moment }
     }
 
     static func slotOrder(_ a: Course, _ b: Course) -> Bool {
