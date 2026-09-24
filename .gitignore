@@ -1,0 +1,17 @@
+# SwiftPM
+.build/
+.swiftpm/
+/CourseKit/Package.resolved
+
+# Xcode
+DerivedData/
+build/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xcresult
+
+# Editors / OS
+.vscode/
+.DS_Store
+Thumbs.db
