@@ -1,0 +1,33 @@
+name: CourseKit
+
+# Pure-Swift logic tests on Linux: fast, and 1× billing on the free private-repo minutes.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "CourseKit/**"
+      - ".github/workflows/coursekit.yml"
+  pull_request:
+    paths:
+      - "CourseKit/**"
+      - ".github/workflows/coursekit.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: coursekit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: swift test (Linux, Swift 6.4)
+    runs-on: ubuntu-latest
+    container: swift:6.4
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: CourseKit
+    steps:
+      - uses: actions/checkout@v7
+      - run: swift --version
+      - run: swift build --build-tests
+      - run: swift test --skip-build

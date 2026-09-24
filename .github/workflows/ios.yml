@@ -1,0 +1,74 @@
+name: iOS
+
+# Builds the app + widget and runs the app tests in the iOS Simulator.
+# macOS minutes count 10× against the private-repo allowance, so this only runs when app code changes.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "CourseTable/**"
+      - "CourseTableWidget/**"
+      - "CourseTableTests/**"
+      - "Shared/**"
+      - "CourseKit/Sources/**"
+      - "CourseKit/Package.swift"
+      - "CourseTable.xcodeproj/**"
+      - ".github/workflows/ios.yml"
+  pull_request:
+    paths:
+      - "CourseTable/**"
+      - "CourseTableWidget/**"
+      - "CourseTableTests/**"
+      - "Shared/**"
+      - "CourseKit/Sources/**"
+      - "CourseKit/Package.swift"
+      - "CourseTable.xcodeproj/**"
+      - ".github/workflows/ios.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & test (iOS Simulator)
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Pick the newest iPhone simulator
+        id: sim
+        run: |
+          udid=$(xcrun simctl list devices available --json | jq -r '
+            .devices | to_entries
+            | map(select(.key | test("SimRuntime\\.iOS-")))
+            | sort_by(.key | capture("iOS-(?<major>[0-9]+)-(?<minor>[0-9]+)") | [(.major | tonumber), (.minor | tonumber)])
+            | last | .value
+            | map(select(.name | startswith("iPhone"))) | first | .udid')
+          test -n "$udid" && test "$udid" != "null"
+          xcrun simctl list devices available | grep "$udid"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: Build and test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project CourseTable.xcodeproj \
+            -scheme CourseTable \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: TestResults
+          path: TestResults.xcresult
+          retention-days: 7
