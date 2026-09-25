@@ -1,6 +1,21 @@
-# Session Handoff — CourseTable (after Phase 4: course list + placing)
+# Session Handoff — CourseTable (after Phase 4b: UI tests + screenshot review)
 
 Date: 2026-09-25 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (private)
+
+## Phase 4b results (seeing the app for the first time)
+
+- **UI tests** (`CourseTableUITests` target + scheme) drive the app in the iOS Simulator. They cover:
+  - typing a course list, placing courses, the Weekend toggle, and which swipes change the week
+  - importing the example CSV from Settings
+  - a screenshot tour of every main screen in English and Chinese
+
+  The app launched with `-uiTesting` uses an in-memory store (`-demoData` for the demo timetable) and skips widget/notification side effects.
+- **Screenshots workflow** (`.github/workflows/screenshots.yml`, manual only): runs the UI tests and uploads a `screenshots` artifact (~8 min). Latest green run with all 3 tests passing: https://github.com/Hilbert0619/CourseTable/actions/runs/36093341882
+- **Fixed after reviewing the screenshots**:
+  - Swiping the placing tray changed the week.
+  - Grid names broke mid-word in narrow columns. Placing mode now keeps 5 columns and has a Weekend toggle, and block type is smaller.
+  - Teacher/Room fields in the editor had no labels.
+- Known cosmetic leftover: very long single English words (e.g. "Mathematics") can still break inside a 5-column block. Chinese names wrap fine.
 
 ## Phase 4 results (course list + placing)
 
@@ -27,7 +42,7 @@ Date: 2026-09-25 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
 ```
 [PROJECT HANDOFF] Native iOS course-table app "CourseTable" — Phase 5
 
-## Where things stand (Phase 4 done, 2026-09-25)
+## Where things stand (Phase 4b done, 2026-09-25)
 Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). Read README.md and HANDOFF.md first.
 - CourseKit/ = all logic: dates/weeks/periods, Course, Timetable, WeekGrid, ScheduleSnapshot, CSV + CourseImporter +
   ImportPlan (import/export), CourseTemplate (course list + placing), Reminders. 110 tests;
@@ -35,13 +50,16 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
 - SwiftData models: CourseRecord, SettingsRecord, CourseTemplateRecord. Not installed anywhere yet, so the schema
   can still change freely; after the first install, use VersionedSchema + a migration plan.
 - CourseTable/ (app: Views/, Persistence/, Import/, Reminders/), CourseTableWidget/ (Home + Lock Screen widget),
-  Shared/ (both targets: palette, SnapshotStore, LocalizedNames, Localizable.xcstrings), CourseTableTests/ (CI only).
+  Shared/ (both targets: palette, SnapshotStore, LocalizedNames, Localizable.xcstrings), CourseTableTests/ (CI only),
+  CourseTableUITests/ (UI tests + screenshots; own scheme, run by the manual Screenshots workflow).
 - CourseTable.xcodeproj is hand-written in Xcode 16+ synced-folder format: drop new files into the folders,
   never edit project.pbxproj unless adding a target/setting.
-- CI: .github/workflows/coursekit.yml (Linux) and ios.yml (macos-26, xcodebuild test, CODE_SIGNING_ALLOWED=NO).
-  Private repo → macOS minutes count 10× (~200/month, one iOS run ≈ 4 min ≈ 40 billed): keep ios.yml
-  path-filtered, no matrix builds, review app code carefully and aim for one iOS run per phase.
-- Nothing has been run on a device or seen in a Simulator yet (no Mac).
+- CI: .github/workflows/coursekit.yml (Linux), ios.yml (macos-26, unit tests, path-filtered) and screenshots.yml
+  (macos-26, UI tests + screenshots, manual only). Free plan: 2,000 minutes/month, macOS counts 10× → ~200 macOS
+  minutes. An iOS run ≈ 4 macOS min (40 billed), a Screenshots run ≈ 8–12. Keep filters; no matrix builds.
+- To see UI changes: `gh workflow run screenshots.yml`, then `gh run download <id> -n screenshots` and look at
+  the PNGs. Add a snapshot step to CourseTableUITests for any new screen.
+- Never run on a real device yet (no Mac): notifications and Lock Screen/Home widgets are still unseen.
 
 ## Environment notes (Windows 11, no Mac)
 - Swift 6.4, VS 2022 C++ tools, Windows SDK 26100, Git 2.54, gh 2.101 (signed in as Hilbert0619), VS Code + Swift ext.
@@ -76,17 +94,16 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
 2. Delete OneDrive\Desktop\.claude\Desktop\claude-review and Downloads\claude-fix, empty the OneDrive recycle bin
 
 ## Phase 5 candidates (confirm scope with me first)
-1. See the app without a Mac: a manually triggered CI workflow that runs the app in the Simulator with demo data
-   and saves screenshots (English + Chinese) as an artifact; review them and fix layout problems.
-   Costs ~60–100 billed macOS minutes per run.
-2. Grid options: show/hide weekends; an "all weeks" toggle outside placing mode (the dimmed view already exists)
+1. More screenshot coverage: dark mode, a small iPhone (SE), widget views (e.g. rendered in a test), the period-
+   times editor; then fix what they show (e.g. long English words in grid blocks)
+2. Grid options: an "all weeks" toggle outside placing mode (the dimmed view already exists); weekend always/auto
 3. Reminders: per-course mute; top up the window in the background (BGAppRefreshTask) so it survives weeks unopened
 4. School-specific import, once I have a sample from my school's 教务 system (Export/导出 Excel, or copy the
    timetable page into a .txt file)
 5. Multiple terms (archive old term, switch between terms). Best near the end of term (~January), with a Mac
 6. Widgets: tap a class to open it in the app (deep link); configurable widget (e.g. show tomorrow)
-7. First Mac session checklist: run on device, check import/export, course list + placing, notifications and
-   Lock Screen widgets, fix anything only visible in the Simulator, screenshots
+7. First Mac session checklist: run on device, check notifications and Home/Lock Screen widgets (not coverable
+   in CI screenshots), import from Files, anything only visible on hardware
 
 ## Done = next milestone
 - Agreed features implemented with CourseKit tests; swift test green locally
