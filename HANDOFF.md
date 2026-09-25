@@ -1,6 +1,13 @@
-# Session Handoff — CourseTable (after Phase 3: import, reminders, Lock Screen widgets)
+# Session Handoff — CourseTable (after Phase 4: course list + placing)
 
 Date: 2026-09-25 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (private)
+
+## Phase 4 results (course list + placing)
+
+- **Course list**: type courses one per line as name, room, teacher (`高等数学 A101 李老师`; spaces, commas or tabs). The list is stored in SwiftData (`CourseTemplateRecord`) and colours follow course names.
+- **Placing mode** (Timetable → **+** → Place Courses, or "Type Course List…" on an empty timetable): a tray of course chips with length and odd/even controls. Each tap on an empty slot adds the selected course there for the whole term, shortened so it doesn't run into the next course. While placing, the grid shows all 7 days and courses from all weeks, with other weeks dimmed. Tapping a block opens the editor.
+- CourseKit: `CourseTemplate`, `parseList`, `placementTemplates`, `assigningColors`, `placing`, `gridPlacements(includingOtherWeeks:)`. 110 tests (13 new).
+- **CI** (green, 0 warnings, 16 app tests, 4 min): iOS https://github.com/Hilbert0619/CourseTable/actions/runs/36088743636 · CourseKit https://github.com/Hilbert0619/CourseTable/actions/runs/36088743736
 
 ## Phase 3 results
 
@@ -18,12 +25,15 @@ Date: 2026-09-25 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
 > Copy the whole block into a new Claude Code session opened in `D:\Projects\CourseTable`.
 
 ```
-[PROJECT HANDOFF] Native iOS course-table app "CourseTable" — Phase 4
+[PROJECT HANDOFF] Native iOS course-table app "CourseTable" — Phase 5
 
-## Where things stand (Phase 3 done, 2026-09-25)
+## Where things stand (Phase 4 done, 2026-09-25)
 Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). Read README.md and HANDOFF.md first.
 - CourseKit/ = all logic: dates/weeks/periods, Course, Timetable, WeekGrid, ScheduleSnapshot, CSV + CourseImporter +
-  ImportPlan (import/export), Reminders. 97 tests; `cd CourseKit && swift test` must stay green on Windows.
+  ImportPlan (import/export), CourseTemplate (course list + placing), Reminders. 110 tests;
+  `cd CourseKit && swift test` must stay green on Windows.
+- SwiftData models: CourseRecord, SettingsRecord, CourseTemplateRecord. Not installed anywhere yet, so the schema
+  can still change freely; after the first install, use VersionedSchema + a migration plan.
 - CourseTable/ (app: Views/, Persistence/, Import/, Reminders/), CourseTableWidget/ (Home + Lock Screen widget),
   Shared/ (both targets: palette, SnapshotStore, LocalizedNames, Localizable.xcstrings), CourseTableTests/ (CI only).
 - CourseTable.xcodeproj is hand-written in Xcode 16+ synced-folder format: drop new files into the folders,
@@ -53,6 +63,8 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
   Week lists that don't fit one range become several courses; duplicates are skipped; same name → same colour.
 - Reminders: rolling window of 60 local notifications, rescheduled from RootView; settings in UserDefaults
   (per device), not SwiftData. No background refresh yet.
+- Course list lines are name, room, teacher (the user's order). Placing creates whole-term courses; the editor
+  refines them. I have no school export sample yet, so the course list is the main way to enter a timetable.
 
 ## How I like to work
 - Communicate in English. I give goals; do as much as you can and keep my manual steps minimal.
@@ -63,15 +75,18 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
 1. Revoke the exposed GitHub token github_pat_11B4KQLU… (GitHub → Settings → Developer settings → Tokens)
 2. Delete OneDrive\Desktop\.claude\Desktop\claude-review and Downloads\claude-fix, empty the OneDrive recycle bin
 
-## Phase 4 candidates (confirm scope with me first)
-1. School-specific import: I provide a real export from my school's 教务 system (often a periods × weekdays
-   grid with cells like "高等数学 / 李老师 / 1-16周 / A101"); add a parser for it in CourseKit + tests
-2. Multiple terms (archive old term, switch between terms) — needs a SwiftData VersionedSchema + migration plan
-3. Grid options: show/hide weekends, show non-current-week courses greyed out
-4. Reminders: per-course mute; top up the window in the background (BGAppRefreshTask) so it survives weeks unopened
-5. Widgets: tap a class to open it in the app (deep link); configurable widget (e.g. show tomorrow)
-6. First Mac session checklist: run on device, check import/export, notifications and Lock Screen widgets,
-   fix anything only visible in the Simulator, screenshots
+## Phase 5 candidates (confirm scope with me first)
+1. See the app without a Mac: a manually triggered CI workflow that runs the app in the Simulator with demo data
+   and saves screenshots (English + Chinese) as an artifact; review them and fix layout problems.
+   Costs ~60–100 billed macOS minutes per run.
+2. Grid options: show/hide weekends; an "all weeks" toggle outside placing mode (the dimmed view already exists)
+3. Reminders: per-course mute; top up the window in the background (BGAppRefreshTask) so it survives weeks unopened
+4. School-specific import, once I have a sample from my school's 教务 system (Export/导出 Excel, or copy the
+   timetable page into a .txt file)
+5. Multiple terms (archive old term, switch between terms). Best near the end of term (~January), with a Mac
+6. Widgets: tap a class to open it in the app (deep link); configurable widget (e.g. show tomorrow)
+7. First Mac session checklist: run on device, check import/export, course list + placing, notifications and
+   Lock Screen widgets, fix anything only visible in the Simulator, screenshots
 
 ## Done = next milestone
 - Agreed features implemented with CourseKit tests; swift test green locally
