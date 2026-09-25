@@ -5,7 +5,7 @@ import WidgetKit
 import CourseKit
 
 enum Persistence {
-    static var schema: Schema { Schema([CourseRecord.self, SettingsRecord.self]) }
+    static var schema: Schema { Schema([CourseRecord.self, SettingsRecord.self, CourseTemplateRecord.self]) }
 
     static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
         if !inMemory {

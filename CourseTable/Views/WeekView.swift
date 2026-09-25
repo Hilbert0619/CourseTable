@@ -1,22 +1,34 @@
 import SwiftUI
+import SwiftData
 import CourseKit
 
 struct WeekView: View {
+    @Environment(\.modelContext) private var context
+    @Query(sort: \CourseTemplateRecord.createdAt) private var templateRecords: [CourseTemplateRecord]
+
     let timetable: Timetable
     /// `nil` follows the current week.
     @State private var selectedWeek: Int?
     @State private var editorTarget: EditorTarget?
     @State private var importing = false
+    @State private var editingCourseList = false
+    /// Placing mode: pick a course from the tray, then tap empty slots to add it there.
+    @State private var placing = false
+    @State private var placementID: CourseTemplate.ID?
+    @State private var placementLength = 2
+    @State private var placementParity: WeekParity = .every
+    @State private var placedCount = 0
 
     private var today: LocalDate { LocalDate(.now) }
     private var currentWeek: Int { timetable.semester.displayWeek(on: today) }
     private var week: Int { min(selectedWeek ?? currentWeek, timetable.semester.totalWeeks) }
 
     private var visibleDays: [Weekday] {
-        timetable.hasWeekendCourses ? Weekday.allCases : Array(Weekday.allCases.prefix(5))
+        placing || timetable.hasWeekendCourses ? Weekday.allCases : Array(Weekday.allCases.prefix(5))
     }
 
     var body: some View {
+        let templates = timetable.placementTemplates(saved: templateRecords.map(\.template))
         NavigationStack {
             GeometryReader { proxy in
                 let layout = GridLayout(width: proxy.size.width, days: visibleDays)
@@ -29,16 +41,20 @@ struct WeekView: View {
                             timetable: timetable,
                             week: week,
                             today: today,
+                            showsAllWeeks: placing,
                             onSelectCourse: { editorTarget = .edit($0) },
-                            onSelectSlot: { editorTarget = .new(weekday: $0, period: $1) }
+                            onSelectSlot: { day, period in selectSlot(day, period, templates: templates) }
                         )
                     }
                     .overlay(alignment: .bottom) {
-                        if timetable.courses.isEmpty {
+                        if timetable.courses.isEmpty && !placing {
                             VStack(spacing: 6) {
                                 Text("Tap an empty slot or + to add a course")
-                                Button("Import Courses…") { importing = true }
-                                    .fontWeight(.semibold)
+                                HStack(spacing: 16) {
+                                    Button("Type Course List…") { startPlacing(templates: templates) }
+                                    Button("Import Courses…") { importing = true }
+                                }
+                                .fontWeight(.semibold)
                             }
                             .font(.callout)
                             .padding(.horizontal, 16)
@@ -49,6 +65,21 @@ struct WeekView: View {
                     }
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                if placing {
+                    PlacementTray(
+                        templates: templates,
+                        savedIDs: Set(templateRecords.map(\.id)),
+                        selection: $placementID,
+                        length: $placementLength,
+                        parity: $placementParity,
+                        periodsPerDay: timetable.periods.count,
+                        onAddCourses: { editingCourseList = true },
+                        onRemove: { removeTemplate($0) }
+                    )
+                }
+            }
+            .sensoryFeedback(.success, trigger: placedCount)
             .simultaneousGesture(
                 DragGesture(minimumDistance: 30).onEnded { value in
                     let dx = value.translation.width
@@ -65,10 +96,29 @@ struct WeekView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        editorTarget = .new(weekday: today.weekday, period: 1)
-                    } label: {
-                        Label("Add Course", systemImage: "plus")
+                    if placing {
+                        Button("Done") { placing = false }
+                            .fontWeight(.semibold)
+                    } else {
+                        Menu {
+                            Button {
+                                editorTarget = .new(weekday: today.weekday, period: 1)
+                            } label: {
+                                Label("New Course", systemImage: "square.and.pencil")
+                            }
+                            Button {
+                                startPlacing(templates: templates)
+                            } label: {
+                                Label("Place Courses", systemImage: "hand.tap")
+                            }
+                            Button {
+                                importing = true
+                            } label: {
+                                Label("Import Courses…", systemImage: "square.and.arrow.down")
+                            }
+                        } label: {
+                            Label("Add Course", systemImage: "plus")
+                        }
                     }
                 }
             }
@@ -78,6 +128,46 @@ struct WeekView: View {
             .sheet(isPresented: $importing) {
                 ImportView(timetable: timetable)
             }
+            .sheet(isPresented: $editingCourseList) {
+                CourseListView(timetable: timetable) { added in
+                    if let first = added.first {
+                        placementID = first.id
+                    }
+                }
+            }
+        }
+    }
+
+    /// Enters placing mode with a course selected, opening the course list if there's nothing to place.
+    private func startPlacing(templates: [CourseTemplate]) {
+        placing = true
+        if !templates.contains(where: { $0.id == placementID }) {
+            placementID = templates.first?.id
+        }
+        if templates.isEmpty {
+            editingCourseList = true
+        }
+    }
+
+    /// In placing mode with a course selected, adds it at the tapped slot; otherwise opens a new course there.
+    private func selectSlot(_ day: Weekday, _ period: Int, templates: [CourseTemplate]) {
+        guard placing, let template = templates.first(where: { $0.id == placementID }) else {
+            editorTarget = .new(weekday: day, period: period)
+            return
+        }
+        let course = timetable.placing(template, on: day, at: period, periodCount: placementLength, parity: placementParity)
+        context.insert(CourseRecord(course))
+        try? context.save()
+        placedCount += 1
+    }
+
+    private func removeTemplate(_ id: CourseTemplate.ID) {
+        for record in templateRecords where record.id == id {
+            context.delete(record)
+        }
+        try? context.save()
+        if placementID == id {
+            placementID = nil
         }
     }
 
@@ -179,6 +269,8 @@ private struct WeekGrid: View {
     let timetable: Timetable
     let week: Int
     let today: LocalDate
+    /// Also show courses that don't meet in `week`, dimmed (used while placing courses).
+    let showsAllWeeks: Bool
     let onSelectCourse: (Course) -> Void
     let onSelectSlot: (Weekday, Int) -> Void
 
@@ -208,10 +300,11 @@ private struct WeekGrid: View {
                 }
             }
 
-            ForEach(timetable.gridPlacements(inWeek: week)) { placement in
+            ForEach(timetable.gridPlacements(inWeek: week, includingOtherWeeks: showsAllWeeks)) { placement in
                 if let x = layout.x(for: placement.weekday) {
                     let laneWidth = layout.columnWidth / CGFloat(placement.laneCount)
                     CourseBlock(course: placement.course)
+                        .opacity(placement.isInWeek ? 1 : 0.35)
                         .onTapGesture { onSelectCourse(placement.course) }
                         .frame(
                             width: laneWidth - 3,
@@ -275,4 +368,108 @@ struct CourseBlock: View {
         courses: SampleCourses.all(today: today)
     )
     return WeekView(timetable: timetable)
+        .modelContainer(Persistence.previewContainer())
+}
+
+/// Bottom panel while placing: choose a course, set its length and weeks, then tap empty slots.
+private struct PlacementTray: View {
+    let templates: [CourseTemplate]
+    /// Templates from the course list (removable), as opposed to ones taken from placed courses.
+    let savedIDs: Set<CourseTemplate.ID>
+    @Binding var selection: CourseTemplate.ID?
+    @Binding var length: Int
+    @Binding var parity: WeekParity
+    let periodsPerDay: Int
+    let onAddCourses: () -> Void
+    let onRemove: (CourseTemplate.ID) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Group {
+                if let selected = templates.first(where: { $0.id == selection }) {
+                    Text("Tap empty slots to place \(selected.name).")
+                } else if templates.isEmpty {
+                    Text("Add your courses first, then tap empty slots to place them.")
+                } else {
+                    Text("Choose a course, then tap empty slots to place it.")
+                }
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(templates) { template in
+                        let chip = TemplateChip(template: template, isSelected: template.id == selection) {
+                            selection = template.id == selection ? nil : template.id
+                        }
+                        if savedIDs.contains(template.id) {
+                            chip.contextMenu {
+                                Button("Remove from List", role: .destructive) { onRemove(template.id) }
+                            }
+                        } else {
+                            chip
+                        }
+                    }
+                    Button(action: onAddCourses) {
+                        Label("Add Courses…", systemImage: "plus")
+                            .font(.subheadline)
+                            .padding(.horizontal, 12)
+                            .frame(minHeight: 40)
+                            .background(Color.secondary.opacity(0.12), in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.vertical, 2)
+            }
+
+            Stepper(value: $length, in: 1...max(periodsPerDay, 1)) {
+                Text("Length: \(length) periods")
+                    .font(.subheadline)
+            }
+            Picker("Repeats", selection: $parity) {
+                ForEach(WeekParity.allCases, id: \.self) { parity in
+                    Text(verbatim: parity.displayName).tag(parity)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding()
+        .background(.bar)
+    }
+}
+
+private struct TemplateChip: View {
+    let template: CourseTemplate
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(template.color)
+                    .frame(width: 10, height: 10)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(verbatim: template.name)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                    if !template.room.isEmpty {
+                        Text(verbatim: template.room)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .frame(minHeight: 40)
+            .background(isSelected ? template.color.opacity(0.25) : Color.secondary.opacity(0.12), in: Capsule())
+            .overlay {
+                Capsule().strokeBorder(isSelected ? template.color : Color.clear, lineWidth: 2)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
 }

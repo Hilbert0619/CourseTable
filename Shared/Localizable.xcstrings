@@ -59,6 +59,34 @@
         }
       }
     },
+    "%lld new courses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld new course"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld new courses"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 门新课程"
+          }
+        }
+      }
+    },
     "+%lld more" : {
       "localizations" : {
         "zh-Hans" : {
@@ -79,12 +107,32 @@
         }
       }
     },
+    "Add" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加"
+          }
+        }
+      }
+    },
     "Add Course" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加课程"
+          }
+        }
+      }
+    },
+    "Add Courses…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加课程…"
           }
         }
       }
@@ -105,6 +153,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请至少添加一节课。"
+          }
+        }
+      }
+    },
+    "Add your courses first, then tap empty slots to place them." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先添加课程，然后点击空白格子放置。"
           }
         }
       }
@@ -145,6 +203,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择文件…"
+          }
+        }
+      }
+    },
+    "Choose a course, then tap empty slots to place it." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一门课程，然后点击空白格子放置。"
           }
         }
       }
@@ -229,6 +297,16 @@
         }
       }
     },
+    "Course List" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程列表"
+          }
+        }
+      }
+    },
     "Course name" : {
       "localizations" : {
         "zh-Hans" : {
@@ -295,6 +373,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入前先删除课程表中已有的课程。"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
           }
         }
       }
@@ -517,6 +605,16 @@
         }
       }
     },
+    "Name, room and teacher, separated by spaces, commas or tabs, e.g. “高等数学 A101 李老师”. Room and teacher are optional. Use commas if a name contains spaces." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "依次填写课程名、教室、教师，用空格、逗号或制表符分隔，例如“高等数学 A101 李老师”。教室和教师可以省略。课程名中有空格时请用逗号分隔。"
+          }
+        }
+      }
+    },
     "New Course" : {
       "localizations" : {
         "zh-Hans" : {
@@ -633,6 +731,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "单周"
+          }
+        }
+      }
+    },
+    "One course per line" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每行一门课程"
           }
         }
       }
@@ -757,6 +865,16 @@
         }
       }
     },
+    "Place Courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "排课"
+          }
+        }
+      }
+    },
     "Previous Week" : {
       "localizations" : {
         "zh-Hans" : {
@@ -793,6 +911,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒会覆盖接下来的 %lld 节课，每次打开 App 时自动续上。"
+          }
+        }
+      }
+    },
+    "Remove from List" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从列表中移除"
           }
         }
       }
@@ -997,12 +1125,32 @@
         }
       }
     },
+    "Swipe left to remove a course from the list. Courses already placed on the timetable stay." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "向左轻扫可从列表中移除课程，已排入课表的课程不受影响。"
+          }
+        }
+      }
+    },
     "Tap an empty slot or + to add a course" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "点击空白格子或 + 添加课程"
+          }
+        }
+      }
+    },
+    "Tap empty slots to place %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击空白格子放置“%@”。"
           }
         }
       }
@@ -1243,6 +1391,16 @@
         }
       }
     },
+    "Type Course List…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入课程列表…"
+          }
+        }
+      }
+    },
     "Version" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1319,6 +1477,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "学期周数"
+          }
+        }
+      }
+    },
+    "Your course list" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的课程列表"
           }
         }
       }

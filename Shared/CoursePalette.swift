@@ -24,3 +24,7 @@ enum CoursePalette {
 extension Course {
     var color: Color { CoursePalette.color(colorIndex) }
 }
+
+extension CourseTemplate {
+    var color: Color { CoursePalette.color(colorIndex) }
+}

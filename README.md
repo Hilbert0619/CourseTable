@@ -9,6 +9,7 @@ A native iOS class-schedule app: **Swift + SwiftUI + SwiftData + WidgetKit**, iO
 
 - **Courses**: add, edit and delete by hand. Each course has a name, teacher, room, weekday, start period and length, week range and odd/even weeks. Colours are assigned automatically, and clashes are flagged.
 - **Import**: paste CSV text or rows copied from a spreadsheet, or open a `.csv`/`.txt` file (Settings → Import Courses…, or the button on an empty timetable). A preview lists the courses, clashes and lines that can't be read before anything is saved. Courses that are already in the timetable are skipped. You can also replace all existing courses. See [Import format](#import-format).
+- **Course list + placing**: when you only know your courses (name, room, teacher), type them one per line, e.g. `高等数学 A101 李老师`, then place them on the grid. Use **+ → Place Courses** or **Type Course List…** on an empty timetable. In placing mode, a tray lists your courses. Pick one, set its length and odd/even weeks, then tap empty slots: each tap adds that course there for the whole term. The block is shortened so it doesn't run into the next course. While placing, the grid shows all seven days and courses from every week, dimming the ones not in the week shown. Tap a placed block to adjust weeks or length in the editor. Long-press a course in the tray to remove it from the list.
 - **Export**: Settings → Export as CSV shares the courses as a UTF-8 CSV file (Excel-friendly) in the same format, so an export can be imported again.
 - **Class reminders**: a local notification 0–60 minutes before each class (Settings → Reminders).
 - **Term**: set the first day of term and the number of weeks. The app works out the current week.
@@ -48,7 +49,7 @@ One course per line. Columns are separated by commas, tabs (spreadsheet paste), 
 ```
 CourseKit/            Swift package with all timetable logic; builds and tests on Windows, Linux and macOS
   Sources/CourseKit/    LocalDate, TimeOfDay, Semester, PeriodSchedule, Course, Timetable, WeekGrid, ScheduleSnapshot,
-                        CSV + CourseImport + ImportPlan (import/export), Reminders
+                        CSV + CourseImport + ImportPlan (import/export), CourseTemplate (course list + placing), Reminders
   Tests/CourseKitTests/ Swift Testing unit tests
 CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
 CourseTableWidget/    WidgetKit extension
@@ -117,4 +118,5 @@ Nothing needs to be regenerated on the Mac. The Xcode project in the repo is the
 - **Dates without time zones:** term dates are `LocalDate` values (year, month, day), and day counting is integer arithmetic. Week numbers therefore never shift with time zones or daylight saving.
 - **Snapshot versioning:** `ScheduleSnapshot.currentVersion` is bumped when its JSON shape changes. The widget ignores snapshots newer than it understands.
 - **Reminder window:** iOS keeps at most 64 pending local notifications per app, so only the next 60 classes (`Timetable.maxScheduledReminders`) are scheduled, roughly two to three weeks of classes. The app reschedules them each time it comes to the foreground and whenever the timetable or reminder settings change. If you don't open the app for longer than that window, reminders stop until you open it again. Reminders whose time has already passed are skipped. Reminder settings are per device (`UserDefaults`), not part of the SwiftData store.
-- **Import colours:** a course whose name matches an existing course keeps that course's colour. Other names get the least-used palette colour.
+- **Import colours:** a course whose name matches an existing course keeps that course's colour. Other names get the least-used palette colour. The same rule applies to the course list.
+- **SwiftData schema:** `CourseRecord`, `SettingsRecord`, `CourseTemplateRecord` (the course list). The app hasn't been installed anywhere yet, so the schema can still change freely. After the first install, changes need a `VersionedSchema` and a migration plan.

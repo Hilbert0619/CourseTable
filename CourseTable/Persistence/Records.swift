@@ -61,6 +61,31 @@ final class CourseRecord {
     }
 }
 
+/// An entry in the course list: a course typed as name, room and teacher, waiting to be placed on
+/// the grid. Placing it creates `CourseRecord`s; the entry stays so the course can be placed again.
+@Model
+final class CourseTemplateRecord {
+    @Attribute(.unique) var id: UUID
+    var name: String
+    var room: String
+    var teacher: String
+    var colorIndex: Int
+    var createdAt: Date
+
+    init(_ template: CourseTemplate, createdAt: Date = .now) {
+        id = template.id
+        name = template.name
+        room = template.room
+        teacher = template.teacher
+        colorIndex = template.colorIndex
+        self.createdAt = createdAt
+    }
+
+    var template: CourseTemplate {
+        CourseTemplate(id: id, name: name, room: room, teacher: teacher, colorIndex: colorIndex)
+    }
+}
+
 /// App-wide settings: the term and the bell schedule. There is exactly one row.
 @Model
 final class SettingsRecord {
