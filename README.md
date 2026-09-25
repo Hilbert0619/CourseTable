@@ -9,7 +9,7 @@ A native iOS class-schedule app: **Swift + SwiftUI + SwiftData + WidgetKit**, iO
 
 - **Courses**: add, edit and delete by hand. Each course has a name, teacher, room, weekday, start period and length, week range and odd/even weeks. Colours are assigned automatically, and clashes are flagged.
 - **Import**: paste CSV text or rows copied from a spreadsheet, or open a `.csv`/`.txt` file (Settings → Import Courses…, or the button on an empty timetable). A preview lists the courses, clashes and lines that can't be read before anything is saved. Courses that are already in the timetable are skipped. You can also replace all existing courses. See [Import format](#import-format).
-- **Course list + placing**: when you only know your courses (name, room, teacher), type them one per line, e.g. `高等数学 A101 李老师`, then place them on the grid. Use **+ → Place Courses** or **Type Course List…** on an empty timetable. In placing mode, a tray lists your courses. Pick one, set its length and odd/even weeks, then tap empty slots: each tap adds that course there for the whole term. The block is shortened so it doesn't run into the next course. While placing, the grid shows all seven days and courses from every week, dimming the ones not in the week shown. Tap a placed block to adjust weeks or length in the editor. Long-press a course in the tray to remove it from the list.
+- **Course list + placing**: when you only know your courses (name, room, teacher), type them one per line, e.g. `高等数学 A101 李老师`, then place them on the grid. Use **+ → Place Courses** or **Type Course List…** on an empty timetable. In placing mode, a tray lists your courses. Pick one, set its length and odd/even weeks, then tap empty slots: each tap adds that course there for the whole term. The block is shortened so it doesn't run into the next course. While placing, the grid shows courses from every week, dimming the ones not in the week shown. The tray's **Weekend** toggle adds Saturday and Sunday. Tap a placed block to adjust weeks or length in the editor. Long-press a course in the tray to remove it from the list.
 - **Export**: Settings → Export as CSV shares the courses as a UTF-8 CSV file (Excel-friendly) in the same format, so an export can be imported again.
 - **Class reminders**: a local notification 0–60 minutes before each class (Settings → Reminders).
 - **Term**: set the first day of term and the number of weeks. The app works out the current week.
@@ -55,6 +55,7 @@ CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
 CourseTableWidget/    WidgetKit extension
 Shared/               Code and strings compiled into both the app and the widget (palette, snapshot file, Localizable.xcstrings)
 CourseTableTests/     App-level tests, run in the iOS Simulator on CI
+CourseTableUITests/   UI tests that drive the app and take screenshots (Screenshots workflow)
 CourseTable.xcodeproj Xcode project (synced folders: new files are picked up automatically)
 .github/workflows/    CI: coursekit.yml (Linux) and ios.yml (macOS + Simulator)
 ```
@@ -94,8 +95,11 @@ Day-to-day workflow:
 |---|---|---|---|
 | `CourseKit` | Ubuntu, `swift:6.4` container | pushes/PRs touching `CourseKit/` | `swift build` + `swift test` |
 | `iOS` | `macos-26` (Xcode 26.x) | pushes/PRs touching the app, widget, shared code, project or CourseKit sources | `xcodebuild test`: builds the app and widget, runs `CourseTableTests` on the newest iPhone simulator |
+| `Screenshots` | `macos-26` | **manual only** | runs the UI tests (`CourseTableUITests` scheme) and uploads a `screenshots` artifact: every main screen in English and Chinese, plus the course-list, placing and import flows |
 
-The repo is private. GitHub's free plan counts macOS minutes at 10×, which leaves roughly 200 macOS minutes a month, so the iOS job runs only when relevant files change and cancels superseded runs. To run it by hand, use **Actions → iOS → Run workflow**, or `gh workflow run ios.yml`. Useful commands: `gh run list`, `gh run watch`, `gh run view --log-failed`.
+The repo is private. The free plan includes 2,000 Actions minutes a month, and macOS minutes count 10×, so that's roughly 200 macOS minutes. A normal `iOS` run takes about 4 minutes (40 of the 2,000), and a `Screenshots` run about 9–12 minutes (90–120). The iOS job runs only when relevant files change and cancels superseded runs.
+
+To see the app without a Mac: run **Actions → Screenshots → Run workflow** (or `gh workflow run screenshots.yml`), then download the artifact with `gh run download <run-id> -n screenshots`. UI tests launch the app with `-uiTesting`, so it uses an in-memory store (with `-demoData`, a demo timetable) and never writes the widget snapshot or schedules notifications. To run it by hand, use **Actions → iOS → Run workflow**, or `gh workflow run ios.yml`. Useful commands: `gh run list`, `gh run watch`, `gh run view --log-failed`.
 
 ## Opening the project on a Mac later
 

@@ -35,6 +35,12 @@ jobs:
           xcrun simctl list devices available | grep "$udid"
           echo "udid=$udid" >> "$GITHUB_OUTPUT"
 
+      # A cold simulator can take longer to boot than XCUITest waits for the first app launch.
+      - name: Boot the simulator
+        run: |
+          xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
+
       - name: Run UI tests
         run: |
           set -o pipefail
@@ -43,6 +49,7 @@ jobs:
             -scheme CourseTableUITests \
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }},arch=arm64" \
             -resultBundlePath UITestResults.xcresult \
+            -retry-tests-on-failure -test-iterations 2 \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions
 

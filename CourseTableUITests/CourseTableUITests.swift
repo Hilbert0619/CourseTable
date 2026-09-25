@@ -25,14 +25,22 @@ final class CourseTableUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["Tap empty slots to place Calculus."].waitForExistence(timeout: 10))
         snapshot(app, "flow-2-placing")
-        tapSlot(app, dayIndex: 0, period: 1, visibleDays: 7)
+        // Without weekend classes the grid shows Monday–Friday until the Weekend toggle is on.
+        XCTAssertFalse(app.staticTexts["Sun"].exists)
+        tapSlot(app, dayIndex: 0, period: 1, visibleDays: 5)
         XCTAssertTrue(courseBlock(app, named: "Calculus").waitForExistence(timeout: 5))
 
         tap(chip(app, named: "Physics"))
         XCTAssertTrue(app.staticTexts["Tap empty slots to place Physics."].waitForExistence(timeout: 5))
-        tapSlot(app, dayIndex: 2, period: 3, visibleDays: 7)
+        tapSlot(app, dayIndex: 2, period: 3, visibleDays: 5)
         XCTAssertTrue(courseBlock(app, named: "Physics").waitForExistence(timeout: 5))
         snapshot(app, "flow-3-placed")
+
+        tap(element(app, "weekendToggle"))
+        XCTAssertTrue(app.staticTexts["Sun"].waitForExistence(timeout: 5))
+        snapshot(app, "flow-3b-weekend")
+        tap(element(app, "weekendToggle"))
+        XCTAssertTrue(app.staticTexts["Sun"].waitForNonExistence(timeout: 5))
 
         // Scrolling the course tray must not change the week; swiping the grid does.
         let weekMenu = element(app, "weekMenu")

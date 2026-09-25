@@ -18,13 +18,15 @@ struct WeekView: View {
     @State private var placementLength = 2
     @State private var placementParity: WeekParity = .every
     @State private var placedCount = 0
+    /// While placing, also show Saturday and Sunday so weekend classes can be placed.
+    @State private var placingOnWeekend = false
 
     private var today: LocalDate { LocalDate(.now) }
     private var currentWeek: Int { timetable.semester.displayWeek(on: today) }
     private var week: Int { min(selectedWeek ?? currentWeek, timetable.semester.totalWeeks) }
 
     private var visibleDays: [Weekday] {
-        placing || timetable.hasWeekendCourses ? Weekday.allCases : Array(Weekday.allCases.prefix(5))
+        timetable.hasWeekendCourses || (placing && placingOnWeekend) ? Weekday.allCases : Array(Weekday.allCases.prefix(5))
     }
 
     var body: some View {
@@ -82,6 +84,7 @@ struct WeekView: View {
                         selection: $placementID,
                         length: $placementLength,
                         parity: $placementParity,
+                        showsWeekend: timetable.hasWeekendCourses ? nil : $placingOnWeekend,
                         periodsPerDay: timetable.periods.count,
                         onAddCourses: { editingCourseList = true },
                         onRemove: { removeTemplate($0) }
@@ -350,18 +353,20 @@ struct CourseBlock: View {
     let course: Course
 
     var body: some View {
+        // Small type and padding: day columns are only ~70 points wide (~50 with the weekend shown),
+        // and English words wider than that get broken mid-word.
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: course.name)
-                .font(.caption.weight(.semibold))
-                .lineLimit(4)
+                .font(.system(size: 11, weight: .semibold))
+                .lineLimit(5)
             if !course.room.isEmpty {
                 Text(verbatim: "@\(course.room)")
-                    .font(.caption2)
+                    .font(.system(size: 10))
                     .lineLimit(2)
             }
         }
         .foregroundStyle(.white)
-        .padding(4)
+        .padding(3)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(course.color, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
         .accessibilityElement(children: .combine)
@@ -386,23 +391,33 @@ private struct PlacementTray: View {
     @Binding var selection: CourseTemplate.ID?
     @Binding var length: Int
     @Binding var parity: WeekParity
+    /// `nil` when the weekend is always shown because there are weekend classes.
+    let showsWeekend: Binding<Bool>?
     let periodsPerDay: Int
     let onAddCourses: () -> Void
     let onRemove: (CourseTemplate.ID) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Group {
-                if let selected = templates.first(where: { $0.id == selection }) {
-                    Text("Tap empty slots to place \(selected.name).")
-                } else if templates.isEmpty {
-                    Text("Add your courses first, then tap empty slots to place them.")
-                } else {
-                    Text("Choose a course, then tap empty slots to place it.")
+            HStack(alignment: .firstTextBaseline) {
+                Group {
+                    if let selected = templates.first(where: { $0.id == selection }) {
+                        Text("Tap empty slots to place \(selected.name).")
+                    } else if templates.isEmpty {
+                        Text("Add your courses first, then tap empty slots to place them.")
+                    } else {
+                        Text("Choose a course, then tap empty slots to place it.")
+                    }
+                }
+                .foregroundStyle(.secondary)
+                Spacer(minLength: 8)
+                if let showsWeekend {
+                    Toggle("Weekend", isOn: showsWeekend)
+                        .toggleStyle(.button)
+                        .accessibilityIdentifier("weekendToggle")
                 }
             }
             .font(.footnote)
-            .foregroundStyle(.secondary)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {

@@ -785,6 +785,16 @@
         }
       }
     },
+    "Optional" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选填"
+          }
+        }
+      }
+    },
     "Paste CSV or spreadsheet rows" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1447,6 +1457,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开学日期所在的周一至周日为第 1 周。"
+          }
+        }
+      }
+    },
+    "Weekend" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "周末"
           }
         }
       }

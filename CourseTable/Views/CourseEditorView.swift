@@ -41,8 +41,14 @@ struct CourseEditorView: View {
             Form {
                 Section {
                     TextField("Course name", text: $draft.name)
-                    TextField("Teacher", text: $draft.teacher)
-                    TextField("Room", text: $draft.room)
+                    LabeledContent("Teacher") {
+                        TextField("Optional", text: $draft.teacher)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    LabeledContent("Room") {
+                        TextField("Optional", text: $draft.room)
+                            .multilineTextAlignment(.trailing)
+                    }
                 }
 
                 Section("Time") {
