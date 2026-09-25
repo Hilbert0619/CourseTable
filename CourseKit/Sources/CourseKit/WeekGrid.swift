@@ -6,6 +6,8 @@ public struct GridPlacement: Hashable, Identifiable, Sendable {
     public var course: Course
     public var lane: Int
     public var laneCount: Int
+    /// Whether the course meets in the week shown; `false` only when other weeks are included.
+    public var isInWeek = true
 
     public var id: Course.ID { course.id }
     public var weekday: Weekday { course.weekday }
@@ -14,9 +16,17 @@ public struct GridPlacement: Hashable, Identifiable, Sendable {
 
 extension Timetable {
     /// Block placements for the weekly grid of teaching week `week`.
-    public func gridPlacements(inWeek week: Int) -> [GridPlacement] {
-        let byDay = Dictionary(grouping: courses(inWeek: week), by: \.weekday)
-        return Weekday.allCases.flatMap { Self.layOut(byDay[$0] ?? []) }
+    ///
+    /// With `includingOtherWeeks`, every course that meets at some point in the term is laid out,
+    /// and those not meeting in `week` have `isInWeek == false` (shown dimmed).
+    public func gridPlacements(inWeek week: Int, includingOtherWeeks: Bool = false) -> [GridPlacement] {
+        let shown = includingOtherWeeks ? courses.filter { !$0.weeks.all.isEmpty } : courses(inWeek: week)
+        let byDay = Dictionary(grouping: shown, by: \.weekday)
+        return Weekday.allCases.flatMap { Self.layOut(byDay[$0] ?? []) }.map { placement in
+            var placement = placement
+            placement.isInWeek = placement.course.meets(inWeek: week)
+            return placement
+        }
     }
 
     /// Greedy interval colouring, then each cluster of overlapping blocks shares one lane count.

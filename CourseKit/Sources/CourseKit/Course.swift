@@ -131,9 +131,14 @@ extension Course {
 
     /// The palette colour used least by `existing` courses (lowest index on ties).
     public static func suggestedColorIndex(avoiding existing: [Course]) -> Int {
+        leastUsedColorIndex(among: existing.map(\.colorIndex))
+    }
+
+    /// The palette colour appearing least often in `used` (lowest index on ties).
+    static func leastUsedColorIndex(among used: [Int]) -> Int {
         var usage = Array(repeating: 0, count: paletteSize)
-        for course in existing where usage.indices.contains(course.colorIndex) {
-            usage[course.colorIndex] += 1
+        for index in used where usage.indices.contains(index) {
+            usage[index] += 1
         }
         return usage.indices.min { usage[$0] < usage[$1] } ?? 0
     }
