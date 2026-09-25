@@ -1,0 +1,79 @@
+name: Screenshots
+
+# Runs the UI tests (CourseTableUITests) in the iOS Simulator and uploads the screenshots they take:
+# the main screens with demo data in English and Chinese, plus the course-list and import flows.
+# Manual only, since macOS minutes count 10×: Actions → Screenshots → Run workflow,
+# or `gh workflow run screenshots.yml`.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui-tests:
+    name: UI tests + screenshots (iOS Simulator)
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Pick the newest iPhone simulator
+        id: sim
+        run: |
+          udid=$(xcrun simctl list devices available --json | jq -r '
+            .devices | to_entries
+            | map(select(.key | test("SimRuntime\\.iOS-")))
+            | sort_by(.key | capture("iOS-(?<major>[0-9]+)-(?<minor>[0-9]+)") | [(.major | tonumber), (.minor | tonumber)])
+            | last | .value
+            | map(select(.name | startswith("iPhone"))) | first | .udid')
+          test -n "$udid" && test "$udid" != "null"
+          xcrun simctl list devices available | grep "$udid"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: Run UI tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project CourseTable.xcodeproj \
+            -scheme CourseTableUITests \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }},arch=arm64" \
+            -resultBundlePath UITestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Export screenshots
+        if: always()
+        run: |
+          mkdir -p screenshots
+          if [ -d UITestResults.xcresult ]; then
+            xcrun xcresulttool export attachments --path UITestResults.xcresult --output-path screenshots || true
+          fi
+          # Rename exported files after the names the tests gave them (the manifest maps them).
+          if [ -f screenshots/manifest.json ]; then
+            jq -r '.[].attachments[] | [.exportedFileName, .suggestedHumanReadableName] | @tsv' screenshots/manifest.json |
+              while IFS=$'\t' read -r file name; do
+                if [ -n "$name" ] && [ -f "screenshots/$file" ]; then mv "screenshots/$file" "screenshots/$name"; fi
+              done
+          fi
+          ls -la screenshots
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: screenshots
+          retention-days: 14
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: UITestResults
+          path: UITestResults.xcresult
+          retention-days: 7

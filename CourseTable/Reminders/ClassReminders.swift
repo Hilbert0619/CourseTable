@@ -76,7 +76,7 @@ enum ClassReminders {
     /// Replaces the scheduled reminders with ones for the upcoming classes, or removes them all when
     /// reminders are off or not allowed.
     static func sync(_ request: SyncRequest, now: Date = .now) async {
-        guard request.isActive else { return }
+        guard request.isActive, !UITestLaunch.isActive else { return }
         // Let a burst of edits settle; a newer request cancels this one.
         try? await Task.sleep(for: .seconds(1))
         guard !Task.isCancelled else { return }

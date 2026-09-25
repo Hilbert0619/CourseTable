@@ -27,6 +27,13 @@
 			remoteGlobalIDString = C0DE00000000000000000030;
 			remoteInfo = CourseTable;
 		};
+		C0DE00000000000000000064 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0DE00000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0DE00000000000000000030;
+			remoteInfo = CourseTable;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +54,7 @@
 		C0DE00000000000000000010 /* CourseTable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CourseTable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0DE00000000000000000011 /* CourseTableWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CourseTableWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0DE00000000000000000012 /* CourseTableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourseTableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0DE00000000000000000013 /* CourseTableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourseTableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -94,6 +102,11 @@
 			path = CourseTableTests;
 			sourceTree = "<group>";
 		};
+		C0DE00000000000000000026 /* CourseTableUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CourseTableUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +133,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0DE0000000000000000004B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -130,6 +150,7 @@
 				C0DE00000000000000000022 /* CourseTableWidget */,
 				C0DE00000000000000000021 /* Shared */,
 				C0DE00000000000000000023 /* CourseTableTests */,
+				C0DE00000000000000000026 /* CourseTableUITests */,
 				C0DE00000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -140,6 +161,7 @@
 				C0DE00000000000000000010 /* CourseTable.app */,
 				C0DE00000000000000000011 /* CourseTableWidgetExtension.appex */,
 				C0DE00000000000000000012 /* CourseTableTests.xctest */,
+				C0DE00000000000000000013 /* CourseTableUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,6 +242,29 @@
 			productReference = C0DE00000000000000000012 /* CourseTableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		C0DE00000000000000000033 /* CourseTableUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0DE00000000000000000074 /* Build configuration list for PBXNativeTarget "CourseTableUITests" */;
+			buildPhases = (
+				C0DE0000000000000000004A /* Sources */,
+				C0DE0000000000000000004B /* Frameworks */,
+				C0DE0000000000000000004C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0DE00000000000000000065 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0DE00000000000000000026 /* CourseTableUITests */,
+			);
+			name = CourseTableUITests;
+			packageProductDependencies = (
+			);
+			productName = CourseTableUITests;
+			productReference = C0DE00000000000000000013 /* CourseTableUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -237,6 +282,10 @@
 						CreatedOnToolsVersion = 26.0;
 					};
 					C0DE00000000000000000032 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = C0DE00000000000000000030;
+					};
+					C0DE00000000000000000033 = {
 						CreatedOnToolsVersion = 26.0;
 						TestTargetID = C0DE00000000000000000030;
 					};
@@ -263,6 +312,7 @@
 				C0DE00000000000000000030 /* CourseTable */,
 				C0DE00000000000000000031 /* CourseTableWidgetExtension */,
 				C0DE00000000000000000032 /* CourseTableTests */,
+				C0DE00000000000000000033 /* CourseTableUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -283,6 +333,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C0DE00000000000000000049 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0DE0000000000000000004C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -313,6 +370,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0DE0000000000000000004A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -325,6 +389,11 @@
 			isa = PBXTargetDependency;
 			target = C0DE00000000000000000030 /* CourseTable */;
 			targetProxy = C0DE00000000000000000061 /* PBXContainerItemProxy */;
+		};
+		C0DE00000000000000000065 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0DE00000000000000000030 /* CourseTable */;
+			targetProxy = C0DE00000000000000000064 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -524,6 +593,34 @@
 			};
 			name = Release;
 		};
+		C0DE00000000000000000088 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.hilbert0619.CourseTableUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = CourseTable;
+			};
+			name = Debug;
+		};
+		C0DE00000000000000000089 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.hilbert0619.CourseTableUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = CourseTable;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -559,6 +656,15 @@
 			buildConfigurations = (
 				C0DE00000000000000000086 /* Debug */,
 				C0DE00000000000000000087 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0DE00000000000000000074 /* Build configuration list for PBXNativeTarget "CourseTableUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0DE00000000000000000088 /* Debug */,
+				C0DE00000000000000000089 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

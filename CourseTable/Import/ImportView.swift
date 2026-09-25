@@ -57,6 +57,7 @@ struct ImportView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .accessibilityIdentifier("cancel")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Import") {

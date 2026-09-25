@@ -42,14 +42,19 @@ enum Persistence {
     static func previewContainer() -> ModelContainer {
         do {
             let container = try makeContainer(inMemory: true)
-            let today = LocalDate(.now)
-            settings(in: container.mainContext, today: today.adding(days: -28))  // today is in week 5
-            for course in SampleCourses.all(today: today) {
-                container.mainContext.insert(CourseRecord(course))
-            }
+            insertDemoData(into: container.mainContext)
             return container
         } catch {
             fatalError("Preview store failed: \(error)")
+        }
+    }
+
+    /// A term in its fifth week and a few courses on today's weekday and the next, for previews and UI tests.
+    @MainActor
+    static func insertDemoData(into context: ModelContext, today: LocalDate = LocalDate(.now)) {
+        settings(in: context, today: today.adding(days: -28))
+        for course in SampleCourses.all(today: today) {
+            context.insert(CourseRecord(course))
         }
     }
 }
@@ -60,6 +65,7 @@ enum WidgetSync {
 
     @MainActor
     static func publish(_ timetable: Timetable) {
+        guard !UITestLaunch.isActive else { return }
         guard let url = SnapshotStore.defaultURL else {
             logger.notice("App Group unavailable; widget snapshot not written")
             return

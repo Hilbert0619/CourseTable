@@ -7,9 +7,12 @@ struct CourseTableApp: App {
 
     init() {
         do {
-            container = try Persistence.makeContainer()
+            container = try Persistence.makeContainer(inMemory: UITestLaunch.isActive)
         } catch {
             fatalError("Could not open the course database: \(error)")
+        }
+        if UITestLaunch.isActive && UITestLaunch.wantsDemoData {
+            Persistence.insertDemoData(into: container.mainContext)
         }
     }
 

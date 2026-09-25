@@ -65,6 +65,15 @@ struct WeekView: View {
                     }
                 }
             }
+            // Swiping the grid changes the week. Attached before the tray is added below, so
+            // scrolling the tray's course chips doesn't.
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 30).onEnded { value in
+                    let dx = value.translation.width
+                    guard abs(dx) > 60, abs(dx) > abs(value.translation.height) * 1.5 else { return }
+                    step(dx < 0 ? 1 : -1)
+                }
+            )
             .safeAreaInset(edge: .bottom) {
                 if placing {
                     PlacementTray(
@@ -80,13 +89,6 @@ struct WeekView: View {
                 }
             }
             .sensoryFeedback(.success, trigger: placedCount)
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 30).onEnded { value in
-                    let dx = value.translation.width
-                    guard abs(dx) > 60, abs(dx) > abs(value.translation.height) * 1.5 else { return }
-                    step(dx < 0 ? 1 : -1)
-                }
-            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) { weekSwitcher }
@@ -119,6 +121,7 @@ struct WeekView: View {
                         } label: {
                             Label("Add Course", systemImage: "plus")
                         }
+                        .accessibilityIdentifier("addMenu")
                     }
                 }
             }
@@ -198,6 +201,7 @@ struct WeekView: View {
                 .frame(minWidth: 90)
             }
             .foregroundStyle(.primary)
+            .accessibilityIdentifier("weekMenu")
 
             Button { step(1) } label: {
                 Image(systemName: "chevron.right").accessibilityLabel("Next Week")
@@ -315,11 +319,14 @@ private struct WeekGrid: View {
                             y: layout.y(forPeriod: placement.periods.lowerBound) + 1.5
                         )
                         .accessibilityAddTraits(.isButton)
+                        .accessibilityIdentifier("courseBlock")
                 }
             }
         }
         .frame(width: layout.totalWidth, height: CGFloat(periodCount) * GridLayout.rowHeight, alignment: .topLeading)
         .clipped()
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("weekGrid")
     }
 }
 
@@ -422,6 +429,7 @@ private struct PlacementTray: View {
                 }
                 .padding(.vertical, 2)
             }
+            .accessibilityIdentifier("courseChips")
 
             Stepper(value: $length, in: 1...max(periodsPerDay, 1)) {
                 Text("Length: \(length) periods")
@@ -471,5 +479,6 @@ private struct TemplateChip: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier("courseChip")
     }
 }
