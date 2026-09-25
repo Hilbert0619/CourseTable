@@ -8,6 +8,11 @@ enum Persistence {
     static var schema: Schema { Schema([CourseRecord.self, SettingsRecord.self]) }
 
     static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
+        if !inMemory {
+            // The default store lives in Application Support, which doesn't exist on first launch;
+            // creating it up front avoids CoreData's noisy "Failed to stat path" recovery.
+            try FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
+        }
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
         return try ModelContainer(for: schema, configurations: [configuration])
     }
