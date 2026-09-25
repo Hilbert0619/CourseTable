@@ -90,7 +90,7 @@ struct CourseEditorView: View {
                                 .foregroundStyle(issue.isBlocking ? Color.red : Color.orange)
                         }
                         ForEach(clashes) { other in
-                            Label(clashMessage(other), systemImage: "exclamationmark.triangle.fill")
+                            Label(other.clashMessage, systemImage: "exclamationmark.triangle.fill")
                                 .foregroundStyle(.orange)
                         }
                     }
@@ -119,10 +119,6 @@ struct CourseEditorView: View {
                 draft.periodCount = min(draft.periodCount, max(periodsPerDay - start + 1, 1))
             }
         }
-    }
-
-    private func clashMessage(_ other: Course) -> String {
-        String(localized: "Clashes with \(other.name) (\(other.weekday.shortName), periods \(other.startPeriod)–\(other.endPeriod))")
     }
 
     private func save() {

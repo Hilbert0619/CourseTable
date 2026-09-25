@@ -1,6 +1,64 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ until %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$@ 下课"
+          }
+        }
+      }
+    },
+    "%lld already in your timetable and will be skipped." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 门课程已在课程表中，将跳过。"
+          }
+        }
+      }
+    },
+    "%lld courses to add" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld course to add"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld courses to add"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将添加 %lld 门课程"
+          }
+        }
+      }
+    },
+    "%lld minutes before" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提前 %lld 分钟"
+          }
+        }
+      }
+    },
     "+%lld more" : {
       "localizations" : {
         "zh-Hans" : {
@@ -51,12 +109,42 @@
         }
       }
     },
+    "At start time" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上课时"
+          }
+        }
+      }
+    },
+    "Can't read the %@ “%@”." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法识别%1$@“%2$@”。"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "取消"
+          }
+        }
+      }
+    },
+    "Choose File…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择文件…"
           }
         }
       }
@@ -87,6 +175,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上课节次"
+          }
+        }
+      }
+    },
+    "Class reminders" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上课提醒"
           }
         }
       }
@@ -141,6 +239,16 @@
         }
       }
     },
+    "Courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程"
+          }
+        }
+      }
+    },
     "Day" : {
       "localizations" : {
         "zh-Hans" : {
@@ -177,6 +285,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除这门课程？"
+          }
+        }
+      }
+    },
+    "Deletes the courses already in your timetable before importing." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入前先删除课程表中已有的课程。"
           }
         }
       }
@@ -231,6 +349,16 @@
         }
       }
     },
+    "Export as CSV" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出为 CSV"
+          }
+        }
+      }
+    },
     "First day of term" : {
       "localizations" : {
         "zh-Hans" : {
@@ -271,6 +399,46 @@
         }
       }
     },
+    "Import" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入"
+          }
+        }
+      }
+    },
+    "Import Courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入课程"
+          }
+        }
+      }
+    },
+    "Import Courses…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入课程…"
+          }
+        }
+      }
+    },
+    "Insert Example" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "填入示例"
+          }
+        }
+      }
+    },
     "Length: %lld periods" : {
       "localizations" : {
         "en" : {
@@ -295,6 +463,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时长：%lld 节"
+          }
+        }
+      }
+    },
+    "Line %lld: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$lld 行：%2$@"
+          }
+        }
+      }
+    },
+    "Lines that can't be imported" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法导入的行"
+          }
+        }
+      }
+    },
+    "Missing %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少%@。"
           }
         }
       }
@@ -369,6 +567,16 @@
         }
       }
     },
+    "No courses found yet." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未识别到课程。"
+          }
+        }
+      }
+    },
     "No more classes today" : {
       "localizations" : {
         "zh-Hans" : {
@@ -399,6 +607,16 @@
         }
       }
     },
+    "Notifications for Course Table are turned off." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程表的通知已关闭。"
+          }
+        }
+      }
+    },
     "Now" : {
       "localizations" : {
         "zh-Hans" : {
@@ -419,12 +637,52 @@
         }
       }
     },
+    "One course per line with the columns name, teacher, room, weekday, periods and weeks. Add a header row (English or Chinese) to use any column order. Rows copied from Excel or Numbers work too." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每行一门课程，列依次为：课程、教师、教室、星期、节次、周次。加上标题行（中英文均可）后可以使用任意列顺序。也可以直接粘贴从 Excel 或 Numbers 复制的行。"
+          }
+        }
+      }
+    },
+    "Open Course Table" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开课程表"
+          }
+        }
+      }
+    },
     "Open Course Table to add your classes." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开课程表，添加你的课程。"
+          }
+        }
+      }
+    },
+    "Open Settings" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置"
+          }
+        }
+      }
+    },
+    "Paste CSV or spreadsheet rows" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴 CSV 或表格内容"
           }
         }
       }
@@ -489,6 +747,16 @@
         }
       }
     },
+    "Periods “%@” are outside periods 1–%lld." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "节次“%1$@”超出了第 1–%2$lld 节。"
+          }
+        }
+      }
+    },
     "Previous Week" : {
       "localizations" : {
         "zh-Hans" : {
@@ -499,12 +767,72 @@
         }
       }
     },
+    "Remind me" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒时间"
+          }
+        }
+      }
+    },
+    "Reminders" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒"
+          }
+        }
+      }
+    },
+    "Reminders cover your next %lld classes and are renewed whenever you open the app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒会覆盖接下来的 %lld 节课，每次打开 App 时自动续上。"
+          }
+        }
+      }
+    },
     "Repeats" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "重复"
+          }
+        }
+      }
+    },
+    "Replace" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换"
+          }
+        }
+      }
+    },
+    "Replace all current courses?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换所有现有课程？"
+          }
+        }
+      }
+    },
+    "Replace existing courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换现有课程"
           }
         }
       }
@@ -609,12 +937,32 @@
         }
       }
     },
+    "Starting now" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现在上课"
+          }
+        }
+      }
+    },
     "Starts at" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始节次"
+          }
+        }
+      }
+    },
+    "Starts in %lld min" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 分钟后上课"
           }
         }
       }
@@ -717,12 +1065,42 @@
         }
       }
     },
+    "That file is too large to be a timetable." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件太大，不像是课程表。"
+          }
+        }
+      }
+    },
+    "That file isn't readable text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取该文件中的文本。"
+          }
+        }
+      }
+    },
     "The class must fit within periods 1–%lld." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "上课节次需在第 1–%lld 节之间。"
+          }
+        }
+      }
+    },
+    "The header row is missing %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标题行缺少%@。"
           }
         }
       }
@@ -743,6 +1121,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回到本周"
+          }
+        }
+      }
+    },
+    "This deletes the %lld courses in your timetable." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "This deletes the %lld course in your timetable."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "This deletes the %lld courses in your timetable."
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这会删除课程表中的 %lld 门课程。"
           }
         }
       }
@@ -897,6 +1303,16 @@
         }
       }
     },
+    "Weeks %lld–%lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$lld–%2$lld 周"
+          }
+        }
+      }
+    },
     "Weeks in term" : {
       "localizations" : {
         "zh-Hans" : {
@@ -913,6 +1329,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示正在上或下一节课，以及今天的课程。"
+          }
+        }
+      }
+    },
+    "course name" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程名"
+          }
+        }
+      }
+    },
+    "periods" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "节次"
+          }
+        }
+      }
+    },
+    "room" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "教室"
+          }
+        }
+      }
+    },
+    "teacher" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "教师"
+          }
+        }
+      }
+    },
+    "weekday" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "星期"
+          }
+        }
+      }
+    },
+    "weeks" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "周次"
           }
         }
       }

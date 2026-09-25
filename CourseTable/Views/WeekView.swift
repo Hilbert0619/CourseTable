@@ -6,6 +6,7 @@ struct WeekView: View {
     /// `nil` follows the current week.
     @State private var selectedWeek: Int?
     @State private var editorTarget: EditorTarget?
+    @State private var importing = false
 
     private var today: LocalDate { LocalDate(.now) }
     private var currentWeek: Int { timetable.semester.displayWeek(on: today) }
@@ -34,12 +35,16 @@ struct WeekView: View {
                     }
                     .overlay(alignment: .bottom) {
                         if timetable.courses.isEmpty {
-                            Text("Tap an empty slot or + to add a course")
-                                .font(.callout)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 10)
-                                .background(.regularMaterial, in: Capsule())
-                                .padding(.bottom, 24)
+                            VStack(spacing: 6) {
+                                Text("Tap an empty slot or + to add a course")
+                                Button("Import Courses…") { importing = true }
+                                    .fontWeight(.semibold)
+                            }
+                            .font(.callout)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .padding(.bottom, 24)
                         }
                     }
                 }
@@ -69,6 +74,9 @@ struct WeekView: View {
             }
             .sheet(item: $editorTarget) { target in
                 CourseEditorView(timetable: timetable, target: target)
+            }
+            .sheet(isPresented: $importing) {
+                ImportView(timetable: timetable)
             }
         }
     }

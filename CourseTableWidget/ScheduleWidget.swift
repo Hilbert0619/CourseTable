@@ -56,7 +56,8 @@ struct ScheduleWidget: Widget {
         }
         .configurationDisplayName("Class Schedule")
         .description("Your current or next class, and today's classes.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        // StandBy shows the small size; the accessory sizes are for the Lock Screen.
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryInline, .accessoryCircular])
     }
 }
 

@@ -1,15 +1,18 @@
 import SwiftUI
 import SwiftData
+import UIKit
 import CourseKit
 
 struct SettingsView: View {
+    /// The current timetable, for importing and exporting courses.
+    let timetable: Timetable
     @Query private var settingsRecords: [SettingsRecord]
 
     var body: some View {
         NavigationStack {
             Group {
                 if let settings = settingsRecords.first {
-                    SettingsForm(settings: settings)
+                    SettingsForm(settings: settings, timetable: timetable)
                 } else {
                     ProgressView()
                 }
@@ -21,6 +24,8 @@ struct SettingsView: View {
 
 private struct SettingsForm: View {
     @Bindable var settings: SettingsRecord
+    let timetable: Timetable
+    @State private var importing = false
 
     private var appVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–"
@@ -54,11 +59,80 @@ private struct SettingsForm: View {
                 }
             }
 
+            Section("Courses") {
+                Button {
+                    importing = true
+                } label: {
+                    Label("Import Courses…", systemImage: "square.and.arrow.down")
+                }
+                ShareLink(
+                    item: CourseListFile(courses: timetable.courses),
+                    preview: SharePreview(CourseListFile.fileName)
+                ) {
+                    Label("Export as CSV", systemImage: "square.and.arrow.up")
+                }
+                .disabled(timetable.courses.isEmpty)
+            }
+
+            ReminderSection()
+
             Section("About") {
                 LabeledContent("Version") {
                     Text(verbatim: appVersion)
                 }
             }
+        }
+        .sheet(isPresented: $importing) {
+            ImportView(timetable: timetable)
+        }
+    }
+}
+
+private struct ReminderSection: View {
+    @AppStorage(ReminderSettings.enabledKey) private var enabled = false
+    @AppStorage(ReminderSettings.leadMinutesKey) private var leadMinutes = ReminderSettings.defaultLeadMinutes
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
+    @State private var notificationsDenied = false
+
+    var body: some View {
+        Section {
+            Toggle("Class reminders", isOn: $enabled)
+            if enabled {
+                Picker("Remind me", selection: $leadMinutes) {
+                    ForEach(ReminderSettings.leadChoices, id: \.self) { minutes in
+                        Text(verbatim: ReminderSettings.label(forLeadMinutes: minutes)).tag(minutes)
+                    }
+                }
+            }
+            if notificationsDenied {
+                Label("Notifications for Course Table are turned off.", systemImage: "bell.slash")
+                    .foregroundStyle(.orange)
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
+                        openURL(url)
+                    }
+                }
+            }
+        } header: {
+            Text("Reminders")
+        } footer: {
+            Text("Reminders cover your next \(Timetable.maxScheduledReminders) classes and are renewed whenever you open the app.")
+        }
+        .onChange(of: enabled) { _, isOn in
+            guard isOn else { return }
+            Task {
+                // Prompts the first time; afterwards returns the choice made in Settings.
+                let granted = await ClassReminders.requestAuthorization()
+                if !granted {
+                    enabled = false
+                }
+                notificationsDenied = await ClassReminders.isDenied()
+            }
+        }
+        // Check again when coming back from the Settings app.
+        .task(id: scenePhase) {
+            notificationsDenied = await ClassReminders.isDenied()
         }
     }
 }
@@ -165,6 +239,8 @@ extension PeriodSchedule {
 }
 
 #Preview {
-    SettingsView()
+    let today = LocalDate(.now)
+    let timetable = Timetable(semester: Semester(startingOn: today), courses: SampleCourses.all(today: today))
+    return SettingsView(timetable: timetable)
         .modelContainer(Persistence.previewContainer())
 }

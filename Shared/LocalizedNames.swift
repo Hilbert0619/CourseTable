@@ -39,6 +39,26 @@ extension WeekParity {
     }
 }
 
+extension CourseWeeks {
+    /// e.g. "Weeks 1–16", "Week 5", "Weeks 1–15 · Odd weeks"
+    var summary: String {
+        let range = first == last ? String(localized: "Week \(first)") : String(localized: "Weeks \(first)–\(last)")
+        return parity == .every ? range : "\(range) · \(parity.displayName)"
+    }
+}
+
+extension Course {
+    /// e.g. "Periods 3–4", or "Period 5" for a single period.
+    var periodsLabel: String {
+        periodCount > 1 ? String(localized: "Periods \(startPeriod)–\(endPeriod)") : String(localized: "Period \(startPeriod)")
+    }
+
+    /// Warning about this course, shown when it clashes with the one being edited or imported.
+    var clashMessage: String {
+        String(localized: "Clashes with \(name) (\(weekday.shortName), periods \(startPeriod)–\(endPeriod))")
+    }
+}
+
 extension SemesterStatus {
     var summary: String {
         switch self {
