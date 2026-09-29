@@ -57,6 +57,8 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
 - CI: .github/workflows/coursekit.yml (Linux), ios.yml (macos-26, unit tests, path-filtered) and screenshots.yml
   (macos-26, UI tests + screenshots, manual only). Free plan: 2,000 minutes/month, macOS counts 10× → ~200 macOS
   minutes. An iOS run ≈ 4 macOS min (40 billed), a Screenshots run ≈ 8–12. Keep filters; no matrix builds.
+- Unsigned IPA for sideloading: `gh workflow run ipa.yml`, then `gh run download <id> -n CourseTable-unsigned-ipa`
+  (~3 macOS min). Without a proper signature the widget's App Group may not work.
 - To see UI changes: `gh workflow run screenshots.yml`, then `gh run download <id> -n screenshots` and look at
   the PNGs. Add a snapshot step to CourseTableUITests for any new screen.
 - Never run on a real device yet (no Mac): notifications and Lock Screen/Home widgets are still unseen.
