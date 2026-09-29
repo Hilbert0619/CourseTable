@@ -1,0 +1,48 @@
+name: IPA
+
+# Builds the app (with its widget) for iPhones without code signing and packages it as
+# CourseTable-unsigned.ipa, for sideloading tools that sign or install IPAs themselves.
+# Manual only, since macOS minutes count 10×: Actions → IPA → Run workflow, or `gh workflow run ipa.yml`.
+on:
+  workflow_dispatch:
+
+jobs:
+  ipa:
+    name: Unsigned IPA (Release, iOS devices)
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build for iOS devices (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project CourseTable.xcodeproj \
+            -scheme CourseTable \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | xcbeautify --renderer github-actions
+
+      - name: Package the IPA
+        run: |
+          app=build/Build/Products/Release-iphoneos/CourseTable.app
+          test -d "$app"
+          ls "$app/PlugIns"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" -c "Print :CFBundleShortVersionString" -c "Print :MinimumOSVersion" "$app/Info.plist"
+          mkdir -p ipa/Payload
+          cp -R "$app" ipa/Payload/
+          (cd ipa && zip -qry ../CourseTable-unsigned.ipa Payload)
+          ls -la CourseTable-unsigned.ipa
+
+      - name: Upload the IPA
+        uses: actions/upload-artifact@v7
+        with:
+          name: CourseTable-unsigned-ipa
+          path: CourseTable-unsigned.ipa
+          retention-days: 14
