@@ -31,13 +31,25 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Check the settings are present
+      # Says what kind of value a secret holds (never the value itself) and drops stray spaces or line breaks.
+      - name: Check the settings
         run: |
           missing=0
           for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD PROJECT_REF; do
             if [ -z "${!name}" ]; then echo "::error::$name is not set"; missing=1; fi
           done
-          exit $missing
+          [ $missing = 0 ] || exit 1
+          token=$(printf '%s' "$SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]')
+          echo "::add-mask::$token"
+          case "$token" in
+            sbp_*) echo "SUPABASE_ACCESS_TOKEN is a personal access token (sbp_…), ${#token} characters" ;;
+            sb_secret_*) echo "::error::SUPABASE_ACCESS_TOKEN holds the project's secret API key (sb_secret_…). It needs a personal access token (sbp_…) from Account → Access Tokens."; exit 1 ;;
+            sb_publishable_*) echo "::error::SUPABASE_ACCESS_TOKEN holds the publishable key (sb_publishable_…). It needs a personal access token (sbp_…) from Account → Access Tokens."; exit 1 ;;
+            eyJ*) echo "::error::SUPABASE_ACCESS_TOKEN holds a JWT (a legacy anon or service_role key). It needs a personal access token (sbp_…) from Account → Access Tokens."; exit 1 ;;
+            *) echo "::error::SUPABASE_ACCESS_TOKEN doesn't start with sbp_ (${#token} characters). It needs a personal access token from Account → Access Tokens."; exit 1 ;;
+          esac
+          if [ "$token" != "$SUPABASE_ACCESS_TOKEN" ]; then echo "Removed spaces or line breaks around the token"; fi
+          echo "SUPABASE_ACCESS_TOKEN=$token" >> "$GITHUB_ENV"
 
       - uses: supabase/setup-cli@v1
         with:
