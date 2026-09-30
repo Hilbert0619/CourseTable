@@ -7,7 +7,7 @@ Date: 2026-09-30 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
 - **v0.1.1 runs on my iPhone** (sideloaded with iloader, free Apple ID). The widget works since the App Group fix.
 - Full history, test results, bugs found and fixed, and open items: **[`docs/v1-development-record.md`](docs/v1-development-record.md)**.
 - Tests: CourseKit 110 (Windows + Linux) · app 17 (Simulator) · UI 3 (Screenshots workflow): all green.
-- Current phase: **English vocabulary learning** (online, Supabase, a Words tab). Agreed spec and plan: [`docs/vocabulary-spec.md`](docs/vocabulary-spec.md). Stage 1 (VocabKit + the 考研 word list) is done; stage 2 (backend: `supabase/`, `backend.yml`) is in progress.
+- Current phase: **English vocabulary learning** (online, Supabase, a Words tab). Agreed spec and plan: [`docs/vocabulary-spec.md`](docs/vocabulary-spec.md). Stage 1 (VocabKit + the 考研 word list) and stage 2 (backend deployed to Supabase project `prkvpkxrugvbmrwxehhs`, Singapore; deploy with `backend-deploy.yml`) are done; stage 3 (the app) is next.
 
 ## Handoff prompt for the next phase
 

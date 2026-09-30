@@ -14,6 +14,10 @@ on:
         description: Also apply the sign-in settings from supabase/remote-auth.json
         type: boolean
         default: true
+      code_emails:
+        description: Send the 6-digit-code email templates (needs a custom SMTP sender on the project)
+        type: boolean
+        default: false
 
 concurrency:
   group: backend-deploy
@@ -68,15 +72,16 @@ jobs:
       - name: Apply migrations
         run: supabase db push
 
-      # Two requests, so the basic options still apply if the email templates are refused. Prints the
-      # API's error message on failure and, on success, the stored value of each field that was sent.
+      # Prints the API's error message on failure and, on success, the stored value of each field sent.
+      # Free projects using Supabase's built-in email can't change email templates, so the code emails
+      # (remote-auth-code-emails.json) are only sent on request, once the project has its own SMTP sender.
       - name: Sign-in settings
         if: inputs.auth_settings
         run: |
           set -o pipefail
-          apply() { # description, jq filter picking fields from remote-auth.json
+          apply() { # description, settings file
             local body code
-            body=$(jq -c "$2" supabase/remote-auth.json)
+            body=$(jq -c . "$2")
             code=$(curl -sS -o response.json -w '%{http_code}' -X PATCH "https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth" \
               -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" --data "$body")
             if [ "$code" != 200 ]; then
@@ -87,8 +92,10 @@ jobs:
             echo "$1 applied:"
             jq --argjson sent "$body" 'with_entries(select(.key as $k | $sent | has($k)) | .value |= (tostring | .[0:70]))' response.json
           }
-          apply "Sign-up and password options" 'with_entries(select(.key | test("^mailer_(templates|subjects)_") | not))'
-          apply "Email templates with the 6-digit code" 'with_entries(select(.key | test("^mailer_(templates|subjects)_")))'
+          apply "Sign-in options" supabase/remote-auth.json
+          if [ "${{ inputs.code_emails }}" = true ]; then
+            apply "Email templates with the 6-digit code" supabase/remote-auth-code-emails.json
+          fi
 
       - name: Check the database
         run: |

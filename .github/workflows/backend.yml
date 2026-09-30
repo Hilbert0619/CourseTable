@@ -49,7 +49,8 @@ jobs:
           result=$(docker exec -i supabase_db_CourseTable psql -U postgres -At -F '|' < supabase/checks/deployed.sql)
           echo "$result"
           test "$result" = "4801|4801|t|f|f"
-          jq -e '.mailer_otp_length == 6 and .mailer_autoconfirm == false' supabase/remote-auth.json > /dev/null
+          jq -e '.site_url as $app | .mailer_autoconfirm == false and (.uri_allow_list | contains($app))' supabase/remote-auth.json > /dev/null
+          jq -e '.mailer_templates_confirmation_content | contains("{{ .Token }}")' supabase/remote-auth-code-emails.json > /dev/null
 
       - name: Stop Supabase
         if: always()

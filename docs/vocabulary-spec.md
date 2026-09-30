@@ -11,7 +11,7 @@ disagree, this file wins.
 | Product | Online and multi-user, for 考研 candidates. It needs accounts and cloud sync, but studying must also work offline. |
 | Where | A **Words** tab inside CourseTable. The timetable stays local and needs no account; only the Words tab needs sign-in. |
 | Backend | **Supabase Cloud, Singapore region**: Postgres, Auth, and later Edge Functions and Storage. Start on the free plan. |
-| Sign-in | **Email + password**. Sign-up is confirmed, and passwords are reset, with a 6-digit code typed into the app, so no deep links are needed. Sign in with Apple needs the paid developer program, so it waits until the app is published. |
+| Sign-in | **Email + password**. Sign-up is confirmed, and passwords are reset, with the link in Supabase's standard email: it opens the app through its URL scheme (`io.github.hilbert0619.coursetable://auth-callback`, which works with a free Apple ID). Free projects on Supabase's built-in email can't change the email templates (checked 2026-09-30), so 6-digit codes wait for a custom SMTP sender (`supabase/remote-auth-code-emails.json` is ready). Sign in with Apple needs the paid developer program, so it waits until the app is published. |
 | Word list | **ECDICT** (MIT). Book 1 is every entry tagged `ky` (考研, roughly 5,000 words). Users can also import their own lists. |
 | Scheduling | **FSRS-6**. Default parameters, target retention 0.9. It runs **on the device**, in `VocabKit`, and also works offline. Our own code (no third-party package), checked against the reference implementation's published test values. |
 | Pronunciation | On-device `AVSpeechSynthesizer` (US or UK voice). There are no audio files in v0.2–v0.3. |
@@ -28,7 +28,7 @@ Kept from the draft:
 ## 2. Scope
 
 **v0.2: core, no AI**
-- Sign up, sign in, confirmation code, forgotten password, sign out, delete account (the App Store requires in-app deletion).
+- Sign up, sign in, confirmation link (opens the app), forgotten password (same), sign out, delete account (the App Store requires in-app deletion).
 - Books: the system 考研 book, downloaded once and cached for offline use.
 - Your own books: import TXT (one word per line; the meaning is filled in from the dictionary, and unknown words are listed) or CSV (the columns in §6). You can rename and delete them.
 - **Today** card: new words done out of the target, reviews due, a time estimate, progress, and the exam countdown.
@@ -234,7 +234,7 @@ macOS CI budget for v0.2: about 3 iOS runs (~12 min), 3 screenshot runs (~30 min
 
 1. **VocabKit + content** (done 2026-09-30): scheduling (FSRS), day, plan, session, grading, choices, import, search, stats, sync
    merge; the `vocab-content` tool; `content/kaoyan-ecdict.csv`. No cost, no accounts.
-2. **Backend (local)**: `supabase/` folder (config, migrations, seed, pgTAP tests) and `backend.yml`. Everything
+2. **Backend** (done 2026-09-30; project `prkvpkxrugvbmrwxehhs`, deployed by `backend-deploy.yml`): `supabase/` folder (config, migrations, seed, pgTAP tests) and `backend.yml`. Everything
    runs in Docker here.
    **Your step at the end**:
    - create a Supabase account and a project in Singapore (free plan);
@@ -246,10 +246,11 @@ macOS CI budget for v0.2: about 3 iOS runs (~12 min), 3 screenshot runs (~30 min
 
 ## 12. Risks and open items
 
-- **Reachability from China**: supabase.com answered here directly without VPN (2026-09-29). The project
-  itself must be tested from the phone, as in stage 2.
+- **Reachability from China**: the cloud project answered on the iPhone without VPN (2026-09-30), and supabase.com
+  answered from the PC without VPN (2026-09-29).
 - **Free-plan limits**: idle projects are paused (resume in the dashboard); the database is 500 MB, far above our needs.
-- **Email**: Supabase's built-in sender is only for testing, since it delivers to project team members and is rate-limited.
+- **Email**: Supabase's built-in sender is only for testing: it delivers only to the project team's addresses, a few emails an hour,
+  and doesn't allow custom templates.
   Before other students sign up, set up a custom SMTP provider in Supabase.
 - **Before any public release**:
   - Sign in with Apple (App Store rule 4.8, if other logins are offered), a privacy policy, and a PIPL review;
