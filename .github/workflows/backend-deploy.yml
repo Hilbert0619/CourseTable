@@ -49,6 +49,10 @@ jobs:
             *) echo "::error::SUPABASE_ACCESS_TOKEN doesn't start with sbp_ (${#token} characters). It needs a personal access token from Account → Access Tokens."; exit 1 ;;
           esac
           if [ "$token" != "$SUPABASE_ACCESS_TOKEN" ]; then echo "Removed spaces or line breaks around the token"; fi
+          case "$SUPABASE_DB_PASSWORD" in
+            sbp_*) echo "::error::SUPABASE_DB_PASSWORD holds an access token (sbp_…): the two secrets look swapped."; exit 1 ;;
+            *) echo "SUPABASE_DB_PASSWORD is set, ${#SUPABASE_DB_PASSWORD} characters" ;;
+          esac
           echo "SUPABASE_ACCESS_TOKEN=$token" >> "$GITHUB_ENV"
 
       - uses: supabase/setup-cli@v1
