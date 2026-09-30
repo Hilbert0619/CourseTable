@@ -61,7 +61,7 @@ final class CourseTableUITests: XCTestCase {
     @MainActor
     func testImportExampleFromSettings() throws {
         let app = launch()
-        app.tabBars.buttons.element(boundBy: 2).tap()
+        app.tabBars.buttons.element(boundBy: 3).tap()
         tap(app.buttons["Import Courses…"])
         tap(app.buttons["Insert Example"])
         snapshot(app, "import-1-example")
@@ -102,7 +102,7 @@ final class CourseTableUITests: XCTestCase {
             snapshot(app, "\(language)-5-placing")
             tap(app.buttons[text("Done", "完成")])
 
-            app.tabBars.buttons.element(boundBy: 2).tap()
+            app.tabBars.buttons.element(boundBy: 3).tap()
             snapshot(app, "\(language)-6-settings")
             tap(app.buttons[text("Import Courses…", "导入课程…")])
             tap(app.buttons[text("Insert Example", "填入示例")])

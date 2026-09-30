@@ -20,6 +20,8 @@ struct RootView: View {
                 .tabItem { Label("Today", systemImage: "sun.max") }
             WeekView(timetable: timetable)
                 .tabItem { Label("Timetable", systemImage: "calendar") }
+            WordsTab()
+                .tabItem { Label("Words", systemImage: "character.book.closed") }
             SettingsView(timetable: timetable)
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }
@@ -52,4 +54,5 @@ enum EditorTarget: Identifiable {
 #Preview {
     RootView()
         .modelContainer(Persistence.previewContainer())
+        .environment(VocabApp.preview())
 }

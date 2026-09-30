@@ -4,6 +4,8 @@ import SwiftData
 @main
 struct CourseTableApp: App {
     private let container: ModelContainer
+    /// The Words tab: its own store (Vocabulary.store) and the vocabulary backend.
+    @State private var vocab = VocabApp.makeForLaunch()
 
     init() {
         do {
@@ -19,6 +21,11 @@ struct CourseTableApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(vocab)
+                // Sign-in email links (io.github.hilbert0619.coursetable://auth-callback#…).
+                .onOpenURL { url in
+                    Task { await vocab.open(url) }
+                }
         }
         .modelContainer(container)
     }

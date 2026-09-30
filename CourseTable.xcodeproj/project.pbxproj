@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		C0DE00000000000000000050 /* CourseKit in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000091 /* CourseKit */; };
 		C0DE00000000000000000051 /* CourseKit in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000092 /* CourseKit */; };
+		C0DE00000000000000000053 /* VocabKit in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000094 /* VocabKit */; };
+		C0DE00000000000000000054 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000095 /* Supabase */; };
 		C0DE00000000000000000052 /* CourseTableWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C0DE00000000000000000011 /* CourseTableWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -62,6 +64,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				CourseTable.entitlements,
+				Info.plist,
 			);
 			target = C0DE00000000000000000030 /* CourseTable */;
 		};
@@ -115,6 +118,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0DE00000000000000000050 /* CourseKit in Frameworks */,
+				C0DE00000000000000000053 /* VocabKit in Frameworks */,
+				C0DE00000000000000000054 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +195,8 @@
 			name = CourseTable;
 			packageProductDependencies = (
 				C0DE00000000000000000091 /* CourseKit */,
+				C0DE00000000000000000094 /* VocabKit */,
+				C0DE00000000000000000095 /* Supabase */,
 			);
 			productName = CourseTable;
 			productReference = C0DE00000000000000000010 /* CourseTable.app */;
@@ -303,6 +310,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				C0DE00000000000000000090 /* XCLocalSwiftPackageReference "CourseKit" */,
+				C0DE00000000000000000093 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C0DE00000000000000000003 /* Products */;
@@ -475,6 +483,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CourseTable/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Course Table";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -502,6 +511,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CourseTable/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Course Table";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -678,6 +688,17 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		C0DE00000000000000000093 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = exactVersion;
+				version = 2.55.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		C0DE00000000000000000091 /* CourseKit */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -688,6 +709,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C0DE00000000000000000090 /* XCLocalSwiftPackageReference "CourseKit" */;
 			productName = CourseKit;
+		};
+		C0DE00000000000000000094 /* VocabKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0DE00000000000000000090 /* XCLocalSwiftPackageReference "CourseKit" */;
+			productName = VocabKit;
+		};
+		C0DE00000000000000000095 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0DE00000000000000000093 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -12,6 +12,10 @@ public struct DayStats: Hashable, Sendable {
     public var correct = 0
     public var durationMs = 0
 
+    public init(day: Int) {
+        self.day = day
+    }
+
     public var accuracy: Double? { answers == 0 ? nil : Double(correct) / Double(answers) }
     public var studied: Bool { answers > 0 }
 }

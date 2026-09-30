@@ -10,7 +10,8 @@ on:
       - "CourseTableWidget/**"
       - "CourseTableTests/**"
       - "Shared/**"
-      - "CourseKit/Sources/CourseKit/**"  # VocabKit joins when the app links it (stage 3)
+      - "CourseKit/Sources/CourseKit/**"
+      - "CourseKit/Sources/VocabKit/**"
       - "CourseKit/Package.swift"
       - "CourseTable.xcodeproj/**"
       - ".github/workflows/ios.yml"
@@ -20,7 +21,8 @@ on:
       - "CourseTableWidget/**"
       - "CourseTableTests/**"
       - "Shared/**"
-      - "CourseKit/Sources/CourseKit/**"  # VocabKit joins when the app links it (stage 3)
+      - "CourseKit/Sources/CourseKit/**"
+      - "CourseKit/Sources/VocabKit/**"
       - "CourseKit/Package.swift"
       - "CourseTable.xcodeproj/**"
       - ".github/workflows/ios.yml"
