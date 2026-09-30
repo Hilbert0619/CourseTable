@@ -3,7 +3,28 @@ import VocabKit
 
 // Builds a word-list file from ECDICT's ecdict.csv:
 //   swift run -c release vocab-content <ecdict.csv> <output.csv> [--tag ky]
+// Turns a word-list file into the Supabase migration that loads it:
+//   swift run -c release vocab-content sql <word-list.csv> <migration.sql>
 // See docs/vocabulary-spec.md §4.
+
+func fail(_ message: String, code: Int32 = 1) -> Never {
+    FileHandle.standardError.write(Data((message + "\n").utf8))
+    exit(code)
+}
+
+if CommandLine.arguments.dropFirst().first == "sql" {
+    let paths = Array(CommandLine.arguments.dropFirst(2))
+    guard paths.count == 2 else { fail("usage: vocab-content sql <word-list.csv> <migration.sql>", code: 2) }
+    do {
+        let entries = try ContentFile.read(String(contentsOf: URL(fileURLWithPath: paths[0]), encoding: .utf8))
+        let sql = SeedSQL.migration(for: .kaoyan, entries: entries)
+        try sql.write(to: URL(fileURLWithPath: paths[1]), atomically: true, encoding: .utf8)
+        print("Wrote \(entries.count) words for '\(SystemBook.kaoyan.name)' to \(paths[1]) (\(sql.utf8.count / 1024) KB)")
+        exit(0)
+    } catch {
+        fail("sql: \(error)")
+    }
+}
 
 var arguments = Array(CommandLine.arguments.dropFirst())
 var tag = "ky"

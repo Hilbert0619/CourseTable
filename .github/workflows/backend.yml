@@ -1,0 +1,48 @@
+name: Backend
+
+# The vocabulary backend on a local Supabase stack: migrations, pgTAP tests (schema, content, row-level
+# security) and an end-to-end API check. Linux runner: 1× billing on the free private-repo minutes.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    paths:
+      - "supabase/**"
+      - ".github/workflows/backend.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Supabase (local stack, Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      # Only what the app talks to: Postgres, Auth (gotrue), the REST API (postgrest) and the gateway (kong).
+      - name: Start Supabase
+        run: supabase start -x realtime,storage-api,imgproxy,studio,edge-runtime,logflare,vector,supavisor,postgres-meta
+
+      - name: Database tests (pgTAP)
+        run: supabase test db
+
+      - name: API check
+        run: bash supabase/tests/api/smoke.sh
+
+      - name: Lint database functions
+        run: supabase db lint --level warning --fail-on warning
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup

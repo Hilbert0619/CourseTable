@@ -7,7 +7,7 @@ Date: 2026-09-30 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
 - **v0.1.1 runs on my iPhone** (sideloaded with iloader, free Apple ID). The widget works since the App Group fix.
 - Full history, test results, bugs found and fixed, and open items: **[`docs/v1-development-record.md`](docs/v1-development-record.md)**.
 - Tests: CourseKit 110 (Windows + Linux) · app 17 (Simulator) · UI 3 (Screenshots workflow): all green.
-- Next phase: an **English word-learning feature**. I'll provide a requirements draft (Markdown, written with ChatGPT) to refine together before any code is written.
+- Current phase: **English vocabulary learning** (online, Supabase, a Words tab). Agreed spec and plan: [`docs/vocabulary-spec.md`](docs/vocabulary-spec.md). Stage 1 (VocabKit + the 考研 word list) is done; stage 2 (backend: `supabase/`, `backend.yml`) is in progress.
 
 ## Handoff prompt for the next phase
 
@@ -73,9 +73,7 @@ Read README.md, HANDOFF.md and docs/v1-development-record.md first.
 - Don't bypass security mechanisms; if something needs my approval or sign-in, say exactly what to do.
 
 ## Leftovers to remind me about at the start
-1. Revoke the exposed GitHub token github_pat_11B4KQLU… (GitHub → Settings → Developer settings → Tokens)
-2. Delete OneDrive\Desktop\.claude\Desktop\claude-review and Downloads\claude-fix, empty the OneDrive recycle bin
-3. Check on the iPhone: class reminders (Settings → Reminders) and the Lock Screen widgets — not yet confirmed
+None. The token, the two folders and the iPhone checks were done on 2026-09-30.
 
 ## Backlog for CourseTable itself (after the vocabulary phase, or when I ask)
 - Long single English words still break inside grid blocks; more screenshot coverage (dark mode, iPhone SE)

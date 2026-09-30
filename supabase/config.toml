@@ -1,0 +1,35 @@
+# Local development and CI settings for the vocabulary backend (docs/vocabulary-spec.md).
+# Anything not set here uses the Supabase CLI defaults. The cloud project's auth settings (6-digit
+# confirmation codes, email templates) are set when the project is linked.
+project_id = "CourseTable"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+# PostgREST returns at most this many rows per request; the app pages through word lists.
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+# Word content is loaded by a migration, so every environment gets it the same way.
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+# Off locally so tests can sign up without an inbox; the cloud project confirms with a code.
+enable_confirmations = false
+double_confirm_changes = true
+otp_length = 6
+otp_expiry = 3600
