@@ -29,7 +29,7 @@ final class VocabApp {
     init(backend: any VocabBackend, container: ModelContainer, storeProblem: String? = nil) {
         self.backend = backend
         self.storeProblem = storeProblem
-        model = VocabModel(context: container.mainContext)
+        model = VocabModel(container: container)
         sync = SyncEngine(backend: backend, model: model)
         model.load()
     }

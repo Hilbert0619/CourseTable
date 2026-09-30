@@ -300,7 +300,7 @@ private struct ChoiceQuestionView: View {
                         Text(verbatim: option)
                             .multilineTextAlignment(.leading)
                         Spacer()
-                        if let picked, index == question.correctIndex {
+                        if picked != nil, index == question.correctIndex {
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                         } else if picked == index {
                             Image(systemName: "xmark.circle.fill").foregroundStyle(.red)

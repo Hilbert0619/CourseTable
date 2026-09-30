@@ -9,6 +9,8 @@ import VocabKit
 @MainActor
 @Observable
 final class VocabModel {
+    /// Held so the context stays usable: a `ModelContext` doesn't keep its container alive.
+    let container: ModelContainer
     let context: ModelContext
 
     /// Dictionary entries by word key.
@@ -29,8 +31,9 @@ final class VocabModel {
     @ObservationIgnored private var cachedSearch: WordSearch?
     @ObservationIgnored private var cachedPool: ChoicePool?
 
-    init(context: ModelContext) {
-        self.context = context
+    init(container: ModelContainer) {
+        self.container = container
+        context = container.mainContext
     }
 
     // MARK: - Loading
