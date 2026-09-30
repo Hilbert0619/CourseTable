@@ -47,10 +47,16 @@ One course per line. Columns are separated by commas, tabs (spreadsheet paste), 
 ## Repository layout
 
 ```
-CourseKit/            Swift package with all timetable logic; builds and tests on Windows, Linux and macOS
+CourseKit/            Swift package with all timetable and vocabulary logic; builds and tests on Windows, Linux and macOS
   Sources/CourseKit/    LocalDate, TimeOfDay, Semester, PeriodSchedule, Course, Timetable, WeekGrid, ScheduleSnapshot,
                         CSV + CourseImport + ImportPlan (import/export), CourseTemplate (course list + placing), Reminders
-  Tests/CourseKitTests/ Swift Testing unit tests
+  Sources/VocabKit/     Vocabulary learning (docs/vocabulary-spec.md): FSRS-6 + Scheduler, StudyClock, DailyPlan,
+                        StudySession, AnswerGrader, ChoicePool, WordEntry, ECDICT + ContentFile, WordListImport,
+                        WordSearch, VocabStats, SyncMerge
+  Sources/VocabContent/ `vocab-content` tool: builds content/kaoyan-ecdict.csv from ECDICT's ecdict.csv
+  Tests/                Swift Testing unit tests (CourseKitTests, VocabKitTests)
+content/              Word lists built from ECDICT (MIT, see content/ECDICT-LICENSE); content/.cache/ holds the
+                      downloaded source and is not committed
 CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
 CourseTableWidget/    WidgetKit extension
 Shared/               Code and strings compiled into both the app and the widget (palette, snapshot file, Localizable.xcstrings)

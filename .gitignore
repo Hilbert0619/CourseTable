@@ -15,3 +15,6 @@ xcuserdata/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Vocabulary content: the full ECDICT download (only the generated word list is committed)
+content/.cache/

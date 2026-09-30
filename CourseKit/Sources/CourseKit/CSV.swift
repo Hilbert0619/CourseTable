@@ -4,21 +4,26 @@ import Foundation
 ///
 /// Handles quoted fields with doubled quotes, delimiters and line breaks inside quotes, and
 /// `\n`, `\r\n` or `\r` line endings. A quote in the middle of an unquoted field is kept as text.
-enum CSV {
-    struct Record: Hashable {
+public enum CSV {
+    public struct Record: Hashable, Sendable {
         /// 1-based line in the input where the record starts.
-        var line: Int
-        var fields: [String]
+        public var line: Int
+        public var fields: [String]
+
+        public init(line: Int, fields: [String]) {
+            self.line = line
+            self.fields = fields
+        }
     }
 
-    static let tab: Unicode.Scalar = "\t"
-    static let comma: Unicode.Scalar = ","
-    static let semicolon: Unicode.Scalar = ";"
-    static let fullWidthComma: Unicode.Scalar = "\u{FF0C}"
+    public static let tab: Unicode.Scalar = "\t"
+    public static let comma: Unicode.Scalar = ","
+    public static let semicolon: Unicode.Scalar = ";"
+    public static let fullWidthComma: Unicode.Scalar = "\u{FF0C}"
 
     /// Tab if the first non-empty line has one (a spreadsheet paste), otherwise the most frequent of
     /// comma, semicolon and full-width comma, defaulting to comma.
-    static func detectDelimiter(in text: String) -> Unicode.Scalar {
+    public static func detectDelimiter(in text: String) -> Unicode.Scalar {
         let firstLine = text.split(whereSeparator: \.isNewline).first { !$0.allSatisfy(\.isWhitespace) } ?? ""
         let scalars = firstLine.unicodeScalars
         if scalars.contains(tab) { return tab }
@@ -28,7 +33,7 @@ enum CSV {
         return candidates[best]
     }
 
-    static func records(in text: String, delimiter: Unicode.Scalar) -> [Record] {
+    public static func records(in text: String, delimiter: Unicode.Scalar) -> [Record] {
         let scalars = Array(text.unicodeScalars)
         var records: [Record] = []
         var fields: [String] = []
@@ -86,7 +91,7 @@ enum CSV {
     }
 
     /// `field` quoted if it contains the delimiter, a quote or a line break.
-    static func escape(_ field: String, delimiter: Unicode.Scalar = comma) -> String {
+    public static func escape(_ field: String, delimiter: Unicode.Scalar = comma) -> String {
         let needsQuotes = field.unicodeScalars.contains { $0 == delimiter || $0 == "\"" || $0 == "\n" || $0 == "\r" }
         guard needsQuotes else { return field }
         return "\"" + field.replacingOccurrences(of: "\"", with: "\"\"") + "\""
