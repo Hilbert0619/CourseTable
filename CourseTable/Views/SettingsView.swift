@@ -76,9 +76,18 @@ private struct SettingsForm: View {
 
             ReminderSection()
 
-            Section("About") {
+            Section {
                 LabeledContent("Version") {
                     Text(verbatim: appVersion)
+                }
+                LabeledContent("Widget") {
+                    SnapshotStore.defaultURL == nil ? Text("Unavailable") : Text("Connected")
+                }
+            } header: {
+                Text("About")
+            } footer: {
+                if SnapshotStore.defaultURL == nil {
+                    Text("The widget can't read your timetable because this copy of the app has no App Group. Install it with Xcode, TestFlight, iloader, SideStore or AltStore to use the widget.")
                 }
             }
         }

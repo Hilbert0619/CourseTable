@@ -95,7 +95,7 @@ Day-to-day workflow:
 |---|---|---|---|
 | `CourseKit` | Ubuntu, `swift:6.4` container | pushes/PRs touching `CourseKit/` | `swift build` + `swift test` |
 | `iOS` | `macos-26` (Xcode 26.x) | pushes/PRs touching the app, widget, shared code, project or CourseKit sources | `xcodebuild test`: builds the app and widget, runs `CourseTableTests` on the newest iPhone simulator |
-| `IPA` | `macos-26` | **manual only** | builds an unsigned Release build for iPhones and uploads `CourseTable-unsigned.ipa` (app + widget, iOS 17+), for sideloading tools that sign it themselves |
+| `IPA` | `macos-26` | **manual only** | builds a Release build for iPhones, ad-hoc signed with its entitlements, and uploads `CourseTable.ipa` (app + widget, iOS 17+) for sideloading tools (iloader, SideStore, AltStore, LiveContainer) |
 | `Screenshots` | `macos-26` | **manual only** | runs the UI tests (`CourseTableUITests` scheme) and uploads a `screenshots` artifact: every main screen in English and Chinese, plus the course-list, placing and import flows |
 
 The repo is private. The free plan includes 2,000 Actions minutes a month, and macOS minutes count 10×, so that's roughly 200 macOS minutes. A normal `iOS` run takes about 4 minutes (40 of the 2,000), and a `Screenshots` run about 9–12 minutes (90–120). The iOS job runs only when relevant files change and cancels superseded runs.

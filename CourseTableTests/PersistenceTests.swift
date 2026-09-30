@@ -70,6 +70,26 @@ import CourseKit
         #expect(SnapshotStore.read(from: url) == snapshot)
     }
 
+    @Test func appGroupFollowsHowTheAppWasSigned() {
+        // Xcode / TestFlight: the group from the entitlements files.
+        #expect(SnapshotStore.appGroupCandidates(bundleIdentifier: "io.github.hilbert0619.CourseTable")
+            == ["group.io.github.hilbert0619.CourseTable"])
+        #expect(SnapshotStore.appGroupCandidates(bundleIdentifier: "io.github.hilbert0619.CourseTable.Widget")
+            == ["group.io.github.hilbert0619.CourseTable"])
+
+        // iloader / SideStore / AltStore rename the app to <id>.<TEAMID>; app and widget must agree on the group.
+        let app = SnapshotStore.appGroupCandidates(bundleIdentifier: "io.github.hilbert0619.CourseTable.AB12CD34EF")
+        let widget = SnapshotStore.appGroupCandidates(bundleIdentifier: "io.github.hilbert0619.CourseTable.AB12CD34EF.Widget")
+        #expect(app.first == "group.io.github.hilbert0619.CourseTable.AB12CD34EF")
+        #expect(widget.first == app.first)
+        #expect(app.last == SnapshotStore.appGroupID)
+
+        // Groups listed by AltStore/SideStore in Info.plist come first.
+        let listed = SnapshotStore.appGroupCandidates(bundleIdentifier: "x.Widget", listedGroups: ["group.listed"])
+        #expect(listed == ["group.listed", "group.x", SnapshotStore.appGroupID])
+        #expect(SnapshotStore.appGroupCandidates(bundleIdentifier: nil) == [SnapshotStore.appGroupID])
+    }
+
     @Test func missingOrCorruptFileReadsAsNil() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).json")
         #expect(SnapshotStore.read(from: url) == nil)

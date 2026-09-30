@@ -297,6 +297,16 @@
         }
       }
     },
+    "Connected" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已连接"
+          }
+        }
+      }
+    },
     "Course List" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1273,6 +1283,16 @@
         }
       }
     },
+    "The widget can't read your timetable because this copy of the app has no App Group. Install it with Xcode, TestFlight, iloader, SideStore or AltStore to use the widget." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小组件无法读取课表，因为当前安装的 App 没有 App Group。请通过 Xcode、TestFlight、iloader、SideStore 或 AltStore 安装以使用小组件。"
+          }
+        }
+      }
+    },
     "This Week" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1411,6 +1431,16 @@
         }
       }
     },
+    "Unavailable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不可用"
+          }
+        }
+      }
+    },
     "Version" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1497,6 +1527,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "学期周数"
+          }
+        }
+      }
+    },
+    "Widget" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小组件"
           }
         }
       }

@@ -1,14 +1,14 @@
 name: IPA
 
-# Builds the app (with its widget) for iPhones without code signing and packages it as
-# CourseTable-unsigned.ipa, for sideloading tools that sign or install IPAs themselves.
+# Builds the app (with its widget) for iPhones, ad-hoc signed with its entitlements, and packages it as
+# CourseTable.ipa for sideloading tools (iloader, SideStore, AltStore, LiveContainer) that re-sign it.
 # Manual only, since macOS minutes count 10×: Actions → IPA → Run workflow, or `gh workflow run ipa.yml`.
 on:
   workflow_dispatch:
 
 jobs:
   ipa:
-    name: Unsigned IPA (Release, iOS devices)
+    name: IPA for sideloading (Release, iOS devices)
     runs-on: macos-26
     timeout-minutes: 30
     steps:
@@ -29,20 +29,27 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             | xcbeautify --renderer github-actions
 
+      # Ad-hoc signing embeds the entitlements (App Group) so sideloaders that read them from the
+      # binary (AltStore/SideStore) set up the group the widget needs; they re-sign with a real
+      # certificate anyway. Nested bundles are signed first.
       - name: Package the IPA
         run: |
           app=build/Build/Products/Release-iphoneos/CourseTable.app
           test -d "$app"
           ls "$app/PlugIns"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" -c "Print :CFBundleShortVersionString" -c "Print :MinimumOSVersion" "$app/Info.plist"
+          codesign --force --sign - --entitlements CourseTableWidget/CourseTableWidget.entitlements \
+            "$app/PlugIns/CourseTableWidgetExtension.appex"
+          codesign --force --sign - --entitlements CourseTable/CourseTable.entitlements "$app"
+          codesign -d --entitlements - "$app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" -c "Print :CFBundleShortVersionString" -c "Print :CFBundleVersion" -c "Print :MinimumOSVersion" "$app/Info.plist"
           mkdir -p ipa/Payload
           cp -R "$app" ipa/Payload/
-          (cd ipa && zip -qry ../CourseTable-unsigned.ipa Payload)
-          ls -la CourseTable-unsigned.ipa
+          (cd ipa && zip -qry ../CourseTable.ipa Payload)
+          ls -la CourseTable.ipa
 
       - name: Upload the IPA
         uses: actions/upload-artifact@v7
         with:
-          name: CourseTable-unsigned-ipa
-          path: CourseTable-unsigned.ipa
+          name: CourseTable-ipa
+          path: CourseTable.ipa
           retention-days: 14

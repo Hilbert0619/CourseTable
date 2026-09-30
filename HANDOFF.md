@@ -47,8 +47,9 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
 - CourseKit/ = all logic: dates/weeks/periods, Course, Timetable, WeekGrid, ScheduleSnapshot, CSV + CourseImporter +
   ImportPlan (import/export), CourseTemplate (course list + placing), Reminders. 110 tests;
   `cd CourseKit && swift test` must stay green on Windows.
-- SwiftData models: CourseRecord, SettingsRecord, CourseTemplateRecord. Not installed anywhere yet, so the schema
-  can still change freely; after the first install, use VersionedSchema + a migration plan.
+- SwiftData models: CourseRecord, SettingsRecord, CourseTemplateRecord. The app is now installed on my iPhone
+  (sideloaded with iloader, 2026-09-29) and holds my real data: schema changes need a VersionedSchema + migration
+  plan (or only additive changes with defaults). Never ship a change that could wipe the store.
 - CourseTable/ (app: Views/, Persistence/, Import/, Reminders/), CourseTableWidget/ (Home + Lock Screen widget),
   Shared/ (both targets: palette, SnapshotStore, LocalizedNames, Localizable.xcstrings), CourseTableTests/ (CI only),
   CourseTableUITests/ (UI tests + screenshots; own scheme, run by the manual Screenshots workflow).
@@ -57,11 +58,13 @@ Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private). R
 - CI: .github/workflows/coursekit.yml (Linux), ios.yml (macos-26, unit tests, path-filtered) and screenshots.yml
   (macos-26, UI tests + screenshots, manual only). Free plan: 2,000 minutes/month, macOS counts 10× → ~200 macOS
   minutes. An iOS run ≈ 4 macOS min (40 billed), a Screenshots run ≈ 8–12. Keep filters; no matrix builds.
-- Unsigned IPA for sideloading: `gh workflow run ipa.yml`, then `gh run download <id> -n CourseTable-unsigned-ipa`
-  (~3 macOS min). Without a proper signature the widget's App Group may not work.
+- IPA for sideloading: `gh workflow run ipa.yml`, then `gh run download <id> -n CourseTable-ipa`
+  (~3 macOS min). Sideloaders rename the App Group to group.<bundle id>.<TEAMID>; SnapshotStore finds it at runtime.
 - To see UI changes: `gh workflow run screenshots.yml`, then `gh run download <id> -n screenshots` and look at
   the PNGs. Add a snapshot step to CourseTableUITests for any new screen.
-- Never run on a real device yet (no Mac): notifications and Lock Screen/Home widgets are still unseen.
+- Real device: installed on my iPhone with iloader (free Apple ID, re-sign every 7 days). iloader renames the app
+  to <bundle id>.<TEAMID> and the App Group to group.<that id>; SnapshotStore resolves it at runtime (0.1.1).
+  Settings → About → Widget shows whether the App Group was found.
 
 ## Environment notes (Windows 11, no Mac)
 - Swift 6.4, VS 2022 C++ tools, Windows SDK 26100, Git 2.54, gh 2.101 (signed in as Hilbert0619), VS Code + Swift ext.
