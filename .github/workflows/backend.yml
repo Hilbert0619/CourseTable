@@ -43,6 +43,14 @@ jobs:
       - name: Lint database functions
         run: supabase db lint --level warning --fail-on warning
 
+      # backend-deploy.yml runs this query on the cloud project and sends remote-auth.json to it.
+      - name: Deploy check and settings file
+        run: |
+          result=$(docker exec -i supabase_db_CourseTable psql -U postgres -At -F '|' < supabase/checks/deployed.sql)
+          echo "$result"
+          test "$result" = "4801|4801|t|f|f"
+          jq -e '.mailer_otp_length == 6 and .mailer_autoconfirm == false' supabase/remote-auth.json > /dev/null
+
       - name: Stop Supabase
         if: always()
         run: supabase stop --no-backup

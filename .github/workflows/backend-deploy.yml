@@ -1,0 +1,71 @@
+name: Backend deploy
+
+# Applies the migrations in supabase/migrations to the cloud project and sets its sign-in options
+# (supabase/remote-auth.json), then checks the result. Run by hand: gh workflow run backend-deploy.yml
+#
+# Needs, in the repository settings (Secrets and variables → Actions):
+#   secret   SUPABASE_ACCESS_TOKEN  a Supabase personal access token (Account → Access Tokens)
+#   secret   SUPABASE_DB_PASSWORD   the project's database password
+#   variable SUPABASE_PROJECT_REF   the project ref, e.g. abcdefghijklmnopqrst from https://abcdefghijklmnopqrst.supabase.co
+on:
+  workflow_dispatch:
+    inputs:
+      auth_settings:
+        description: Also apply the sign-in settings from supabase/remote-auth.json
+        type: boolean
+        default: true
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Supabase Cloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the settings are present
+        run: |
+          missing=0
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD PROJECT_REF; do
+            if [ -z "${!name}" ]; then echo "::error::$name is not set"; missing=1; fi
+          done
+          exit $missing
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      - name: Link the project
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      - name: Migrations to apply
+        run: supabase db push --dry-run
+
+      - name: Apply migrations
+        run: supabase db push
+
+      - name: Sign-in settings
+        if: inputs.auth_settings
+        run: |
+          curl -sS --fail-with-body -X PATCH "https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data @supabase/remote-auth.json \
+          | jq '{site_url, mailer_autoconfirm, mailer_otp_length, mailer_otp_exp, password_min_length,
+                 external_anonymous_users_enabled, mailer_subjects_confirmation, mailer_subjects_recovery}'
+
+      - name: Check the database
+        run: |
+          result=$(curl -sS --fail-with-body -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data "$(jq -Rs '{query: .}' < supabase/checks/deployed.sql)")
+          echo "$result" | jq .
+          echo "$result" | jq -e '.[0] | .words == 4801 and .kaoyan_entries == 4801 and .rls_on == true
+                                        and .anon_can_read_words == false and .answers_editable == false' > /dev/null
