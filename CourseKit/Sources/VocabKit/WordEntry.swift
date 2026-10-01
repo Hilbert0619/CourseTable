@@ -77,7 +77,7 @@ public struct WordEntry: Hashable, Sendable, Codable {
     }
 
     /// A short meaning for quiz options and lists: the first meaning line with at most three meanings,
-    /// e.g. `vt. 放弃, 抛弃, 遗弃`.
+    /// e.g. `vt. 放弃，抛弃，遗弃` (full-width commas, as on the word page).
     public var shortMeaning: String {
         let lines = senses
         guard let line = lines.first(where: { $0.label == nil }) ?? lines.first else { return "" }
@@ -128,9 +128,9 @@ public struct SenseLine: Hashable, Sendable {
 
     public var partOfSpeech: PartOfSpeech? { partOfSpeechTag.flatMap(PartOfSpeech.init(abbreviation:)) }
 
-    /// `vt. 放弃, 抛弃, 遗弃`, keeping at most `maxMeanings` meanings.
+    /// `vt. 放弃，抛弃，遗弃`, keeping at most `maxMeanings` meanings.
     public func formatted(maxMeanings: Int = .max) -> String {
-        let text = meanings.prefix(maxMeanings).joined(separator: ", ")
+        let text = meanings.prefix(maxMeanings).joined(separator: "，")
         return [label.map { "[\($0)]" }, partOfSpeechTag, text].compactMap { $0 }.joined(separator: " ")
     }
 

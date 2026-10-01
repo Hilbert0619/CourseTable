@@ -60,11 +60,14 @@ jobs:
           if [ -d UITestResults.xcresult ]; then
             xcrun xcresulttool export attachments --path UITestResults.xcresult --output-path screenshots || true
           fi
-          # Rename exported files after the names the tests gave them (the manifest maps them).
+          # Rename exported files after the names the tests gave them (the manifest maps them). Failure
+          # attachments are named after the query (`Debug description for "x" Any…`): the artifact upload
+          # refuses quotes, colons and the like, so those characters become underscores.
           if [ -f screenshots/manifest.json ]; then
             jq -r '.[].attachments[] | [.exportedFileName, .suggestedHumanReadableName] | @tsv' screenshots/manifest.json |
               while IFS=$'\t' read -r file name; do
-                if [ -n "$name" ] && [ -f "screenshots/$file" ]; then mv "screenshots/$file" "screenshots/$name"; fi
+                safe=$(printf '%s' "$name" | tr '":<>|*?\\/' '_')
+                if [ -n "$safe" ] && [ -f "screenshots/$file" ]; then mv "screenshots/$file" "screenshots/$safe"; fi
               done
           fi
           ls -la screenshots

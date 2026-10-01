@@ -33,7 +33,7 @@ extension VocabFixture {
         #expect(senses[0].meanings == ["放弃", "抛弃", "遗弃", "使屈从", "沉溺", "放纵"])
         #expect(senses[1].partOfSpeech == .noun)
         #expect(abandon.primaryPartOfSpeech == .verb)
-        #expect(abandon.shortMeaning == "vt. 放弃, 抛弃, 遗弃")
+        #expect(abandon.shortMeaning == "vt. 放弃，抛弃，遗弃")
         #expect(abandon.meaningTokens.contains("狂热"))
     }
 
@@ -42,7 +42,7 @@ extension VocabFixture {
         #expect(china.senses[1].label == "网络")
         #expect(china.senses[1].partOfSpeech == nil)
         #expect(china.senses[1].meanings == ["中国", "瓷", "陶瓷"])
-        #expect(china.senses[1].formatted() == "[网络] 中国, 瓷, 陶瓷")
+        #expect(china.senses[1].formatted() == "[网络] 中国，瓷，陶瓷")
         #expect(china.shortMeaning == "n. 瓷器")
         let entry = WordEntry(headword: "give", translation: "vt. （使）放弃；给予")
         #expect(entry.meaningTokens == ["放弃", "给予"])
@@ -275,7 +275,7 @@ extension VocabFixture {
         let question = try #require(ChoiceGenerator.question(for: abandon, pool: pool, seed: 42))
         #expect(question.options.count == 4)
         #expect(Set(question.options).count == 4)
-        #expect(question.options[question.correctIndex] == "vt. 放弃, 抛弃, 遗弃")
+        #expect(question.options[question.correctIndex] == "vt. 放弃，抛弃，遗弃")
         #expect(question.isCorrect(question.correctIndex))
         // desert shares 抛弃/遗弃/放弃, so it would be a second right answer.
         #expect(!question.options.contains("vt. 抛弃, 遗弃, 放弃"))

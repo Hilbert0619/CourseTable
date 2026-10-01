@@ -81,11 +81,13 @@ struct BooksView: View {
                 Spacer()
                 if isCurrent {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(Color.accentColor)
                         .accessibilityLabel(Text("Studying"))
                 }
             }
         }
+        // A list row button tints its whole label; the book's name should read as text.
+        .tint(Color.primary)
         .accessibilityIdentifier("book")
     }
 }

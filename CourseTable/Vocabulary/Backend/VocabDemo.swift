@@ -44,7 +44,7 @@ enum VocabDemo {
     }
 
     /// A learner's first two weeks, ending the study day before `now`: two new words a day, reviews on
-    /// the days FSRS schedules them, and a few forgotten ones (so there are hard words).
+    /// the days FSRS schedules them, and a few forgotten ones; the first two words twice (hard words).
     static func history(endingBefore now: Date, calendar: Calendar = .current) -> [ReviewEvent] {
         let clock = StudyClock(calendar: calendar)
         let scheduler = Scheduler()
@@ -67,6 +67,7 @@ enum VocabDemo {
             // Reviews that are due, a few of them forgotten.
             for (word, card) in cards.sorted(by: { $0.key < $1.key }) where card.state == .review && card.isDue(on: day, dayEnd: clock.end(of: day)) {
                 let forgotten = (word.count + offset) % 6 == 0 || ["arbitrary", "ambiguous"].contains(word) && offset % 3 == 0
+                    || ["abandon", "ability"].contains(word) && card.lapses < VocabStats.hardWordLapses
                 answer(word, forgotten ? .again : .good, day: day, minute: minute, mode: .recognition)
                 if forgotten { answer(word, .good, day: day, minute: minute + 10, mode: .choice) }
                 minute += 1

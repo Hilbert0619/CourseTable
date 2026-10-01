@@ -107,6 +107,8 @@ struct SignInView: View {
                         }
                         Spacer()
                     }
+                    // The separator below would otherwise start at the centred title.
+                    .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
                 }
                 .disabled(!canSubmit)
                 .accessibilityIdentifier("submitAuth")

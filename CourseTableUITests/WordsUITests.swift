@@ -200,7 +200,12 @@ final class WordsUITests: XCTestCase {
     /// button (in the navigation bar, so never scrolled away) tells the two apart.
     @MainActor
     private func open(_ app: XCUIApplication, _ identifier: String, file: StaticString = #filePath, line: UInt = #line) {
-        tap(element(app, identifier), file: file, line: line)
+        let link = element(app, identifier)
+        // A list only creates the rows on screen: scroll until the link is there.
+        _ = link.waitForExistence(timeout: 2)
+        for _ in 0..<4 where !(link.exists && link.isHittable) { app.swipeUp() }
+        for _ in 0..<6 where !(link.exists && link.isHittable) { app.swipeDown() }
+        tap(link, file: file, line: line)
         XCTAssertTrue(element(app, "wordsSettings").waitForNonExistence(timeout: 10), "\(identifier) didn't open", file: file, line: line)
     }
 

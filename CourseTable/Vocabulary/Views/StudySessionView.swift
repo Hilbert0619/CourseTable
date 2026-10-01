@@ -107,6 +107,8 @@ private struct RemainingView: View {
             count(remaining.review, "clock.arrow.circlepath", .green)
         }
         .font(.subheadline.monospacedDigit())
+        // Toolbars show labels as icons only; the counts are the point here.
+        .labelStyle(.titleAndIcon)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("remaining")
     }
@@ -177,7 +179,7 @@ private struct NewWordQuestion: View {
         } else {
             Text("New word")
                 .font(.caption.bold())
-                .foregroundStyle(.blue)
+                .foregroundStyle(.tint)
                 .textCase(.uppercase)
             WordHeader(entry: entry)
             MeaningsView(entry: entry)

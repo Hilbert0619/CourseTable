@@ -26,7 +26,7 @@ import Testing
 
     @Test func knownEntries() throws {
         let abandon = try #require(entries.first { $0.headword == "abandon" })
-        #expect(abandon.shortMeaning == "vt. 放弃, 抛弃, 遗弃")
+        #expect(abandon.shortMeaning == "vt. 放弃，抛弃，遗弃")
         #expect(abandon.forms.contains(WordForm(kind: .past, word: "abandoned")))
         let within = try #require(entries.first { $0.headword == "within" })
         #expect(within.senses.map(\.partOfSpeech) == [.noun, .adverb, .preposition])

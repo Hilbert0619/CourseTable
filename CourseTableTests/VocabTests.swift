@@ -199,6 +199,7 @@ import VocabKit
         #expect(events.allSatisfy { $0.studyDay < today })
         #expect(Set(events.map(\.studyDay)).count == 13)
         #expect(Set(events.map(\.id)).count == events.count)
+        #expect(Set(VocabStats.hardWords(Scheduler().replay(events).values).map(\.headword)).isSuperset(of: ["abandon", "ability"]))
         #expect(VocabDemo.examDate(from: now).hasSuffix("-12-19") || VocabDemo.examDate(from: now).contains("-12-"))
     }
 }
