@@ -44,6 +44,7 @@ struct WordsHomeView: View {
                         Label("Favourites", systemImage: "star")
                     }
                 }
+                .accessibilityIdentifier("favoritesLink")
                 NavigationLink(value: WordsRoute.hardWords) {
                     LabeledContent {
                         Text(verbatim: "\(model.hardWords.count)")
@@ -51,6 +52,7 @@ struct WordsHomeView: View {
                         Label("Hard Words", systemImage: "exclamationmark.bubble")
                     }
                 }
+                .accessibilityIdentifier("hardWordsLink")
                 NavigationLink(value: WordsRoute.statistics) {
                     Label("Statistics", systemImage: "chart.bar")
                 }
