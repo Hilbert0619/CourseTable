@@ -241,7 +241,7 @@ macOS CI budget for v0.2: about 3 iOS runs (~12 min), 3 screenshot runs (~30 min
    - run `supabase login` once in a terminal (browser sign-in), and type the database password yourself when I link the project;
    - open the project URL in Safari on your iPhone with the VPN off, to check it's reachable.
    I then push the migrations and seed.
-3. **App**: the Words tab with every v0.2 screen, zh-Hans strings, app tests, screenshots I review, then an IPA
+3. **App** (in progress 2026-10-02: code, strings and app tests done; UI tests, screenshots, IPA and device test to do): the Words tab with every v0.2 screen, zh-Hans strings, app tests, screenshots I review, then an IPA
    (version 0.2.0) for your phone. Then README / HANDOFF / the development record get updated.
 
 ## 12. Risks and open items
