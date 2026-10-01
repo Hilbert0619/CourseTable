@@ -12,6 +12,9 @@ struct VocabStatsView: View {
         let model = vocab.model
         let today = model.today
         let days = VocabStats.series(model.events, endingOn: today, count: 30)
+        // Axis labels start at their tick, so the last tick is six days before today: one near the right
+        // edge would have its date cut off.
+        let weekTicks = days.filter { (today - $0.day) % 7 == 6 }.map { model.clock.date(of: $0.day).dateValue }
         let todayStats = days.last ?? DayStats(day: today)
         let streak = VocabStats.streak(model.events, today: today)
         let buckets = VocabStats.buckets(model.cards.values, today: today)
@@ -39,7 +42,7 @@ struct VocabStatsView: View {
                         .foregroundStyle(by: .value("Kind", String(localized: "Reviewed")))
                 }
                 .chartXAxis {
-                    AxisMarks(values: .stride(by: .day, count: 7)) { _ in
+                    AxisMarks(values: weekTicks) { _ in
                         AxisGridLine()
                         AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
                     }

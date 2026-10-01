@@ -6,6 +6,11 @@ name: Screenshots
 # or `gh workflow run screenshots.yml`.
 on:
   workflow_dispatch:
+    inputs:
+      only:
+        description: "Run only these tests (an xcodebuild -only-testing value, e.g. CourseTableUITests/WordsUITests/testWordsScreenshotTour); empty runs them all"
+        type: string
+        default: ""
 
 concurrency:
   group: screenshots-${{ github.ref }}
@@ -42,11 +47,16 @@ jobs:
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
 
       - name: Run UI tests
+        env:
+          ONLY: ${{ inputs.only }}
         run: |
           set -o pipefail
+          only=()
+          if [ -n "$ONLY" ]; then only=("-only-testing:$ONLY"); fi
           xcodebuild test \
             -project CourseTable.xcodeproj \
             -scheme CourseTableUITests \
+            "${only[@]}" \
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }},arch=arm64" \
             -resultBundlePath UITestResults.xcresult \
             -retry-tests-on-failure -test-iterations 2 \
@@ -60,13 +70,13 @@ jobs:
           if [ -d UITestResults.xcresult ]; then
             xcrun xcresulttool export attachments --path UITestResults.xcresult --output-path screenshots || true
           fi
-          # Rename exported files after the names the tests gave them (the manifest maps them). Failure
-          # attachments are named after the query (`Debug description for "x" Any…`): the artifact upload
-          # refuses quotes, colons and the like, so those characters become underscores.
+          # Rename exported files after the names the tests gave them (the manifest maps them), without the
+          # `_0_<UUID>` XCTest appends. Failure attachments are named after the query (`Debug description
+          # for "x" Any…`): the artifact upload refuses quotes, colons and the like, so those become underscores.
           if [ -f screenshots/manifest.json ]; then
             jq -r '.[].attachments[] | [.exportedFileName, .suggestedHumanReadableName] | @tsv' screenshots/manifest.json |
               while IFS=$'\t' read -r file name; do
-                safe=$(printf '%s' "$name" | tr '":<>|*?\\/' '_')
+                safe=$(printf '%s' "$name" | tr '":<>|*?\\/' '_' | sed -E 's/_[0-9]+_[0-9A-F-]{36}(\.[a-z]+)$/\1/')
                 if [ -n "$safe" ] && [ -f "screenshots/$file" ]; then mv "screenshots/$file" "screenshots/$safe"; fi
               done
           fi

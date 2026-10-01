@@ -22,10 +22,6 @@ struct CourseTableApp: App {
         WindowGroup {
             RootView()
                 .environment(vocab)
-                // Sign-in email links (io.github.hilbert0619.coursetable://auth-callback#…).
-                .onOpenURL { url in
-                    Task { await vocab.open(url) }
-                }
         }
         .modelContainer(container)
     }

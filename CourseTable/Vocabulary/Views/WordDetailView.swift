@@ -15,6 +15,8 @@ struct WordDetailView: View {
                     WordHeader(entry: entry)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
+                        // Header and meanings read as one card; the separator would start mid-row.
+                        .listRowSeparator(.hidden)
                     MeaningsView(entry: entry)
                 }
                 if !entry.definition.isEmpty {

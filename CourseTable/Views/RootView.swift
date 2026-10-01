@@ -1,10 +1,20 @@
 import SwiftUI
 import SwiftData
 import CourseKit
+import VocabKit
 
 struct RootView: View {
+    enum Tab: Hashable {
+        case today
+        case timetable
+        case words
+        case settings
+    }
+
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(VocabApp.self) private var vocab
+    @State private var tab = Tab.today
     @Query(sort: \CourseRecord.createdAt) private var courseRecords: [CourseRecord]
     @Query private var settingsRecords: [SettingsRecord]
     @AppStorage(ReminderSettings.enabledKey) private var remindersEnabled = false
@@ -15,15 +25,26 @@ struct RootView: View {
         let reminderRequest = ClassReminders.SyncRequest(
             timetable: timetable, enabled: remindersEnabled, leadMinutes: reminderLeadMinutes, isActive: scenePhase == .active
         )
-        TabView {
+        TabView(selection: $tab) {
             TodayView(timetable: timetable)
                 .tabItem { Label("Today", systemImage: "sun.max") }
+                .tag(Tab.today)
             WeekView(timetable: timetable)
                 .tabItem { Label("Timetable", systemImage: "calendar") }
+                .tag(Tab.timetable)
             WordsTab()
                 .tabItem { Label("Words", systemImage: "character.book.closed") }
+                .tag(Tab.words)
             SettingsView(timetable: timetable)
                 .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(Tab.settings)
+        }
+        // Sign-in email links (io.github.hilbert0619.coursetable://auth-callback#…) open the Words tab,
+        // where the result (signed in, a new password to choose, or what went wrong) is shown.
+        .onOpenURL { url in
+            guard AuthLink(url) != .notAuthLink else { return }
+            tab = .words
+            Task { await vocab.open(url) }
         }
         .onAppear { Persistence.settings(in: context) }
         // Any change to courses or settings refreshes the widget's copy.

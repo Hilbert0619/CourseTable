@@ -1409,12 +1409,12 @@
         }
       }
     },
-    "Learned: answered at least once. Mastered: expected to stay above 90% recall for %lld days or more." : {
+    "Learned: answered at least once. Mastered: expected to stay above 90%% recall for %lld days or more." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已学：至少作答过一次。已掌握：预计 %lld 天或更久内记忆率保持在 90% 以上。"
+            "value" : "已学：至少作答过一次。已掌握：预计 %lld 天或更久内记忆率保持在 90%% 以上。"
           }
         }
       }
@@ -3288,7 +3288,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "词书"
+            "value" : "内置词书"
           }
         }
       }

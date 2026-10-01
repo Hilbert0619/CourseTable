@@ -50,7 +50,8 @@ def main():
             return unescape(literal) in translated
         # `\(…)` with up to three levels of parentheses inside.
         parts = re.split(r"\\\((?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*\)", literal)
-        pattern = SPECIFIER.join(re.escape(unescape(part)) for part in parts)
+        # With interpolations the key is a format string, so a literal % in it is escaped as %%.
+        pattern = SPECIFIER.join(re.escape(unescape(part).replace("%", "%%")) for part in parts)
         return any(re.fullmatch(pattern, key) for key in translated)
 
     missing = set()
