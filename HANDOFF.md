@@ -1,17 +1,17 @@
-# Session Handoff — CourseTable (v0.2 done → v0.3: class Live Activity, first draft pushed, unverified)
+# Session Handoff — CourseTable (v0.3: class Live Activity reviewed, 0.3.0 IPA built, device test next)
 
 Date: 2026-10-08 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (private)
 
 ## Status
 
-- **v0.2.0 (build 3) runs on my iPhone** (iloader, free Apple ID) against the cloud project. The device test passed on 2026-10-08 with no issues. Record: [`docs/v2-development-record.md`](docs/v2-development-record.md). v0.1 record: [`docs/v1-development-record.md`](docs/v1-development-record.md).
-- Tests, all green:
-  - packages: CourseKit 110 (122 with the v0.3 draft) and VocabKit 77, on Windows and Linux CI;
-  - backend: 58 pgTAP checks and 16 HTTP checks, on Linux CI;
-  - app: 17 timetable tests and 12 Words tests in the Simulator (+1 Live Activity test in the draft);
-  - UI: 3 timetable tests and 4 Words tests.
-- **v0.3 starts with a class Live Activity in the Dynamic Island** (my request, decided 2026-10-08, see below). After that comes the spec's v0.3 list ([`docs/vocabulary-spec.md`](docs/vocabulary-spec.md) §2).
-- **A first draft of the Live Activity is already on `main` (commit `25273e3`), but it is unverified.** Claude wrote it at the end of the v0.2 session before I asked for a clean handover. Its CourseKit logic has 12 new tests (122 CourseKit tests pass), it builds, and CI is green: [iOS run 37802243711](https://github.com/Hilbert0619/CourseTable/actions/runs/37802243711) (app + widget, 30 app tests including the new one) and CourseKit run 37802243444. No screenshots or device test yet. The next session reviews it, finishes it or changes it. To start from scratch instead: `git revert 25273e3`.
+- **v0.2.0 (build 3) runs on my iPhone** (iloader, free Apple ID). Records: [`docs/v2-development-record.md`](docs/v2-development-record.md), [`docs/v1-development-record.md`](docs/v1-development-record.md).
+- **v0.3, feature 1: the class Live Activity is reviewed, fixed and screenshot-tested; 0.3.0 (build 4) is built for the device test.**
+  The draft (`25273e3`) was reviewed on 2026-10-08 and changed in `3e9aea3`, `d576828`, `19d6e34` (details below).
+  Green: CourseKit 124 tests (Windows + Linux), iOS runs 37807315285 and 37811418322 (32 app tests), Screenshots
+  37808492013 and 37811421333 (Live Activity test only). IPA run 37814288450.
+- Tests: CourseKit 124, VocabKit 77; backend 58 pgTAP + 16 HTTP; app 32 (17 timetable + 12 Words + 3 Live Activity);
+  UI 3 timetable + 4 Words + 2 Live Activity.
+- macOS minutes in October so far ≈ 140 of ~200 (v0.2's runs on 10-01 ≈ 84, this session ≈ 57). Be frugal until November.
 
 ## Handoff prompt for the next session
 
@@ -25,7 +25,7 @@ README.md, HANDOFF.md, docs/v2-development-record.md (what v0.2 is and how it wa
 (the vocabulary spec; §2 lists v0.3). Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable (private), branch main.
 
 ## v0.3 feature 1: class Live Activity (Dynamic Island + Lock Screen), decided with me 2026-10-08
-(A first draft exists: see "State of the draft" below. Review it before building on it.)
+(Built and reviewed: see "State of feature 1" below. Next: the device test.)
 - My iPhone has a Dynamic Island and runs iOS 26. The app supports iOS 17+.
 - One Live Activity per class, shown from the reminder lead time (Settings → Reminders, 0–60 min) until the class ends:
   a countdown to the start with course and room, then "until 09:40" with a progress bar. Switch the layout at the start
@@ -44,37 +44,37 @@ README.md, HANDOFF.md, docs/v2-development-record.md (what v0.2 is and how it wa
   NSSupportsLiveActivities = YES in the app's Info.plist.
 - Expected to work with a free Apple ID: no push, no capability needed. Confirm on my iPhone.
 
-## State of the draft (commit 25273e3, not reviewed by me; builds and app tests green on CI, no screenshots or device test yet)
+## State of feature 1 (reviewed and fixed 2026-10-08; device test of 0.3.0 (4) pending)
 Files:
-- CourseKit/Sources/CourseKit/ClassActivities.swift: ClassActivityWindow (session + showMoment; id, signature = what is
-  shown, key = signature + show time), Timetable.upcomingActivityWindows(after:leadMinutes:limit:) (maxClassActivities = 4),
-  ExistingClassActivity, ClassActivityPlan (what to end / start now / schedule; a key is created at most once, so a
-  closed activity doesn't come back). Tests: CourseKit/Tests/CourseKitTests/ClassActivityTests.swift (12, passing).
-- Shared/ClassActivity.swift: ClassActivityAttributes (+ ContentState start/end; content.staleDate = start) and
-  EndClassActivityIntent (LiveActivityIntent; calls ClassActivityCloser).
-- CourseTableWidget/ClassActivityWidget.swift (Lock Screen + Dynamic Island views, Close button), added to the
-  WidgetBundle in ScheduleWidget.swift; CourseTableWidget/ClassActivityCloser.swift = a no-op stub (the system runs the
-  intent in the app; the stub avoids calling ActivityKit APIs that may be unavailable in extensions).
-- CourseTable/Reminders/ClassLiveActivities.swift: LiveActivitySettings (on by default), ClassLiveActivities.sync
-  (run from RootView on every foreground with the reminder lead time; iOS 26 schedules with alertConfiguration = the
-  reminder text), CreatedKeys (UserDefaults), startDemo for UI tests, the real ClassActivityCloser.
-  ClassReminders.body(for:leadMinutes:) is shared with the notification text.
-- Settings → Reminders: "Live Activity" toggle (identifier liveActivityToggle), a note when iOS has Live Activities off,
-  footer text. Info.plist: NSSupportsLiveActivities. 6 new zh-Hans strings (check_strings: 0 missing).
-- Tests: app test liveActivityDescribesTheClass (CourseTableTests/ImportAndReminderTests.swift); UI test
-  CourseTableUITests/LiveActivityUITests.swift with launch flag -liveActivityDemo before|during: Settings, then the Home
-  Screen island, a long press to expand it, and Notification Center (Lock Screen layout), in en and zh-Hans.
-  SpringBoard gestures are best effort, and the screenshots show what happened.
+- CourseKit/Sources/CourseKit/ClassActivities.swift: ClassActivityWindow (session + showMoment = the reminder time, or
+  the end of the class before if that's later, so two classes never show at once; signature = what is shown;
+  leadMinutes), Timetable.upcomingActivityWindows (maxClassActivities = 4), ExistingClassActivity, ClassActivityPlan
+  (end / forget / startNow / schedule: one activity per class signature, so a closed one doesn't come back; scheduled
+  ones the app ends itself are forgotten). Tests: ClassActivityTests (14).
+- Shared/ClassActivity.swift: ClassActivityAttributes (name, room, teacher, colour, "08:00"/"09:40", showDate,
+  signature); ContentState(start, end).content(now:) = staleDate at the start (only if still ahead) + relevanceScore
+  = start time, so a later class takes the island from a finished one; EndClassActivityIntent(signature).
+- CourseTableWidget/ClassActivityWidget.swift: compact = name + timer in minutes ("72:30"); expanded = Close on the
+  left, timer on the right, the class at full width below; Lock Screen card; started = isStale || start <= now.
+- CourseTable/Reminders/ClassLiveActivities.swift: sync on every foreground; iOS 26 schedules with
+  alertConfiguration = the reminder text; endFinished() runs as a background app refresh (cleanupTaskID; Info.plist
+  BGTaskSchedulerPermittedIdentifiers + UIBackgroundModes fetch) requested for the next class end (iOS decides when);
+  CreatedActivities (UserDefaults, by signature); startDemo for UI tests (-liveActivityDemo before|during|switch; a
+  start error is shown on screen and attached).
+- Settings → Reminders: "Live Activity" switch, a note when iOS has them off, footer; on iOS 17/18 a note that it only
+  starts while the app is open.
+Findings (Simulator screenshots):
+- An activity requested with a stale date in the past didn't show at all. Fixed: no stale date once the class started.
+- iOS redraws at the stale date late: not within 20 s in the Simulator; others report ~1 min 45 s when the app is
+  suspended. So "Starts in 0:00" can show for up to ~2 minutes after the start. The switch test now waits 160 s and
+  answers iOS's question first (not run since: run it only if the device test needs more evidence).
+- The widget extension draws in the system language, so Simulator shots show English captions even with
+  -AppleLanguages zh-Hans. Chinese captions can only be checked on a device set to Chinese.
+- The first activity makes iOS ask "Allow Live Activities from Course Table?" on the Lock Screen.
 Next, in order:
-1. Review the draft's code (CI for 25273e3 is already green: iOS 37802243711, CourseKit 37802243444).
-2. Screenshots of only the new test: `gh workflow run screenshots.yml -f only=CourseTableUITests/LiveActivityUITests`
-   (~16 macOS min), then review island / expanded / Lock Screen / Settings in en + zh-Hans.
-3. Points to check: compact timer widths; whether the layout really switches at the start (isStale at the stale date);
-   the system limit vs maxClassActivities = 4; double sound (notification + Live Activity alert at the same moment).
-4. Version 0.3.0 (build 4) in all 16 places, IPA, then a device test on my iPhone (iOS 26): Live Activity on; with the
-   app closed it appears at the reminder time with an alert; it switches at the start; Close works and the class doesn't
-   come back; opening the app after class ends finished ones; the free Apple ID install allows Live Activities.
-5. Docs: README (feature), a v0.3 record (like docs/v2-development-record.md), HANDOFF.
+1. Device test of 0.3.0 (4) on my iPhone (iOS 26): see the checklist in docs or the session report.
+2. Fix what it finds (iOS run ~10 min + IPA ~3 min each round).
+3. Docs: README (feature), docs/v3-development-record.md (like v2's), HANDOFF.
 
 ## What's where
 - CourseKit/ (Swift package; tests on Windows + Linux CI `coursekit.yml`):
