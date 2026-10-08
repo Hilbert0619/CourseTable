@@ -11,7 +11,7 @@ Date: 2026-10-08 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
   - app: 17 timetable tests and 12 Words tests in the Simulator (+1 Live Activity test in the draft);
   - UI: 3 timetable tests and 4 Words tests.
 - **v0.3 starts with a class Live Activity in the Dynamic Island** (my request, decided 2026-10-08, see below). After that comes the spec's v0.3 list ([`docs/vocabulary-spec.md`](docs/vocabulary-spec.md) §2).
-- **A first draft of the Live Activity is already on `main` (commit `25273e3`), but it is unverified.** Claude wrote it at the end of the v0.2 session before I asked for a clean handover. Only its CourseKit logic is tested (122 CourseKit tests pass locally). It builds, and CI is green: [iOS run 37802243711](https://github.com/Hilbert0619/CourseTable/actions/runs/37802243711) (app + widget, 30 app tests including the new one) and CourseKit run 37802243444. No screenshots or device test yet. The next session reviews it, finishes it or changes it. To start from scratch instead: `git revert 25273e3`.
+- **A first draft of the Live Activity is already on `main` (commit `25273e3`), but it is unverified.** Claude wrote it at the end of the v0.2 session before I asked for a clean handover. Its CourseKit logic has 12 new tests (122 CourseKit tests pass), it builds, and CI is green: [iOS run 37802243711](https://github.com/Hilbert0619/CourseTable/actions/runs/37802243711) (app + widget, 30 app tests including the new one) and CourseKit run 37802243444. No screenshots or device test yet. The next session reviews it, finishes it or changes it. To start from scratch instead: `git revert 25273e3`.
 
 ## Handoff prompt for the next session
 
