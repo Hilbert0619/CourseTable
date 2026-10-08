@@ -5,7 +5,7 @@ import WidgetKit
 
 /// A class as a Live Activity: in the Dynamic Island and on the Lock Screen from the reminder time until
 /// the class ends. Before the start it counts down to it; once the class has started (the content's stale
-/// date) it counts down to the end with a progress bar. Timers update on their own: the app sends no updates.
+/// date) it shows "Until 09:40" with a progress bar. Timers update on their own: the app sends no updates.
 struct ClassActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ClassActivityAttributes.self) { context in
@@ -33,7 +33,7 @@ struct ClassActivityWidget: Widget {
                         info.caption
                             .font(.caption2)
                             .foregroundStyle(.secondary)
-                        info.timer
+                        info.timer(showsHours: true)
                             .font(.title3.monospacedDigit().weight(.semibold))
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 90, alignment: .trailing)
@@ -42,15 +42,16 @@ struct ClassActivityWidget: Widget {
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack(spacing: 12) {
+                        info.when
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
                         if info.started {
                             info.progress
                         } else {
-                            Text(info.state.start...info.state.end)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
                             Spacer()
                         }
-                        CloseActivityButton(key: info.key)
+                        CloseActivityButton(signature: info.signature)
                     }
                     .padding(.horizontal, 4)
                 }
@@ -61,10 +62,11 @@ struct ClassActivityWidget: Widget {
                     .lineLimit(1)
                     .frame(maxWidth: 64, alignment: .leading)
             } compactTrailing: {
-                info.timer
+                // Minutes only ("72:30"), so a long class fits.
+                info.timer(showsHours: false)
                     .font(.caption.monospacedDigit().weight(.semibold))
                     .multilineTextAlignment(.trailing)
-                    .frame(width: 46, alignment: .trailing)
+                    .frame(width: 48, alignment: .trailing)
             } minimal: {
                 info.ring
             }
@@ -86,7 +88,7 @@ private struct ClassActivityInfo {
         started = context.isStale
     }
 
-    var key: String { attributes.key }
+    var signature: String { attributes.signature }
     var courseName: String { attributes.courseName }
     var details: String { attributes.details }
     var color: Color { CoursePalette.color(attributes.colorIndex) }
@@ -100,9 +102,14 @@ private struct ClassActivityInfo {
         started ? Text("Ends in") : Text("Starts in")
     }
 
+    /// "08:00–09:40" before the start, then "Until 09:40".
+    var when: Text {
+        started ? Text("Until \(attributes.endTime)") : Text(verbatim: attributes.times)
+    }
+
     /// Counts down to the start, then to the end.
-    var timer: Text {
-        Text(timerInterval: interval, countsDown: true)
+    func timer(showsHours: Bool) -> Text {
+        Text(timerInterval: interval, countsDown: true, showsHours: showsHours)
     }
 
     var progress: some View {
@@ -139,14 +146,14 @@ struct ClassActivityLockScreenView: View {
                     .font(.headline)
                     .lineLimit(1)
                 HStack(spacing: 6) {
-                    Text(info.state.start...info.state.end)
+                    info.when
                     if !info.details.isEmpty {
                         Text(verbatim: "· \(info.details)")
-                            .lineLimit(1)
                     }
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
                 if info.started {
                     info.progress
                 }
@@ -156,12 +163,12 @@ struct ClassActivityLockScreenView: View {
                 info.caption
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                info.timer
+                info.timer(showsHours: true)
                     .font(.title2.monospacedDigit().weight(.semibold))
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: 110, alignment: .trailing)
             }
-            CloseActivityButton(key: info.key)
+            CloseActivityButton(signature: info.signature)
         }
         .padding(16)
         .activitySystemActionForegroundColor(info.color)
@@ -170,10 +177,10 @@ struct ClassActivityLockScreenView: View {
 
 /// Ends the activity: Live Activities can't remove themselves at a set time without a server.
 private struct CloseActivityButton: View {
-    let key: String
+    let signature: String
 
     var body: some View {
-        Button(intent: EndClassActivityIntent(key: key)) {
+        Button(intent: EndClassActivityIntent(signature: signature)) {
             Image(systemName: "xmark")
                 .font(.caption.weight(.bold))
                 .frame(width: 28, height: 28)

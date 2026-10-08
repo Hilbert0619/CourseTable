@@ -4,6 +4,14 @@
 <dict>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>io.github.hilbert0619.CourseTable.classActivities</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

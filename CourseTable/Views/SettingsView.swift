@@ -138,6 +138,9 @@ private struct ReminderSection: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Reminders cover your next \(Timetable.maxScheduledReminders) classes and are renewed whenever you open the app.")
                 Text("Live Activity shows each class in the Dynamic Island and on the Lock Screen from the reminder time until it ends. Close it there if you don't need it.")
+                if !ClassLiveActivities.canSchedule {
+                    Text("On this version of iOS, a Live Activity can only start while Course Table is open, for example when you tap the class reminder.")
+                }
             }
         }
         .onChange(of: enabled) { _, isOn in

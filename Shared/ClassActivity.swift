@@ -12,24 +12,27 @@ struct ClassActivityAttributes: ActivityAttributes {
         var end: Date
     }
 
-    /// `ClassActivityWindow.signature`: which class, and everything shown about it.
+    /// `ClassActivityWindow.signature`: which class, and everything shown about it. The Close button
+    /// passes it back.
     var signature: String
-    /// `ClassActivityWindow.key`, for the Close button.
-    var key: String
     var courseName: String
     var room: String
     var teacher: String
     var colorIndex: Int
-    /// When it appears: the reminder time.
+    /// "08:00" and "09:40", written like everywhere else in the app.
+    var startTime: String
+    var endTime: String
+    /// When it appears: the reminder time, or the end of the class before.
     var showDate: Date
 }
 
 extension ClassActivityAttributes {
     init(_ window: ClassActivityWindow, calendar: Calendar = .current) {
-        let course = window.session.course
+        let session = window.session
         self.init(
-            signature: window.signature, key: window.key, courseName: course.name, room: course.room,
-            teacher: course.teacher, colorIndex: course.colorIndex, showDate: window.showMoment.date(calendar: calendar)
+            signature: window.signature, courseName: session.course.name, room: session.course.room,
+            teacher: session.course.teacher, colorIndex: session.course.colorIndex, startTime: session.start.description,
+            endTime: session.end.description, showDate: window.showMoment.date(calendar: calendar)
         )
     }
 
@@ -37,6 +40,9 @@ extension ClassActivityAttributes {
     var details: String {
         [room, teacher].filter { !$0.isEmpty }.joined(separator: " · ")
     }
+
+    /// e.g. "08:00–09:40"
+    var times: String { "\(startTime)–\(endTime)" }
 }
 
 extension ClassActivityAttributes.ContentState {
@@ -45,9 +51,10 @@ extension ClassActivityAttributes.ContentState {
     }
 
     /// The content as shown: it becomes "stale" when the class starts, which switches the layout from
-    /// the countdown to the class in progress.
+    /// the countdown to the class in progress. A later class is more relevant, so once a class is over
+    /// (its activity can't end itself), the next one takes the Dynamic Island.
     var content: ActivityContent<Self> {
-        ActivityContent(state: self, staleDate: start)
+        ActivityContent(state: self, staleDate: start, relevanceScore: start.timeIntervalSince1970 / 60)
     }
 }
 
@@ -57,17 +64,18 @@ struct EndClassActivityIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Close"
     static let isDiscoverable = false
 
+    /// `ClassActivityAttributes.signature`
     @Parameter(title: "Class")
-    var key: String
+    var signature: String
 
     init() {}
 
-    init(key: String) {
-        self.key = key
+    init(signature: String) {
+        self.signature = signature
     }
 
     func perform() async throws -> some IntentResult {
-        await ClassActivityCloser.close(key: key)
+        await ClassActivityCloser.close(signature: signature)
         return .result()
     }
 }

@@ -48,14 +48,36 @@ import CourseKit
         let attributes = ClassActivityAttributes(window)
         #expect(attributes.courseName == "Calculus")
         #expect(attributes.details == "A101 · Li")
+        #expect(attributes.times == "08:00–09:40")
+        #expect(attributes.endTime == "09:40")
         #expect(attributes.signature == window.signature)
-        #expect(attributes.key == window.key)
         #expect(attributes.showDate == window.showMoment.date())
         let state = ClassActivityAttributes.ContentState(window)
         #expect(state.end.timeIntervalSince(state.start) == 100 * 60)
         #expect(state.start.timeIntervalSince(attributes.showDate) == 10 * 60)
         #expect(state.content.staleDate == state.start)
-        #expect(ClassReminders.body(for: window.session, leadMinutes: 10) == ClassReminders.payload(for: try firstReminder(leadMinutes: 10)).body)
+        #expect(ClassReminders.body(for: window.session, leadMinutes: window.leadMinutes)
+            == ClassReminders.payload(for: try firstReminder(leadMinutes: 10)).body)
+    }
+
+    /// A later class is more relevant, so it takes the Dynamic Island from one that has ended.
+    @Test func laterClassesAreMoreRelevant() throws {
+        let physics = Course(name: "Physics", weekday: .monday, startPeriod: 3, periodCount: 2, weeks: CourseWeeks(first: 1, last: 16))
+        let timetable = Timetable(semester: Semester(startingOn: LocalDate(year: 2026, month: 8, day: 31)), courses: [physics, calculus])
+        let now = Moment(day: LocalDate(year: 2026, month: 8, day: 31), time: TimeOfDay(hour: 7, minute: 0))
+        let windows = timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 2)
+        let scores = windows.map { ClassActivityAttributes.ContentState($0).content.relevanceScore }
+        #expect(windows.map(\.session.course.name) == ["Calculus", "Physics"])
+        #expect(scores[0] < scores[1])
+    }
+
+    /// Live Activities and the background refresh that ends them are declared in Info.plist.
+    @Test func infoPlistAllowsLiveActivitiesAndTheirCleanup() {
+        #expect(Bundle.main.object(forInfoDictionaryKey: "NSSupportsLiveActivities") as? Bool == true)
+        let tasks = Bundle.main.object(forInfoDictionaryKey: "BGTaskSchedulerPermittedIdentifiers") as? [String] ?? []
+        #expect(tasks.contains(ClassLiveActivities.cleanupTaskID))
+        let modes = Bundle.main.object(forInfoDictionaryKey: "UIBackgroundModes") as? [String] ?? []
+        #expect(modes.contains("fetch"))
     }
 }
 

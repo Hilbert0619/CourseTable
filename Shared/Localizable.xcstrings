@@ -1977,6 +1977,16 @@
         }
       }
     },
+    "On this version of iOS, a Live Activity can only start while Course Table is open, for example when you tap the class reminder." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在此 iOS 版本上，实时活动只能在课程表打开时开始，例如轻点上课提醒时。"
+          }
+        }
+      }
+    },
     "One course per line" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3229,6 +3239,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不可用"
+          }
+        }
+      }
+    },
+    "Until %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 下课"
           }
         }
       }

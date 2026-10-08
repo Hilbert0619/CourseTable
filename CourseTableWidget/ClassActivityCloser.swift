@@ -2,5 +2,5 @@
 /// here, but the system always runs it in the app, whose `ClassActivityCloser` ends the activity. This
 /// one only satisfies the name.
 enum ClassActivityCloser {
-    static func close(key: String) async {}
+    static func close(signature: String) async {}
 }

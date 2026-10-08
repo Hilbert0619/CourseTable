@@ -24,5 +24,9 @@ struct CourseTableApp: App {
                 .environment(vocab)
         }
         .modelContainer(container)
+        // Ends class Live Activities whose class is over, whenever iOS grants a refresh after one ends.
+        .backgroundTask(.appRefresh(ClassLiveActivities.cleanupTaskID)) {
+            await ClassLiveActivities.endFinished()
+        }
     }
 }

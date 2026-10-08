@@ -12,9 +12,9 @@ final class LiveActivityUITests: XCTestCase {
     @MainActor
     func testClassLiveActivityScreenshots() throws {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        for (language, mode) in [("en", "before"), ("en", "during"), ("zh-Hans", "during")] {
+        for (language, mode) in [("en", "before"), ("en", "during"), ("zh-Hans", "before"), ("zh-Hans", "during")] {
             let app = launch(language: language, mode: mode)
-            if mode == "before" || language != "en" {
+            if mode == "before" {
                 app.tabBars.buttons.element(boundBy: 3).tap()
                 let toggle = app.descendants(matching: .any)["liveActivityToggle"].firstMatch
                 for _ in 0..<4 where !(toggle.exists && toggle.isHittable) { app.swipeUp() }
