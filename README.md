@@ -1,11 +1,16 @@
 # CourseTable · 课程表
 
-A native iOS class-schedule app: **Swift + SwiftUI + SwiftData + WidgetKit**, iOS 17+, English and Simplified Chinese UI.
+A native iOS class-schedule app with an English vocabulary trainer for 考研: **Swift + SwiftUI + SwiftData + WidgetKit**, iOS 17+, English and Simplified Chinese UI. The timetable stays on the device and needs no account; the **Words** tab signs in and syncs through Supabase.
 
 [![CourseKit](https://github.com/Hilbert0619/CourseTable/actions/workflows/coursekit.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/coursekit.yml)
 [![iOS](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml)
+[![Backend](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml)
+
+Tabs: **Today**, **Timetable**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Vocabulary spec: [docs/vocabulary-spec.md](docs/vocabulary-spec.md).
 
 ## Features
+
+### Timetable
 
 - **Courses**: add, edit and delete by hand. Each course has a name, teacher, room, weekday, start period and length, week range and odd/even weeks. Colours are assigned automatically, and clashes are flagged.
 - **Import**: paste CSV text or rows copied from a spreadsheet, or open a `.csv`/`.txt` file (Settings → Import Courses…, or the button on an empty timetable). A preview lists the courses, clashes and lines that can't be read before anything is saved. Courses that are already in the timetable are skipped. You can also replace all existing courses. See [Import format](#import-format).
@@ -17,6 +22,17 @@ A native iOS class-schedule app: **Swift + SwiftUI + SwiftData + WidgetKit**, iO
 - **Weekly grid**: Mon–Fri, plus Sat/Sun if you have weekend classes. Switch weeks with the arrows, the week menu or a swipe. Tap an empty slot to add a course there.
 - **Today**: today's classes with times; the current and next class are highlighted.
 - **Widgets**: on the Home Screen, the small size shows the current or next class and the medium size shows the rest of today. The small size also works in StandBy. On the Lock Screen, the rectangular widget shows the current or next class with room and teacher, the inline widget sits above the clock ("Calculus until 09:40", "10:00 Physics"), and the circular widget shows a progress ring during class or the next start time.
+
+### Words (English vocabulary, v0.2)
+
+- **Account**: email + password. Creating an account and resetting a password both work through the link in Supabase's email, which opens the app (URL scheme `io.github.hilbert0619.coursetable://auth-callback`) and signs you in. Sign out clears this iPhone's word data; Delete Account removes everything on the server too.
+- **Books**: the built-in **考研词汇** list, 4,801 entries that ECDICT (MIT licence) tags as 考研, most frequent first. It downloads once and stays on the device for offline study. Import your own lists: one word per line (meanings are filled in from the dictionary) or CSV (`word, meaning, phonetic, pos, example`). Rename or delete them with a swipe.
+- **Today**: new words done out of the daily target, reviews left, a time estimate from your own pace, progress, and an exam countdown with the pace needed to finish the book.
+- **Study session**: due learning steps first, then due reviews, then new words. A new word shows its page, then a quick multiple-choice check (**I Know This** skips it). Reviews ask in the mode you choose: **recall and rate** (Again / Hard / Good / Easy, each showing when the word comes back), **multiple choice**, **spelling** (US/UK speech, a hint, and a letter-by-letter diff), or **mixed**. Every answer is saved at once, so closing early loses nothing; a summary ends the session.
+- **Scheduling**: FSRS-6 runs on the device (VocabKit), with a 0.9 retention target that can be changed. A study day starts at 04:00, so late-night study counts for the evening before.
+- **Search** your downloaded words by English prefix, inflected form, similar spelling or Chinese meaning. A **word page** has speech, meanings, the English definition, forms, the exam lists the word is on and your progress. **Favourites** and **Hard Words** (forgotten twice or more) have their own lists.
+- **Statistics**: today, study streak, words a day over 30 days, accuracy trend, learned words by when they're due, and book progress. Every threshold is spelled out.
+- **Sync**: answers are kept as an append-only log and uploaded automatically (at launch, after a session, when the app comes back) or with **Sync Now**; card state is replayed from the log, so two devices can't conflict. Studying works offline.
 
 ## Import format
 
@@ -51,19 +67,31 @@ CourseKit/            Swift package with all timetable and vocabulary logic; bui
   Sources/CourseKit/    LocalDate, TimeOfDay, Semester, PeriodSchedule, Course, Timetable, WeekGrid, ScheduleSnapshot,
                         CSV + CourseImport + ImportPlan (import/export), CourseTemplate (course list + placing), Reminders
   Sources/VocabKit/     Vocabulary learning (docs/vocabulary-spec.md): FSRS-6 + Scheduler, StudyClock, DailyPlan,
-                        StudySession, AnswerGrader, ChoicePool, WordEntry, ECDICT + ContentFile, WordListImport,
-                        WordSearch, VocabStats, SyncMerge
-  Sources/VocabContent/ `vocab-content` tool: builds content/kaoyan-ecdict.csv from ECDICT's ecdict.csv
+                        StudySession, AnswerGrader, ChoicePool, WordEntry, ECDICT + ContentFile + SeedSQL,
+                        WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink
+  Sources/VocabContent/ `vocab-content` tool: ECDICT's ecdict.csv → content/kaoyan-ecdict.csv → the Supabase seed migration
   Tests/                Swift Testing unit tests (CourseKitTests, VocabKitTests)
 content/              Word lists built from ECDICT (MIT, see content/ECDICT-LICENSE); content/.cache/ holds the
                       downloaded source and is not committed
 CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
+  Vocabulary/           The Words tab: VocabApp.swift (coordinator: sign-in state, email links, sign-out; speech)
+    Backend/              VocabBackend protocol + DTOs; SupabaseBackend (the only file that uses supabase-swift);
+                          DemoBackend + VocabDemo (in memory, for tests, previews and UI tests)
+    Store/                VocabRecords (SwiftData, its own Vocabulary.store, VocabSchemaV1 + migration plan),
+                          VocabModel (cards replayed from the answer log, plan, search), SyncEngine
+    Views/                WordsTab (sign-in), WordsHomeView, StudySessionView, WordDetailView (+ search, lists),
+                          BooksView (+ import), VocabStatsView, VocabSettingsView, WordComponents
 CourseTableWidget/    WidgetKit extension
 Shared/               Code and strings compiled into both the app and the widget (palette, snapshot file, Localizable.xcstrings)
-CourseTableTests/     App-level tests, run in the iOS Simulator on CI
+CourseTableTests/     App-level tests, run in the iOS Simulator on CI (timetable + VocabTests)
 CourseTableUITests/   UI tests that drive the app and take screenshots (Screenshots workflow)
 CourseTable.xcodeproj Xcode project (synced folders: new files are picked up automatically)
-.github/workflows/    CI: coursekit.yml (Linux) and ios.yml (macOS + Simulator)
+supabase/             The vocabulary backend: config.toml, migrations (schema + row-level security, generated word
+                      content), tests (pgTAP + api/smoke.sh), remote-auth.json (cloud sign-in options), checks/
+tools/                check_strings.py, add_strings.py (zh-Hans strings); xcresult_crash.py, xcresult_screenshots.py
+                      (crash reports and named screenshots from a downloaded CI results bundle)
+.github/workflows/    CI: coursekit.yml (Linux), ios.yml (macOS + Simulator), backend.yml (Linux), and the manual
+                      screenshots.yml, ipa.yml, backend-deploy.yml
 ```
 
 How the pieces fit together:
@@ -73,6 +101,7 @@ How the pieces fit together:
 3. **The widget** never opens the database. Whenever the timetable changes, the app writes a small versioned JSON snapshot to the shared App Group folder (`Shared/SnapshotStore.swift`). The widget reads that snapshot and uses CourseKit to build a timeline, with entries at every class start and end.
 4. **Import** is `CourseImporter` (text → courses + per-line problems) followed by `Timetable.planningImport` (skips duplicates, assigns colours, gives the resulting timetable for clash checks). `ImportView` only shows the plan and inserts `plan.added`.
 5. **Reminders**: `Timetable.upcomingReminders` picks the next classes. `CourseTable/Reminders/ClassReminders.swift` turns them into local notifications and replaces the pending set.
+6. **Words**: `VocabApp` owns the sign-in state, a `VocabModel` and a `SyncEngine`. The model keeps word content, books, the answer log, favourites and settings in `Vocabulary.store`, a SwiftData file separate from the timetable's. Cards aren't stored: VocabKit's `Scheduler` replays them from the answer log. The `SyncEngine` talks to an `any VocabBackend`: `SupabaseBackend` in the app, `DemoBackend` in tests and with `-uiTesting`. On the server, Postgres row-level security keeps every learner's rows private, and answers are append-only (client UUIDs, server-stamped `received_at`). Details: [docs/vocabulary-spec.md](docs/vocabulary-spec.md).
 
 ## Developing on Windows
 
@@ -91,7 +120,9 @@ swift test
 Day-to-day workflow:
 
 - Add Swift files by dropping them into `CourseTable/` (app), `CourseTableWidget/` (widget), `Shared/` (both) or `CourseTableTests/`. The Xcode project uses synced folders, so `project.pbxproj` never needs editing.
-- New UI text: write it in English in the code (`Text("…")` or `String(localized: "…")`) and add the key with its `zh-Hans` translation to `Shared/Localizable.xcstrings`.
+- New UI text: write it in English in the code (`Text("…")` or `String(localized: "…")`) and add the key with its `zh-Hans` translation to `Shared/Localizable.xcstrings`. `python tools/add_strings.py translations.json` adds keys in exactly the format Xcode writes, and `python tools/check_strings.py` must report nothing missing.
+- When an app test crashes on CI, download the `TestResults` artifact and run `python tools/xcresult_crash.py <folder>`: it prints each crash's message and crashed thread, no Xcode needed. If the `screenshots` artifact is missing, `python tools/xcresult_screenshots.py <UITestResults folder> <out>` saves the named screenshots from the `UITestResults` artifact.
+- Never round-trip UTF-8 files through Windows PowerShell 5.1 `Get-Content`/`Set-Content`: it mangles the Chinese text and adds a BOM.
 - Put new logic in CourseKit with a test first. It's the only part you can run locally.
 - Line endings are forced to LF by `.gitattributes`, so Windows and Mac edits don't fight.
 
@@ -102,11 +133,13 @@ Day-to-day workflow:
 | `CourseKit` | Ubuntu, `swift:6.4` container | pushes/PRs touching `CourseKit/` | `swift build` + `swift test` |
 | `iOS` | `macos-26` (Xcode 26.x) | pushes/PRs touching the app, widget, shared code, project or CourseKit sources | `xcodebuild test`: builds the app and widget, runs `CourseTableTests` on the newest iPhone simulator |
 | `IPA` | `macos-26` | **manual only** | builds a Release build for iPhones, ad-hoc signed with its entitlements, and uploads `CourseTable.ipa` (app + widget, iOS 17+) for sideloading tools (iloader, SideStore, AltStore, LiveContainer) |
-| `Screenshots` | `macos-26` | **manual only** | runs the UI tests (`CourseTableUITests` scheme) and uploads a `screenshots` artifact: every main screen in English and Chinese, plus the course-list, placing and import flows |
+| `Screenshots` | `macos-26` | **manual only** | runs the UI tests (`CourseTableUITests` scheme) and uploads a `screenshots` artifact: every main screen in English and Chinese, the course-list, placing and import flows, and the Words tab (sign-up, a whole study session, each question type, every Words screen) |
+| `Backend` | Ubuntu | pushes/PRs touching `supabase/` | starts a local Supabase stack, applies the migrations, runs the pgTAP tests (schema, content, row-level security) and an HTTP smoke test |
+| `Backend deploy` | Ubuntu | **manual only** (the owner starts it) | pushes the migrations to the cloud project, applies `supabase/remote-auth.json`, and checks the result; needs the `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` secrets and the `SUPABASE_PROJECT_REF` variable |
 
-The repo is private. The free plan includes 2,000 Actions minutes a month, and macOS minutes count 10×, so that's roughly 200 macOS minutes. A normal `iOS` run takes about 4 minutes (40 of the 2,000), and a `Screenshots` run about 9–12 minutes (90–120). The iOS job runs only when relevant files change and cancels superseded runs.
+The repo is private. The free plan includes 2,000 Actions minutes a month, and macOS minutes count 10×, so that's roughly 200 macOS minutes. Since the Words tab (supabase-swift compiles with the app), a normal `iOS` run takes about 5–9 minutes (50–90 of the 2,000), a `Screenshots` run about 22 (about 16 for a single test), and an `IPA` run about 3. Linux runs count 1×. The iOS job runs only when relevant files change and cancels superseded runs.
 
-To see the app without a Mac: run **Actions → Screenshots → Run workflow** (or `gh workflow run screenshots.yml`), then download the artifact with `gh run download <run-id> -n screenshots`. UI tests launch the app with `-uiTesting`, so it uses an in-memory store (with `-demoData`, a demo timetable) and never writes the widget snapshot or schedules notifications. To run it by hand, use **Actions → iOS → Run workflow**, or `gh workflow run ios.yml`. Useful commands: `gh run list`, `gh run watch`, `gh run view --log-failed`.
+To see the app without a Mac: run **Actions → Screenshots → Run workflow** (or `gh workflow run screenshots.yml`), then download the artifact with `gh run download <run-id> -n screenshots`. To save minutes, run selected tests only: `gh workflow run screenshots.yml -f only=CourseTableUITests/WordsUITests/testWordsScreenshotTour` (any `xcodebuild -only-testing` value). UI tests launch the app with `-uiTesting`, so it uses in-memory stores and the demo vocabulary backend, never touches the network, and never writes the widget snapshot or schedules notifications. `-demoData` adds a demo timetable; `-vocabDemo` signs in a demo learner with two weeks of answers, 30 words and an exam date; `-vocabMode recognition|choice|spelling|mixed` sets that learner's review questions. To run it by hand, use **Actions → iOS → Run workflow**, or `gh workflow run ios.yml`. Useful commands: `gh run list`, `gh run watch`, `gh run view --log-failed`.
 
 ## Opening the project on a Mac later
 
@@ -130,4 +163,4 @@ Nothing needs to be regenerated on the Mac. The Xcode project in the repo is the
 - **Snapshot versioning:** `ScheduleSnapshot.currentVersion` is bumped when its JSON shape changes. The widget ignores snapshots newer than it understands.
 - **Reminder window:** iOS keeps at most 64 pending local notifications per app, so only the next 60 classes (`Timetable.maxScheduledReminders`) are scheduled, roughly two to three weeks of classes. The app reschedules them each time it comes to the foreground and whenever the timetable or reminder settings change. If you don't open the app for longer than that window, reminders stop until you open it again. Reminders whose time has already passed are skipped. Reminder settings are per device (`UserDefaults`), not part of the SwiftData store.
 - **Import colours:** a course whose name matches an existing course keeps that course's colour. Other names get the least-used palette colour. The same rule applies to the course list.
-- **SwiftData schema:** `CourseRecord`, `SettingsRecord`, `CourseTemplateRecord` (the course list). The app hasn't been installed anywhere yet, so the schema can still change freely. After the first install, changes need a `VersionedSchema` and a migration plan.
+- **SwiftData schemas:** the timetable store holds `CourseRecord`, `SettingsRecord` and `CourseTemplateRecord` (the course list); the Words tab has its own file, `Vocabulary.store` (`VocabSchemaV1` + `VocabMigrationPlan`). The app holds real data on a phone now, so any model change needs a new `VersionedSchema` and a migration stage. The timetable store isn't versioned yet: its first change must start by describing today's models as V1.

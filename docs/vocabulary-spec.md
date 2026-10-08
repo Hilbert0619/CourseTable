@@ -69,7 +69,7 @@ iPhone — CourseTable app
                 │  HTTPS (publishable key + user JWT)
                 ▼
 Supabase Cloud (Singapore)
-├─ Auth: email + password, OTP codes
+├─ Auth: email + password; confirmation and reset by email link into the app
 ├─ Postgres: shared content (read-only to users) + user data (row-level security: own rows only)
 └─ later: Edge Functions (AI proxy), Storage (media, if ever)
 ```
@@ -205,8 +205,9 @@ Cards that FSRS schedules for later the same day (short-term steps) come back wi
 - **Pull**: `review_logs where received_at > cursor - 10 minutes`. The overlap catches rows that were
   committed late, and duplicates are skipped by id. Then the affected words are replayed.
 - **Favourites, settings and your own books**: upsert with `updated_at`, and the newest edit wins.
-- **When**: at app start, when the tab opens, after a session, after 30 s of no activity with unsent items,
-  and when "Sync now" is tapped. Everything works offline.
+- **When**: at app start, when the app comes back to the foreground, after a session, after a change to books,
+  when leaving study settings, on pull-to-refresh and when "Sync now" is tapped (favourites go with the next sync). Everything works offline. (The planned upload after 30 s
+  of no activity wasn't built in v0.2: unsent answers simply wait on the device.)
 - **Auth tokens** come from supabase-swift and are stored in the Keychain. The app only contains the project URL
   and the publishable key, which are public by design and protected by row-level security. The
   secret key never goes into the app or the repo.
@@ -241,7 +242,7 @@ macOS CI budget for v0.2: about 3 iOS runs (~12 min), 3 screenshot runs (~30 min
    - run `supabase login` once in a terminal (browser sign-in), and type the database password yourself when I link the project;
    - open the project URL in Safari on your iPhone with the VPN off, to check it's reachable.
    I then push the migrations and seed.
-3. **App** (in progress 2026-10-02: code, strings and app tests done; UI tests, screenshots, IPA and device test to do): the Words tab with every v0.2 screen, zh-Hans strings, app tests, screenshots I review, then an IPA
+3. **App** (done 2026-10-08; 0.2.0 on your iPhone, record in `docs/v2-development-record.md`): the Words tab with every v0.2 screen, zh-Hans strings, app tests, screenshots I review, then an IPA
    (version 0.2.0) for your phone. Then README / HANDOFF / the development record get updated.
 
 ## 12. Risks and open items
