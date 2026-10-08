@@ -42,8 +42,15 @@ final class LiveActivityUITests: XCTestCase {
         Thread.sleep(forTimeInterval: 3)
         goHome()
         snapshot(XCUIScreen.main.screenshot(), "en-live-4-switch-before-island")
-        // The demo class starts 45 seconds after launch.
-        Thread.sleep(forTimeInterval: 50)
+        // Answer iOS's first-time question about Live Activities, so it doesn't hold anything back.
+        openNotificationCenter()
+        if springboard.buttons["Allow"].exists {
+            springboard.buttons["Allow"].tap()
+        }
+        goHome()
+        // The demo class starts 45 seconds after launch. With the app suspended, iOS redraws a stale
+        // activity up to about two minutes late, so look well after that.
+        Thread.sleep(forTimeInterval: 160)
         snapshot(XCUIScreen.main.screenshot(), "en-live-5-switch-after-island")
         expandIsland()
         snapshot(XCUIScreen.main.screenshot(), "en-live-6-switch-after-expanded")

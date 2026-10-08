@@ -54,7 +54,7 @@ struct ClassActivityWidget: Widget {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(info.color)
                     .lineLimit(1)
-                    .frame(maxWidth: 64, alignment: .leading)
+                    .frame(maxWidth: 88, alignment: .leading)
             } compactTrailing: {
                 info.timer
                     .font(.caption.monospacedDigit().weight(.semibold))
@@ -94,10 +94,17 @@ private struct ClassActivityInfo {
         started ? Text("Ends in") : Text("Starts in")
     }
 
-    /// "08:00–09:40 · A101 · Li" before the start, then "Until 09:40 · A101 · Li".
+    /// "08:00–09:40" before the start, then "Until 09:40".
+    var when: String {
+        started ? String(localized: "Until \(attributes.endTime)") : attributes.times
+    }
+
+    /// Room and teacher, e.g. "A101 · Li"; may be empty.
+    var details: String { attributes.details }
+
+    /// Both on one line: "08:00–09:40 · A101 · Li", then "Until 09:40 · A101 · Li".
     var whenAndWhere: Text {
-        let when = started ? String(localized: "Until \(attributes.endTime)") : attributes.times
-        return Text(verbatim: [when, attributes.details].filter { !$0.isEmpty }.joined(separator: " · "))
+        Text(verbatim: [when, details].filter { !$0.isEmpty }.joined(separator: " · "))
     }
 
     /// Counts down to the start, then to the end, in minutes ("72:30") so a long class fits.
@@ -141,10 +148,15 @@ struct ClassActivityLockScreenView: View {
                     Text(verbatim: info.courseName)
                         .font(.headline)
                         .lineLimit(2)
-                    info.whenAndWhere
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                    Group {
+                        Text(verbatim: info.when)
+                        if !info.details.isEmpty {
+                            Text(verbatim: info.details)
+                        }
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .trailing, spacing: 0) {
