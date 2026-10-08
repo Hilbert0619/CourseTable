@@ -1,3 +1,4 @@
+import ActivityKit
 import Foundation
 import SwiftData
 import Testing
@@ -36,6 +37,25 @@ import CourseKit
         let labels = ReminderSettings.leadChoices.map(ReminderSettings.label(forLeadMinutes:))
         #expect(Set(labels).count == labels.count)
         #expect(ReminderSettings.leadChoices.contains(ReminderSettings.defaultLeadMinutes))
+    }
+
+    /// The Live Activity for a class: what it shows, and that it turns "stale" (the in-class layout)
+    /// exactly at the start.
+    @Test func liveActivityDescribesTheClass() throws {
+        let timetable = Timetable(semester: Semester(startingOn: LocalDate(year: 2026, month: 8, day: 31)), courses: [calculus])
+        let now = Moment(day: LocalDate(year: 2026, month: 8, day: 31), time: TimeOfDay(hour: 7, minute: 0))
+        let window = try #require(timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 1).first)
+        let attributes = ClassActivityAttributes(window)
+        #expect(attributes.courseName == "Calculus")
+        #expect(attributes.details == "A101 · Li")
+        #expect(attributes.signature == window.signature)
+        #expect(attributes.key == window.key)
+        #expect(attributes.showDate == window.showMoment.date())
+        let state = ClassActivityAttributes.ContentState(window)
+        #expect(state.end.timeIntervalSince(state.start) == 100 * 60)
+        #expect(state.start.timeIntervalSince(attributes.showDate) == 10 * 60)
+        #expect(state.content.staleDate == state.start)
+        #expect(ClassReminders.body(for: window.session, leadMinutes: 10) == ClassReminders.payload(for: try firstReminder(leadMinutes: 10)).body)
     }
 }
 

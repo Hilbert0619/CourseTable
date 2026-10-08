@@ -631,6 +631,16 @@
         }
       }
     },
+    "Class" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程"
+          }
+        }
+      }
+    },
     "Class Schedule" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1017,6 +1027,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "结束"
+          }
+        }
+      }
+    },
+    "Ends in" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距下课"
           }
         }
       }
@@ -1493,6 +1513,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "词表名称"
+          }
+        }
+      }
+    },
+    "Live Activities for Course Table are turned off in Settings." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程表的实时活动已在系统设置中关闭。"
+          }
+        }
+      }
+    },
+    "Live Activity" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实时活动"
+          }
+        }
+      }
+    },
+    "Live Activity shows each class in the Dynamic Island and on the Lock Screen from the reminder time until it ends. Close it there if you don't need it." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实时活动会在灵动岛和锁定屏幕上显示每节课，从提醒时间一直到下课。不需要时可以在那里关闭。"
           }
         }
       }
@@ -2603,6 +2653,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始节次"
+          }
+        }
+      }
+    },
+    "Starts in" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距上课"
           }
         }
       }

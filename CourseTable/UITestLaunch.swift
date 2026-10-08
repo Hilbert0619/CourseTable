@@ -11,4 +11,6 @@ enum UITestLaunch {
     static let wantsVocabDemo = ProcessInfo.processInfo.arguments.contains("-vocabDemo")
     /// The demo learner's review question type (`-vocabMode recognition`); mixed if not given.
     static let vocabReviewMode = UserDefaults.standard.string(forKey: "vocabMode")
+    /// Start a demo class Live Activity (`-liveActivityDemo before|during`).
+    static let liveActivityDemo = isActive ? UserDefaults.standard.string(forKey: "liveActivityDemo") : nil
 }

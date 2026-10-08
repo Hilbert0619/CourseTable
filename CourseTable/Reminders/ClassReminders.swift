@@ -42,20 +42,24 @@ enum ClassReminders {
 
     /// e.g. title "Calculus", body "Starts in 10 min · 08:00–09:40 · A101 · Li".
     static func payload(for reminder: ClassReminder) -> Payload {
-        let session = reminder.session
-        let when = reminder.leadMinutes == 0
-            ? String(localized: "Starting now")
-            : String(localized: "Starts in \(reminder.leadMinutes) min")
         let fire = reminder.fireMoment
         return Payload(
             id: reminder.id,
-            title: session.course.name,
-            body: [when, session.timeRange, session.details].filter { !$0.isEmpty }.joined(separator: " · "),
+            title: reminder.session.course.name,
+            body: body(for: reminder.session, leadMinutes: reminder.leadMinutes),
             fireDate: DateComponents(
                 year: fire.day.year, month: fire.day.month, day: fire.day.day,
                 hour: fire.time.hour, minute: fire.time.minute
             )
         )
+    }
+
+    /// e.g. "Starts in 10 min · 08:00–09:40 · A101 · Li"; also the alert of a class Live Activity.
+    static func body(for session: ClassSession, leadMinutes: Int) -> String {
+        let when = leadMinutes <= 0
+            ? String(localized: "Starting now")
+            : String(localized: "Starts in \(leadMinutes) min")
+        return [when, session.timeRange, session.details].filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
     /// Asks for permission to show notifications (only prompts the first time). `true` if allowed.

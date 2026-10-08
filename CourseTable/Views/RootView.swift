@@ -19,11 +19,15 @@ struct RootView: View {
     @Query private var settingsRecords: [SettingsRecord]
     @AppStorage(ReminderSettings.enabledKey) private var remindersEnabled = false
     @AppStorage(ReminderSettings.leadMinutesKey) private var reminderLeadMinutes = ReminderSettings.defaultLeadMinutes
+    @AppStorage(LiveActivitySettings.enabledKey) private var liveActivitiesEnabled = LiveActivitySettings.defaultEnabled
 
     var body: some View {
         let timetable = Persistence.timetable(settings: settingsRecords.first, courses: courseRecords)
         let reminderRequest = ClassReminders.SyncRequest(
             timetable: timetable, enabled: remindersEnabled, leadMinutes: reminderLeadMinutes, isActive: scenePhase == .active
+        )
+        let activityRequest = ClassLiveActivities.SyncRequest(
+            timetable: timetable, enabled: liveActivitiesEnabled, leadMinutes: reminderLeadMinutes, isActive: scenePhase == .active
         )
         TabView(selection: $tab) {
             TodayView(timetable: timetable)
@@ -55,6 +59,15 @@ struct RootView: View {
         // the app comes to the foreground, which moves the window of scheduled reminders forward.
         .task(id: reminderRequest) {
             await ClassReminders.sync(reminderRequest)
+        }
+        // The same for the class Live Activities: end finished ones, start or schedule the next.
+        .task(id: activityRequest) {
+            await ClassLiveActivities.sync(activityRequest)
+        }
+        .task {
+            if let mode = UITestLaunch.liveActivityDemo {
+                await ClassLiveActivities.startDemo(mode)
+            }
         }
     }
 }

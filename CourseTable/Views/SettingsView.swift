@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import ActivityKit
 import CourseKit
 
 struct SettingsView: View {
@@ -100,14 +101,18 @@ private struct SettingsForm: View {
 private struct ReminderSection: View {
     @AppStorage(ReminderSettings.enabledKey) private var enabled = false
     @AppStorage(ReminderSettings.leadMinutesKey) private var leadMinutes = ReminderSettings.defaultLeadMinutes
+    @AppStorage(LiveActivitySettings.enabledKey) private var liveActivities = LiveActivitySettings.defaultEnabled
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
     @State private var notificationsDenied = false
+    @State private var activitiesDisabled = false
 
     var body: some View {
         Section {
             Toggle("Class reminders", isOn: $enabled)
-            if enabled {
+            Toggle("Live Activity", isOn: $liveActivities)
+                .accessibilityIdentifier("liveActivityToggle")
+            if enabled || liveActivities {
                 Picker("Remind me", selection: $leadMinutes) {
                     ForEach(ReminderSettings.leadChoices, id: \.self) { minutes in
                         Text(verbatim: ReminderSettings.label(forLeadMinutes: minutes)).tag(minutes)
@@ -123,10 +128,17 @@ private struct ReminderSection: View {
                     }
                 }
             }
+            if liveActivities && activitiesDisabled {
+                Label("Live Activities for Course Table are turned off in Settings.", systemImage: "rectangle.slash")
+                    .foregroundStyle(.orange)
+            }
         } header: {
             Text("Reminders")
         } footer: {
-            Text("Reminders cover your next \(Timetable.maxScheduledReminders) classes and are renewed whenever you open the app.")
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Reminders cover your next \(Timetable.maxScheduledReminders) classes and are renewed whenever you open the app.")
+                Text("Live Activity shows each class in the Dynamic Island and on the Lock Screen from the reminder time until it ends. Close it there if you don't need it.")
+            }
         }
         .onChange(of: enabled) { _, isOn in
             guard isOn else { return }
@@ -142,6 +154,7 @@ private struct ReminderSection: View {
         // Check again when coming back from the Settings app.
         .task(id: scenePhase) {
             notificationsDenied = await ClassReminders.isDenied()
+            activitiesDisabled = !ActivityAuthorizationInfo().areActivitiesEnabled
         }
     }
 }
