@@ -51,10 +51,12 @@ extension ClassActivityAttributes.ContentState {
     }
 
     /// The content as shown: it becomes "stale" when the class starts, which switches the layout from
-    /// the countdown to the class in progress. A later class is more relevant, so once a class is over
-    /// (its activity can't end itself), the next one takes the Dynamic Island.
-    var content: ActivityContent<Self> {
-        ActivityContent(state: self, staleDate: start, relevanceScore: start.timeIntervalSince1970 / 60)
+    /// the countdown to the class in progress. For a class that has already started there's no stale
+    /// date (with one in the past, the activity didn't show in the Simulator): the view checks the time.
+    /// A later class is more relevant, so once a class is over (its activity can't end itself), the
+    /// next one takes the Dynamic Island.
+    func content(now: Date = .now) -> ActivityContent<Self> {
+        ActivityContent(state: self, staleDate: start > now ? start : nil, relevanceScore: start.timeIntervalSince1970 / 60)
     }
 }
 

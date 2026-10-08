@@ -55,7 +55,9 @@ import CourseKit
         let state = ClassActivityAttributes.ContentState(window)
         #expect(state.end.timeIntervalSince(state.start) == 100 * 60)
         #expect(state.start.timeIntervalSince(attributes.showDate) == 10 * 60)
-        #expect(state.content.staleDate == state.start)
+        #expect(state.content(now: attributes.showDate).staleDate == state.start)
+        // An activity started after the class began has no stale date (the view checks the time).
+        #expect(state.content(now: state.start.addingTimeInterval(60)).staleDate == nil)
         #expect(ClassReminders.body(for: window.session, leadMinutes: window.leadMinutes)
             == ClassReminders.payload(for: try firstReminder(leadMinutes: 10)).body)
     }
@@ -66,7 +68,7 @@ import CourseKit
         let timetable = Timetable(semester: Semester(startingOn: LocalDate(year: 2026, month: 8, day: 31)), courses: [physics, calculus])
         let now = Moment(day: LocalDate(year: 2026, month: 8, day: 31), time: TimeOfDay(hour: 7, minute: 0))
         let windows = timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 2)
-        let scores = windows.map { ClassActivityAttributes.ContentState($0).content.relevanceScore }
+        let scores = windows.map { ClassActivityAttributes.ContentState($0).content().relevanceScore }
         #expect(windows.map(\.session.course.name) == ["Calculus", "Physics"])
         #expect(scores[0] < scores[1])
     }

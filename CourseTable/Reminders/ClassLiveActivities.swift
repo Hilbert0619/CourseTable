@@ -72,7 +72,7 @@ enum ClassLiveActivities {
         for window in plan.startNow {
             do {
                 _ = try Activity<ClassActivityAttributes>.request(
-                    attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content
+                    attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content(now: now)
                 )
                 created.insert(window)
             } catch {
@@ -84,7 +84,7 @@ enum ClassLiveActivities {
             for window in plan.schedule {
                 do {
                     _ = try Activity<ClassActivityAttributes>.request(
-                        attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content,
+                        attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content(now: now),
                         pushType: nil, style: .standard, alertConfiguration: alert(for: window), start: window.showMoment.date()
                     )
                     created.insert(window)
@@ -148,14 +148,19 @@ enum ClassLiveActivities {
         )
     }
 
-    /// For UI tests (`-liveActivityDemo before|during`): one class activity, counting down to a class
-    /// starting in a few minutes or showing one in progress.
-    static func startDemo(_ mode: String, now: Date = .now) async {
+    /// For UI tests (`-liveActivityDemo before|during|switch`): one class activity, counting down to a
+    /// class starting in a few minutes, showing one in progress, or starting in 45 seconds (to see the
+    /// layout switch). Returns why it couldn't start, if it couldn't.
+    static func startDemo(_ mode: String, now: Date = .now) async -> String? {
         for activity in Activity<ClassActivityAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
         let chinese = Locale.current.language.languageCode?.identifier == "zh"
-        let start = mode == "during" ? now.addingTimeInterval(-25 * 60) : now.addingTimeInterval(9 * 60 + 30)
+        let start = switch mode {
+        case "during": now.addingTimeInterval(-25 * 60)
+        case "switch": now.addingTimeInterval(45)
+        default: now.addingTimeInterval(9 * 60 + 30)
+        }
         let end = start.addingTimeInterval(100 * 60)
         let attributes = ClassActivityAttributes(
             signature: "demo", courseName: chinese ? "高等数学" : "Advanced Mathematics", room: "A101",
@@ -164,9 +169,11 @@ enum ClassLiveActivities {
         )
         let state = ClassActivityAttributes.ContentState(start: start, end: end)
         do {
-            _ = try Activity<ClassActivityAttributes>.request(attributes: attributes, content: state.content)
+            _ = try Activity<ClassActivityAttributes>.request(attributes: attributes, content: state.content(now: now))
+            return nil
         } catch {
             logger.error("Starting the demo activity failed: \(error.localizedDescription)")
+            return "\(error)"
         }
     }
 }

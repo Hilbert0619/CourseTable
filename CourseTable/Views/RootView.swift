@@ -20,6 +20,8 @@ struct RootView: View {
     @AppStorage(ReminderSettings.enabledKey) private var remindersEnabled = false
     @AppStorage(ReminderSettings.leadMinutesKey) private var reminderLeadMinutes = ReminderSettings.defaultLeadMinutes
     @AppStorage(LiveActivitySettings.enabledKey) private var liveActivitiesEnabled = LiveActivitySettings.defaultEnabled
+    /// UI tests only: why the demo Live Activity couldn't start.
+    @State private var liveActivityDemoError: String?
 
     var body: some View {
         let timetable = Persistence.timetable(settings: settingsRecords.first, courses: courseRecords)
@@ -66,7 +68,17 @@ struct RootView: View {
         }
         .task {
             if let mode = UITestLaunch.liveActivityDemo {
-                await ClassLiveActivities.startDemo(mode)
+                liveActivityDemoError = await ClassLiveActivities.startDemo(mode)
+            }
+        }
+        .overlay(alignment: .center) {
+            if let liveActivityDemoError {
+                Text(verbatim: liveActivityDemoError)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .padding()
+                    .background(.background)
+                    .accessibilityIdentifier("liveActivityDemoError")
             }
         }
     }

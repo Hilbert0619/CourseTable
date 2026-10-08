@@ -13,46 +13,40 @@ struct ClassActivityWidget: Widget {
         } dynamicIsland: { context in
             let info = ClassActivityInfo(context: context)
             return DynamicIsland {
+                // Like the system timer: the button on the left, the time on the right, and the class
+                // below at full width, so long course names fit.
                 DynamicIslandExpandedRegion(.leading) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(verbatim: info.courseName)
-                            .font(.headline)
-                            .foregroundStyle(info.color)
-                            .lineLimit(1)
-                        if !info.details.isEmpty {
-                            Text(verbatim: info.details)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
-                    .padding(.leading, 4)
+                    CloseActivityButton(signature: info.signature, size: 40)
+                        .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 2) {
+                    VStack(alignment: .trailing, spacing: 0) {
                         info.caption
-                            .font(.caption2)
+                            .font(.caption)
                             .foregroundStyle(.secondary)
-                        info.timer(showsHours: true)
-                            .font(.title3.monospacedDigit().weight(.semibold))
+                        info.timer
+                            .font(.title2.monospacedDigit().weight(.semibold))
                             .multilineTextAlignment(.trailing)
-                            .frame(maxWidth: 90, alignment: .trailing)
+                            .frame(maxWidth: 100, alignment: .trailing)
                     }
                     .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    HStack(spacing: 12) {
-                        info.when
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(verbatim: info.courseName)
+                            .font(.headline)
+                            .foregroundStyle(info.color)
+                            .lineLimit(1)
+                        info.whenAndWhere
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                         if info.started {
                             info.progress
-                        } else {
-                            Spacer()
+                                .padding(.top, 2)
                         }
-                        CloseActivityButton(signature: info.signature)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)
                 }
             } compactLeading: {
@@ -62,8 +56,7 @@ struct ClassActivityWidget: Widget {
                     .lineLimit(1)
                     .frame(maxWidth: 64, alignment: .leading)
             } compactTrailing: {
-                // Minutes only ("72:30"), so a long class fits.
-                info.timer(showsHours: false)
+                info.timer
                     .font(.caption.monospacedDigit().weight(.semibold))
                     .multilineTextAlignment(.trailing)
                     .frame(width: 48, alignment: .trailing)
@@ -79,18 +72,17 @@ struct ClassActivityWidget: Widget {
 private struct ClassActivityInfo {
     let attributes: ClassActivityAttributes
     let state: ClassActivityAttributes.ContentState
-    /// The class has started: the stale date (its start) has passed.
+    /// The class has started: the stale date (its start) has passed, or the activity began after it.
     let started: Bool
 
     init(context: ActivityViewContext<ClassActivityAttributes>) {
         attributes = context.attributes
         state = context.state
-        started = context.isStale
+        started = context.isStale || context.state.start <= .now
     }
 
     var signature: String { attributes.signature }
     var courseName: String { attributes.courseName }
-    var details: String { attributes.details }
     var color: Color { CoursePalette.color(attributes.colorIndex) }
 
     /// Before the start: from when it appeared to the start; then the class itself.
@@ -102,14 +94,15 @@ private struct ClassActivityInfo {
         started ? Text("Ends in") : Text("Starts in")
     }
 
-    /// "08:00–09:40" before the start, then "Until 09:40".
-    var when: Text {
-        started ? Text("Until \(attributes.endTime)") : Text(verbatim: attributes.times)
+    /// "08:00–09:40 · A101 · Li" before the start, then "Until 09:40 · A101 · Li".
+    var whenAndWhere: Text {
+        let when = started ? String(localized: "Until \(attributes.endTime)") : attributes.times
+        return Text(verbatim: [when, attributes.details].filter { !$0.isEmpty }.joined(separator: " · "))
     }
 
-    /// Counts down to the start, then to the end.
-    func timer(showsHours: Bool) -> Text {
-        Text(timerInterval: interval, countsDown: true, showsHours: showsHours)
+    /// Counts down to the start, then to the end, in minutes ("72:30") so a long class fits.
+    var timer: Text {
+        Text(timerInterval: interval, countsDown: true, showsHours: false)
     }
 
     var progress: some View {
@@ -137,38 +130,38 @@ struct ClassActivityLockScreenView: View {
 
     var body: some View {
         let info = ClassActivityInfo(context: context)
-        HStack(alignment: .center, spacing: 12) {
-            RoundedRectangle(cornerRadius: 3)
-                .fill(info.color)
-                .frame(width: 6)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: info.courseName)
-                    .font(.headline)
-                    .lineLimit(1)
-                HStack(spacing: 6) {
-                    info.when
-                    if !info.details.isEmpty {
-                        Text(verbatim: "· \(info.details)")
-                    }
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top, spacing: 12) {
+                // As tall as the text beside it (the stack has a fixed height).
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(info.color)
+                    .frame(width: 6)
+                    .frame(maxHeight: .infinity)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(verbatim: info.courseName)
+                        .font(.headline)
+                        .lineLimit(2)
+                    info.whenAndWhere
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
                 }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                if info.started {
-                    info.progress
+                .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .trailing, spacing: 0) {
+                    info.caption
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    info.timer
+                        .font(.title2.monospacedDigit().weight(.semibold))
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: 84, alignment: .trailing)
                 }
+                CloseActivityButton(signature: info.signature, size: 28)
             }
-            Spacer(minLength: 4)
-            VStack(alignment: .trailing, spacing: 2) {
-                info.caption
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                info.timer(showsHours: true)
-                    .font(.title2.monospacedDigit().weight(.semibold))
-                    .multilineTextAlignment(.trailing)
-                    .frame(maxWidth: 110, alignment: .trailing)
+            .fixedSize(horizontal: false, vertical: true)
+            if info.started {
+                info.progress
             }
-            CloseActivityButton(signature: info.signature)
         }
         .padding(16)
         .activitySystemActionForegroundColor(info.color)
@@ -178,12 +171,13 @@ struct ClassActivityLockScreenView: View {
 /// Ends the activity: Live Activities can't remove themselves at a set time without a server.
 private struct CloseActivityButton: View {
     let signature: String
+    let size: CGFloat
 
     var body: some View {
         Button(intent: EndClassActivityIntent(signature: signature)) {
             Image(systemName: "xmark")
-                .font(.caption.weight(.bold))
-                .frame(width: 28, height: 28)
+                .font(size > 32 ? .body.weight(.bold) : .caption.weight(.bold))
+                .frame(width: size, height: size)
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.circle)
