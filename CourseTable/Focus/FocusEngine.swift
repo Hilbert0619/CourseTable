@@ -22,7 +22,7 @@ final class FocusEngine {
     private static let goalKey = "focus.goal"
     private static let soundKey = "focus.sound"
     private static let volumeKey = "focus.volume"
-    static let notificationPrefix = "focus-"
+    nonisolated static let notificationPrefix = "focus-"
 
     /// The session in progress, if any.
     private(set) var run: FocusRun?
