@@ -12,7 +12,7 @@ Date: 2026-10-09 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
   Green: CourseKit 140 (Windows + Linux 37967845938), iOS 37968070324 (37 app tests), Screenshots 37968936694
   (class Live Activity with to-dos, Today with to-dos, the editor, Focus setup/running/island/Lock Screen; en + zh).
   The fixes in `2265f4f` (focus island/Lock Screen layout, running buttons, Start pinned, "日期") were compiled by
-  the IPA run 37971663701 only, no new screenshots (minutes). IPA: C:SERSAIDOWNLOADSCOURSETABLECOURSETABLE-0.3.1.IPA (13 MB).
+  the IPA run 37971663701 only, no new screenshots (minutes). IPA: `C:\Users\AI\Downloads\CourseTable\CourseTable-0.3.1.ipa` (13 MB).
 - Sounds: nine CC0 recordings from Freesound (`content/sounds/SOURCES.md`), made into seamless loops by the manual
   Linux workflow `Sounds` (run 37965538219) and committed in `CourseTable/Sounds/` (8.9 MB).
 - Tests: CourseKit 140, VocabKit 77; backend 58 pgTAP + 16 HTTP; app 37; UI 3 timetable + 4 Words + 2 Live Activity
