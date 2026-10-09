@@ -87,7 +87,7 @@ final class LiveActivityUITests: XCTestCase {
     /// Settings, scrolled until the Live Activity switch and the footer below it clear the tab bar.
     @MainActor
     private func showLiveActivitySetting(in app: XCUIApplication) {
-        app.tabBars.buttons.element(boundBy: 3).tap()
+        app.tabBars.buttons.element(boundBy: 4).tap()
         let toggle = app.descendants(matching: .any)["liveActivityToggle"].firstMatch
         let tabBarTop = app.tabBars.firstMatch.frame.minY
         for _ in 0..<6 {

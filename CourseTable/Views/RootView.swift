@@ -7,6 +7,7 @@ struct RootView: View {
     enum Tab: Hashable {
         case today
         case timetable
+        case focus
         case words
         case settings
     }
@@ -14,6 +15,7 @@ struct RootView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Environment(VocabApp.self) private var vocab
+    @Environment(PlannerModel.self) private var planner
     @State private var tab = Tab.today
     @Query(sort: \CourseRecord.createdAt) private var courseRecords: [CourseRecord]
     @Query private var settingsRecords: [SettingsRecord]
@@ -25,11 +27,9 @@ struct RootView: View {
 
     var body: some View {
         let timetable = Persistence.timetable(settings: settingsRecords.first, courses: courseRecords)
-        let reminderRequest = ClassReminders.SyncRequest(
-            timetable: timetable, enabled: remindersEnabled, leadMinutes: reminderLeadMinutes, isActive: scenePhase == .active
-        )
-        let activityRequest = ClassLiveActivities.SyncRequest(
-            timetable: timetable, enabled: liveActivitiesEnabled, leadMinutes: reminderLeadMinutes, isActive: scenePhase == .active
+        let alertRequest = Alerts.SyncRequest(
+            timetable: timetable, remindersEnabled: remindersEnabled, liveActivitiesEnabled: liveActivitiesEnabled,
+            leadMinutes: reminderLeadMinutes, todos: planner.todos, isActive: scenePhase == .active
         )
         TabView(selection: $tab) {
             TodayView(timetable: timetable)
@@ -38,6 +38,9 @@ struct RootView: View {
             WeekView(timetable: timetable)
                 .tabItem { Label("Timetable", systemImage: "calendar") }
                 .tag(Tab.timetable)
+            FocusView()
+                .tabItem { Label("Focus", systemImage: "timer") }
+                .tag(Tab.focus)
             WordsTab()
                 .tabItem { Label("Words", systemImage: "character.book.closed") }
                 .tag(Tab.words)
@@ -57,16 +60,21 @@ struct RootView: View {
         .onChange(of: timetable, initial: true) { _, newValue in
             WidgetSync.publish(newValue)
         }
-        // Reschedule class reminders when the timetable or reminder settings change, and each time
-        // the app comes to the foreground, which moves the window of scheduled reminders forward.
-        .task(id: reminderRequest) {
-            await ClassReminders.sync(reminderRequest)
+        // Class Live Activities, class reminders and to-do notifications, whenever the timetable, the
+        // to-dos or the settings change, and each time the app comes to the foreground (which moves the
+        // window of scheduled alerts forward).
+        .task(id: alertRequest) {
+            await Alerts.sync(alertRequest)
         }
-        // The same for the class Live Activities: end finished ones, start or schedule the next.
-        .task(id: activityRequest) {
-            await ClassLiveActivities.sync(activityRequest)
+        // A focus session may have switched phase or ended while the app wasn't running.
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            if phase == .active { FocusEngine.shared.refresh() }
         }
         .task {
+            if UITestLaunch.wantsFocusDemo {
+                tab = .focus
+                FocusEngine.shared.startDemo()
+            }
             if let mode = UITestLaunch.liveActivityDemo {
                 liveActivityDemoError = await ClassLiveActivities.startDemo(mode)
             }
@@ -101,4 +109,5 @@ enum EditorTarget: Identifiable {
     RootView()
         .modelContainer(Persistence.previewContainer())
         .environment(VocabApp.preview())
+        .environment(PlannerModel.preview())
 }

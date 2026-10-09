@@ -80,6 +80,7 @@ import CourseKit
         #expect(tasks.contains(ClassLiveActivities.cleanupTaskID))
         let modes = Bundle.main.object(forInfoDictionaryKey: "UIBackgroundModes") as? [String] ?? []
         #expect(modes.contains("fetch"))
+        #expect(modes.contains("audio"))
     }
 }
 

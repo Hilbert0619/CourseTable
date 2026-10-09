@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: "Run only these tests (an xcodebuild -only-testing value, e.g. CourseTableUITests/WordsUITests/testWordsScreenshotTour); empty runs them all"
+        description: "Run only these tests (xcodebuild -only-testing values, comma-separated, e.g. CourseTableUITests/WordsUITests/testWordsScreenshotTour); empty runs them all"
         type: string
         default: ""
 
@@ -52,7 +52,8 @@ jobs:
         run: |
           set -o pipefail
           only=()
-          if [ -n "$ONLY" ]; then only=("-only-testing:$ONLY"); fi
+          IFS=',' read -ra wanted <<< "$ONLY"
+          for test in "${wanted[@]}"; do only+=("-only-testing:$test"); done
           xcodebuild test \
             -project CourseTable.xcodeproj \
             -scheme CourseTableUITests \

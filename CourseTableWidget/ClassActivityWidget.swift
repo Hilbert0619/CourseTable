@@ -41,6 +41,9 @@ struct ClassActivityWidget: Widget {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
+                        if let todos = info.todos {
+                            TodoLine(text: todos, color: info.color)
+                        }
                         if info.started {
                             info.progress
                                 .padding(.top, 2)
@@ -82,6 +85,8 @@ private struct ClassActivityInfo {
     }
 
     var signature: String { attributes.signature }
+    /// "After class: …", if the class has to-dos.
+    var todos: String? { state.todoSummary.map { String(localized: "After class: \($0)") } }
     var courseName: String { attributes.courseName }
     var color: Color { CoursePalette.color(attributes.colorIndex) }
 
@@ -157,6 +162,9 @@ struct ClassActivityLockScreenView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    if let todos = info.todos {
+                        TodoLine(text: todos, color: info.color)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .trailing, spacing: 0) {
@@ -177,6 +185,23 @@ struct ClassActivityLockScreenView: View {
         }
         .padding(16)
         .activitySystemActionForegroundColor(info.color)
+    }
+}
+
+/// The to-dos due after the class, with a checklist icon in the course colour.
+private struct TodoLine: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        Label {
+            Text(verbatim: text)
+                .lineLimit(1)
+        } icon: {
+            Image(systemName: "checklist")
+                .foregroundStyle(color)
+        }
+        .font(.subheadline)
     }
 }
 

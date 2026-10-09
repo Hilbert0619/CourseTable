@@ -193,7 +193,7 @@ final class WordsUITests: XCTestCase {
 
     @MainActor
     private func openWordsTab(_ app: XCUIApplication) {
-        app.tabBars.buttons.element(boundBy: 2).tap()
+        app.tabBars.buttons.element(boundBy: 3).tap()
     }
 
     /// Opens a screen from the Words home screen and waits until it's there. The home screen's settings

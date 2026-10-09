@@ -79,5 +79,6 @@ struct CourseTableWidgetBundle: WidgetBundle {
     var body: some Widget {
         ScheduleWidget()
         ClassActivityWidget()
+        FocusActivityWidget()
     }
 }

@@ -25,14 +25,6 @@ enum ClassLiveActivities {
     /// The background app refresh that ends activities after their class (listed in Info.plist).
     static let cleanupTaskID = "io.github.hilbert0619.CourseTable.classActivities"
 
-    struct SyncRequest: Equatable, Sendable {
-        var timetable: Timetable
-        var enabled: Bool
-        var leadMinutes: Int
-        /// Only sync while the app is in the foreground.
-        var isActive: Bool
-    }
-
     /// Whether the system can start an activity at a later date on its own.
     static var canSchedule: Bool {
         if #available(iOS 26.0, *) {
@@ -41,32 +33,35 @@ enum ClassLiveActivities {
         return false
     }
 
-    /// Ends, starts and schedules activities so they match the upcoming classes.
-    static func sync(_ request: SyncRequest, now: Date = .now) async {
-        guard request.isActive, !UITestLaunch.isActive else { return }
-        // Let a burst of edits settle; a newer request cancels this one.
-        try? await Task.sleep(for: .seconds(1))
-        guard !Task.isCancelled else { return }
-
+    /// Ends, starts, schedules and updates activities so they match the upcoming classes and their to-dos.
+    /// Returns the classes (`ClassSession.id`) that have an activity, or had one: `Alerts.sync` sends no
+    /// notification for them.
+    static func sync(timetable: Timetable, enabled: Bool, leadMinutes: Int, todos: [Todo], now: Date = .now) async -> Set<String> {
         var created = CreatedActivities.load()
         created.removeFinished(before: now)
-        if !request.enabled {
+        if !enabled {
             // Turning the switch on again shows the class in its window once more.
             created.removeAll()
         }
         let moment = Moment(now)
-        let wanted = request.enabled && ActivityAuthorizationInfo().areActivitiesEnabled
-            ? request.timetable.upcomingActivityWindows(after: moment, leadMinutes: request.leadMinutes)
+        let wanted = enabled && ActivityAuthorizationInfo().areActivitiesEnabled
+            ? timetable.upcomingActivityWindows(after: moment, leadMinutes: leadMinutes, todos: todos)
             : []
         let activities = Activity<ClassActivityAttributes>.activities.filter(isLive)
         let existing = activities.map { activity in
-            ExistingClassActivity(id: activity.id, signature: activity.attributes.signature,
-                                  showMoment: Moment(activity.attributes.showDate), isPending: isPending(activity))
+            ExistingClassActivity(id: activity.id, signature: activity.attributes.signature, showMoment: Moment(activity.attributes.showDate),
+                                  isPending: isPending(activity), todos: activity.content.state.todos)
         }
         let plan = ClassActivityPlan(existing: existing, wanted: wanted, created: created.signatures, now: moment, canSchedule: canSchedule)
+        var covered = plan.covered
 
         for activity in activities where plan.end.contains(activity.id) {
             await activity.end(nil, dismissalPolicy: .immediate)
+        }
+        for change in plan.update {
+            if let activity = activities.first(where: { $0.id == change.id }) {
+                await activity.update(ClassActivityAttributes.ContentState(change.window).content(now: now))
+            }
         }
         created.forget(plan.forget)
         for window in plan.startNow {
@@ -75,6 +70,7 @@ enum ClassLiveActivities {
                     attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content(now: now)
                 )
                 created.insert(window)
+                covered.insert(window.id)
             } catch {
                 logger.error("Starting the activity for \(window.id) failed: \(error.localizedDescription)")
                 break
@@ -88,8 +84,10 @@ enum ClassLiveActivities {
                         pushType: nil, style: .standard, alertConfiguration: alert(for: window), start: window.showMoment.date()
                     )
                     created.insert(window)
+                    covered.insert(window.id)
                 } catch {
-                    // Most likely the system's limit on activities: the rest are scheduled next time.
+                    // Most likely the system's limit on activities: the rest get notifications, and are
+                    // scheduled next time.
                     logger.error("Scheduling the activity for \(window.id) failed: \(error.localizedDescription)")
                     break
                 }
@@ -97,6 +95,7 @@ enum ClassLiveActivities {
         }
         created.save()
         scheduleCleanup(now: now)
+        return covered
     }
 
     /// Ends the activities whose class is over. Runs as a background app refresh (`cleanupTaskID`)
@@ -167,7 +166,7 @@ enum ClassLiveActivities {
             teacher: chinese ? "李老师" : "Li", colorIndex: 5, startTime: TimeOfDay(start).description,
             endTime: TimeOfDay(end).description, showDate: start.addingTimeInterval(-10 * 60)
         )
-        let state = ClassActivityAttributes.ContentState(start: start, end: end)
+        let state = ClassActivityAttributes.ContentState(start: start, end: end, todos: [chinese ? "交论文" : "Hand in the paper"])
         do {
             _ = try Activity<ClassActivityAttributes>.request(attributes: attributes, content: state.content(now: now))
             return nil

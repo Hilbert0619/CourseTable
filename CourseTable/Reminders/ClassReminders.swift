@@ -15,22 +15,15 @@ enum ReminderSettings {
     }
 }
 
-/// Local notifications shortly before each class.
+/// Local notifications shortly before each class that has no Live Activity.
 ///
 /// iOS keeps at most 64 pending notifications per app, so only the next
-/// `Timetable.maxScheduledReminders` classes are scheduled. The app schedules them again whenever
-/// it comes to the foreground and whenever the timetable or the reminder settings change.
+/// `Timetable.maxScheduledReminders` classes are scheduled (`Alerts.sync` does it whenever the app comes
+/// to the foreground and whenever the timetable, the to-dos or the settings change).
 enum ClassReminders {
     private static let logger = Logger(subsystem: "io.github.hilbert0619.CourseTable", category: "Reminders")
-
-    /// What `RootView` asks for; a new value cancels the previous sync.
-    struct SyncRequest: Equatable, Sendable {
-        var timetable: Timetable
-        var enabled: Bool
-        var leadMinutes: Int
-        /// Only sync while the app is in the foreground.
-        var isActive: Bool
-    }
+    /// Every class reminder's identifier starts with this (`ClassReminder.id`).
+    static let idPrefix = "class-"
 
     /// One notification's text and time, before it becomes a `UNNotificationRequest`.
     struct Payload: Hashable, Sendable {
@@ -72,26 +65,25 @@ enum ClassReminders {
         await UNUserNotificationCenter.current().notificationSettings().authorizationStatus == .denied
     }
 
-    private static func isAllowed() async -> Bool {
+    static func isAllowed() async -> Bool {
         let status = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
         return [.authorized, .provisional, .ephemeral].contains(status)
     }
 
-    /// Replaces the scheduled reminders with ones for the upcoming classes, or removes them all when
-    /// reminders are off or not allowed.
-    static func sync(_ request: SyncRequest, now: Date = .now) async {
-        guard request.isActive, !UITestLaunch.isActive else { return }
-        // Let a burst of edits settle; a newer request cancels this one.
-        try? await Task.sleep(for: .seconds(1))
-        guard !Task.isCancelled else { return }
-
+    /// Removes the pending notifications whose identifiers start with `prefix`, leaving the other kinds.
+    static func removePending(withPrefix prefix: String) async {
         let center = UNUserNotificationCenter.current()
-        guard request.enabled, await isAllowed() else {
-            center.removeAllPendingNotificationRequests()
-            return
-        }
-        let reminders = request.timetable.upcomingReminders(after: Moment(now), leadMinutes: request.leadMinutes)
-        center.removeAllPendingNotificationRequests()
+        let ids = await center.pendingNotificationRequests().map(\.identifier).filter { $0.hasPrefix(prefix) }
+        center.removePendingNotificationRequests(withIdentifiers: ids)
+    }
+
+    /// Replaces the scheduled class reminders with ones for the upcoming classes not in `excluding` (those
+    /// with a Live Activity), or removes them when reminders are off or not allowed.
+    static func sync(timetable: Timetable, enabled: Bool, leadMinutes: Int, excluding: Set<String>, now: Date = .now) async {
+        let center = UNUserNotificationCenter.current()
+        await removePending(withPrefix: idPrefix)
+        guard enabled, await isAllowed() else { return }
+        let reminders = timetable.upcomingReminders(after: Moment(now), leadMinutes: leadMinutes, excluding: excluding)
         for payload in reminders.map(payload(for:)) {
             guard !Task.isCancelled else { return }
             let content = UNMutableNotificationContent()

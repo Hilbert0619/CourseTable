@@ -4,12 +4,33 @@ import CourseKit
 import Foundation
 
 /// One class as a Live Activity (Dynamic Island, Lock Screen): it appears at the reminder time, counts
-/// down to the start, then shows the class in progress until it ends. Nothing changes after it starts,
-/// so the content only carries the times; the layout switches at the start through the stale date.
+/// down to the start, then shows the class in progress until it ends. The content carries the times (the
+/// layout switches at the start through the stale date) and the to-dos due after the class, which the app
+/// updates when they change.
 struct ClassActivityAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         var start: Date
         var end: Date
+        /// Unfinished to-dos due when the class ends ("After class: …").
+        var todos: [String]
+
+        init(start: Date, end: Date, todos: [String] = []) {
+            self.start = start
+            self.end = end
+            self.todos = todos
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case start, end, todos
+        }
+
+        /// Activities from 0.3.0 have no to-dos.
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            start = try container.decode(Date.self, forKey: .start)
+            end = try container.decode(Date.self, forKey: .end)
+            todos = try container.decodeIfPresent([String].self, forKey: .todos) ?? []
+        }
     }
 
     /// `ClassActivityWindow.signature`: which class, and everything shown about it. The Close button
@@ -47,7 +68,15 @@ extension ClassActivityAttributes {
 
 extension ClassActivityAttributes.ContentState {
     init(_ window: ClassActivityWindow, calendar: Calendar = .current) {
-        self.init(start: window.session.startMoment.date(calendar: calendar), end: window.session.endMoment.date(calendar: calendar))
+        self.init(start: window.session.startMoment.date(calendar: calendar), end: window.session.endMoment.date(calendar: calendar),
+                  todos: window.todos)
+    }
+
+    /// "Hand in the paper · Return the book +1": the first two and how many more.
+    var todoSummary: String? {
+        guard !todos.isEmpty else { return nil }
+        let shown = todos.prefix(2).joined(separator: " · ")
+        return todos.count > 2 ? "\(shown) +\(todos.count - 2)" : shown
     }
 
     /// The content as shown: it becomes "stale" when the class starts, which switches the layout from

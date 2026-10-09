@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ focused" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已专注 %@"
+          }
+        }
+      }
+    },
     "%@ until %@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -131,6 +141,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 天"
+          }
+        }
+      }
+    },
+    "%lld focus blocks · %@ of focus · ends at %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld focus block · %@ of focus · ends at %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld focus blocks · %@ of focus · ends at %@"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 段专注 · 共专注 %@ · %@ 结束"
           }
         }
       }
@@ -351,6 +389,16 @@
         }
       }
     },
+    "Add To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加待办"
+          }
+        }
+      }
+    },
     "Add at least one period." : {
       "localizations" : {
         "zh-Hans" : {
@@ -391,12 +439,62 @@
         }
       }
     },
+    "After %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@下课后"
+          }
+        }
+      }
+    },
+    "After a class" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "某节课后"
+          }
+        }
+      }
+    },
+    "After class" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下课后"
+          }
+        }
+      }
+    },
+    "After class: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下课后：%@"
+          }
+        }
+      }
+    },
     "Again" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "忘了"
+          }
+        }
+      }
+    },
+    "Airplane Cabin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "机舱"
           }
         }
       }
@@ -451,6 +549,26 @@
         }
       }
     },
+    "Any time" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "随时"
+          }
+        }
+      }
+    },
+    "At a time" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定时间"
+          }
+        }
+      }
+    },
     "At least 8 characters." : {
       "localizations" : {
         "zh-Hans" : {
@@ -481,12 +599,42 @@
         }
       }
     },
+    "Back to focus" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续专注"
+          }
+        }
+      }
+    },
+    "Background Sound" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景声音"
+          }
+        }
+      }
+    },
     "Base form" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "原形"
+          }
+        }
+      }
+    },
+    "Block %lld of %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %lld/%lld 段"
           }
         }
       }
@@ -511,12 +659,42 @@
         }
       }
     },
+    "Breaks (Pomodoro)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "休息（番茄钟）"
+          }
+        }
+      }
+    },
     "British pronunciation" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "英式发音"
+          }
+        }
+      }
+    },
+    "Café" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "咖啡馆"
+          }
+        }
+      }
+    },
+    "Campfire" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "篝火"
           }
         }
       }
@@ -667,6 +845,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上课提醒"
+          }
+        }
+      }
+    },
+    "Class reminders notify you of classes that have no Live Activity, up to your next %lld classes, and are renewed whenever you open the app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上课提醒会通知没有实时活动的课，最多覆盖接下来的 %lld 节课，每次打开 App 时自动续上。"
           }
         }
       }
@@ -911,6 +1099,16 @@
         }
       }
     },
+    "Delete To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除待办"
+          }
+        }
+      }
+    },
     "Delete this course?" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1007,6 +1205,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "编辑课程"
+          }
+        }
+      }
+    },
+    "Edit To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑待办"
           }
         }
       }
@@ -1121,12 +1329,72 @@
         }
       }
     },
+    "Finished" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成"
+          }
+        }
+      }
+    },
     "First day of term" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "开学日期"
+          }
+        }
+      }
+    },
+    "Focus" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注"
+          }
+        }
+      }
+    },
+    "Focus block" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注一段"
+          }
+        }
+      }
+    },
+    "Focus session done" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本次专注完成"
+          }
+        }
+      }
+    },
+    "Focus · Block %lld of %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注 · 第 %lld/%lld 段"
+          }
+        }
+      }
+    },
+    "Focused today" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日专注"
           }
         }
       }
@@ -1239,6 +1507,16 @@
         }
       }
     },
+    "Goal, e.g. Calculus review" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目标，例如：高数复习"
+          }
+        }
+      }
+    },
     "Good" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1275,6 +1553,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提示"
+          }
+        }
+      }
+    },
+    "History" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录"
           }
         }
       }
@@ -1369,6 +1657,16 @@
         }
       }
     },
+    "Its class was removed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对应的课程已删除"
+          }
+        }
+      }
+    },
     "Kind" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1445,6 +1743,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "学习中"
+          }
+        }
+      }
+    },
+    "Length" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总时长"
           }
         }
       }
@@ -1543,6 +1851,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "实时活动会在灵动岛和锁定屏幕上显示每节课，从提醒时间一直到下课。不需要时可以在那里关闭。"
+          }
+        }
+      }
+    },
+    "Long break" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长休息"
+          }
+        }
+      }
+    },
+    "Long break after every %lld blocks" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 %lld 段后长休息"
+          }
+        }
+      }
+    },
+    "Mark as Done" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标为完成"
+          }
+        }
+      }
+    },
+    "Mark as Not Done" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标为未完成"
           }
         }
       }
@@ -1697,6 +2045,16 @@
         }
       }
     },
+    "New To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新待办"
+          }
+        }
+      }
+    },
     "New day starts at" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1767,6 +2125,16 @@
         }
       }
     },
+    "Next Day" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后一天"
+          }
+        }
+      }
+    },
     "Next Week" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1797,6 +2165,26 @@
         }
       }
     },
+    "Night" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "夏夜"
+          }
+        }
+      }
+    },
+    "No %@ class on this day" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这天没有%@"
+          }
+        }
+      }
+    },
     "No Favourites" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1813,6 +2201,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "没有难词"
+          }
+        }
+      }
+    },
+    "No Sound" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无声音"
+          }
+        }
+      }
+    },
+    "No classes on this day" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这天没有课"
           }
         }
       }
@@ -1953,6 +2361,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "好"
+          }
+        }
+      }
+    },
+    "Ocean" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "海浪"
           }
         }
       }
@@ -2127,6 +2545,26 @@
         }
       }
     },
+    "Pause" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂停"
+          }
+        }
+      }
+    },
+    "Paused" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暂停"
+          }
+        }
+      }
+    },
     "Period %lld" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2227,12 +2665,52 @@
         }
       }
     },
+    "Preview Sound" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试听"
+          }
+        }
+      }
+    },
+    "Previous Day" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前一天"
+          }
+        }
+      }
+    },
     "Previous Week" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "上一周"
+          }
+        }
+      }
+    },
+    "Rain" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雨声"
+          }
+        }
+      }
+    },
+    "Rain on a Roof" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "屋顶雨声"
           }
         }
       }
@@ -2273,16 +2751,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒"
-          }
-        }
-      }
-    },
-    "Reminders cover your next %lld classes and are renewed whenever you open the app." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提醒会覆盖接下来的 %lld 节课，每次打开 App 时自动续上。"
           }
         }
       }
@@ -2407,6 +2875,16 @@
         }
       }
     },
+    "Resume" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续"
+          }
+        }
+      }
+    },
     "Review questions" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2507,6 +2985,16 @@
         }
       }
     },
+    "Schedule" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日程"
+          }
+        }
+      }
+    },
     "Search" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2537,12 +3025,32 @@
         }
       }
     },
+    "Session ends at %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 结束本次专注"
+          }
+        }
+      }
+    },
     "Settings" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "Short break" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短休息"
           }
         }
       }
@@ -2617,6 +3125,16 @@
         }
       }
     },
+    "Skip Break" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跳过休息"
+          }
+        }
+      }
+    },
     "Spelling" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2643,6 +3161,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始"
+          }
+        }
+      }
+    },
+    "Start Focusing" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始专注"
           }
         }
       }
@@ -2703,6 +3231,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "状态"
+          }
+        }
+      }
+    },
+    "Stop" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        }
+      }
+    },
+    "Stop Preview" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止试听"
+          }
+        }
+      }
+    },
+    "Stop Session" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "结束专注"
+          }
+        }
+      }
+    },
+    "Stop this focus session?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "结束本次专注？"
+          }
+        }
+      }
+    },
+    "Stopped" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已中止"
+          }
+        }
+      }
+    },
+    "Stream" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "溪流"
           }
         }
       }
@@ -3035,6 +3623,26 @@
         }
       }
     },
+    "The sound keeps playing when you leave the app or lock your iPhone, and mixes with music. Recordings from Freesound, in the public domain (CC0)." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "离开 App 或锁定 iPhone 后声音会继续播放，也可以和音乐同时播放。录音来自 Freesound，属于公共领域（CC0）。"
+          }
+        }
+      }
+    },
+    "The time you've focused so far is kept in the history." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已专注的时间会保存在记录中。"
+          }
+        }
+      }
+    },
     "The widget can't read your timetable because this copy of the app has no App Group. Install it with Xcode, TestFlight, iloader, SideStore or AltStore to use the widget." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3143,6 +3751,26 @@
         }
       }
     },
+    "Time for a break" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "休息一下"
+          }
+        }
+      }
+    },
+    "Time for a long break" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长休息时间到了"
+          }
+        }
+      }
+    },
     "Timetable" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3179,6 +3807,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "邮件或尝试次数过多，请稍后再试。"
+          }
+        }
+      }
+    },
+    "Train" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "火车"
           }
         }
       }
@@ -3259,6 +3897,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "版本"
+          }
+        }
+      }
+    },
+    "Volume" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音量"
           }
         }
       }
@@ -3349,6 +3997,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "学期周数"
+          }
+        }
+      }
+    },
+    "What to do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要做什么"
+          }
+        }
+      }
+    },
+    "When" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间"
           }
         }
       }
@@ -3463,6 +4131,16 @@
         }
       }
     },
+    "You get a notification at that time, or when the class ends. A class's to-dos also show in its Live Activity." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "到时间或下课时会收到通知。课后待办也会显示在这节课的实时活动中。"
+          }
+        }
+      }
+    },
     "You're offline. Connect to the internet and try again." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3549,6 +4227,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "课程名"
+          }
+        }
+      }
+    },
+    "ends at %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 结束"
           }
         }
       }
