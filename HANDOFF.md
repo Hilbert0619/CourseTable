@@ -1,17 +1,23 @@
-# Session Handoff — CourseTable (v0.3: class Live Activity reviewed, 0.3.0 IPA built, device test next)
+# Session Handoff — CourseTable (v0.3: class Live Activity done; to-dos + focus timer built, 0.3.1 IPA, device test next)
 
-Date: 2026-10-08 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (private)
+Date: 2026-10-09 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (private)
 
 ## Status
 
-- **v0.2.0 (build 3) runs on my iPhone** (iloader, free Apple ID). Records: [`docs/v2-development-record.md`](docs/v2-development-record.md), [`docs/v1-development-record.md`](docs/v1-development-record.md).
-- **v0.3, feature 1: the class Live Activity is reviewed, fixed and screenshot-tested; 0.3.0 (build 4) is built for the device test.**
-  The draft (`25273e3`) was reviewed on 2026-10-08 and changed in `3e9aea3`, `d576828`, `19d6e34` (details below).
-  Green: CourseKit 124 tests (Windows + Linux), iOS runs 37807315285 and 37811418322 (32 app tests), Screenshots
-  37808492013 and 37811421333 (Live Activity test only). IPA run 37814288450.
-- Tests: CourseKit 124, VocabKit 77; backend 58 pgTAP + 16 HTTP; app 32 (17 timetable + 12 Words + 3 Live Activity);
-  UI 3 timetable + 4 Words + 2 Live Activity.
-- macOS minutes in October so far ≈ 140 of ~200 (v0.2's runs on 10-01 ≈ 84, this session ≈ 57). Be frugal until November.
+- **0.3.0 (build 4) runs on my iPhone** (iloader, free Apple ID): the class Live Activity. Device test 2026-10-09: no
+  bugs; the notification and the Live Activity alerted at the same time, so I asked for no duplicates.
+- **To-dos, focus timer and class alerts** (spec: [`docs/todos-focus-spec.md`](docs/todos-focus-spec.md), decided
+  2026-10-09) are **built and screenshot-tested; 0.3.1 (build 5) is built for the device test.** Commits `0574940`
+  (CourseKit logic), `6312246` (app), `7dd33cb` (sounds), `491920b`, `2265f4f` (fixes after screenshots, 0.3.1).
+  Green: CourseKit 140 (Windows + Linux 37967845938), iOS 37968070324 (37 app tests), Screenshots 37968936694
+  (class Live Activity with to-dos, Today with to-dos, the editor, Focus setup/running/island/Lock Screen; en + zh).
+  The fixes in `2265f4f` (focus island/Lock Screen layout, running buttons, Start pinned, "日期") were compiled by
+  the IPA run 37971663701 only, no new screenshots (minutes). IPA: C:SERSAIDOWNLOADSCOURSETABLECOURSETABLE-0.3.1.IPA (13 MB).
+- Sounds: nine CC0 recordings from Freesound (`content/sounds/SOURCES.md`), made into seamless loops by the manual
+  Linux workflow `Sounds` (run 37965538219) and committed in `CourseTable/Sounds/` (8.9 MB).
+- Tests: CourseKit 140, VocabKit 77; backend 58 pgTAP + 16 HTTP; app 37; UI 3 timetable + 4 Words + 2 Live Activity
+  + 2 planner.
+- macOS minutes in October ≈ 170 of ~200. Only the IPA and small fixes until November.
 
 ## Handoff prompt for the next session
 
