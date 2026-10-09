@@ -15,7 +15,7 @@ seamless loop at matched loudness; the start and length used are in `sources.jso
 | Stream | [Large brook, creek, stream, water sound.](https://freesound.org/people/SamsterBirdies/sounds/584270/) | SamsterBirdies | CC0 1.0 |
 | Night | [20240816_Crickets_in_the_Night_002](https://freesound.org/people/Borgory/sounds/751472/) | Borgory | CC0 1.0 |
 | Train | [Riding Train interior recording](https://freesound.org/people/gecop/sounds/525058/) | gecop | CC0 1.0 |
-| Café | [People talking at cafe ambience](https://freesound.org/people/priesjensen/sounds/482990/) | priesjensen | CC0 1.0 |
+| Café | [Cafe Ambience](https://freesound.org/people/bittermelonheart/sounds/732984/) | bittermelonheart | CC0 1.0 |
 
 Licences were checked on each recording's page on 2026-10-09. The files are built from Freesound's
 high-quality previews (Ogg Vorbis), which are the same recordings.

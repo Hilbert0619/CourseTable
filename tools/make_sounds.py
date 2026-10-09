@@ -3,8 +3,8 @@
     python3 tools/make_sounds.py OUT_DIR        # needs ffmpeg; runs in the manual `Sounds` workflow on Linux
 
 For each recording: download the Freesound preview, take `length` + 4 seconds from `start`, crossfade the last
-4 seconds into the first ones so the loop has no seam, set it to -20 LUFS with a fixed gain (peaks at most
--1 dBTP), and encode AAC (112 kb/s stereo, 44.1 kHz). Prints a report of what was measured and written.
+4 seconds into the first ones so the loop has no seam, bring it to -20 LUFS with a fixed gain (a limiter holds
+peaks at -1 dB, taking at most 9 dB off the loudest ones), and encode AAC (112 kb/s stereo, 44.1 kHz). Prints a report of what was measured and written.
 """
 import json
 import os
@@ -16,6 +16,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FADE = 4.0
 TARGET_LUFS = -20.0
 MAX_PEAK = -1.0
+# At most this much of a peaky recording (a campfire's crackles) is held down by a limiter to reach the target.
+MAX_LIMITING = 9.0
 
 
 def ffmpeg(*args):
@@ -67,17 +69,21 @@ def main():
 
         integrated, peak = loudness(section)
         gain = TARGET_LUFS - integrated
+        limiter = ""
         if peak + gain > MAX_PEAK:
-            gain = MAX_PEAK - peak
+            gain = min(gain, MAX_PEAK - peak + MAX_LIMITING)
+            limiter = ",alimiter=limit=0.891:attack=5:release=80:level=0"
 
         # The body's last 4 seconds fade into the head, which continues where the body begins: no seam.
         target = os.path.join(out_dir, f"sound-{name}.m4a")
-        ffmpeg("-i", body, "-i", head, "-filter_complex", f"[0:a][1:a]acrossfade=d={FADE}:c1=qsin:c2=qsin,volume={gain:.2f}dB[out]",
+        ffmpeg("-i", body, "-i", head, "-filter_complex", f"[0:a][1:a]acrossfade=d={FADE}:c1=qsin:c2=qsin,volume={gain:.2f}dB{limiter}[out]",
                "-map", "[out]", "-c:a", "aac", "-b:a", "112k", "-movflags", "+faststart", target)
         if os.path.getsize(target) < 10_000:
             sys.exit(f"{name}: the encoded file is empty")
+        result, _ = loudness(target)
         print(f"{name:9} source {total:6.1f} s  {integrated:6.1f} LUFS  peak {peak:5.1f} dBTP  gain {gain:+5.1f} dB"
-              f"  -> {duration(target):5.1f} s  {os.path.getsize(target) / 1024:6.0f} KB", flush=True)
+              f"{' limited' if limiter else '        '}  -> {duration(target):5.1f} s  {result:6.1f} LUFS"
+              f"  {os.path.getsize(target) / 1024:6.0f} KB", flush=True)
     for leftover in os.listdir(work):
         os.remove(os.path.join(work, leftover))
     os.rmdir(work)
