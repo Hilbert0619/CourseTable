@@ -18,22 +18,25 @@ TARGET_LUFS = -20.0
 MAX_PEAK = -1.0
 
 
-def loudness(path, trim):
-    """Integrated loudness and true peak of the trimmed section, from ffmpeg's loudnorm analysis."""
-    result = subprocess.run(
-        ["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af", f"{trim},loudnorm=print_format=json", "-f", "null", "-"],
-        capture_output=True, text=True, check=True,
-    )
-    report = json.loads(result.stderr[result.stderr.rindex("{"):])
+def ffmpeg(*args):
+    """Runs ffmpeg; stops with its messages if it fails. Returns what it printed."""
+    result = subprocess.run(["ffmpeg", "-y", "-hide_banner", *args], capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.exit(f"ffmpeg {' '.join(args)} failed:\n{result.stderr[-3000:]}")
+    return result.stderr
+
+
+def loudness(path):
+    """Integrated loudness and true peak, from ffmpeg's loudnorm analysis."""
+    log = ffmpeg("-nostats", "-i", path, "-af", "loudnorm=print_format=json", "-f", "null", "-")
+    report = json.loads(log[log.rindex("{"):])
     return float(report["input_i"]), float(report["input_tp"])
 
 
 def duration(path):
     """Seconds of audio, by decoding the file (container headers don't always say)."""
-    result = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-f", "null", "-"], capture_output=True, text=True)
-    if result.returncode != 0:
-        sys.exit(f"Can't decode {path}:\n{result.stderr[-2000:]}")
-    stamp = result.stderr[result.stderr.rindex("time=") + 5:].split()[0]
+    log = ffmpeg("-i", path, "-f", "null", "-")
+    stamp = log[log.rindex("time=") + 5:].split()[0]
     hours, minutes, seconds = stamp.split(":")
     return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
 
@@ -42,35 +45,42 @@ def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)
     out_dir = sys.argv[1]
-    os.makedirs(out_dir, exist_ok=True)
+    work = os.path.join(out_dir, "work")
+    os.makedirs(work, exist_ok=True)
     sources = json.load(open(os.path.join(ROOT, "content", "sounds", "sources.json"), encoding="utf-8"))["sounds"]
     for sound in sources:
-        raw = os.path.join(out_dir, f"source-{sound['id']}.ogg")
+        name = sound["id"]
+        raw = os.path.join(work, f"{name}.ogg")
         urllib.request.urlretrieve(sound["preview"], raw)
         total = duration(raw)
         start, length = float(sound["start"]), float(sound["length"])
         if start + length + FADE > total:
-            sys.exit(f"{sound['id']}: {start} + {length} + {FADE} s is longer than the recording ({total:.1f} s)")
-        trim = f"atrim=start={start}:duration={length + FADE},asetpts=PTS-STARTPTS"
-        integrated, peak = loudness(raw, trim)
+            sys.exit(f"{name}: {start} + {length} + {FADE} s is longer than the recording ({total:.1f} s)")
+
+        # The section, as 44.1 kHz stereo WAV; then its first 4 seconds (head) and the rest (body).
+        section = os.path.join(work, f"{name}-section.wav")
+        head = os.path.join(work, f"{name}-head.wav")
+        body = os.path.join(work, f"{name}-body.wav")
+        ffmpeg("-ss", str(start), "-t", str(length + FADE), "-i", raw, "-ar", "44100", "-ac", "2", section)
+        ffmpeg("-i", section, "-t", str(FADE), head)
+        ffmpeg("-ss", str(FADE), "-i", section, body)
+
+        integrated, peak = loudness(section)
         gain = TARGET_LUFS - integrated
         if peak + gain > MAX_PEAK:
             gain = MAX_PEAK - peak
-        graph = (
-            f"[0:a]{trim},aresample=44100,aformat=channel_layouts=stereo,asplit[s1][s2];"
-            f"[s1]atrim=start={FADE},asetpts=PTS-STARTPTS[body];"
-            f"[s2]atrim=end={FADE},asetpts=PTS-STARTPTS[head];"
-            f"[body][head]acrossfade=d={FADE}:c1=qsin:c2=qsin,volume={gain:.2f}dB[out]"
-        )
-        target = os.path.join(out_dir, f"sound-{sound['id']}.m4a")
-        encode = subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "warning", "-i", raw, "-filter_complex", graph,
-                                 "-map", "[out]", "-c:a", "aac", "-b:a", "112k", "-movflags", "+faststart", target],
-                                capture_output=True, text=True)
-        if encode.returncode != 0 or not os.path.exists(target) or os.path.getsize(target) < 10_000:
-            sys.exit(f"{sound['id']}: encoding failed ({encode.returncode})\n{graph}\n{encode.stderr}")
-        os.remove(raw)
-        print(f"{sound['id']:9} source {total:6.1f} s  {integrated:6.1f} LUFS  peak {peak:5.1f} dBTP  gain {gain:+5.1f} dB"
-              f"  -> {duration(target):5.1f} s  {os.path.getsize(target) / 1024:6.0f} KB")
+
+        # The body's last 4 seconds fade into the head, which continues where the body begins: no seam.
+        target = os.path.join(out_dir, f"sound-{name}.m4a")
+        ffmpeg("-i", body, "-i", head, "-filter_complex", f"[0:a][1:a]acrossfade=d={FADE}:c1=qsin:c2=qsin,volume={gain:.2f}dB[out]",
+               "-map", "[out]", "-c:a", "aac", "-b:a", "112k", "-movflags", "+faststart", target)
+        if os.path.getsize(target) < 10_000:
+            sys.exit(f"{name}: the encoded file is empty")
+        print(f"{name:9} source {total:6.1f} s  {integrated:6.1f} LUFS  peak {peak:5.1f} dBTP  gain {gain:+5.1f} dB"
+              f"  -> {duration(target):5.1f} s  {os.path.getsize(target) / 1024:6.0f} KB", flush=True)
+    for leftover in os.listdir(work):
+        os.remove(os.path.join(work, leftover))
+    os.rmdir(work)
 
 
 if __name__ == "__main__":
