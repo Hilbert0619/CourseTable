@@ -1,0 +1,14 @@
+{
+  "about": "Background sounds for the focus timer. Every recording is CC0 (public domain) on Freesound; tools/make_sounds.py turns the high-quality previews into seamless loops (start/length in seconds). See SOURCES.md.",
+  "sounds": [
+    {"id": "rain", "title": "steady rain in the city.wav", "author": "roofusj", "page": "https://freesound.org/people/roofusj/sounds/217236/", "preview": "https://cdn.freesound.org/previews/217/217236_4054839-hq.ogg", "license": "CC0 1.0", "start": 20, "length": 80},
+    {"id": "roofRain", "title": "Rain on Shed Roof", "author": "timothyd4y", "page": "https://freesound.org/people/timothyd4y/sounds/527499/", "preview": "https://cdn.freesound.org/previews/527/527499_288104-hq.ogg", "license": "CC0 1.0", "start": 2, "length": 54},
+    {"id": "campfire", "title": "campfire.wav", "author": "Spandau", "page": "https://freesound.org/people/Spandau/sounds/40699/", "preview": "https://cdn.freesound.org/previews/40/40699_25133-hq.ogg", "license": "CC0 1.0", "start": 30, "length": 80},
+    {"id": "airplane", "title": "Airplane cabin ambience / atmosphere Airbus A330-300", "author": "FillSoko", "page": "https://freesound.org/people/FillSoko/sounds/456092/", "preview": "https://cdn.freesound.org/previews/456/456092_3025911-hq.ogg", "license": "CC0 1.0", "start": 20, "length": 80},
+    {"id": "ocean", "title": "Ocean_coast_04_092025_0659AM", "author": "YevgVerh", "page": "https://freesound.org/people/YevgVerh/sounds/827530/", "preview": "https://cdn.freesound.org/previews/827/827530_2718606-hq.ogg", "license": "CC0 1.0", "start": 20, "length": 80},
+    {"id": "stream", "title": "Large brook, creek, stream, water sound.", "author": "SamsterBirdies", "page": "https://freesound.org/people/SamsterBirdies/sounds/584270/", "preview": "https://cdn.freesound.org/previews/584/584270_5487341-hq.ogg", "license": "CC0 1.0", "start": 2, "length": 58},
+    {"id": "night", "title": "20240816_Crickets_in_the_Night_002", "author": "Borgory", "page": "https://freesound.org/people/Borgory/sounds/751472/", "preview": "https://cdn.freesound.org/previews/751/751472_801011-hq.ogg", "license": "CC0 1.0", "start": 20, "length": 80},
+    {"id": "train", "title": "Riding Train interior recording", "author": "gecop", "page": "https://freesound.org/people/gecop/sounds/525058/", "preview": "https://cdn.freesound.org/previews/525/525058_3562198-hq.ogg", "license": "CC0 1.0", "start": 2, "length": 58},
+    {"id": "cafe", "title": "People talking at cafe ambience", "author": "priesjensen", "page": "https://freesound.org/people/priesjensen/sounds/482990/", "preview": "https://cdn.freesound.org/previews/482/482990_8972317-hq.ogg", "license": "CC0 1.0", "start": 20, "length": 80}
+  ]
+}

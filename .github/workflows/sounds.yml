@@ -1,0 +1,27 @@
+name: Sounds
+
+# Builds the focus timer's background sounds from content/sounds/sources.json (CC0 recordings on Freesound):
+# seamless loops at matched loudness, AAC. Manual only; Linux minutes are cheap. Download the `sounds`
+# artifact and put the files in CourseTable/Sounds/.
+on:
+  workflow_dispatch:
+
+jobs:
+  sounds:
+    name: Build sound loops
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+
+      - name: Build loops
+        shell: bash
+        run: mkdir -p out && python3 tools/make_sounds.py out | tee out/report.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: sounds
+          path: out
