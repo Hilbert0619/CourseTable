@@ -29,9 +29,11 @@ def loudness(path, trim):
 
 
 def duration(path):
-    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
-                         capture_output=True, text=True, check=True).stdout
-    return float(out.strip())
+    """Seconds of audio, by decoding the file (container headers don't always say)."""
+    result = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-f", "null", "-"], capture_output=True, text=True, check=True)
+    stamp = result.stderr[result.stderr.rindex("time=") + 5:].split()[0]
+    hours, minutes, seconds = stamp.split(":")
+    return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
 
 
 def main():
