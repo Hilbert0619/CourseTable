@@ -50,7 +50,7 @@ import Testing
         #expect(zip(all, all.dropFirst()).allSatisfy { $0.fireMoment < $1.fireMoment })
         #expect(Set(all.map(\.id)).count == all.count)
 
-        #expect(timetable.upcomingReminders(after: beforeTerm, leadMinutes: 10).count == 59)
+        #expect(timetable.upcomingReminders(after: beforeTerm, leadMinutes: 10) == Array(all.prefix(Timetable.maxScheduledReminders)))
         #expect(timetable.upcomingReminders(after: beforeTerm, leadMinutes: 10, limit: 20) == Array(all.prefix(20)))
         #expect(timetable.upcomingReminders(after: beforeTerm, leadMinutes: 10, limit: 0).isEmpty)
         #expect(Timetable.maxScheduledReminders < 64)
@@ -82,5 +82,14 @@ import Testing
         let again = timetable.upcomingReminders(after: Fixture.at("2026-09-28", "07:30"), leadMinutes: 15, limit: 3)
         #expect(first.map(\.id) == again.map(\.id))
         #expect(first[0].id == "class-\(Fixture.calculus.id.uuidString)@2026-09-28")
+    }
+
+    /// Classes with a Live Activity get no notification.
+    @Test func classesWithALiveActivityAreLeftOut() {
+        let now = Fixture.at("2026-09-28", "07:00")
+        let windows = timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 2)
+        let reminders = timetable.upcomingReminders(after: now, leadMinutes: 10, limit: 3, excluding: Set(windows.map(\.id)))
+        #expect(summary(reminders) == ["Lab 2026-10-01 13:50", "Seminar 2026-10-02 18:50", "Calculus 2026-10-05 07:50"])
+        #expect(Set(reminders.map(\.session.id)).isDisjoint(with: windows.map(\.id)))
     }
 }

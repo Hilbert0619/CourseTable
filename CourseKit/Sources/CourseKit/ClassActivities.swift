@@ -5,10 +5,13 @@ public struct ClassActivityWindow: Hashable, Identifiable, Sendable {
     public var session: ClassSession
     /// When the activity appears.
     public var showMoment: Moment
+    /// The unfinished to-dos due when the class ends ("After class: …").
+    public var todos: [String]
 
-    public init(session: ClassSession, showMoment: Moment) {
+    public init(session: ClassSession, showMoment: Moment, todos: [String] = []) {
         self.session = session
         self.showMoment = showMoment
+        self.todos = todos
     }
 
     /// Stable for a given course and day.
@@ -39,8 +42,9 @@ extension Timetable {
     public static let maxClassActivities = 4
 
     /// The windows that haven't ended by `moment`, including one that is showing now, in the order
-    /// they appear, up to `limit`.
-    public func upcomingActivityWindows(after moment: Moment, leadMinutes: Int, limit: Int = maxClassActivities) -> [ClassActivityWindow] {
+    /// they appear, up to `limit`, each with its class's "after" to-dos from `todos`.
+    public func upcomingActivityWindows(after moment: Moment, leadMinutes: Int, limit: Int = maxClassActivities,
+                                        todos: [Todo] = []) -> [ClassActivityWindow] {
         let lead = max(leadMinutes, 0)
         var windows: [ClassActivityWindow] = []
         var day = max(moment.day, semester.firstMonday)
@@ -53,7 +57,8 @@ extension Timetable {
                 if let previousEnd, previousEnd > show {
                     show = previousEnd
                 }
-                windows.append(ClassActivityWindow(session: session, showMoment: show))
+                let after = self.todos(after: session, in: todos).map(\.title)
+                windows.append(ClassActivityWindow(session: session, showMoment: show, todos: after))
             }
             day = day.adding(days: 1)
         }
@@ -70,19 +75,29 @@ public struct ExistingClassActivity: Hashable, Sendable {
     public var showMoment: Moment
     /// Scheduled but not started yet.
     public var isPending: Bool
+    /// The to-dos it shows.
+    public var todos: [String]
 
-    public init(id: String, signature: String, showMoment: Moment, isPending: Bool) {
+    public init(id: String, signature: String, showMoment: Moment, isPending: Bool, todos: [String] = []) {
         self.id = id
         self.signature = signature
         self.showMoment = showMoment
         self.isPending = isPending
+        self.todos = todos
     }
 
     /// Whether this activity stands for `window`: same details, and for one not started yet, the
-    /// same time to appear.
+    /// same time to appear and the same to-dos (a showing one gets its to-dos updated instead).
     func matches(_ window: ClassActivityWindow) -> Bool {
-        signature == window.signature && (!isPending || showMoment == window.showMoment)
+        signature == window.signature && (!isPending || (showMoment == window.showMoment && todos == window.todos))
     }
+}
+
+/// An activity that stays but shows other to-dos now.
+public struct ClassActivityUpdate: Hashable, Sendable {
+    /// `ExistingClassActivity.id`
+    public var id: String
+    public var window: ClassActivityWindow
 }
 
 /// What to change so the Live Activities match the wanted windows.
@@ -96,6 +111,11 @@ public struct ClassActivityPlan: Hashable, Sendable {
     public var end: [String]
     /// Signatures to remove from the created ones: scheduled activities ended before they started.
     public var forget: Set<String>
+    /// Showing activities whose to-dos changed.
+    public var update: [ClassActivityUpdate]
+    /// Classes (`ClassActivityWindow.id`) that keep an activity, or had one: no notification for them. The
+    /// app adds the ones it starts or schedules.
+    public var covered: Set<String>
     /// Windows open now that need an activity started.
     public var startNow: [ClassActivityWindow]
     /// Later windows to schedule (only where the system can start an activity on its own, iOS 26).
@@ -108,6 +128,7 @@ public struct ClassActivityPlan: Hashable, Sendable {
     ///   - canSchedule: whether activities can be scheduled to start later.
     public init(existing: [ExistingClassActivity], wanted: [ClassActivityWindow], created: Set<String>, now: Moment, canSchedule: Bool) {
         var end: [String] = []
+        var update: [ClassActivityUpdate] = []
         var endedPending: Set<String> = []
         var kept: Set<String> = []
         var covered: Set<String> = []
@@ -115,6 +136,9 @@ public struct ClassActivityPlan: Hashable, Sendable {
             if let window = wanted.first(where: { activity.matches($0) && !covered.contains($0.id) }) {
                 covered.insert(window.id)
                 kept.insert(activity.signature)
+                if activity.todos != window.todos {
+                    update.append(ClassActivityUpdate(id: activity.id, window: window))
+                }
             } else {
                 end.append(activity.id)
                 if activity.isPending {
@@ -126,7 +150,10 @@ public struct ClassActivityPlan: Hashable, Sendable {
         let remembered = created.subtracting(forget)
         var startNow: [ClassActivityWindow] = []
         var schedule: [ClassActivityWindow] = []
-        for window in wanted where !covered.contains(window.id) && !remembered.contains(window.signature) && now < window.session.endMoment {
+        for window in wanted where !covered.contains(window.id) && remembered.contains(window.signature) {
+            covered.insert(window.id)
+        }
+        for window in wanted where !covered.contains(window.id) && now < window.session.endMoment {
             if window.isOpen(at: now) {
                 startNow.append(window)
             } else if canSchedule {
@@ -135,6 +162,8 @@ public struct ClassActivityPlan: Hashable, Sendable {
         }
         self.end = end
         self.forget = forget
+        self.update = update
+        self.covered = covered
         self.startNow = startNow
         self.schedule = schedule
     }

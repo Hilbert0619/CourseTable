@@ -11,17 +11,20 @@ public struct ClassReminder: Hashable, Identifiable, Sendable {
 }
 
 extension Timetable {
-    /// iOS keeps at most 64 pending local notifications per app; leave a little room.
-    public static let maxScheduledReminders = 60
+    /// iOS keeps at most 64 pending local notifications per app: classes 40, to-dos 12
+    /// (`maxTodoAlerts`), focus 10 (`FocusRun.maxAlerts`), 2 spare.
+    public static let maxScheduledReminders = 40
 
     /// Reminders `leadMinutes` before each class after `moment`, earliest first, up to `limit`.
-    /// Reminders whose time has already passed are left out, even if the class hasn't started.
-    public func upcomingReminders(after moment: Moment, leadMinutes: Int, limit: Int = maxScheduledReminders) -> [ClassReminder] {
+    /// Reminders whose time has already passed are left out, even if the class hasn't started, and so are
+    /// the classes in `excluding` (`ClassSession.id`: those with a Live Activity).
+    public func upcomingReminders(after moment: Moment, leadMinutes: Int, limit: Int = maxScheduledReminders,
+                                  excluding: Set<String> = []) -> [ClassReminder] {
         let lead = max(leadMinutes, 0)
         var reminders: [ClassReminder] = []
         var day = max(moment.day, semester.firstMonday)
         while day <= semester.lastDay, reminders.count < limit {
-            for session in sessions(on: day) {
+            for session in sessions(on: day) where !excluding.contains(session.id) {
                 let fire = session.startMoment.adding(minutes: -lead)
                 if fire > moment {
                     reminders.append(ClassReminder(session: session, leadMinutes: lead, fireMoment: fire))

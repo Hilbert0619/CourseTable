@@ -9,8 +9,8 @@ import Testing
         windows.map { "\($0.session.course.name) \($0.showMoment.day) \($0.showMoment.time)–\($0.session.end)" }
     }
 
-    func existing(_ window: ClassActivityWindow, id: String? = nil, pending: Bool = false) -> ExistingClassActivity {
-        ExistingClassActivity(id: id ?? window.id, signature: window.signature, showMoment: window.showMoment, isPending: pending)
+    func existing(_ window: ClassActivityWindow, id: String? = nil, pending: Bool = false, todos: [String] = []) -> ExistingClassActivity {
+        ExistingClassActivity(id: id ?? window.id, signature: window.signature, showMoment: window.showMoment, isPending: pending, todos: todos)
     }
 
     // MARK: - Windows
@@ -181,6 +181,41 @@ import Testing
 
         let on = ClassActivityPlan(existing: [], wanted: wanted, created: [], now: now, canSchedule: true)
         #expect(on.schedule == wanted)
+    }
+
+    /// New to-dos: a showing activity is updated, a scheduled one is replaced (it never showed).
+    @Test func changedToDosUpdateOrReplace() {
+        let now = Fixture.at("2026-09-28", "08:00")
+        let before = timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 2)
+        let monday = Fixture.day("2026-09-28")
+        let todos = [
+            Todo(title: "Hand in the paper", day: monday, timing: .afterClass(courseID: Fixture.calculus.id)),
+            Todo(title: "Return the book", day: monday, timing: .afterClass(courseID: Fixture.physics.id)),
+        ]
+        let after = timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 2, todos: todos)
+        let current = [existing(before[0], id: "showing"), existing(before[1], id: "scheduled", pending: true)]
+        let plan = ClassActivityPlan(existing: current, wanted: after, created: Set(before.map(\.signature)), now: now, canSchedule: true)
+        #expect(plan.update == [ClassActivityUpdate(id: "showing", window: after[0])])
+        #expect(plan.end == ["scheduled"])
+        #expect(plan.forget == [before[1].signature])
+        #expect(plan.schedule == [after[1]])
+        #expect(plan.schedule[0].todos == ["Return the book"])
+
+        // Unchanged to-dos: nothing to do.
+        let same = [existing(after[0], id: "showing", todos: after[0].todos), existing(after[1], id: "scheduled", pending: true, todos: after[1].todos)]
+        let quiet = ClassActivityPlan(existing: same, wanted: after, created: Set(after.map(\.signature)), now: now, canSchedule: true)
+        #expect(quiet.update.isEmpty && quiet.end.isEmpty && quiet.schedule.isEmpty)
+    }
+
+    /// The classes that need no notification: those with an activity, and those whose activity was closed.
+    @Test func coveredClassesHaveOrHadAnActivity() {
+        let now = Fixture.at("2026-09-28", "07:00")
+        let wanted = timetable.upcomingActivityWindows(after: now, leadMinutes: 10)
+        let plan = ClassActivityPlan(existing: [existing(wanted[1], id: "physics", pending: true)], wanted: wanted,
+                                     created: [wanted[1].signature, wanted[2].signature], now: now, canSchedule: true)
+        // Physics is scheduled, Lab was closed; Calculus and Seminar are to be scheduled (the app adds them).
+        #expect(plan.covered == [wanted[1].id, wanted[2].id])
+        #expect(plan.schedule == [wanted[0], wanted[3]])
     }
 
     @Test func duplicatesAreEnded() {
