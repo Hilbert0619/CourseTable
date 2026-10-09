@@ -30,7 +30,9 @@ def loudness(path, trim):
 
 def duration(path):
     """Seconds of audio, by decoding the file (container headers don't always say)."""
-    result = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-f", "null", "-"], capture_output=True, text=True, check=True)
+    result = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-f", "null", "-"], capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.exit(f"Can't decode {path}:\n{result.stderr[-2000:]}")
     stamp = result.stderr[result.stderr.rindex("time=") + 5:].split()[0]
     hours, minutes, seconds = stamp.split(":")
     return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
@@ -61,8 +63,11 @@ def main():
             f"[body][head]acrossfade=d={FADE}:c1=qsin:c2=qsin,volume={gain:.2f}dB[out]"
         )
         target = os.path.join(out_dir, f"sound-{sound['id']}.m4a")
-        subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", raw, "-filter_complex", graph,
-                        "-map", "[out]", "-c:a", "aac", "-b:a", "112k", "-movflags", "+faststart", target], check=True)
+        encode = subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "warning", "-i", raw, "-filter_complex", graph,
+                                 "-map", "[out]", "-c:a", "aac", "-b:a", "112k", "-movflags", "+faststart", target],
+                                capture_output=True, text=True)
+        if encode.returncode != 0 or not os.path.exists(target) or os.path.getsize(target) < 10_000:
+            sys.exit(f"{sound['id']}: encoding failed ({encode.returncode})\n{graph}\n{encode.stderr}")
         os.remove(raw)
         print(f"{sound['id']:9} source {total:6.1f} s  {integrated:6.1f} LUFS  peak {peak:5.1f} dBTP  gain {gain:+5.1f} dB"
               f"  -> {duration(target):5.1f} s  {os.path.getsize(target) / 1024:6.0f} KB")
