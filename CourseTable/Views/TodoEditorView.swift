@@ -78,7 +78,7 @@ struct TodoEditorView: View {
                         .accessibilityIdentifier("todoTitle")
                 }
                 Section {
-                    DatePicker("Day", selection: dayBinding, displayedComponents: .date)
+                    DatePicker("Date", selection: dayBinding, displayedComponents: .date)
                     Picker("When", selection: $kind) {
                         Text("Any time").tag(Kind.anytime)
                         Text("At a time").tag(Kind.at)

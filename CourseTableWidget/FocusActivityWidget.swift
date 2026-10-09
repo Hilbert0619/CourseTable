@@ -13,33 +13,40 @@ struct FocusActivityWidget: Widget {
             let info = FocusInfo(context: context)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    FocusButtons(info: info, size: 40)
-                        .padding(.leading, 4)
+                    Label {
+                        Text(verbatim: info.shortPhaseName)
+                    } icon: {
+                        Image(systemName: info.symbol)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(info.color)
+                    .lineLimit(1)
+                    .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 0) {
-                        Text(verbatim: info.phaseName)
-                            .font(.caption)
-                            .foregroundStyle(info.color)
-                        info.timer
-                            .font(.title2.monospacedDigit().weight(.semibold))
-                            .multilineTextAlignment(.trailing)
-                            .frame(maxWidth: 110, alignment: .trailing)
-                    }
-                    .padding(.trailing, 4)
+                    info.timer
+                        .font(.title2.monospacedDigit().weight(.semibold))
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: 110, alignment: .trailing)
+                        .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 8) {
                         if !info.goal.isEmpty {
                             Text(verbatim: info.goal)
                                 .font(.headline)
                                 .lineLimit(1)
                         }
-                        Text(verbatim: info.detail)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                        info.progress
+                        HStack(spacing: 10) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(verbatim: info.detail)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                info.progress
+                            }
+                            FocusButtons(info: info, size: 30)
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)
@@ -85,6 +92,12 @@ private struct FocusInfo {
             return state.phase == "longBreak" ? String(localized: "Long break") : String(localized: "Short break")
         }
         return state.blockCount > 1 ? String(localized: "Focus · Block \(state.block) of \(state.blockCount)") : String(localized: "Focus")
+    }
+
+    /// "Focus 2/5", "Short break", "Long break": fits beside the camera.
+    var shortPhaseName: String {
+        if state.isBreak { return phaseName }
+        return state.blockCount > 1 ? String(localized: "Focus \(state.block)/\(state.blockCount)") : String(localized: "Focus")
     }
 
     /// "Paused" or "Ends at 21:30".
@@ -136,28 +149,28 @@ private struct FocusLockScreenView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .center, spacing: 12) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
                 Image(systemName: info.symbol)
-                    .font(.title2)
                     .foregroundStyle(info.color)
-                    .frame(width: 32)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(verbatim: info.goal.isEmpty ? info.phaseName : info.goal)
-                        .font(.headline)
-                        .lineLimit(1)
-                    Text(verbatim: info.goal.isEmpty ? info.detail : "\(info.phaseName) · \(info.detail)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                Text(verbatim: info.goal.isEmpty ? info.phaseName : info.goal)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 info.timer
                     .font(.title2.monospacedDigit().weight(.semibold))
                     .multilineTextAlignment(.trailing)
-                    .frame(maxWidth: 84, alignment: .trailing)
-                FocusButtons(info: info, size: 28)
+                    .frame(maxWidth: 96, alignment: .trailing)
             }
-            info.progress
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(verbatim: "\(info.shortPhaseName) · \(info.detail)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                    info.progress
+                }
+                FocusButtons(info: info, size: 26)
+            }
         }
         .padding(16)
         .activitySystemActionForegroundColor(info.color)

@@ -1359,6 +1359,16 @@
         }
       }
     },
+    "Focus %lld/%lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注 %lld/%lld"
+          }
+        }
+      }
+    },
     "Focus block" : {
       "localizations" : {
         "zh-Hans" : {

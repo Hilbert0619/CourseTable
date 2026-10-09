@@ -6,7 +6,7 @@ A native iOS class-schedule app with an English vocabulary trainer for 考研: *
 [![iOS](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml)
 [![Backend](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml)
 
-Tabs: **Today**, **Timetable**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Vocabulary spec: [docs/vocabulary-spec.md](docs/vocabulary-spec.md).
+Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md).
 
 ## Features
 
@@ -16,12 +16,21 @@ Tabs: **Today**, **Timetable**, **Words**, **Settings**. Records: [v0.1 (timetab
 - **Import**: paste CSV text or rows copied from a spreadsheet, or open a `.csv`/`.txt` file (Settings → Import Courses…, or the button on an empty timetable). A preview lists the courses, clashes and lines that can't be read before anything is saved. Courses that are already in the timetable are skipped. You can also replace all existing courses. See [Import format](#import-format).
 - **Course list + placing**: when you only know your courses (name, room, teacher), type them one per line, e.g. `高等数学 A101 李老师`, then place them on the grid. Use **+ → Place Courses** or **Type Course List…** on an empty timetable. In placing mode, a tray lists your courses. Pick one, set its length and odd/even weeks, then tap empty slots: each tap adds that course there for the whole term. The block is shortened so it doesn't run into the next course. While placing, the grid shows courses from every week, dimming the ones not in the week shown. The tray's **Weekend** toggle adds Saturday and Sunday. Tap a placed block to adjust weeks or length in the editor. Long-press a course in the tray to remove it from the list.
 - **Export**: Settings → Export as CSV shares the courses as a UTF-8 CSV file (Excel-friendly) in the same format, so an export can be imported again.
-- **Class reminders**: a local notification 0–60 minutes before each class (Settings → Reminders).
+- **Class Live Activity** (v0.3): each class appears in the Dynamic Island and on the Lock Screen from the reminder time (0–60 minutes before, Settings → Reminders) until it ends: a countdown to the start with the room, then "Until 09:40" with a progress bar, plus the to-dos due after it. On iOS 26 the next 4 classes are scheduled ahead and start on their own, with an alert; on iOS 17/18 it starts when you open the app during the window (for example from the class reminder). Without a server it can't end itself: a ✕ closes it, the app ends finished ones when it opens or gets a background refresh, and iOS ends it after 8 hours. A later class always takes the Dynamic Island from a finished one, and the next class appears when the one before ends.
+- **Class reminders**: a local notification 0–60 minutes before each class that has **no** Live Activity (beyond the next 4, with Live Activities off, or on iOS 17/18), so you never get both.
 - **Term**: set the first day of term and the number of weeks. The app works out the current week.
 - **Period times**: edit how many periods there are per day and each period's start and end time. The default is a 12-period day.
 - **Weekly grid**: Mon–Fri, plus Sat/Sun if you have weekend classes. Switch weeks with the arrows, the week menu or a swipe. Tap an empty slot to add a course there.
-- **Today**: today's classes with times; the current and next class are highlighted.
+- **Today**: the day's classes and to-dos in time order; the current and next class are highlighted. The arrows show other days.
+- **To-dos** (v0.3): add them for any day with **+**: any time, at a time ("12:00 pick up the package"), or after one of that day's classes ("after Calculus: hand in the paper"). Timed ones send a notification (at the time, or when the class ends), and a class's to-dos also show in its Live Activity. Tick off, swipe to delete, tap to edit.
 - **Widgets**: on the Home Screen, the small size shows the current or next class and the medium size shows the rest of today. The small size also works in StandBy. On the Lock Screen, the rectangular widget shows the current or next class with room and teacher, the inline widget sits above the clock ("Calculus until 09:40", "10:00 Physics"), and the circular widget shows a progress ring during class or the next start time.
+
+### Focus (v0.3)
+
+- **Pomodoro timer** on its own tab: a goal ("高数复习"), a length (15 min – 4 h, breaks included), and 25-minute focus blocks with 5-minute breaks and a 15-minute break after every fourth block (all adjustable), or one straight countdown with breaks off. The plan is shown before you start ("5 focus blocks · 2 hr of focus · ends at 21:30").
+- **While running**: the phase and time left, Pause/Resume, Skip Break, Stop; the same in the Dynamic Island and on the Lock Screen, with Pause and Stop buttons. A notification at every switch and at the end, also while the app is open.
+- **Background sounds**: rain, rain on a roof, campfire, airplane cabin, ocean, stream, night, train, café: recordings from Freesound in the public domain (CC0, [sources](content/sounds/SOURCES.md)), looped without a seam. They keep playing when you leave the app or lock the phone, mix with music, and can be changed while running.
+- **History**: today's focus time and the latest sessions.
 
 ### Words (English vocabulary, v0.2)
 
@@ -65,7 +74,8 @@ One course per line. Columns are separated by commas, tabs (spreadsheet paste), 
 ```
 CourseKit/            Swift package with all timetable and vocabulary logic; builds and tests on Windows, Linux and macOS
   Sources/CourseKit/    LocalDate, TimeOfDay, Semester, PeriodSchedule, Course, Timetable, WeekGrid, ScheduleSnapshot,
-                        CSV + CourseImport + ImportPlan (import/export), CourseTemplate (course list + placing), Reminders
+                        CSV + CourseImport + ImportPlan (import/export), CourseTemplate (course list + placing), Reminders,
+                        ClassActivities (Live Activity windows and plan), Todos, Focus (Pomodoro plan and run)
   Sources/VocabKit/     Vocabulary learning (docs/vocabulary-spec.md): FSRS-6 + Scheduler, StudyClock, DailyPlan,
                         StudySession, AnswerGrader, ChoicePool, WordEntry, ECDICT + ContentFile + SeedSQL,
                         WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink
@@ -74,6 +84,11 @@ CourseKit/            Swift package with all timetable and vocabulary logic; bui
 content/              Word lists built from ECDICT (MIT, see content/ECDICT-LICENSE); content/.cache/ holds the
                       downloaded source and is not committed
 CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
+  Reminders/            Alerts.sync: class Live Activities (ClassLiveActivities), class and to-do notifications
+  Planner/              Planner.store (to-dos, focus history; PlannerSchemaV1) and PlannerModel
+  Focus/                FocusEngine (the running session, its Live Activity and notifications), FocusView,
+                        SoundPlayer (gapless loops)
+  Sounds/               sound-<id>.m4a, built by tools/make_sounds.py from content/sounds/sources.json
   Vocabulary/           The Words tab: VocabApp.swift (coordinator: sign-in state, email links, sign-out; speech)
     Backend/              VocabBackend protocol + DTOs; SupabaseBackend (the only file that uses supabase-swift);
                           DemoBackend + VocabDemo (in memory, for tests, previews and UI tests)
@@ -81,7 +96,7 @@ CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
                           VocabModel (cards replayed from the answer log, plan, search), SyncEngine
     Views/                WordsTab (sign-in), WordsHomeView, StudySessionView, WordDetailView (+ search, lists),
                           BooksView (+ import), VocabStatsView, VocabSettingsView, WordComponents
-CourseTableWidget/    WidgetKit extension
+CourseTableWidget/    WidgetKit extension: widgets, the class and focus Live Activities
 Shared/               Code and strings compiled into both the app and the widget (palette, snapshot file, Localizable.xcstrings)
 CourseTableTests/     App-level tests, run in the iOS Simulator on CI (timetable + VocabTests)
 CourseTableUITests/   UI tests that drive the app and take screenshots (Screenshots workflow)
@@ -89,9 +104,9 @@ CourseTable.xcodeproj Xcode project (synced folders: new files are picked up aut
 supabase/             The vocabulary backend: config.toml, migrations (schema + row-level security, generated word
                       content), tests (pgTAP + api/smoke.sh), remote-auth.json (cloud sign-in options), checks/
 tools/                check_strings.py, add_strings.py (zh-Hans strings); xcresult_crash.py, xcresult_screenshots.py
-                      (crash reports and named screenshots from a downloaded CI results bundle)
+                      (crash reports and named screenshots from a downloaded CI results bundle); make_sounds.py
 .github/workflows/    CI: coursekit.yml (Linux), ios.yml (macOS + Simulator), backend.yml (Linux), and the manual
-                      screenshots.yml, ipa.yml, backend-deploy.yml
+                      screenshots.yml, ipa.yml, backend-deploy.yml, sounds.yml (Linux)
 ```
 
 How the pieces fit together:
@@ -135,11 +150,12 @@ Day-to-day workflow:
 | `IPA` | `macos-26` | **manual only** | builds a Release build for iPhones, ad-hoc signed with its entitlements, and uploads `CourseTable.ipa` (app + widget, iOS 17+) for sideloading tools (iloader, SideStore, AltStore, LiveContainer) |
 | `Screenshots` | `macos-26` | **manual only** | runs the UI tests (`CourseTableUITests` scheme) and uploads a `screenshots` artifact: every main screen in English and Chinese, the course-list, placing and import flows, and the Words tab (sign-up, a whole study session, each question type, every Words screen) |
 | `Backend` | Ubuntu | pushes/PRs touching `supabase/` | starts a local Supabase stack, applies the migrations, runs the pgTAP tests (schema, content, row-level security) and an HTTP smoke test |
+| `Sounds` | Ubuntu | **manual only** | builds the focus sounds from `content/sounds/sources.json` with ffmpeg (seamless loops, -20 LUFS, AAC) and uploads a `sounds` artifact for `CourseTable/Sounds/` |
 | `Backend deploy` | Ubuntu | **manual only** (the owner starts it) | pushes the migrations to the cloud project, applies `supabase/remote-auth.json`, and checks the result; needs the `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` secrets and the `SUPABASE_PROJECT_REF` variable |
 
 The repo is private. The free plan includes 2,000 Actions minutes a month, and macOS minutes count 10×, so that's roughly 200 macOS minutes. Since the Words tab (supabase-swift compiles with the app), a normal `iOS` run takes about 5–9 minutes (50–90 of the 2,000), a `Screenshots` run about 22 (about 16 for a single test), and an `IPA` run about 3. Linux runs count 1×. The iOS job runs only when relevant files change and cancels superseded runs.
 
-To see the app without a Mac: run **Actions → Screenshots → Run workflow** (or `gh workflow run screenshots.yml`), then download the artifact with `gh run download <run-id> -n screenshots`. To save minutes, run selected tests only: `gh workflow run screenshots.yml -f only=CourseTableUITests/WordsUITests/testWordsScreenshotTour` (any `xcodebuild -only-testing` value). UI tests launch the app with `-uiTesting`, so it uses in-memory stores and the demo vocabulary backend, never touches the network, and never writes the widget snapshot or schedules notifications. `-demoData` adds a demo timetable; `-vocabDemo` signs in a demo learner with two weeks of answers, 30 words and an exam date; `-vocabMode recognition|choice|spelling|mixed` sets that learner's review questions. To run it by hand, use **Actions → iOS → Run workflow**, or `gh workflow run ios.yml`. Useful commands: `gh run list`, `gh run watch`, `gh run view --log-failed`.
+To see the app without a Mac: run **Actions → Screenshots → Run workflow** (or `gh workflow run screenshots.yml`), then download the artifact with `gh run download <run-id> -n screenshots`. To save minutes, run selected tests only: `gh workflow run screenshots.yml -f only=CourseTableUITests/WordsUITests/testWordsScreenshotTour` (`xcodebuild -only-testing` values, comma-separated). UI tests launch the app with `-uiTesting`, so it uses in-memory stores and the demo vocabulary backend, never touches the network, and never writes the widget snapshot or schedules notifications. `-demoData` adds a demo timetable; `-vocabDemo` signs in a demo learner with two weeks of answers, 30 words and an exam date; `-vocabMode recognition|choice|spelling|mixed` sets that learner's review questions; `-liveActivityDemo before|during|switch` starts a demo class Live Activity; `-focusDemo` opens Focus with a session running. With `-demoData`, today also gets a few demo to-dos. To run it by hand, use **Actions → iOS → Run workflow**, or `gh workflow run ios.yml`. Useful commands: `gh run list`, `gh run watch`, `gh run view --log-failed`.
 
 ## Opening the project on a Mac later
 
@@ -161,6 +177,6 @@ Nothing needs to be regenerated on the Mac. The Xcode project in the repo is the
 - **Weeks** run Monday–Sunday. Week 1 is the week containing the chosen first day of term. Odd/even is counted from the week number (week 1 is odd).
 - **Dates without time zones:** term dates are `LocalDate` values (year, month, day), and day counting is integer arithmetic. Week numbers therefore never shift with time zones or daylight saving.
 - **Snapshot versioning:** `ScheduleSnapshot.currentVersion` is bumped when its JSON shape changes. The widget ignores snapshots newer than it understands.
-- **Reminder window:** iOS keeps at most 64 pending local notifications per app, so only the next 60 classes (`Timetable.maxScheduledReminders`) are scheduled, roughly two to three weeks of classes. The app reschedules them each time it comes to the foreground and whenever the timetable or reminder settings change. If you don't open the app for longer than that window, reminders stop until you open it again. Reminders whose time has already passed are skipped. Reminder settings are per device (`UserDefaults`), not part of the SwiftData store.
+- **Reminder window:** iOS keeps at most 64 pending local notifications per app: classes 40 (`Timetable.maxScheduledReminders`, roughly two weeks), to-dos 12, focus switches 10, 2 spare. Each kind replaces only its own. The app reschedules them each time it comes to the foreground and whenever the timetable or reminder settings change. If you don't open the app for longer than that window, reminders stop until you open it again. Reminders whose time has already passed are skipped. Reminder settings are per device (`UserDefaults`), not part of the SwiftData store.
 - **Import colours:** a course whose name matches an existing course keeps that course's colour. Other names get the least-used palette colour. The same rule applies to the course list.
-- **SwiftData schemas:** the timetable store holds `CourseRecord`, `SettingsRecord` and `CourseTemplateRecord` (the course list); the Words tab has its own file, `Vocabulary.store` (`VocabSchemaV1` + `VocabMigrationPlan`). The app holds real data on a phone now, so any model change needs a new `VersionedSchema` and a migration stage. The timetable store isn't versioned yet: its first change must start by describing today's models as V1.
+- **SwiftData schemas:** the timetable store holds `CourseRecord`, `SettingsRecord` and `CourseTemplateRecord` (the course list); the Words tab has its own file, `Vocabulary.store` (`VocabSchemaV1` + `VocabMigrationPlan`); to-dos and focus history are in `Planner.store` (`PlannerSchemaV1` + `PlannerMigrationPlan`). A running focus session is kept in `UserDefaults`. The app holds real data on a phone now, so any model change needs a new `VersionedSchema` and a migration stage. The timetable store isn't versioned yet: its first change must start by describing today's models as V1.

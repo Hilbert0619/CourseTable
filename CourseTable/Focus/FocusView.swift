@@ -69,20 +69,22 @@ private struct FocusSetupView: View {
 
             SoundSection(engine: engine)
 
-            Section {
-                Button {
-                    engine.start()
-                } label: {
-                    Label("Start Focusing", systemImage: "play.fill")
-                        .frame(maxWidth: .infinity)
-                        .font(.headline)
-                }
-                .buttonStyle(.borderedProminent)
-                .listRowInsets(EdgeInsets())
-                .accessibilityIdentifier("startFocus")
-            }
-
             FocusHistorySection(engine: engine, planner: planner)
+        }
+        // Always in reach, above the tab bar.
+        .safeAreaInset(edge: .bottom) {
+            Button {
+                engine.start()
+            } label: {
+                Label("Start Focusing", systemImage: "play.fill")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 8)
+            .accessibilityIdentifier("startFocus")
         }
         .onDisappear { engine.stopPreview() }
     }
@@ -198,6 +200,10 @@ private struct RunningFocusView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
+                        if status.phase.isBreak && !status.isPaused {
+                            Button("Skip Break") { engine.skipBreak() }
+                                .buttonStyle(.bordered)
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
@@ -209,30 +215,30 @@ private struct RunningFocusView: View {
                     Button {
                         engine.togglePause()
                     } label: {
-                        Label {
-                            run.isPaused ? Text("Resume") : Text("Pause")
-                        } icon: {
+                        HStack(spacing: 6) {
                             Image(systemName: run.isPaused ? "play.fill" : "pause.fill")
+                            run.isPaused ? Text("Resume") : Text("Pause")
                         }
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
                     }
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("pauseFocus")
-                    Button(role: .destructive) {
+                    Button {
                         confirmingStop = true
                     } label: {
-                        Label("Stop", systemImage: "stop.fill")
-                            .frame(maxWidth: .infinity)
+                        HStack(spacing: 6) {
+                            Image(systemName: "stop.fill")
+                            Text("Stop")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
                     }
                     .buttonStyle(.bordered)
+                    .tint(.red)
                 }
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    if run.status(at: context.date).phase.isBreak && !run.isPaused {
-                        Button("Skip Break") { engine.skipBreak() }
-                    }
-                }
             }
 
             SoundSection(engine: engine)

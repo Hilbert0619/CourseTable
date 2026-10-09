@@ -30,16 +30,16 @@ final class FocusEngine {
     private(set) var lastEnded: FocusSessionSummary?
 
     var settings: FocusSettings { didSet { save(settings, Self.settingsKey) } }
-    var goal: String { didSet { UserDefaults.standard.set(goal, forKey: Self.goalKey) } }
+    var goal: String { didSet { defaults.set(goal, forKey: Self.goalKey) } }
     var sound: FocusSound {
         didSet {
-            UserDefaults.standard.set(sound.rawValue, forKey: Self.soundKey)
+            defaults.set(sound.rawValue, forKey: Self.soundKey)
             if run != nil || previewing { player.play(sound) }
         }
     }
     var volume: Double {
         didSet {
-            UserDefaults.standard.set(volume, forKey: Self.volumeKey)
+            defaults.set(volume, forKey: Self.volumeKey)
             player.volume = Float(volume)
         }
     }
@@ -51,14 +51,17 @@ final class FocusEngine {
 
     private let player = SoundPlayer()
     @ObservationIgnored private var ticker: Task<Void, Never>?
+    private let defaults: UserDefaults
 
     private init() {
-        let defaults = UserDefaults.standard
-        settings = Self.load(FocusSettings.self, Self.settingsKey) ?? FocusSettings()
+        // UI tests start from the defaults every time (and `defaults` doesn't keep what they change).
+        let defaults = UITestLaunch.isActive ? UserDefaults(suiteName: "focus.uiTesting.\(UUID().uuidString)")! : .standard
+        self.defaults = defaults
+        settings = Self.load(FocusSettings.self, Self.settingsKey, from: defaults) ?? FocusSettings()
         goal = defaults.string(forKey: Self.goalKey) ?? ""
         sound = defaults.string(forKey: Self.soundKey).flatMap { FocusSound(rawValue: $0) } ?? .rain
         volume = defaults.object(forKey: Self.volumeKey) as? Double ?? 0.6
-        run = UITestLaunch.isActive ? nil : Self.load(FocusRun.self, Self.runKey)
+        run = Self.load(FocusRun.self, Self.runKey, from: defaults)
         player.volume = Float(volume)
     }
 
@@ -202,18 +205,18 @@ final class FocusEngine {
         if let run {
             save(run, Self.runKey)
         } else {
-            UserDefaults.standard.removeObject(forKey: Self.runKey)
+            defaults.removeObject(forKey: Self.runKey)
         }
     }
 
     private func save<T: Encodable>(_ value: T, _ key: String) {
         if let data = try? JSONEncoder().encode(value) {
-            UserDefaults.standard.set(data, forKey: key)
+            defaults.set(data, forKey: key)
         }
     }
 
-    private static func load<T: Decodable>(_ type: T.Type, _ key: String) -> T? {
-        UserDefaults.standard.data(forKey: key).flatMap { try? JSONDecoder().decode(type, from: $0) }
+    private static func load<T: Decodable>(_ type: T.Type, _ key: String, from defaults: UserDefaults) -> T? {
+        defaults.data(forKey: key).flatMap { try? JSONDecoder().decode(type, from: $0) }
     }
 
     // MARK: - UI tests
