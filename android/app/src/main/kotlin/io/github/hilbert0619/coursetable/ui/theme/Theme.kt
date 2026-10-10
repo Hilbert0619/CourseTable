@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 
 // Material 3 "fidelity" schemes from the iOS accent colour #586BEA (Assets.xcassets/AccentColor), so the app looks
 // the same on any phone (no dynamic colour).
-private val LightColors = lightColorScheme(
+internal val LightColors = lightColorScheme(
     primary = Color(0xFF3A4DCD),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFF5568E7),
@@ -48,7 +48,7 @@ private val LightColors = lightColorScheme(
     surfaceContainerLowest = Color(0xFFFFFFFF),
 )
 
-private val DarkColors = darkColorScheme(
+internal val DarkColors = darkColorScheme(
     primary = Color(0xFFBBC3FF),
     onPrimary = Color(0xFF001B97),
     primaryContainer = Color(0xFF7586FF),

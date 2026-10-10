@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What FileProvider may share: the exported CSV (Settings → Export as CSV). -->
+<paths>
+    <cache-path name="exports" path="exports/" />
+</paths>

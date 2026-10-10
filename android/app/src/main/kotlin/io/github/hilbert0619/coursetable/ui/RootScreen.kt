@@ -5,11 +5,14 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,34 +30,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.hilbert0619.coursetable.BuildConfig
 import io.github.hilbert0619.coursetable.R
-import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
+import io.github.hilbert0619.coursetable.ui.settings.SettingsScreen
+import io.github.hilbert0619.coursetable.ui.timetable.TimetableScreen
+import io.github.hilbert0619.coursetable.ui.today.TodayScreen
 
 /** The five tabs, as on iOS. */
 enum class Tab(
     @param:StringRes val title: Int,
     @param:DrawableRes val icon: Int,
     @param:DrawableRes val selectedIcon: Int,
-    @param:StringRes val placeholder: Int,
 ) {
-    TODAY(R.string.tab_today, R.drawable.ic_tab_today, R.drawable.ic_tab_today_filled, R.string.placeholder_today),
-    TIMETABLE(
-        R.string.tab_timetable, R.drawable.ic_tab_timetable, R.drawable.ic_tab_timetable_filled,
-        R.string.placeholder_timetable,
-    ),
-    FOCUS(R.string.tab_focus, R.drawable.ic_tab_focus, R.drawable.ic_tab_focus_filled, R.string.placeholder_focus),
-    WORDS(R.string.tab_words, R.drawable.ic_tab_words, R.drawable.ic_tab_words_filled, R.string.placeholder_words),
-    SETTINGS(
-        R.string.tab_settings, R.drawable.ic_tab_settings, R.drawable.ic_tab_settings_filled,
-        R.string.placeholder_settings,
-    ),
+    TODAY(R.string.tab_today, R.drawable.ic_tab_today, R.drawable.ic_tab_today_filled),
+    TIMETABLE(R.string.tab_timetable, R.drawable.ic_tab_timetable, R.drawable.ic_tab_timetable_filled),
+    FOCUS(R.string.tab_focus, R.drawable.ic_tab_focus, R.drawable.ic_tab_focus_filled),
+    WORDS(R.string.tab_words, R.drawable.ic_tab_words, R.drawable.ic_tab_words_filled),
+    SETTINGS(R.string.tab_settings, R.drawable.ic_tab_settings, R.drawable.ic_tab_settings_filled),
 }
 
+/** The tab bar and the selected tab. [data] is `null` until the database has been read. */
 @Composable
-fun RootScreen(initialTab: Tab = Tab.TODAY) {
+fun RootScreen(data: AppData?, actions: AppActions, initialTab: Tab = Tab.TODAY) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
     Scaffold(
         bottomBar = {
@@ -64,23 +61,32 @@ fun RootScreen(initialTab: Tab = Tab.TODAY) {
                     NavigationBarItem(
                         selected = selected,
                         onClick = { tab = item },
-                        icon = {
-                            Icon(painterResource(if (selected) item.selectedIcon else item.icon), contentDescription = null)
-                        },
+                        icon = { Icon(painterResource(if (selected) item.selectedIcon else item.icon), contentDescription = null) },
                         label = { Text(stringResource(item.title)) },
                     )
                 }
             }
         },
     ) { padding ->
-        Placeholder(tab, Modifier.padding(padding))
+        val content = Modifier.padding(padding).consumeWindowInsets(padding)
+        if (data == null) {
+            Box(content.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+            return@Scaffold
+        }
+        when (tab) {
+            Tab.TODAY -> TodayScreen(data.timetable, data.todos, actions, content)
+            Tab.TIMETABLE -> TimetableScreen(data.timetable, data.templates, actions, content)
+            Tab.FOCUS -> Placeholder(tab, R.string.placeholder_focus, content)
+            Tab.WORDS -> Placeholder(tab, R.string.placeholder_words, content)
+            Tab.SETTINGS -> SettingsScreen(data.timetable, actions, content)
+        }
     }
 }
 
-/** What each tab shows until its screens are built. */
+/** What a tab shows until its screens are built. */
 @Composable
-private fun Placeholder(tab: Tab, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxSize()) {
+private fun Placeholder(tab: Tab, @StringRes text: Int, modifier: Modifier = Modifier) {
+    Column(modifier.fillMaxSize().safeDrawingPadding()) {
         Text(
             stringResource(tab.title),
             style = MaterialTheme.typography.headlineLarge,
@@ -100,31 +106,14 @@ private fun Placeholder(tab: Tab, modifier: Modifier = Modifier) {
                         modifier = Modifier.padding(20.dp).size(40.dp),
                     )
                 }
-                Text(
-                    stringResource(tab.placeholder),
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
+                Text(stringResource(text), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
                 Text(
                     stringResource(R.string.placeholder_note),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
-                if (tab == Tab.SETTINGS) {
-                    Text(
-                        "${stringResource(R.string.version)} ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun RootScreenPreview() {
-    StudyHourTheme { RootScreen() }
 }

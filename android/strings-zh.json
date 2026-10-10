@@ -1,9 +1,11 @@
 {
   "app_name": "学时",
-  "placeholder_today": "这里将显示当天的课程和待办。",
-  "placeholder_timetable": "这里将显示每周课表。",
   "placeholder_focus": "这里将是带背景音的番茄钟。",
   "placeholder_words": "这里将是背单词和同步。",
-  "placeholder_settings": "这里将设置学期日期、节次时间和提醒。",
-  "placeholder_note": "学时 Android 版正在开发中。"
+  "placeholder_note": "学时 Android 版正在开发中。",
+  "back": "返回",
+  "decrease": "减少",
+  "increase": "增加",
+  "todo_notification_footer": "到时间或下课时会收到通知。课后待办也会显示在这节课的上课通知中。",
+  "import_footer": "每行一门课程，列依次为：课程、教师、教室、星期、节次、周次。加上标题行（中英文均可）后可以使用任意列顺序。也可以直接粘贴从 Excel 或 WPS 复制的行。"
 }
