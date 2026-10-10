@@ -21,7 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -147,6 +150,8 @@ fun CourseBlock(course: Course, modifier: Modifier = Modifier, onClick: () -> Un
             .clickable(onClick = onClick).padding(3.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
+        // Long English words are hyphenated rather than broken anywhere ("Mathe-matics", not "Mathematic-s").
+        val wrapping = TextStyle(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)
         Text(
             course.name,
             color = Color.White,
@@ -154,9 +159,10 @@ fun CourseBlock(course: Course, modifier: Modifier = Modifier, onClick: () -> Un
             lineHeight = 13.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 5,
+            style = wrapping,
         )
         if (course.room.isNotEmpty()) {
-            Text("@${course.room}", color = Color.White, fontSize = 10.sp, lineHeight = 12.sp, maxLines = 2)
+            Text("@${course.room}", color = Color.White, fontSize = 10.sp, lineHeight = 12.sp, maxLines = 2, style = wrapping)
         }
     }
 }
