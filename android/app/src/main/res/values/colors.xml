@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the Compose theme's surface colour (ui/theme/Theme.kt). -->
+    <color name="window_background">#FFFBF8FF</color>
+    <color name="ic_launcher_top">#FF4876F6</color>
+    <color name="ic_launcher_bottom">#FF764CE2</color>
+</resources>

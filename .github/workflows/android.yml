@@ -1,0 +1,101 @@
+name: Android
+
+# The Android app (android/): :core logic tests, the app's JVM tests with Roborazzi screenshots (Robolectric), and a
+# debug APK to install on a phone. Linux runners are free for this public repo.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "spec/**"
+      - "content/**"
+      - "CourseTable/Sounds/**"
+      - "Shared/Localizable.xcstrings"
+      - "tools/xcstrings_to_android.py"
+      - ".github/workflows/android.yml"
+  pull_request:
+    paths:
+      - "android/**"
+      - "spec/**"
+      - "content/**"
+      - "CourseTable/Sounds/**"
+      - "Shared/Localizable.xcstrings"
+      - "tools/xcstrings_to_android.py"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Test and build the debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Chinese strings are complete
+        working-directory: .
+        run: python3 tools/xcstrings_to_android.py --check
+
+      # A fixed debug key (repo secret), so each new debug APK installs over the previous one. Without it (fork pull
+      # requests) Gradle makes a throwaway key.
+      - name: Debug signing key
+        env:
+          DEBUG_KEYSTORE: ${{ secrets.ANDROID_DEBUG_KEYSTORE }}
+        run: |
+          if [ -n "$DEBUG_KEYSTORE" ]; then
+            mkdir -p ~/.android
+            echo "$DEBUG_KEYSTORE" | base64 -d > ~/.android/debug.keystore
+            echo "Using the repo's debug key."
+          fi
+
+      - name: Tests, screenshots and the debug APK
+        run: ./gradlew :core:test :app:recordRoborazziDebug :app:assembleDebug
+
+      - name: Name the APK
+        run: |
+          version=$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' app/build.gradle.kts)
+          cp app/build/outputs/apk/debug/app-debug.apk "StudyHour-$version-debug-${GITHUB_RUN_NUMBER}.apk"
+          ls -la StudyHour-*.apk
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: StudyHour-debug-apk
+          path: android/StudyHour-*.apk
+          retention-days: 14
+
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: StudyHour-screenshots
+          path: android/app/build/outputs/roborazzi
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload the test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: StudyHour-test-reports
+          path: |
+            android/core/build/reports/tests
+            android/app/build/reports/tests
+          retention-days: 7

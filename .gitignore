@@ -21,3 +21,10 @@ content/.cache/
 
 # Local tools (Supabase CLI), not committed
 .tools/
+
+# Android (android/): Gradle and Kotlin caches, the local SDK path, IDE files
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/.idea/
+*.iml
