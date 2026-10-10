@@ -2,8 +2,10 @@ package io.github.hilbert0619.coursekit
 
 import java.time.Instant
 import java.time.ZoneId
+import kotlinx.serialization.Serializable
 
 /** A wall-clock time within a day, to the minute (00:00 … 23:59). Values outside a day wrap around. */
+@Serializable(with = TimeOfDaySerializer::class)
 class TimeOfDay(minutes: Int) : Comparable<TimeOfDay> {
     /** Minutes since midnight, `0 until 1440`. */
     val minutes: Int = minutes.mod(24 * 60)
@@ -46,6 +48,12 @@ class TimeOfDay(minutes: Int) : Comparable<TimeOfDay> {
 /** A local day plus a time on it: "now" as far as the timetable is concerned. */
 data class Moment(val day: LocalDate, val time: TimeOfDay) : Comparable<Moment> {
     fun toInstant(zone: ZoneId = ZoneId.systemDefault()): Instant = day.toInstant(time, zone)
+
+    /** The moment [minutes] later (earlier if negative), crossing midnight as needed. */
+    fun adding(minutes: Int): Moment {
+        val total = day.daysSinceEpoch * 1440 + time.minutes + minutes
+        return Moment(LocalDate(daysSinceEpoch = total.floorDiv(1440)), TimeOfDay(total.mod(1440)))
+    }
 
     override fun compareTo(other: Moment): Int = compareValuesBy(this, other, { it.day }, { it.time })
 

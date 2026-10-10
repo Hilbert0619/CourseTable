@@ -2,6 +2,7 @@ package io.github.hilbert0619.coursekit
 
 import java.time.Instant
 import java.time.ZoneId
+import kotlinx.serialization.Serializable
 
 /**
  * A calendar day with no time or time zone attached, such as the first day of term.
@@ -9,6 +10,7 @@ import java.time.ZoneId
  * Day arithmetic is plain integer math on the proleptic Gregorian calendar, so results never depend on the
  * device's time zone or daylight-saving rules.
  */
+@Serializable(with = LocalDateSerializer::class)
 @JvmInline
 value class LocalDate(
     /** Number of days since 1970-01-01 (negative before it). */

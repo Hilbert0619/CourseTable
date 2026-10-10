@@ -1,0 +1,33 @@
+{
+  "about": "FocusPlan(settings) layouts: F = focus, b = short break, L = long break, each with its minutes. Settings are in the Codable form (every key present).",
+  "plans": [
+    { "settings": { "totalMinutes": 150, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F25", "b5", "F25", "b5", "F25", "b5", "F25", "L15", "F20"] },
+    { "settings": { "totalMinutes": 240, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F25", "b5", "F25", "b5", "F25", "b5", "F25", "L15", "F25", "b5", "F25", "b5", "F25", "b5", "F20"] },
+    { "settings": { "totalMinutes": 30, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F30"] },
+    { "settings": { "totalMinutes": 34, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F34"] },
+    { "settings": { "totalMinutes": 35, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F25", "b5", "F5"] },
+    { "settings": { "totalMinutes": 45, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F25", "b5", "F15"] },
+    { "settings": { "totalMinutes": 55, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F25", "b5", "F25"] },
+    { "settings": { "totalMinutes": 60, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F25", "b5", "F30"] },
+    { "settings": { "totalMinutes": 150, "usesBreaks": false, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F150"] },
+    { "settings": { "totalMinutes": 120, "usesBreaks": true, "focusMinutes": 50, "shortBreakMinutes": 10, "longBreakMinutes": 20, "blocksBeforeLongBreak": 2 },
+      "layout": ["F50", "b10", "F60"] },
+    { "settings": { "totalMinutes": 180, "usesBreaks": true, "focusMinutes": 50, "shortBreakMinutes": 10, "longBreakMinutes": 20, "blocksBeforeLongBreak": 2 },
+      "layout": ["F50", "b10", "F50", "L20", "F50"] },
+    { "settings": { "totalMinutes": 1, "usesBreaks": true, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F15"] },
+    { "settings": { "totalMinutes": 999, "usesBreaks": false, "focusMinutes": 25, "shortBreakMinutes": 5, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F240"] },
+    { "settings": { "totalMinutes": 60, "usesBreaks": true, "focusMinutes": 1, "shortBreakMinutes": 0, "longBreakMinutes": 15, "blocksBeforeLongBreak": 4 },
+      "layout": ["F10", "b1", "F10", "b1", "F10", "b1", "F27"] }
+  ]
+}

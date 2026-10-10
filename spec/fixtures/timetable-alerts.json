@@ -1,0 +1,87 @@
+{
+  "about": "Reminders, live class windows, the day agenda and to-do alerts for one timetable (Codable form: dates YYYY-MM-DD, times HH:MM, weekdays 1 = Monday). Moments are 'YYYY-MM-DD HH:MM'. Term from Monday 2026-08-31, 18 weeks: the week of 2026-09-28 is week 5 (odd). reminders: 'course day time'. windows: 'course day show–end', then ' after: ' and the to-dos if any. agenda items: 'HH:MM title' for a to-do, the course name (then ' after: ' and its to-dos) for a class.",
+  "timetable": {
+    "semester": { "firstMonday": "2026-08-31", "totalWeeks": 18 },
+    "periods": {
+      "periods": [
+        { "start": "08:00", "end": "08:45" }, { "start": "08:55", "end": "09:40" },
+        { "start": "10:00", "end": "10:45" }, { "start": "10:55", "end": "11:40" },
+        { "start": "14:00", "end": "14:45" }, { "start": "14:55", "end": "15:40" },
+        { "start": "16:00", "end": "16:45" }, { "start": "16:55", "end": "17:40" },
+        { "start": "19:00", "end": "19:45" }, { "start": "19:55", "end": "20:40" },
+        { "start": "20:50", "end": "21:35" }, { "start": "21:45", "end": "22:30" }
+      ]
+    },
+    "courses": [
+      { "id": "00000000-0000-4000-8000-000000000005", "name": "Seminar", "teacher": "", "room": "", "weekday": 5,
+        "startPeriod": 9, "periodCount": 2, "weeks": { "first": 1, "last": 18, "parity": "every" }, "colorIndex": 4 },
+      { "id": "00000000-0000-4000-8000-000000000004", "name": "Lab", "teacher": "", "room": "", "weekday": 4,
+        "startPeriod": 5, "periodCount": 3, "weeks": { "first": 4, "last": 12, "parity": "every" }, "colorIndex": 3 },
+      { "id": "00000000-0000-4000-8000-000000000003", "name": "English", "teacher": "", "room": "C3", "weekday": 1,
+        "startPeriod": 3, "periodCount": 2, "weeks": { "first": 2, "last": 16, "parity": "even" }, "colorIndex": 2 },
+      { "id": "00000000-0000-4000-8000-000000000002", "name": "Physics", "teacher": "", "room": "B204", "weekday": 1,
+        "startPeriod": 3, "periodCount": 2, "weeks": { "first": 1, "last": 16, "parity": "odd" }, "colorIndex": 1 },
+      { "id": "00000000-0000-4000-8000-000000000001", "name": "Calculus", "teacher": "Li", "room": "A101", "weekday": 1,
+        "startPeriod": 1, "periodCount": 2, "weeks": { "first": 1, "last": 16, "parity": "every" }, "colorIndex": 0 }
+    ]
+  },
+  "todos": [
+    { "id": "10000000-0000-4000-8000-000000000001", "title": "Pick up the package", "day": "2026-09-28",
+      "timing": { "at": { "_0": "12:00" } }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000002", "title": "Hand in the paper", "day": "2026-09-28",
+      "timing": { "afterClass": { "courseID": "00000000-0000-4000-8000-000000000001" } }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000003", "title": "Buy milk", "day": "2026-09-28",
+      "timing": { "anytime": {} }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000004", "title": "Call home", "day": "2026-09-28",
+      "timing": { "at": { "_0": "07:30" } }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000005", "title": "Ask about the exam", "day": "2026-09-28",
+      "timing": { "afterClass": { "courseID": "00000000-0000-4000-8000-000000000001" } }, "isDone": true },
+    { "id": "10000000-0000-4000-8000-000000000006", "title": "Return the book", "day": "2026-09-28",
+      "timing": { "at": { "_0": "10:00" } }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000007", "title": "Another day", "day": "2026-09-29",
+      "timing": { "anytime": {} }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000008", "title": "Lab report", "day": "2026-09-28",
+      "timing": { "afterClass": { "courseID": "00000000-0000-4000-8000-000000000004" } }, "isDone": false },
+    { "id": "10000000-0000-4000-8000-000000000009", "title": "Return the lab coat", "day": "2026-10-01",
+      "timing": { "afterClass": { "courseID": "00000000-0000-4000-8000-000000000004" } }, "isDone": false }
+  ],
+  "reminders": [
+    { "after": "2026-09-28 07:00", "leadMinutes": 10, "limit": 6, "expected": [
+      "Calculus 2026-09-28 07:50", "Physics 2026-09-28 09:50", "Lab 2026-10-01 13:50", "Seminar 2026-10-02 18:50",
+      "Calculus 2026-10-05 07:50", "English 2026-10-05 09:50"] },
+    { "after": "2026-09-28 07:50", "leadMinutes": 10, "limit": 1, "expected": ["Physics 2026-09-28 09:50"] },
+    { "after": "2026-09-28 07:49", "leadMinutes": 10, "limit": 1, "expected": ["Calculus 2026-09-28 07:50"] },
+    { "after": "2026-09-28 07:00", "leadMinutes": 0, "limit": 1, "expected": ["Calculus 2026-09-28 08:00"] },
+    { "after": "2026-09-28 07:00", "leadMinutes": -5, "limit": 1, "expected": ["Calculus 2026-09-28 08:00"] },
+    { "after": "2026-12-28 00:00", "leadMinutes": 10, "limit": 40, "expected": ["Seminar 2027-01-01 18:50"] },
+    { "after": "2027-01-04 00:00", "leadMinutes": 10, "limit": 40, "expected": [] },
+    { "after": "2026-08-01 12:00", "leadMinutes": 25, "limit": 3, "expected": [
+      "Calculus 2026-08-31 07:35", "Physics 2026-08-31 09:35", "Seminar 2026-09-04 18:35"] }
+  ],
+  "windows": [
+    { "after": "2026-09-28 07:00", "leadMinutes": 10, "limit": 4, "expected": [
+      "Calculus 2026-09-28 07:50–09:40 after: Hand in the paper", "Physics 2026-09-28 09:50–11:40",
+      "Lab 2026-10-01 13:50–16:45 after: Return the lab coat", "Seminar 2026-10-02 18:50–20:40"] },
+    { "after": "2026-09-28 09:00", "leadMinutes": 10, "limit": 2, "expected": [
+      "Calculus 2026-09-28 07:50–09:40 after: Hand in the paper", "Physics 2026-09-28 09:50–11:40"] },
+    { "after": "2026-09-28 09:40", "leadMinutes": 10, "limit": 1, "expected": ["Physics 2026-09-28 09:50–11:40"] },
+    { "after": "2026-09-28 07:00", "leadMinutes": 30, "limit": 2, "expected": [
+      "Calculus 2026-09-28 07:30–09:40 after: Hand in the paper", "Physics 2026-09-28 09:40–11:40"] },
+    { "after": "2026-12-28 00:00", "leadMinutes": 10, "limit": 4, "expected": ["Seminar 2027-01-01 18:50–20:40"] },
+    { "after": "2026-09-28 07:00", "leadMinutes": 10, "limit": 0, "expected": [] }
+  ],
+  "agenda": [
+    { "day": "2026-09-28", "anytime": ["Buy milk", "Lab report"], "items": [
+      "07:30 Call home", "Calculus after: Hand in the paper, Ask about the exam", "10:00 Return the book", "Physics",
+      "12:00 Pick up the package"] },
+    { "day": "2026-09-29", "anytime": ["Another day"], "items": [] },
+    { "day": "2026-10-01", "anytime": [], "items": ["Lab after: Return the lab coat"] },
+    { "day": "2026-09-27", "anytime": [], "items": [] }
+  ],
+  "todoAlerts": [
+    { "after": "2026-09-28 08:00", "limit": 12, "expected": [
+      "Hand in the paper", "Return the book", "Pick up the package", "Return the lab coat"] },
+    { "after": "2026-09-28 08:00", "limit": 2, "expected": ["Hand in the paper", "Return the book"] },
+    { "after": "2026-09-28 12:00", "limit": 12, "expected": ["Return the lab coat"] }
+  ]
+}

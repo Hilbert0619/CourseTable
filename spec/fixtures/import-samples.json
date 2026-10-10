@@ -1,0 +1,171 @@
+{
+  "about": "Whole imports (CourseImporter.parse) with the standard 12-period schedule and an 18-week term. A sample has its text inline or a file in this folder (decoded with ImportedText.decode). courses: name|teacher|room|weekday|first-last period|first-last week parity. problems: line, then missingColumns <columns> / missingValue <column> / invalidValue <column> <text> / periodsOutOfRange <text> <periods per day>.",
+  "totalWeeks": 18,
+  "samples": [
+    {
+      "name": "English example with a header",
+      "text": "name,teacher,room,weekday,periods,weeks\nAdvanced Mathematics,Li,A101,Mon,1-2,1-16\nCollege English,Wang,B204,Tue,3-4,1-16\nPhysics Lab,Zhao,Lab 3,Thu,5-7,1-15 odd\nData Structures,Chen,C305,Fri,1-2,\"1-8,10-16\"",
+      "rowCount": 4,
+      "courses": [
+        "Advanced Mathematics|Li|A101|1|1-2|1-16 every",
+        "College English|Wang|B204|2|3-4|1-16 every",
+        "Physics Lab|Zhao|Lab 3|4|5-7|1-15 odd",
+        "Data Structures|Chen|C305|5|1-2|1-8 every",
+        "Data Structures|Chen|C305|5|1-2|10-16 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Chinese example with a header",
+      "text": "课程,教师,教室,星期,节次,周次\n高等数学,李老师,A101,周一,1-2,1-16周\n大学英语,王老师,B204,周二,3-4,1-16周\n物理实验,赵老师,实验楼3,周四,5-7,1-15单周\n数据结构,陈老师,C305,周五,1-2,\"1-8,10-16周\"",
+      "rowCount": 4,
+      "courses": [
+        "高等数学|李老师|A101|1|1-2|1-16 every",
+        "大学英语|王老师|B204|2|3-4|1-16 every",
+        "物理实验|赵老师|实验楼3|4|5-7|1-15 odd",
+        "数据结构|陈老师|C305|5|1-2|1-8 every",
+        "数据结构|陈老师|C305|5|1-2|10-16 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Chinese example saved as GB18030 (Excel on Chinese Windows)",
+      "file": "import-chinese-gb18030.csv",
+      "encoding": "gb18030",
+      "rowCount": 4,
+      "courses": [
+        "高等数学|李老师|A101|1|1-2|1-16 every",
+        "大学英语|王老师|B204|2|3-4|1-16 every",
+        "物理实验|赵老师|实验楼3|4|5-7|1-15 odd",
+        "数据结构|陈老师|C305|5|1-2|1-8 every",
+        "数据结构|陈老师|C305|5|1-2|10-16 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Chinese example saved as UTF-16 with a byte-order mark",
+      "file": "import-chinese-utf16le.csv",
+      "encoding": "utf-16",
+      "rowCount": 4,
+      "courses": [
+        "高等数学|李老师|A101|1|1-2|1-16 every",
+        "大学英语|王老师|B204|2|3-4|1-16 every",
+        "物理实验|赵老师|实验楼3|4|5-7|1-15 odd",
+        "数据结构|陈老师|C305|5|1-2|1-8 every",
+        "数据结构|陈老师|C305|5|1-2|10-16 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Header columns in any order, an unknown column",
+      "text": "Weeks,Notes,Periods,Day,Course,Room\n1-16,bring calculator,3-4,Wed,Calculus,A1\n,,1,Fri,Seminar,",
+      "rowCount": 2,
+      "courses": [
+        "Calculus||A1|3|3-4|1-16 every",
+        "Seminar|||5|1-1|1-18 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "No header: the default column order",
+      "text": "Calculus,Li,A101,1,1-2,1-16\nPhysics,,B2,3,3-4,",
+      "rowCount": 2,
+      "courses": [
+        "Calculus|Li|A101|1|1-2|1-16 every",
+        "Physics||B2|3|3-4|1-18 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Spreadsheet paste (tabs, CRLF) with a Chinese header",
+      "text": "课程名称\t任课教师\t上课地点\t星期\t节次\t周次\r\n线性代数\t陈\tA203\t星期二\t第5-6节\t2-16双周\r\n",
+      "rowCount": 1,
+      "courses": [
+        "线性代数|陈|A203|2|5-6|2-16 even"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Full-width commas",
+      "text": "课程，星期，节次，周次\n高等数学，周一，1-2，1-16周",
+      "rowCount": 1,
+      "courses": [
+        "高等数学|||1|1-2|1-16 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Semicolons and a time range",
+      "text": "name;weekday;time;weeks\nEvening Class;Thu;19:00-20:40;3-15 odd",
+      "rowCount": 1,
+      "courses": [
+        "Evening Class|||4|9-10|3-15 odd"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Byte-order mark, comments and blank lines",
+      "text": "﻿name,weekday,periods\n# a comment\nMath,1,1\n\n// another comment\n",
+      "rowCount": 1,
+      "courses": [
+        "Math|||1|1-1|1-18 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "Split periods and weeks make several courses",
+      "text": "name,weekday,periods,weeks\nLab,Mon,\"1,2,5\",\"1-4,9-12\"",
+      "rowCount": 1,
+      "courses": [
+        "Lab|||1|1-2|1-4 every",
+        "Lab|||1|1-2|9-12 every",
+        "Lab|||1|5-5|1-4 every",
+        "Lab|||1|5-5|9-12 every"
+      ],
+      "problems": []
+    },
+    {
+      "name": "A required column is missing",
+      "text": "name,room,weeks\nCalculus,A1,1-16",
+      "rowCount": 0,
+      "courses": [],
+      "problems": [
+        "1 missingColumns weekday,periods"
+      ]
+    },
+    {
+      "name": "Bad rows are reported, the others imported",
+      "text": "name,weekday,periods,weeks\nCalculus,Mon,1-2,1-16\n\n# comment lines are skipped\nOops,Funday,1-2,1-16\n,Tue,3-4,\nLate,Fri,13-14,\nPhysics,Wed,x,1-16 odd\nChemistry,Thu,,99\nEnglish,Fri,3-4,1-16",
+      "rowCount": 7,
+      "courses": [
+        "Calculus|||1|1-2|1-16 every",
+        "English|||5|3-4|1-16 every"
+      ],
+      "problems": [
+        "5 invalidValue weekday Funday",
+        "6 missingValue name",
+        "7 periodsOutOfRange 13-14 12",
+        "8 invalidValue periods x",
+        "9 missingValue periods",
+        "9 invalidValue weeks 99"
+      ]
+    },
+    {
+      "name": "A short row",
+      "text": "Calculus,Li",
+      "rowCount": 1,
+      "courses": [],
+      "problems": [
+        "1 missingValue weekday",
+        "1 missingValue periods"
+      ]
+    },
+    {
+      "name": "Empty",
+      "text": "",
+      "rowCount": 0,
+      "courses": [],
+      "problems": []
+    }
+  ]
+}

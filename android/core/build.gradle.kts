@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 // The app's logic without Android: the Kotlin port of CourseKit and VocabKit (CourseKit/ in the repo root).
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 java {
@@ -19,6 +20,8 @@ kotlin {
 }
 
 dependencies {
+    api(libs.kotlinx.serialization.json)
+
     testImplementation(kotlin("test"))
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
@@ -27,6 +30,9 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // The shared test cases (spec/fixtures/) that the Swift tests read too.
+    systemProperty("fixtures.dir", rootProject.file("../spec/fixtures").absolutePath)
+    inputs.dir(rootProject.file("../spec/fixtures")).withPropertyName("fixtures").withPathSensitivity(PathSensitivity.RELATIVE)
     testLogging {
         events("failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL

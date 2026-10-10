@@ -1,15 +1,17 @@
 name: CourseKit
 
-# Pure-Swift logic tests on Linux: fast, and 1× billing on the free private-repo minutes.
+# Pure-Swift logic tests on Linux, including the shared test cases in spec/fixtures/ (the Android port reads them too).
 on:
   push:
     branches: [main]
     paths:
       - "CourseKit/**"
+      - "spec/**"
       - ".github/workflows/coursekit.yml"
   pull_request:
     paths:
       - "CourseKit/**"
+      - "spec/**"
       - ".github/workflows/coursekit.yml"
   workflow_dispatch:
 
