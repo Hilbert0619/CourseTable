@@ -52,13 +52,13 @@ object SystemSettings {
     }
 
     fun openLiveUpdateSettings(context: Context) {
-        if (Build.VERSION.SDK_INT >= 36 &&
-            open(context, Intent(Settings.ACTION_MANAGE_APP_PROMOTED_NOTIFICATIONS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName))
-        ) {
-            return
-        }
+        val intent = Intent(PROMOTION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        if (Build.VERSION.SDK_INT >= 36 && open(context, intent)) return
         openNotificationSettings(context)
     }
+
+    /** `Settings.ACTION_APP_NOTIFICATION_PROMOTION_SETTINGS` (Android 16, a flagged API missing from the SDK stubs). */
+    private const val PROMOTION_SETTINGS = "android.settings.APP_NOTIFICATION_PROMOTION_SETTINGS"
 
     /** vivo's auto-start manager (the pages differ by version, so each known one is tried), else App info. */
     fun openAutoStartSettings(context: Context) {
