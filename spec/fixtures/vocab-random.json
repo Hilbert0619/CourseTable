@@ -1,0 +1,97 @@
+{
+  "about": "Seeded randomness, which must match on iOS and Android so the same seed gives the same quiz. UInt64 values are decimal strings. `splitMix`: SeededRandom.next() from a seed. `fnv`: SeededRandom.seed(parts…). `bounded`: next(upperBound:) in turn on one generator. `shuffles`: [0..<count].shuffled(using:). `choices`: ChoicePool(`pool`).question for a word, seed and option count (`options` null: no question). `sessions`: StudySession over the cards from `sessionLog` (study days from 04:00 UTC), new words china, abandoned, abandon, adopt, starting 2026-09-30 20:00, answering every 90 s: Again the first time a word comes up as a learning step, otherwise Good; each item is `word kind mode`.",
+  "splitMix": [
+    {"seed": "0", "values": ["16294208416658607535", "7960286522194355700", "487617019471545679", "17909611376780542444", "1961750202426094747"]},
+    {"seed": "1", "values": ["10451216379200822465", "13757245211066428519", "17911839290282890590", "8196980753821780235", "8195237237126968761"]},
+    {"seed": "42", "values": ["13679457532755275413", "2949826092126892291", "5139283748462763858", "6349198060258255764", "701532786141963250"]},
+    {"seed": "18446744073709551615", "values": ["16490336266968443936", "16834447057089888969", "4048727598324417001", "7862637804313477842", "13015481187462834606"]}
+  ],
+  "fnv": [
+    {"parts": [""], "seed": "14695981039346656037"},
+    {"parts": ["abc"], "seed": "16654208175385433931"},
+    {"parts": ["a", "bc"], "seed": "16770584236298200630"},
+    {"parts": ["ab", "c"], "seed": "18268465426990034500"},
+    {"parts": ["1", "abandon", "0"], "seed": "3373509042711308501"},
+    {"parts": ["3", "放弃", "12"], "seed": "6619734367574921313"}
+  ],
+  "bounded": [
+    {"seed": "7", "upperBounds": ["1", "2", "3", "5", "7", "10", "100", "1000", "4294967311", "9223372036854775817", "18446744073709551615"], "values": ["0", "0", "2", "2", "3", "2", "46", "328", "576635004", "8853275716766052766", "16934472341843718989"]},
+    {"seed": "2026", "upperBounds": ["1", "2", "3", "5", "7", "10", "100", "1000", "4294967311", "9223372036854775817", "18446744073709551615"], "values": ["0", "0", "2", "1", "5", "7", "95", "804", "1438151030", "3091110276793233849", "16636533276210603999"]}
+  ],
+  "shuffles": [
+    {"seed": "0", "count": 10, "order": [8, 4, 2, 9, 1, 6, 5, 3, 0, 7]},
+    {"seed": "1", "count": 10, "order": [5, 7, 9, 6, 3, 8, 2, 0, 1, 4]},
+    {"seed": "2", "count": 10, "order": [5, 7, 6, 8, 0, 2, 3, 9, 4, 1]},
+    {"seed": "3", "count": 10, "order": [1, 7, 6, 3, 5, 8, 2, 9, 4, 0]},
+    {"seed": "9", "count": 10, "order": [6, 7, 4, 8, 5, 2, 3, 9, 0, 1]},
+    {"seed": "123", "count": 100, "order": [70, 97, 86, 69, 3, 68, 99, 51, 65, 21, 75, 91, 34, 25, 93, 43, 55, 40, 12, 8, 92, 90, 31, 46, 17, 44, 23, 88, 37, 26, 7, 78, 9, 60, 1, 52, 36, 77, 32, 16, 15, 82, 28, 76, 84, 10, 67, 57, 2, 22, 63, 24, 54, 74, 47, 48, 95, 85, 33, 38, 64, 83, 45, 62, 13, 58, 11, 29, 14, 5, 39, 72, 41, 27, 59, 66, 89, 80, 19, 35, 87, 53, 96, 49, 71, 6, 42, 73, 81, 98, 18, 0, 30, 79, 50, 94, 61, 20, 56, 4]},
+    {"seed": "5", "count": 0, "order": []},
+    {"seed": "5", "count": 1, "order": [0]},
+    {"seed": "5", "count": 2, "order": [0, 1]}
+  ],
+  "pool": [
+    [{"word": "ability", "translation": "n. 能力, 才能"}, {"word": "core", "translation": "n. 核心, 果心\nvt. 挖...的核"}, {"word": "desert", "translation": "vt. 抛弃, 遗弃, 放弃\nn. 沙漠"}, {"word": "abandon", "translation": "vt. 放弃, 抛弃, 遗弃, 使屈从, 沉溺, 放纵\nn. 放任, 无拘束, 狂热"}, {"word": "swiftly", "translation": "ad. 迅速地, 很快地"}, {"word": "abandoned", "translation": "a. 被抛弃的, 放纵的"}, {"word": "china", "translation": "n. 瓷器\n[网络] 中国；瓷；陶瓷"}, {"word": "adopt", "translation": "vt. 采用, 收养"}, {"word": "adapt", "translation": "vt. 使适应, 改编"}, {"word": "abolish", "translation": "vt. 废除, 废止"}, {"word": "abundant", "translation": "a. 丰富的, 充裕的"}, {"word": "within", "translation": "prep. 在...之内\nad. 在内部\nn. 内部"}, {"word": "although", "translation": "conj. 虽然, 尽管"}, {"word": "brief", "translation": "a. 简短的\nn. 摘要\nvt. 简要介绍"}]
+  ],
+  "choices": [
+    {"word": "abandon", "seed": "1", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 放弃，抛弃，遗弃", "vt. 采用，收养", "vt. 废除，废止"], "correctIndex": 1},
+    {"word": "abandon", "seed": "2", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 采用，收养", "vt. 废除，废止", "vt. 放弃，抛弃，遗弃"], "correctIndex": 3},
+    {"word": "abandon", "seed": "42", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 放弃，抛弃，遗弃", "vt. 采用，收养", "vt. 废除，废止"], "correctIndex": 1},
+    {"word": "abandon", "seed": "99", "optionCount": 4, "options": ["vt. 采用，收养", "vt. 放弃，抛弃，遗弃", "vt. 废除，废止", "vt. 使适应，改编"], "correctIndex": 1},
+    {"word": "abandon", "seed": "7", "optionCount": 3, "options": ["vt. 使适应，改编", "vt. 放弃，抛弃，遗弃", "vt. 废除，废止"], "correctIndex": 1},
+    {"word": "abandon", "seed": "7", "optionCount": 2, "options": ["vt. 废除，废止", "vt. 放弃，抛弃，遗弃"], "correctIndex": 1},
+    {"word": "ability", "seed": "1", "optionCount": 4, "options": ["n. 瓷器", "n. 能力，才能", "n. 核心，果心", "vt. 采用，收养"], "correctIndex": 1},
+    {"word": "ability", "seed": "2", "optionCount": 4, "options": ["n. 瓷器", "vt. 使适应，改编", "n. 核心，果心", "n. 能力，才能"], "correctIndex": 3},
+    {"word": "ability", "seed": "42", "optionCount": 4, "options": ["n. 核心，果心", "n. 能力，才能", "n. 瓷器", "a. 丰富的，充裕的"], "correctIndex": 1},
+    {"word": "ability", "seed": "99", "optionCount": 4, "options": ["n. 核心，果心", "n. 能力，才能", "vt. 放弃，抛弃，遗弃", "n. 瓷器"], "correctIndex": 1},
+    {"word": "ability", "seed": "7", "optionCount": 3, "options": ["n. 瓷器", "n. 能力，才能", "n. 核心，果心"], "correctIndex": 1},
+    {"word": "ability", "seed": "7", "optionCount": 2, "options": ["n. 核心，果心", "n. 能力，才能"], "correctIndex": 1},
+    {"word": "desert", "seed": "1", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 抛弃，遗弃，放弃", "vt. 采用，收养", "vt. 废除，废止"], "correctIndex": 1},
+    {"word": "desert", "seed": "2", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 采用，收养", "vt. 废除，废止", "vt. 抛弃，遗弃，放弃"], "correctIndex": 3},
+    {"word": "desert", "seed": "42", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 抛弃，遗弃，放弃", "vt. 采用，收养", "vt. 废除，废止"], "correctIndex": 1},
+    {"word": "desert", "seed": "99", "optionCount": 4, "options": ["vt. 采用，收养", "vt. 抛弃，遗弃，放弃", "vt. 废除，废止", "vt. 使适应，改编"], "correctIndex": 1},
+    {"word": "desert", "seed": "7", "optionCount": 3, "options": ["vt. 使适应，改编", "vt. 抛弃，遗弃，放弃", "vt. 废除，废止"], "correctIndex": 1},
+    {"word": "desert", "seed": "7", "optionCount": 2, "options": ["vt. 废除，废止", "vt. 抛弃，遗弃，放弃"], "correctIndex": 1},
+    {"word": "swiftly", "seed": "1", "optionCount": 4, "options": ["a. 丰富的，充裕的", "ad. 迅速地，很快地", "vt. 采用，收养", "a. 简短的"], "correctIndex": 1},
+    {"word": "swiftly", "seed": "2", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 废除，废止", "a. 丰富的，充裕的", "ad. 迅速地，很快地"], "correctIndex": 3},
+    {"word": "swiftly", "seed": "42", "optionCount": 4, "options": ["vt. 放弃，抛弃，遗弃", "ad. 迅速地，很快地", "a. 丰富的，充裕的", "a. 被抛弃的，放纵的"], "correctIndex": 1},
+    {"word": "swiftly", "seed": "99", "optionCount": 4, "options": ["vt. 放弃，抛弃，遗弃", "ad. 迅速地，很快地", "conj. 虽然，尽管", "n. 核心，果心"], "correctIndex": 1},
+    {"word": "swiftly", "seed": "7", "optionCount": 3, "options": ["n. 核心，果心", "ad. 迅速地，很快地", "a. 被抛弃的，放纵的"], "correctIndex": 1},
+    {"word": "swiftly", "seed": "7", "optionCount": 2, "options": ["a. 被抛弃的，放纵的", "ad. 迅速地，很快地"], "correctIndex": 1},
+    {"word": "china", "seed": "1", "optionCount": 4, "options": ["n. 核心，果心", "n. 瓷器", "n. 能力，才能", "vt. 采用，收养"], "correctIndex": 1},
+    {"word": "china", "seed": "2", "optionCount": 4, "options": ["n. 能力，才能", "vt. 使适应，改编", "n. 核心，果心", "n. 瓷器"], "correctIndex": 3},
+    {"word": "china", "seed": "42", "optionCount": 4, "options": ["n. 核心，果心", "n. 瓷器", "n. 能力，才能", "a. 丰富的，充裕的"], "correctIndex": 1},
+    {"word": "china", "seed": "99", "optionCount": 4, "options": ["n. 核心，果心", "n. 瓷器", "vt. 放弃，抛弃，遗弃", "n. 能力，才能"], "correctIndex": 1},
+    {"word": "china", "seed": "7", "optionCount": 3, "options": ["n. 能力，才能", "n. 瓷器", "n. 核心，果心"], "correctIndex": 1},
+    {"word": "china", "seed": "7", "optionCount": 2, "options": ["n. 核心，果心", "n. 瓷器"], "correctIndex": 1},
+    {"word": "core", "seed": "1", "optionCount": 4, "options": ["n. 瓷器", "n. 核心，果心", "n. 能力，才能", "vt. 采用，收养"], "correctIndex": 1},
+    {"word": "core", "seed": "2", "optionCount": 4, "options": ["n. 能力，才能", "vt. 使适应，改编", "n. 瓷器", "n. 核心，果心"], "correctIndex": 3},
+    {"word": "core", "seed": "42", "optionCount": 4, "options": ["n. 能力，才能", "n. 核心，果心", "n. 瓷器", "a. 丰富的，充裕的"], "correctIndex": 1},
+    {"word": "core", "seed": "99", "optionCount": 4, "options": ["n. 瓷器", "n. 核心，果心", "vt. 放弃，抛弃，遗弃", "n. 能力，才能"], "correctIndex": 1},
+    {"word": "core", "seed": "7", "optionCount": 3, "options": ["n. 能力，才能", "n. 核心，果心", "n. 瓷器"], "correctIndex": 1},
+    {"word": "core", "seed": "7", "optionCount": 2, "options": ["n. 瓷器", "n. 核心，果心"], "correctIndex": 1},
+    {"word": "within", "seed": "1", "optionCount": 4, "options": ["a. 丰富的，充裕的", "prep. 在...之内", "vt. 采用，收养", "a. 简短的"], "correctIndex": 1},
+    {"word": "within", "seed": "2", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 废除，废止", "a. 丰富的，充裕的", "prep. 在...之内"], "correctIndex": 3},
+    {"word": "within", "seed": "42", "optionCount": 4, "options": ["vt. 放弃，抛弃，遗弃", "prep. 在...之内", "a. 丰富的，充裕的", "a. 被抛弃的，放纵的"], "correctIndex": 1},
+    {"word": "within", "seed": "99", "optionCount": 4, "options": ["vt. 放弃，抛弃，遗弃", "prep. 在...之内", "conj. 虽然，尽管", "n. 核心，果心"], "correctIndex": 1},
+    {"word": "within", "seed": "7", "optionCount": 3, "options": ["n. 核心，果心", "prep. 在...之内", "a. 被抛弃的，放纵的"], "correctIndex": 1},
+    {"word": "within", "seed": "7", "optionCount": 2, "options": ["a. 被抛弃的，放纵的", "prep. 在...之内"], "correctIndex": 1},
+    {"word": "although", "seed": "1", "optionCount": 4, "options": ["a. 丰富的，充裕的", "conj. 虽然，尽管", "vt. 采用，收养", "a. 简短的"], "correctIndex": 1},
+    {"word": "although", "seed": "2", "optionCount": 4, "options": ["vt. 使适应，改编", "vt. 废除，废止", "a. 丰富的，充裕的", "conj. 虽然，尽管"], "correctIndex": 3},
+    {"word": "although", "seed": "42", "optionCount": 4, "options": ["vt. 放弃，抛弃，遗弃", "conj. 虽然，尽管", "a. 丰富的，充裕的", "a. 被抛弃的，放纵的"], "correctIndex": 1},
+    {"word": "although", "seed": "99", "optionCount": 4, "options": ["vt. 放弃，抛弃，遗弃", "conj. 虽然，尽管", "ad. 迅速地，很快地", "n. 核心，果心"], "correctIndex": 1},
+    {"word": "although", "seed": "7", "optionCount": 3, "options": ["n. 核心，果心", "conj. 虽然，尽管", "a. 被抛弃的，放纵的"], "correctIndex": 1},
+    {"word": "although", "seed": "7", "optionCount": 2, "options": ["a. 被抛弃的，放纵的", "conj. 虽然，尽管"], "correctIndex": 1}
+  ],
+  "sessionLog": [
+    [{"word": "abandon", "rating": 3, "at": "2026-09-27 10:00"}, {"word": "abandon", "rating": 3, "at": "2026-09-27 10:10"}, {"word": "ability", "rating": 4, "at": "2026-09-20 10:00"}, {"word": "government", "rating": 4, "at": "2026-09-18 10:00"}, {"word": "system", "rating": 4, "at": "2026-09-19 10:00"}, {"word": "state", "rating": 4, "at": "2026-09-21 09:00"}, {"word": "desert", "rating": 4, "at": "2026-09-25 10:00"}, {"word": "swiftly", "rating": 1, "at": "2026-09-30 19:55"}]
+  ],
+  "sessions": [
+    {"mode": "recognition", "seed": "1", "reviewLimit": null, "items": ["swiftly learning recognition", "swiftly learning recognition", "government review recognition", "state review recognition", "system review recognition", "ability review recognition", "abandon review recognition", "china new choice", "swiftly learning recognition", "abandoned new choice", "adopt new choice", "china learning recognition", "china learning recognition", "abandoned learning recognition", "abandoned learning recognition", "adopt learning recognition", "adopt learning recognition", "china learning recognition", "abandoned learning recognition", "adopt learning recognition"]},
+    {"mode": "recognition", "seed": "2", "reviewLimit": 3, "items": ["swiftly learning recognition", "swiftly learning recognition", "government review recognition", "state review recognition", "ability review recognition", "china new choice", "abandoned new choice", "adopt new choice", "swiftly learning recognition", "china learning recognition", "china learning recognition", "abandoned learning recognition", "abandoned learning recognition", "adopt learning recognition", "adopt learning recognition", "china learning recognition", "abandoned learning recognition", "adopt learning recognition"]},
+    {"mode": "mixed", "seed": "1", "reviewLimit": null, "items": ["swiftly learning spelling", "swiftly learning recognition", "government review recognition", "state review choice", "system review recognition", "ability review choice", "abandon review recognition", "china new choice", "swiftly learning choice", "abandoned new choice", "adopt new choice", "china learning choice", "china learning choice", "abandoned learning choice", "abandoned learning spelling", "adopt learning recognition", "adopt learning recognition", "china learning recognition", "abandoned learning recognition", "adopt learning choice"]},
+    {"mode": "mixed", "seed": "3", "reviewLimit": null, "items": ["swiftly learning spelling", "swiftly learning spelling", "abandon review spelling", "state review recognition", "ability review recognition", "government review spelling", "system review recognition", "china new choice", "swiftly learning recognition", "abandoned new choice", "adopt new choice", "china learning choice", "china learning recognition", "abandoned learning choice", "abandoned learning choice", "adopt learning recognition", "adopt learning choice", "china learning spelling", "abandoned learning spelling", "adopt learning spelling"]},
+    {"mode": "mixed", "seed": "8", "reviewLimit": null, "items": ["swiftly learning spelling", "swiftly learning spelling", "state review recognition", "abandon review recognition", "system review choice", "government review spelling", "ability review spelling", "china new choice", "swiftly learning choice", "abandoned new choice", "adopt new choice", "china learning recognition", "china learning choice", "abandoned learning recognition", "abandoned learning recognition", "adopt learning choice", "adopt learning recognition", "china learning spelling", "abandoned learning spelling", "adopt learning spelling"]},
+    {"mode": "spelling", "seed": "5", "reviewLimit": null, "items": ["swiftly learning spelling", "swiftly learning spelling", "ability review spelling", "system review spelling", "government review spelling", "state review spelling", "abandon review spelling", "china new choice", "swiftly learning spelling", "abandoned new choice", "adopt new choice", "china learning spelling", "china learning spelling", "abandoned learning spelling", "abandoned learning spelling", "adopt learning spelling", "adopt learning spelling", "china learning spelling", "abandoned learning spelling", "adopt learning spelling"]},
+    {"mode": "choice", "seed": "6", "reviewLimit": null, "items": ["swiftly learning choice", "swiftly learning choice", "state review choice", "government review choice", "ability review choice", "abandon review choice", "system review choice", "china new choice", "swiftly learning choice", "abandoned new choice", "adopt new choice", "china learning choice", "china learning choice", "abandoned learning choice", "abandoned learning choice", "adopt learning choice", "adopt learning choice", "china learning choice", "abandoned learning choice", "adopt learning choice"]}
+  ]
+}

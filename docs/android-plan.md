@@ -122,9 +122,15 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
 
 - **Stage 1 (set-up): done 2026-10-09.** `android/` (core + app), `android.yml`, debug APK signed with a fixed debug key (repo secret `ANDROID_DEBUG_KEYSTORE`).
 - **Stage 2 (`:core` timetable logic): done 2026-10-09.** All of CourseKit ported with its tests; shared cases in `spec/fixtures/` read by both test suites.
-- **Stage 3 (timetable app): done 2026-10-09.** Room storage, Today with to-dos, week grid with placing, course editor, course list, import/export, settings, Glance widget; APK 0.2.0 (10). Not yet tested on the phone.
-- **Stage 4 (alerts and focus): built 2026-10-10** (CI green, run 38065463387). One exact alarm for classes and to-dos (`AlertPlanner`), the live class notification, class reminders, to-do notifications, Settings → Reliable Reminders, the Focus tab with notifications, history and the 9 sounds; APK 0.3.0. **Waiting for the phone test** (checklist in `HANDOFF.md`).
-- **Next: stage 5 (`:core` vocabulary logic)** once the phone test of stage 4 is through — see `HANDOFF.md`.
+- **Stage 3 (timetable app): done 2026-10-09.** Room storage, Today with to-dos, week grid with placing, course editor, course list, import/export, settings, Glance widget; APK 0.2.0 (10). Tested on the phone with 0.3.0.
+- **Stage 4 (alerts and focus): done 2026-10-10** (CI run 38066439361). One exact alarm for classes and to-dos
+  (`AlertPlanner`), the live class notification, class reminders, to-do notifications, Settings → Reliable Reminders, the
+  Focus tab with notifications, history and the 9 sounds; APK 0.3.0, **tested on the phone by the owner: no issues**.
+- **Stage 5 (`:core` vocabulary logic): done 2026-10-10.** VocabKit ported to `android/core` (package
+  `io.github.hilbert0619.vocabkit`) with its 74 tests (all but the 3 for `SeedSQL`, a PC-side tool that stays in Swift);
+  new shared cases `spec/fixtures/vocab-*.json` (FSRS replays, seeded quizzes and sessions, grading, import, search),
+  generated from the Swift implementation and checked by both test suites.
+- **Next: stage 6 (Words app)** — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 

@@ -5,7 +5,7 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 
 | Module | What it is |
 |---|---|
-| `core/` | Plain Kotlin (JVM 17, no Android): the port of `CourseKit` (package `io.github.hilbert0619.coursekit`: dates, term, periods, courses, timetable, week grid, CSV import/export, course list, reminders, live class windows, to-dos, focus) and later `VocabKit`, with their tests ported one for one, plus the shared cases in `spec/fixtures/`. JSON (kotlinx.serialization) in the same shapes as Swift's `Codable`. |
+| `core/` | Plain Kotlin (JVM 17, no Android): the port of `CourseKit` (package `io.github.hilbert0619.coursekit`: dates, term, periods, courses, timetable, week grid, CSV import/export, course list, reminders, live class windows, to-dos, focus) and `VocabKit` (package `io.github.hilbert0619.vocabkit`: FSRS-6 and the scheduler, study days, daily plan, study session, answer grading, multiple choice, word entries, ECDICT word lists, word-list import, search, statistics, sync merge, sign-in links), with their tests ported one for one, plus the shared cases in `spec/fixtures/`. JSON (kotlinx.serialization) in the same shapes as Swift's `Codable`. |
 | `app/` | The Android app (`io.github.hilbert0619.coursetable`, minSdk 26, targetSdk 37): Compose UI, Room, the Glance widget, alerts and the focus timer; JVM tests, Robolectric + Roborazzi screenshot tests. |
 
 ## Alerts and focus (`app/…/alerts`, `app/…/focus`)
@@ -39,6 +39,12 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 - Swift structs become Kotlin data classes; methods that mutate in Swift return a changed copy (`FocusRun.pause`).
 - Swift `Date` becomes `java.time.Instant`, `TimeInterval` a `Double` of seconds.
 - `ImportedText.decode` reads GB18030 on Android as on Apple platforms.
+- Swift values that normalise in their initializer (`WordEntry`, `ReviewEvent`) are Kotlin classes with the same
+  normalisation and a hand-written `copy`; `Card(headword:)` is `Card.of(word)`.
+- Seeded randomness matches iOS bit for bit: `SeededRandom` (SplitMix64, FNV-1a seeds) plus Swift's own bounded draws
+  (Lemire's method) and `shuffled(using:)` order, so a seed gives the same quiz and session on both platforms
+  (`spec/fixtures/vocab-random.json`). Swift's character classes (whitespace, newlines, numbers) are in `vocabkit/Text.kt`.
+- Not ported: `SeedSQL` and the `vocab-content` tool, which build the server's word list on the PC from Swift.
 
 ## Strings
 

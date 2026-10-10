@@ -1,69 +1,56 @@
-# Session Handoff — CourseTable (Android stages 1–4 built · 0.3.0 waiting for the phone test · next: stage 5)
+# Session Handoff — CourseTable (Android stages 1–5 done · next: stage 6, the Words app)
 
 Date: 2026-10-10 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
 ## Status
 
-- **Android (StudyHour / 学时)**: stages 1–4 of [`docs/android-plan.md`](docs/android-plan.md) §7 are built and on
-  `main` (CI green, run 38066439361). Stage 4 added the class and to-do alerts, the Focus tab with sounds and Settings →
-  Reliable Reminders (design and code map: [`android/README.md`](android/README.md) "Alerts and focus"). APK:
-  `C:\Users\AI\Downloads\CourseTable\StudyHour-0.3.0-debug-16.apk` (installs over 0.1.0/0.2.0).
-  **The owner hasn't reported a phone test of 0.2.0 or 0.3.0 yet** — the checklist below. No Words yet.
-- **iOS**: unchanged. 0.3.1 (build 5) IPA built (`C:\Users\AI\Downloads\CourseTable\CourseTable-0.3.1.ipa`); the
-  owner's device test of 0.3.1 was not reported. `docs/v3-development-record.md` still unwritten.
-- Outside `android/` only docs changed this session (`docs/android-plan.md` §2, §5, §8; this file).
-
-## Phone test of 0.3.0 (iQOO Neo 9, OriginOS 6) — what to check, what's unknown
-
-1. First launch asks for notifications (once). Settings → Reminders → **Reliable Reminders**: every row green?
-   "Open Auto-Start Settings" opens vivo's page or App info? (The vivo component names are guesses from
-   dontkillmyapp/AutoStarter; the written OriginOS steps are best guesses too — get the real menu names.)
-   **Send a Test Reminder**, lock the phone: does it come after ~10 s?
-2. **Live class notification**: add a class starting in ~15 min (Remind me: 10 min). At the reminder time an alert with
-   a countdown; at the start it turns into "Until …"; at the end it goes. Does OriginOS show it in **原子岛** / the
-   status-bar chip (Live Update)? Close button and swipe-away: it must not come back. A to-do "after" that class shows
-   in it. Then turn the live notification off and Class reminders on: a plain reminder at the reminder time instead.
-3. **To-dos** at a time and after a class: a notification at the time; ticking it off removes it.
-4. **Focus**: start with a sound, lock the phone, play music in another app: both play (mix)? The loop seam audible?
-   Pause/Resume and Stop from the notification; a notification at each switch (set Focus block 10 min to test);
-   history after Stop / finish. Live Update for the focus notification?
-5. Swipe StudyHour away from Recents and wait for an alert: does it still come (vivo background limits)? Reboot: do
-   alarms come back (BOOT_COMPLETED needs auto-start on vivo)?
+- **Android (StudyHour / 学时)**: stages 1–5 of [`docs/android-plan.md`](docs/android-plan.md) §7 are done and on `main`.
+  - Stage 4 (alerts, Focus, Reliable Reminders; code map in [`android/README.md`](android/README.md) "Alerts and focus"):
+    APK `C:\Users\AI\Downloads\CourseTable\StudyHour-0.3.0-debug-16.apk`, **tested on the phone by the owner: no issues**
+    (OriginOS 6 menus, Live Updates, sounds and background alerts all fine).
+  - Stage 5: VocabKit ported to `android/core` (package `io.github.hilbert0619.vocabkit`, 74 ported tests); new shared
+    cases `spec/fixtures/vocab-*.json` (generated from the Swift implementation, checked by both suites — Swift
+    `VocabSharedFixtureTests.swift`, Kotlin `VocabSharedFixtureTests.kt`). CI run: STAGE5_RUN. No app changes, so no
+    new APK.
+- **iOS**: app unchanged. Only `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift` was added (reads the new
+  fixtures). 0.3.1 (build 5) IPA built; the owner's device test of 0.3.1 was not reported. `docs/v3-development-record.md`
+  still unwritten.
 
 ## Handoff prompt for the next session
 
 > Copy the whole block into a new Claude Code session opened in `D:\Projects\CourseTable`.
 
 ```
-[PROJECT HANDOFF] CourseTable — first the owner's phone test of StudyHour 0.3.0 (fix what it finds), then Android
-stage 5: port VocabKit to android/core
+[PROJECT HANDOFF] CourseTable — Android stage 6: the Words tab (sign-in by email link, books, study, stats, sync)
 
 ## Read first
-HANDOFF.md (status, the 0.3.0 test checklist, gotchas), docs/android-plan.md (decisions, parity table, stages),
-android/README.md, docs/vocabulary-spec.md. Swift: CourseKit/Sources/VocabKit (16 files, ~2,000 lines) and
-CourseKit/Tests/VocabKitTests (89 Swift Testing tests). The Kotlin port of CourseKit (android/core, package
-io.github.hilbert0619.coursekit) shows the porting style.
+HANDOFF.md, docs/android-plan.md (§2 parity table: the Words rows; §7 stage 6), docs/vocabulary-spec.md (the Words
+spec: sync §8, study rules §7, data §5), android/README.md. iOS reference: CourseTable/Vocabulary/ (VocabApp.swift;
+Backend/ VocabBackend, SupabaseBackend, DemoBackend, VocabDemo; Store/ VocabModel, VocabRecords, SyncEngine; Views/
+WordsTab, WordsHomeView, StudySessionView, WordDetailView, BooksView, VocabSettingsView, VocabStatsView,
+WordComponents — ~3,500 lines), supabase/ (schema, RLS, seed), docs/v2-development-record.md (how the iOS Words app was
+built and tested). The logic is already in android/core (package io.github.hilbert0619.vocabkit).
 
-## Goal
-1. If I report results of the 0.3.0 phone test, fix them first (alerts: android/app/.../alerts, AlertPlanner +
-   AlertPlannerTest; focus: .../focus, FocusEngineTest), then APK 0.3.1.
-2. Stage 5 (docs/android-plan.md §7): VocabKit in android/core — FSRS-6 (checked against the reference values), Scheduler,
-   StudyClock (study day from 04:00), DailyPlan, StudySession, AnswerGrader, Choice, WordListImport, WordSearch,
-   VocabStats, SyncMerge, AuthLink, Card/WordEntry — each Swift test ported with the same name and expectations, and the
-   cases that matter for "same behaviour" (FSRS reference values, sync merge, grading) moved into spec/fixtures/ for both
-   test suites. Decide whether ECDICT/SeedSQL (content tools for the word list) are needed on Android at all; ask if
-   unsure. :core builds and tests on this PC (JDK only) — iterate locally, then CI.
+## Goal (stage 6 of docs/android-plan.md §7)
+The Words tab on Android as on iOS: sign up / sign in / password reset by email link (deep link
+io.github.hilbert0619.coursetable://auth-callback, AuthLink in core), the system book downloaded and cached, own books
+(import TXT/CSV with preview), the Today card, study sessions in all modes (recognition, choice, spelling, mixed, new-word
+page with "I know this"), search and word page with speech (TextToSpeech US/UK), favourites and hard words, settings,
+statistics, sync (push/pull review logs, newest-wins settings/favourites/books), sign out and delete account. Then APK
+0.4.0 for the owner to test with their account against the same Supabase project.
 
 ## Decided with me — don't reverse; ask if unsure
-Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, same Supabase, APK, StudyHour/学时 on
-Android only, iOS unchanged). Keep the repo secret ANDROID_DEBUG_KEYSTORE. Don't create or change secrets without
-asking. No Android Studio/SDK on this PC: the app builds on CI only.
+Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and schema
+unchanged, supabase-kt, APK, StudyHour/学时 on Android only, iOS unchanged). Keep the repo secret ANDROID_DEBUG_KEYSTORE.
+Don't create or change secrets without asking. No Android Studio/SDK on this PC: the app builds on CI only. Look up the
+current supabase-kt and Ktor versions (and the Ktor engine that works on Android without Google Play services) first.
 
 ## How to work
-Iterate on a branch: push it, `gh workflow run android.yml --ref <branch>`, read the run, fix, repeat; when green,
-fast-forward main and push (main builds the APK). Download artifacts with gh run download (APK to
-C:\Users\AI\Downloads\CourseTable\, screenshots to check). Short report at the end of the stage with run links; I test on
-the phone.
+Logic in android/core with tests first (it builds and tests here: ./gradlew :core:test); the app stays thin. Iterate the
+app on a branch: push, `gh workflow run android.yml --ref <branch>`, read the run, fix, repeat; when green, fast-forward
+main and push (main builds the APK). Download artifacts with gh run download (APK to C:\Users\AI\Downloads\CourseTable\,
+screenshots to check). The Supabase publishable key and URL are public (VocabBackend.swift); never put secret keys,
+passwords or tokens in chat or code. Short report at the end with run links; I test on the phone with my account.
 ```
 
 ## Facts and constraints
@@ -73,7 +60,8 @@ the phone.
   2.3.12, Room 2.8.5, Lifecycle 2.11.0, Glance 1.2.0, core-ktx 1.19.1, Media3 1.11.1, kotlinx-serialization 1.11.0,
   Robolectric 4.17, Roborazzi 1.76.0, Espresso pinned 3.7.0. GitHub Actions: checkout v7, setup-java v6 (Temurin 21),
   gradle/actions v6, upload-artifact v7. `ubuntu-latest` moves to Ubuntu 26 from 2026-10-19.
-- Layout: `android/core` (package `io.github.hilbert0619.coursekit`, 238 tests incl. shared fixtures); `android/app`
+- Layout: `android/core` (packages `io.github.hilbert0619.coursekit` and `…vocabkit`, 322 tests incl. shared fixtures;
+  RealContentTests read `content/kaoyan-ecdict.csv`); `android/app`
   packages `data` (Room `AppDatabase` v1 — schema JSON in `app/schemas/`, bump the version + add a migration for any
   change; `Repository` with `onChange`; focus history `FocusSessionRecord`), `alerts` (`AlertPlanner`, `Alerts`,
   `AlertNotifications`, `AlertReceiver`/`SystemEventReceiver`, `AlertPreferences`, `SystemSettings`), `focus`
@@ -104,6 +92,9 @@ the phone.
   `./gradlew -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=7892 -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=7892 :core:test`
   (only `:core` builds here). TLS hiccups to dl.google.com / raw.githubusercontent.com happen: retry.
   `google()` is limited to androidx/com.android/com.google groups in `settings.gradle.kts`.
+- A local Gradle build that hangs (TLS stalls) leaves daemons holding `core/build/kotlin`: run `./gradlew --stop`,
+  stop leftover `KotlinCompileDaemon` java processes, delete `android/core/build/kotlin`, and build with
+  `--console=plain` to see progress. `swift test` in `CourseKit/` takes ~20 s here (VocabKit 87, CourseKit 144 tests).
 - Robolectric on JDK 21 needs `--add-exports=java.base/jdk.internal.access=ALL-UNNAMED` and
   `--add-opens=java.base/java.io=ALL-UNNAMED` (set in `app/build.gradle.kts`). In Robolectric, POST_NOTIFICATIONS is
   not granted and `canScheduleExactAlarms()` is false unless a test sets them (`ScreenshotTests.allowEverything`).

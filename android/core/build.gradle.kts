@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// The app's logic without Android: the Kotlin port of CourseKit and VocabKit (CourseKit/ in the repo root).
+// The app's logic without Android: the Kotlin port of CourseKit and VocabKit (CourseKit/ in the repo root), in the
+// packages io.github.hilbert0619.coursekit and io.github.hilbert0619.vocabkit.
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
@@ -33,6 +34,9 @@ tasks.test {
     // The shared test cases (spec/fixtures/) that the Swift tests read too.
     systemProperty("fixtures.dir", rootProject.file("../spec/fixtures").absolutePath)
     inputs.dir(rootProject.file("../spec/fixtures")).withPropertyName("fixtures").withPathSensitivity(PathSensitivity.RELATIVE)
+    // The committed word list (content/kaoyan-ecdict.csv), checked by RealContentTests as on iOS.
+    systemProperty("content.dir", rootProject.file("../content").absolutePath)
+    inputs.file(rootProject.file("../content/kaoyan-ecdict.csv")).withPropertyName("wordList").withPathSensitivity(PathSensitivity.RELATIVE)
     testLogging {
         events("failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
