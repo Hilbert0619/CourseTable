@@ -6,7 +6,25 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 | Module | What it is |
 |---|---|
 | `core/` | Plain Kotlin (JVM 17, no Android): the port of `CourseKit` (package `io.github.hilbert0619.coursekit`: dates, term, periods, courses, timetable, week grid, CSV import/export, course list, reminders, live class windows, to-dos, focus) and later `VocabKit`, with their tests ported one for one, plus the shared cases in `spec/fixtures/`. JSON (kotlinx.serialization) in the same shapes as Swift's `Codable`. |
-| `app/` | The Android app (`io.github.hilbert0619.coursetable`, minSdk 26, targetSdk 37): Compose UI, Robolectric + Roborazzi screenshot tests. |
+| `app/` | The Android app (`io.github.hilbert0619.coursetable`, minSdk 26, targetSdk 37): Compose UI, Room, the Glance widget, alerts and the focus timer; JVM tests, Robolectric + Roborazzi screenshot tests. |
+
+## Alerts and focus (`app/…/alerts`, `app/…/focus`)
+
+- **One exact alarm** instead of a notification per class: `Alerts.sync` asks `AlertPlanner` (pure, JVM-tested) what to
+  post, update or remove *now* and when the next event is, then sets one `setExactAndAllowWhileIdle` alarm
+  (`USE_EXACT_ALARM`). It runs on app start, after every data or settings change, at the alarm, and after a restart,
+  an app update or a clock/time zone change (`SystemEventReceiver`).
+- **Live class notification** (setting on by default; the iOS Live Activity): an ongoing notification per class from
+  the reminder time, counting down to the start, then "Until 09:40", with the after-class to-dos and a Close button; a
+  Live Update on Android 16 (`setRequestPromotedOngoing`). One the person closes or swipes away stays gone; one the
+  system removed (a restart) comes back silently. **Class reminders** only for classes without it (the setting off).
+  **To-do notifications** when a to-do is due, removed when it's ticked off or deleted.
+- **Focus**: `FocusEngine` keeps the core `FocusRun` in `SharedPreferences`, so the app, the notification buttons and
+  an alarm in a new process share one session; an alarm at each switch posts its notification. The sounds are the iOS
+  files (`CourseTable/Sounds`, packed as assets by the variant API), played by Media3 ExoPlayer in a loop without audio
+  focus (they mix with music); a `mediaPlayback` foreground service runs only while a session plays a sound.
+- **Settings → Reliable Reminders** checks notifications, exact alarms, battery optimisation and Live Updates, links to
+  vivo/iQOO's auto-start page, and sends a test reminder. Notifications themselves are checked on the phone.
 
 ## Building
 

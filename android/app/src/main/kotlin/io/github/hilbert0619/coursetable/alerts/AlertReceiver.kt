@@ -15,14 +15,10 @@ class AlertReceiver : BroadcastReceiver() {
         val app = context.applicationContext as StudyHourApp
         when (intent.action) {
             ACTION_SYNC -> app.runAsync(this) { Alerts.sync(app) }
-            ACTION_CLOSE -> {
-                val tag = intent.getStringExtra(EXTRA_TAG) ?: return
+            ACTION_CLOSE, ACTION_DISMISSED -> {
                 val signature = intent.getStringExtra(EXTRA_SIGNATURE) ?: return
-                Alerts.close(app, tag, signature, intent.getLongExtra(EXTRA_END, 0))
-            }
-            ACTION_DISMISSED -> {
-                val signature = intent.getStringExtra(EXTRA_SIGNATURE) ?: return
-                app.alertPreferences.addDismissed(signature, intent.getLongExtra(EXTRA_END, 0))
+                val end = intent.getLongExtra(EXTRA_END, 0)
+                app.runAsync(this) { Alerts.dismiss(app, signature, end, intent.getStringExtra(EXTRA_TAG)) }
             }
             ACTION_TEST -> AlertNotifications.postTest(app)
             // The focus engine works on the main thread, where receivers run.

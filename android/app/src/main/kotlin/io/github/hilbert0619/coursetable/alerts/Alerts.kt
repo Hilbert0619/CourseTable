@@ -29,7 +29,7 @@ object Alerts {
         app.scope.launch { sync(app) }
     }
 
-    suspend fun sync(context: Context, now: Instant = Instant.now(), zone: ZoneId = ZoneId.systemDefault()) = mutex.withLock {
+    suspend fun sync(context: Context, now: Instant = Instant.now(), zone: ZoneId = ZoneId.systemDefault()): Unit = mutex.withLock {
         val app = context.applicationContext as StudyHourApp
         val preferences = app.alertPreferences
         val manager = context.getSystemService(NotificationManager::class.java)
@@ -57,11 +57,14 @@ object Alerts {
         Log.d(TAG, "Synced: ${plan.postLive.size} live, ${plan.reminders.size} reminders, ${plan.todos.size} to-dos; next ${plan.nextAlarm}")
     }
 
-    /** Closes a live class notification for good (its Close button). */
-    fun close(context: Context, tag: String, signature: String, end: Long) {
+    /**
+     * Remembers that the person closed (Close button, with [tag]) or swiped away a live class notification, so it
+     * doesn't come back. Under the sync's lock, so a sync running at the same time can't post it again.
+     */
+    suspend fun dismiss(context: Context, signature: String, end: Long, tag: String? = null): Unit = mutex.withLock {
         val app = context.applicationContext as StudyHourApp
         app.alertPreferences.addDismissed(signature, end)
-        context.getSystemService(NotificationManager::class.java).cancel(tag, NotificationIds.LIVE)
+        if (tag != null) context.getSystemService(NotificationManager::class.java).cancel(tag, NotificationIds.LIVE)
     }
 }
 
