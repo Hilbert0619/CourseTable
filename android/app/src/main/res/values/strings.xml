@@ -10,7 +10,6 @@
     <string name="tab_focus">Focus</string>
     <string name="tab_words">Words</string>
     <string name="tab_settings">Settings</string>
-    <string name="placeholder_focus">The Pomodoro timer with background sounds will be here.</string>
     <string name="placeholder_words">Vocabulary study and sync will be here.</string>
     <string name="placeholder_note">StudyHour for Android is being built.</string>
 
@@ -26,6 +25,8 @@
     <string name="increase">Increase</string>
     <string name="optional">Optional</string>
     <string name="version">Version</string>
+    <string name="close">Close</string>
+    <string name="open_settings">Open Settings</string>
 
     <!-- Days, weeks, periods -->
     <string name="mon">Mon</string>
@@ -196,6 +197,97 @@
     <string name="period_issue_empty">Add at least one period.</string>
     <string name="period_issue_ends_before_start">Period %1$d ends before it starts.</string>
     <string name="period_issue_overlaps_previous">Period %1$d starts before the previous one ends.</string>
+
+    <!-- Reminders (Settings) -->
+    <string name="reminders">Reminders</string>
+    <string name="class_reminders">Class reminders</string>
+    <string name="live_notification">Live class notification</string>
+    <string name="remind_me">Remind me</string>
+    <string name="at_start_time">At start time</string>
+    <string name="minutes_before">%1$d minutes before</string>
+    <string name="notifications_off">Notifications for StudyHour are turned off.</string>
+    <string name="reminders_footer_reminders">Class reminders notify you of classes that have no live notification.</string>
+    <string name="reminders_footer_live">The live class notification shows each class from the reminder time until it ends, with a countdown and the to-dos for after class. Close it if you don\'t need it.</string>
+    <string name="reliable_reminders">Reliable Reminders</string>
+
+    <!-- Reliable reminders -->
+    <string name="reliable_intro">Android saves power by stopping apps in the background, and phones from vivo, iQOO and other brands do it more strictly. Then class reminders, to-do notifications and focus alerts can come late or not at all. Allow the items below.</string>
+    <string name="permissions">Permissions</string>
+    <string name="notifications_label">Notifications</string>
+    <string name="exact_alarms">Exact alarms</string>
+    <string name="battery_optimization">Battery optimization</string>
+    <string name="live_updates">Live Updates</string>
+    <string name="status_allowed">Allowed</string>
+    <string name="status_off">Off</string>
+    <string name="status_not_allowed">Not allowed</string>
+    <string name="status_unrestricted">Unrestricted</string>
+    <string name="status_optimized">Optimized: reminders may come late</string>
+    <string name="background_running">Background running</string>
+    <string name="vivo_steps">1. Auto-start: allow StudyHour to start automatically (the button below, or i Manager → App manager → Auto-start).\n2. Background power: App info → Battery → allow high background power consumption.\n3. Recents: open Recents and swipe down on StudyHour\'s card to lock it.</string>
+    <string name="other_steps">Allow StudyHour to start automatically and to run in the background in your phone\'s settings (often under App info → Battery), and lock it in Recents.</string>
+    <string name="menu_names_differ">Menu names differ between phones and system versions.</string>
+    <string name="open_autostart">Open Auto-Start Settings</string>
+    <string name="open_app_info">Open App Info</string>
+    <string name="send_test_reminder">Send a Test Reminder</string>
+    <string name="test_footer">A test reminder arrives 10 seconds after you tap. Lock your phone to check that it comes.</string>
+    <string name="test_sent">Test reminder set: lock your phone and wait 10 seconds.</string>
+
+    <!-- Notifications -->
+    <string name="channel_todos">To-dos</string>
+    <string name="channel_focus_alerts">Focus alerts</string>
+    <string name="channel_focus_timer">Focus timer</string>
+    <string name="starting_now">Starting now</string>
+    <string name="starts_in_min">Starts in %1$d min</string>
+    <string name="until_time">Until %1$s</string>
+    <string name="after_class_todos">After class: %1$s</string>
+    <string name="test_reminder_title">Test reminder</string>
+    <string name="test_reminder_text">Reminders arrive on time on this phone.</string>
+
+    <!-- Focus -->
+    <string name="focus_goal_hint">Goal, e.g. Calculus review</string>
+    <string name="length">Length</string>
+    <string name="breaks_pomodoro">Breaks (Pomodoro)</string>
+    <string name="focus_block">Focus block</string>
+    <string name="short_break">Short break</string>
+    <string name="long_break">Long break</string>
+    <string name="long_break_after">Long break after every %1$d blocks</string>
+    <string name="focus_plan_summary">%1$d focus blocks · %2$s of focus · ends at %3$s</string>
+    <string name="background_sound">Background Sound</string>
+    <string name="volume">Volume</string>
+    <string name="preview_sound">Preview Sound</string>
+    <string name="stop_preview">Stop Preview</string>
+    <string name="sound_footer">The sound keeps playing when you leave the app or lock your phone, and mixes with music. Recordings from Freesound, in the public domain (CC0).</string>
+    <string name="history">History</string>
+    <string name="focused_today">Focused today</string>
+    <string name="finished">Finished</string>
+    <string name="stopped">Stopped</string>
+    <string name="start_focusing">Start Focusing</string>
+    <string name="focus_block_of">Focus · Block %1$d of %2$d</string>
+    <string name="paused">Paused</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="stop">Stop</string>
+    <string name="skip_break">Skip Break</string>
+    <string name="focused_amount">%1$s focused</string>
+    <string name="ends_at">ends at %1$s</string>
+    <string name="stop_focus_question">Stop this focus session?</string>
+    <string name="stop_session">Stop Session</string>
+    <string name="stop_focus_message">The time you\'ve focused so far is kept in the history.</string>
+    <string name="focus_session_done">Focus session done</string>
+    <string name="back_to_focus">Back to focus</string>
+    <string name="block_of">Block %1$d of %2$d</string>
+    <string name="time_for_break">Time for a break</string>
+    <string name="time_for_long_break">Time for a long break</string>
+    <string name="sound_none">No Sound</string>
+    <string name="sound_rain">Rain</string>
+    <string name="sound_roof_rain">Rain on a Roof</string>
+    <string name="sound_campfire">Campfire</string>
+    <string name="sound_airplane">Airplane Cabin</string>
+    <string name="sound_ocean">Ocean</string>
+    <string name="sound_stream">Stream</string>
+    <string name="sound_night">Night</string>
+    <string name="sound_train">Train</string>
+    <string name="sound_cafe">Café</string>
 
     <!-- Widget -->
     <string name="widget_name">Class Schedule</string>

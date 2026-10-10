@@ -30,31 +30,55 @@ import io.github.hilbert0619.coursekit.Semester
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursetable.BuildConfig
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.alerts.AlertNotifications
+import io.github.hilbert0619.coursetable.alerts.ReminderSettings
+import io.github.hilbert0619.coursetable.alerts.SystemSettings
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.DayPickerDialog
+import io.github.hilbert0619.coursetable.ui.components.MenuRow
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
 import io.github.hilbert0619.coursetable.ui.components.StepperRow
+import io.github.hilbert0619.coursetable.ui.components.SwitchRow
 import io.github.hilbert0619.coursetable.ui.components.ValueRow
+import io.github.hilbert0619.coursetable.ui.components.WarningRow
 import io.github.hilbert0619.coursetable.ui.rememberNames
+import io.github.hilbert0619.coursetable.ui.rememberNotificationRequest
+import io.github.hilbert0619.coursetable.ui.rememberSystemState
 import io.github.hilbert0619.coursetable.ui.timetable.ImportScreen
 import java.io.File
 
 @Composable
-fun SettingsScreen(timetable: Timetable, actions: AppActions, modifier: Modifier = Modifier) {
+fun SettingsScreen(timetable: Timetable, reminders: ReminderSettings, actions: AppActions, modifier: Modifier = Modifier) {
     var editingPeriods by rememberSaveable { mutableStateOf(false) }
-    if (editingPeriods) {
-        BackHandler { editingPeriods = false }
-        PeriodScheduleEditor(timetable.periods, actions, onBack = { editingPeriods = false }, modifier = modifier)
-    } else {
-        SettingsList(timetable, actions, onEditPeriods = { editingPeriods = true }, modifier = modifier)
+    var showingReliable by rememberSaveable { mutableStateOf(false) }
+    when {
+        editingPeriods -> {
+            BackHandler { editingPeriods = false }
+            PeriodScheduleEditor(timetable.periods, actions, onBack = { editingPeriods = false }, modifier = modifier)
+        }
+        showingReliable -> {
+            BackHandler { showingReliable = false }
+            ReliableRemindersScreen(actions, onBack = { showingReliable = false }, modifier = modifier)
+        }
+        else -> SettingsList(
+            timetable, reminders, actions, onEditPeriods = { editingPeriods = true }, onShowReliable = { showingReliable = true },
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
-private fun SettingsList(timetable: Timetable, actions: AppActions, onEditPeriods: () -> Unit, modifier: Modifier) {
+private fun SettingsList(
+    timetable: Timetable,
+    reminders: ReminderSettings,
+    actions: AppActions,
+    onEditPeriods: () -> Unit,
+    onShowReliable: () -> Unit,
+    modifier: Modifier,
+) {
     val names = rememberNames()
     val context = LocalContext.current
     val today = LocalNowSource.current.today()
@@ -86,6 +110,8 @@ private fun SettingsList(timetable: Timetable, actions: AppActions, onEditPeriod
                 }
             }
 
+            ReminderSection(reminders, actions, onShowReliable)
+
             Section(title = stringResource(R.string.about)) {
                 ValueRow(stringResource(R.string.version), BuildConfig.VERSION_NAME)
             }
@@ -97,6 +123,44 @@ private fun SettingsList(timetable: Timetable, actions: AppActions, onEditPeriod
     }
     if (importing) ImportScreen(timetable, actions, onDismiss = { importing = false })
 }
+
+/** Class reminders and the live class notification (iOS `ReminderSection`), and the way to Reliable Reminders. */
+@Composable
+private fun ReminderSection(reminders: ReminderSettings, actions: AppActions, onShowReliable: () -> Unit) {
+    val context = LocalContext.current
+    val allowed = rememberSystemState { AlertNotifications.canNotify(context) }
+    val askForNotifications = rememberNotificationRequest()
+    val footer = stringResource(R.string.reminders_footer_reminders) + "\n\n" + stringResource(R.string.reminders_footer_live)
+    Section(title = stringResource(R.string.reminders), footer = footer) {
+        SwitchRow(stringResource(R.string.class_reminders), reminders.remindersEnabled) { on ->
+            actions.setRemindersEnabled(on)
+            if (on) askForNotifications()
+        }
+        RowDivider()
+        SwitchRow(stringResource(R.string.live_notification), reminders.liveEnabled) { on ->
+            actions.setLiveNotificationsEnabled(on)
+            if (on) askForNotifications()
+        }
+        if (reminders.remindersEnabled || reminders.liveEnabled) {
+            RowDivider()
+            MenuRow(stringResource(R.string.remind_me), reminders.leadMinutes, ReminderSettings.LEAD_CHOICES, { leadLabel(it) }) {
+                actions.setLeadMinutes(it)
+            }
+            if (!allowed) {
+                RowDivider()
+                WarningRow(stringResource(R.string.notifications_off))
+                ActionRow(R.drawable.ic_notifications, stringResource(R.string.open_settings)) { SystemSettings.openNotificationSettings(context) }
+            }
+        }
+        RowDivider()
+        ActionRow(R.drawable.ic_alarm, stringResource(R.string.reliable_reminders), onClick = onShowReliable)
+    }
+}
+
+/** "At start time", "10 minutes before" */
+@Composable
+private fun leadLabel(minutes: Int): String =
+    if (minutes == 0) stringResource(R.string.at_start_time) else stringResource(R.string.minutes_before, minutes)
 
 /** The courses as a CSV file (UTF-8 with a byte-order mark, for Excel), offered to the share sheet. */
 private fun shareCsv(context: Context, courses: List<Course>) {

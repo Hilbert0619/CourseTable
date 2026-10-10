@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,6 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.alerts.ReminderSettings
+import io.github.hilbert0619.coursetable.focus.FocusActions
+import io.github.hilbert0619.coursetable.focus.FocusState
+import io.github.hilbert0619.coursetable.ui.focus.FocusScreen
 import io.github.hilbert0619.coursetable.ui.settings.SettingsScreen
 import io.github.hilbert0619.coursetable.ui.timetable.TimetableScreen
 import io.github.hilbert0619.coursetable.ui.today.TodayScreen
@@ -49,10 +54,28 @@ enum class Tab(
     SETTINGS(R.string.tab_settings, R.drawable.ic_tab_settings, R.drawable.ic_tab_settings_filled),
 }
 
-/** The tab bar and the selected tab. [data] is `null` until the database has been read. */
+/**
+ * The tab bar and the selected tab. [data] is `null` until the database has been read. [requestedTab] comes from a
+ * notification; [onTabShown] clears it.
+ */
 @Composable
-fun RootScreen(data: AppData?, actions: AppActions, initialTab: Tab = Tab.TODAY) {
+fun RootScreen(
+    data: AppData?,
+    actions: AppActions,
+    initialTab: Tab = Tab.TODAY,
+    focus: FocusState = FocusState(),
+    focusActions: FocusActions = FocusActions.None,
+    reminders: ReminderSettings = ReminderSettings(),
+    requestedTab: Tab? = null,
+    onTabShown: () -> Unit = {},
+) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
+    LaunchedEffect(requestedTab) {
+        if (requestedTab != null) {
+            tab = requestedTab
+            onTabShown()
+        }
+    }
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -76,9 +99,9 @@ fun RootScreen(data: AppData?, actions: AppActions, initialTab: Tab = Tab.TODAY)
         when (tab) {
             Tab.TODAY -> TodayScreen(data.timetable, data.todos, actions, content)
             Tab.TIMETABLE -> TimetableScreen(data.timetable, data.templates, actions, content)
-            Tab.FOCUS -> Placeholder(tab, R.string.placeholder_focus, content)
+            Tab.FOCUS -> FocusScreen(focus, data.focusSessions, focusActions, content)
             Tab.WORDS -> Placeholder(tab, R.string.placeholder_words, content)
-            Tab.SETTINGS -> SettingsScreen(data.timetable, actions, content)
+            Tab.SETTINGS -> SettingsScreen(data.timetable, reminders, actions, content)
         }
     }
 }

@@ -1,27 +1,86 @@
 package io.github.hilbert0619.coursetable
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.hilbert0619.coursetable.alerts.Alerts
 import io.github.hilbert0619.coursetable.ui.AppViewModel
 import io.github.hilbert0619.coursetable.ui.RootScreen
+import io.github.hilbert0619.coursetable.ui.Tab
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
 
 class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels { AppViewModel.Factory }
+    private val app: StudyHourApp get() = application as StudyHourApp
+
+    /** The tab a notification asked for ([EXTRA_TAB]), until it's shown. */
+    private var requestedTab by mutableStateOf<Tab?>(null)
+
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        Alerts.requestSync(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (savedInstanceState == null) requestedTab = tabOf(intent)
+        askForNotificationsOnce()
         setContent {
             StudyHourTheme {
                 val data by viewModel.data.collectAsStateWithLifecycle()
-                RootScreen(data, viewModel)
+                val focus by app.focus.state.collectAsStateWithLifecycle()
+                val reminders by app.alertPreferences.settings.collectAsStateWithLifecycle()
+                RootScreen(
+                    data, viewModel,
+                    focus = focus, focusActions = app.focus, reminders = reminders,
+                    requestedTab = requestedTab, onTabShown = { requestedTab = null },
+                )
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        tabOf(intent)?.let { requestedTab = it }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Catch up with whatever happened while the app wasn't running.
+        Alerts.requestSync(this)
+        app.focus.refresh()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        app.focus.stopPreview()
+    }
+
+    /** The live class notification is on from the start, so ask once at launch (Android 13+). */
+    private fun askForNotificationsOnce() {
+        val preferences = app.alertPreferences
+        if (Build.VERSION.SDK_INT < 33 || preferences.askedForNotifications) return
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return
+        preferences.askedForNotifications = true
+        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    private fun tabOf(intent: Intent?): Tab? = intent?.getStringExtra(EXTRA_TAB)?.let { name -> Tab.entries.firstOrNull { it.name == name } }
+
+    companion object {
+        /** Opens the app on a tab ([Tab.name]): the class and focus notifications use it. */
+        const val EXTRA_TAB = "tab"
     }
 }

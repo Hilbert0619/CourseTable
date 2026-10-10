@@ -12,7 +12,12 @@ import io.github.hilbert0619.coursekit.Semester
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursetable.StudyHourApp
+import io.github.hilbert0619.coursetable.alerts.Alarms
+import io.github.hilbert0619.coursetable.alerts.Alerts
+import io.github.hilbert0619.coursetable.alerts.ReminderSettings
+import io.github.hilbert0619.coursetable.data.FocusSessionRecord
 import io.github.hilbert0619.coursetable.data.Repository
+import java.time.Instant
 import java.util.UUID
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +30,8 @@ data class AppData(
     val timetable: Timetable,
     val templates: List<CourseTemplate>,
     val todos: List<Todo>,
+    /** Ended focus sessions, newest first. */
+    val focusSessions: List<FocusSessionRecord> = emptyList(),
 )
 
 /** Everything the screens can change. The view model saves it; screenshot tests pass a stand-in. */
@@ -39,6 +46,12 @@ interface AppActions {
     fun saveTodo(todo: Todo)
     fun setTodoDone(id: UUID, isDone: Boolean)
     fun deleteTodo(id: UUID)
+    fun setRemindersEnabled(enabled: Boolean)
+    fun setLiveNotificationsEnabled(enabled: Boolean)
+    fun setLeadMinutes(minutes: Int)
+
+    /** A test notification from an alarm 10 seconds from now (Settings → Reliable Reminders). */
+    fun sendTestReminder()
 
     /** Does nothing: for previews and screenshots. */
     object None : AppActions {
@@ -52,12 +65,19 @@ interface AppActions {
         override fun saveTodo(todo: Todo) = Unit
         override fun setTodoDone(id: UUID, isDone: Boolean) = Unit
         override fun deleteTodo(id: UUID) = Unit
+        override fun setRemindersEnabled(enabled: Boolean) = Unit
+        override fun setLiveNotificationsEnabled(enabled: Boolean) = Unit
+        override fun setLeadMinutes(minutes: Int) = Unit
+        override fun sendTestReminder() = Unit
     }
 }
 
-class AppViewModel(private val repository: Repository) : ViewModel(), AppActions {
-    val data: StateFlow<AppData?> = combine(repository.timetable, repository.templates, repository.todos, ::AppData)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+class AppViewModel(private val app: StudyHourApp) : ViewModel(), AppActions {
+    private val repository: Repository = app.repository
+
+    val data: StateFlow<AppData?> =
+        combine(repository.timetable, repository.templates, repository.todos, repository.focusSessions, ::AppData)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     init {
         viewModelScope.launch { repository.ensureSettings() }
@@ -78,9 +98,20 @@ class AppViewModel(private val repository: Repository) : ViewModel(), AppActions
     override fun setTodoDone(id: UUID, isDone: Boolean) = save { setTodoDone(id, isDone) }
     override fun deleteTodo(id: UUID) = save { deleteTodo(id) }
 
+    override fun setRemindersEnabled(enabled: Boolean) = changeReminders { it.copy(remindersEnabled = enabled) }
+    override fun setLiveNotificationsEnabled(enabled: Boolean) = changeReminders { it.copy(liveEnabled = enabled) }
+    override fun setLeadMinutes(minutes: Int) = changeReminders { it.copy(leadMinutes = minutes) }
+
+    override fun sendTestReminder() = Alarms.set(app, Alarms.TEST, Instant.now().plusSeconds(10))
+
+    private fun changeReminders(transform: (ReminderSettings) -> ReminderSettings) {
+        app.alertPreferences.update(transform)
+        Alerts.requestSync(app)
+    }
+
     companion object {
         val Factory = viewModelFactory {
-            initializer { AppViewModel((this[APPLICATION_KEY] as StudyHourApp).repository) }
+            initializer { AppViewModel(this[APPLICATION_KEY] as StudyHourApp) }
         }
     }
 }

@@ -1,4 +1,4 @@
-# Versions checked on 2026-10-09 (Maven Central, Google Maven, gradle.org).
+# Versions checked on 2026-10-09 (Media3 on 2026-10-10) (Maven Central, Google Maven, gradle.org).
 [versions]
 agp = "9.4.1"
 kotlin = "2.4.21"
@@ -18,6 +18,7 @@ room = "2.8.5"
 lifecycle = "2.11.0"
 glance = "1.2.0"
 coroutines = "1.11.0"
+media3 = "1.11.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -49,6 +50,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }
+media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 [plugins]

@@ -47,6 +47,10 @@ class Repository(
     /** Every to-do, oldest first. */
     val todos: Flow<List<Todo>> = dao.todos().map { list -> list.map { it.toTodo() } }
 
+    /** Ended focus sessions, newest first (the latest [RECENT_FOCUS_SESSIONS]). */
+    val focusSessions: Flow<List<FocusSessionRecord>> =
+        dao.focusSessions(RECENT_FOCUS_SESSIONS).map { list -> list.map { it.toRecord() } }
+
     suspend fun currentTimetable(): Timetable = timetable.first()
 
     /** Creates the settings row with defaults (term starting this week) on first launch. */
@@ -132,6 +136,13 @@ class Repository(
         onChange()
     }
 
+    // Focus history
+
+    /** Saves a session that ended; a second record of the same session is ignored. */
+    suspend fun recordFocus(session: FocusSessionRecord) {
+        dao.insertFocusSession(FocusSessionEntity.from(session))
+    }
+
     /** Demo data for screenshots: a term in its fifth week, a few courses on today and tomorrow, and to-dos. */
     suspend fun insertDemoData(chinese: Boolean) {
         val today = today()
@@ -143,5 +154,10 @@ class Repository(
             dao.upsertTodo(TodoEntity.from(todo, created, if (todo.isDone) created else null))
         }
         onChange()
+    }
+
+    companion object {
+        /** Enough for today's focus time and the recent list. */
+        const val RECENT_FOCUS_SESSIONS = 50
     }
 }

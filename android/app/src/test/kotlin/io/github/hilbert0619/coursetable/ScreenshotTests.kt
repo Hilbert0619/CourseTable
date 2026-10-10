@@ -2,22 +2,31 @@ package io.github.hilbert0619.coursetable
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.hilbert0619.coursekit.CourseCSV
 import io.github.hilbert0619.coursekit.CourseTemplate
+import io.github.hilbert0619.coursekit.FocusPlan
+import io.github.hilbert0619.coursekit.FocusRun
+import io.github.hilbert0619.coursekit.FocusSettings
 import io.github.hilbert0619.coursekit.LocalDate
 import io.github.hilbert0619.coursekit.Moment
 import io.github.hilbert0619.coursekit.Semester
 import io.github.hilbert0619.coursekit.TimeOfDay
 import io.github.hilbert0619.coursekit.Timetable
+import io.github.hilbert0619.coursetable.alerts.ReminderSettings
 import io.github.hilbert0619.coursetable.data.DemoData
+import io.github.hilbert0619.coursetable.data.FocusSessionRecord
+import io.github.hilbert0619.coursetable.focus.FocusState
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.AppData
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
@@ -25,6 +34,7 @@ import io.github.hilbert0619.coursetable.ui.NowSource
 import io.github.hilbert0619.coursetable.ui.RootScreen
 import io.github.hilbert0619.coursetable.ui.Tab
 import io.github.hilbert0619.coursetable.ui.settings.PeriodScheduleEditor
+import io.github.hilbert0619.coursetable.ui.settings.ReliableRemindersScreen
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
 import io.github.hilbert0619.coursetable.ui.timetable.CourseEditorContent
 import io.github.hilbert0619.coursetable.ui.timetable.CourseEditorTarget
@@ -34,12 +44,15 @@ import io.github.hilbert0619.coursetable.ui.timetable.TimetableScreen
 import io.github.hilbert0619.coursetable.ui.today.TodoEditorContent
 import io.github.hilbert0619.coursetable.ui.today.TodoEditorTarget
 import java.time.Clock
+import java.time.Duration
 import java.time.ZoneId
+import java.util.UUID
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import org.robolectric.shadows.ShadowBuild
 
 /**
  * The screens with sample data at a fixed moment (Monday 2026-09-28, 09:00, the first class in progress), rendered on
@@ -70,6 +83,8 @@ class ScreenshotTests {
     }
 
     private fun capture() = compose.onRoot().captureRoboImage()
+
+    private fun at(time: String, day: LocalDate = today) = Moment(day, TimeOfDay.parse(time)!!).toInstant(zone)
 
     // Today
 
@@ -193,7 +208,69 @@ class ScreenshotTests {
         capture()
     }
 
+    // Focus
+
+    private val focusHistory = listOf(
+        FocusSessionRecord(UUID.randomUUID(), "Calculus review", at("07:10"), at("07:55"), 40 * 60, 40 * 60, finished = true),
+        FocusSessionRecord(UUID.randomUUID(), "", at("20:00", today.adding(-1)), at("20:50", today.adding(-1)), 45 * 60, 100 * 60, finished = false),
+    )
+
+    private fun focusRun(minutesAgo: Long) = FocusRun(
+        goal = "Calculus review", plan = FocusPlan(FocusSettings(totalMinutes = 150)), startedAt = at("09:00").minus(Duration.ofMinutes(minutesAgo)),
+    )
+
+    @Test
+    fun focusSetup() {
+        val state = FocusState(settings = FocusSettings(totalMinutes = 150), goal = "Calculus review")
+        show { RootScreen(data(chinese = false).copy(focusSessions = focusHistory), AppActions.None, initialTab = Tab.FOCUS, focus = state) }
+        compose.onNodeWithText("Start Focusing").assertExists()
+        // 4 × 25 min + 20 min, with 3 short breaks and 1 long one (FocusTests in :core).
+        compose.onNodeWithText("5 focus blocks", substring = true).assertExists()
+        compose.onNodeWithText("ends at 11:30", substring = true).assertExists()
+        capture()
+    }
+
+    @Test
+    fun focusRunning() {
+        show { RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.FOCUS, focus = FocusState(run = focusRun(7))) }
+        compose.onNodeWithText("Focus · Block 1 of 5").assertExists()
+        compose.onNodeWithText("18:00").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN-night")
+    fun focusBreakChineseDark() {
+        show { RootScreen(data(chinese = true), AppActions.None, initialTab = Tab.FOCUS, focus = FocusState(run = focusRun(27), goal = "高数复习")) }
+        compose.onNodeWithText("3:00").assertExists()
+        capture()
+    }
+
     // Settings
+
+    @Test
+    fun settingsReminders() {
+        show { RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.SETTINGS, reminders = ReminderSettings(remindersEnabled = true)) }
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText("Reliable Reminders"))
+        compose.onNodeWithText("Live class notification").assertExists()
+        capture()
+    }
+
+    @Test
+    fun reliableReminders() {
+        show { ReliableRemindersScreen(AppActions.None, onBack = {}) }
+        compose.onNodeWithText("Send a Test Reminder").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN")
+    fun reliableRemindersOnVivoChinese() {
+        ShadowBuild.setManufacturer("vivo")
+        show { ReliableRemindersScreen(AppActions.None, onBack = {}) }
+        compose.onNodeWithText("发送测试提醒").assertExists()
+        capture()
+    }
 
     @Test
     fun settings() {

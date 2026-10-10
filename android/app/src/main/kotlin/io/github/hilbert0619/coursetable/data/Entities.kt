@@ -14,6 +14,7 @@ import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursekit.TodoTiming
 import io.github.hilbert0619.coursekit.WeekParity
 import io.github.hilbert0619.coursekit.Weekday
+import java.time.Instant
 import java.util.UUID
 
 // The stored forms of the core types, field by field as on iOS (CourseTable/Persistence, Planner.store). Ids are
@@ -157,5 +158,30 @@ data class FocusSessionEntity(
     val endedAt: Long,
     val focusedSeconds: Int,
     val plannedSeconds: Int,
+    val finished: Boolean,
+) {
+    fun toRecord() = FocusSessionRecord(
+        UUID.fromString(id), goal, Instant.ofEpochMilli(startedAt), Instant.ofEpochMilli(endedAt), focusedSeconds, plannedSeconds, finished,
+    )
+
+    companion object {
+        fun from(record: FocusSessionRecord) = FocusSessionEntity(
+            record.id.toString(), record.goal, record.startedAt.toEpochMilli(), record.endedAt.toEpochMilli(), record.focusedSeconds,
+            record.plannedSeconds, record.finished,
+        )
+    }
+}
+
+/** A finished or stopped focus session, as the Focus tab lists it (iOS `FocusSessionSummary`). */
+data class FocusSessionRecord(
+    val id: UUID,
+    val goal: String,
+    val startedAt: Instant,
+    val endedAt: Instant,
+    /** Focus time without breaks and pauses. */
+    val focusedSeconds: Int,
+    /** The plan's focus time. */
+    val plannedSeconds: Int,
+    /** Ran to the end, or was stopped. */
     val finished: Boolean,
 )

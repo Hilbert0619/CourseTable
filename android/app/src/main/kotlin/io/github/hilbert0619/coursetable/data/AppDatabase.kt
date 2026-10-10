@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -80,8 +81,9 @@ interface StudyHourDao {
     @Query("SELECT * FROM focus_sessions ORDER BY startedAt DESC LIMIT :limit")
     fun focusSessions(limit: Int): Flow<List<FocusSessionEntity>>
 
-    @Upsert
-    suspend fun upsertFocusSession(session: FocusSessionEntity)
+    /** Keeps the first record of a session (iOS `recordFocus`). */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertFocusSession(session: FocusSessionEntity)
 }
 
 /** The app's data: the timetable, the course list, to-dos and focus history (`studyhour.db`). */

@@ -15,8 +15,8 @@ android {
         applicationId = "io.github.hilbert0619.coursetable"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
     buildTypes {
@@ -50,6 +50,13 @@ android {
     }
 }
 
+// The focus timer's background sounds are the iOS app's files (CourseTable/Sounds/sound-<id>.m4a), packed as assets.
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addStaticSourceDirectory(rootProject.file("../CourseTable/Sounds").path)
+    }
+}
+
 room {
     // The database schema of each version, committed, for migrations and their tests.
     schemaDirectory("$projectDir/schemas")
@@ -78,6 +85,7 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
+    implementation(libs.media3.exoplayer)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 

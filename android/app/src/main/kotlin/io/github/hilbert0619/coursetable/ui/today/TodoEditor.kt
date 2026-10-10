@@ -34,6 +34,7 @@ import io.github.hilbert0619.coursetable.ui.components.Section
 import io.github.hilbert0619.coursetable.ui.components.TimePickerDialog
 import io.github.hilbert0619.coursetable.ui.components.ValueRow
 import io.github.hilbert0619.coursetable.ui.rememberNames
+import io.github.hilbert0619.coursetable.ui.rememberNotificationRequest
 import io.github.hilbert0619.coursetable.ui.timeRange
 import java.util.UUID
 
@@ -83,6 +84,7 @@ fun TodoEditorContent(timetable: Timetable, target: TodoEditorTarget, actions: A
     }
     val isNew = target is TodoEditorTarget.New
     val focus = remember { FocusRequester() }
+    val askForNotifications = rememberNotificationRequest()
     LaunchedEffect(Unit) { if (isNew) runCatching { focus.requestFocus() } }
 
     EditorScaffold(
@@ -93,6 +95,8 @@ fun TodoEditorContent(timetable: Timetable, target: TodoEditorTarget, actions: A
         onConfirm = {
             if (timing != null) {
                 actions.saveTodo(original.copy(title = title, day = day, timing = timing))
+                // A timed to-do comes with a notification.
+                if (timing != TodoTiming.Anytime) askForNotifications()
                 onDismiss()
             }
         },

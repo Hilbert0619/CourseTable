@@ -4,6 +4,7 @@ package io.github.hilbert0619.coursetable.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -51,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -144,9 +147,9 @@ fun ActionRow(@DrawableRes icon: Int?, label: String, enabled: Boolean = true, c
     }
 }
 
-/** "Length: 2 periods" with − and + buttons (iOS `Stepper`). */
+/** "Length: 2 periods" with − and + buttons (iOS `Stepper`), changing the value by [step] within [range]. */
 @Composable
-fun StepperRow(label: String, value: Int, range: IntRange, valueText: String? = null, onChange: (Int) -> Unit) {
+fun StepperRow(label: String, value: Int, range: IntRange, valueText: String? = null, step: Int = 1, onChange: (Int) -> Unit) {
     Row(
         Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(start = 16.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -160,12 +163,27 @@ fun StepperRow(label: String, value: Int, range: IntRange, valueText: String? = 
                 modifier = Modifier.padding(end = 8.dp),
             )
         }
-        FilledTonalIconButton(onClick = { onChange(value - 1) }, enabled = value > range.first) {
+        FilledTonalIconButton(onClick = { onChange(maxOf(value - step, range.first)) }, enabled = value > range.first) {
             AppIcon(R.drawable.ic_remove, stringResource(R.string.decrease))
         }
-        FilledTonalIconButton(onClick = { onChange(value + 1) }, enabled = value < range.last) {
+        FilledTonalIconButton(onClick = { onChange(minOf(value + step, range.last)) }, enabled = value < range.last) {
             AppIcon(R.drawable.ic_add, stringResource(R.string.increase))
         }
+    }
+}
+
+/** A label with a switch (iOS `Toggle`); the whole row toggles. */
+@Composable
+fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 52.dp)
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Spacer(Modifier.width(12.dp))
+        Switch(checked = checked, onCheckedChange = null)
     }
 }
 

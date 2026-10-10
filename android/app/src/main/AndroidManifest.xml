@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Class, to-do and focus notifications (asked for at run time on Android 13+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Android 16 Live Updates: the class and focus notifications in the status bar (granted at install). -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+    <!-- One exact alarm for the next class or to-do event and one for the next focus switch. USE_EXACT_ALARM is
+         granted at install on Android 13+; on 12 the other one is. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+    <!-- Sets the alarms again after a restart. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Settings → Reliable Reminders asks to turn battery optimisation off. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- The focus sound keeps playing in the background with the screen off. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:name=".StudyHourApp"
         android:allowBackup="true"
@@ -12,6 +31,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,6 +54,30 @@
         <receiver
             android:name=".widget.ScheduleWidgetUpdates$RefreshReceiver"
             android:exported="false" />
+
+        <!-- The alarms and the notification buttons (classes, to-dos, focus). -->
+        <receiver
+            android:name=".alerts.AlertReceiver"
+            android:exported="false" />
+
+        <!-- Restart, a new app version, the clock or time zone changed, exact alarms allowed: set the alarms again. -->
+        <receiver
+            android:name=".alerts.SystemEventReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Runs only while a focus session plays a sound, so it keeps playing in the background. -->
+        <service
+            android:name=".focus.FocusSoundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
 
         <!-- Shares the exported CSV with other apps. -->
         <provider
