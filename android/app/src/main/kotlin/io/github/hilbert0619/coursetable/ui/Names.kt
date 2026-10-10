@@ -18,6 +18,7 @@ import io.github.hilbert0619.coursekit.WeekParity
 import io.github.hilbert0619.coursekit.Weekday
 import io.github.hilbert0619.coursetable.R
 import java.time.format.DateTimeFormatter
+import java.time.LocalDate as JavaLocalDate
 import java.time.format.FormatStyle
 import java.util.Locale
 
@@ -103,13 +104,13 @@ class Names(private val res: Resources) {
     }
 
     /** e.g. "Monday, September 28, 2026" / "2026年9月28日星期一" */
-    fun fullDate(day: LocalDate): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale).format(day.java)
+    fun fullDate(day: LocalDate): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale).format(day.javaDate)
 
     /** e.g. "Sep 28, 2026" / "2026年9月28日" */
-    fun mediumDate(day: LocalDate): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(day.java)
+    fun mediumDate(day: LocalDate): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(day.javaDate)
 
     /** The abbreviated month, e.g. "Sep" / "9月". */
-    fun month(day: LocalDate): String = DateTimeFormatter.ofPattern("MMM", locale).format(day.java)
+    fun month(day: LocalDate): String = DateTimeFormatter.ofPattern("MMM", locale).format(day.javaDate)
 
     companion object {
         private val SHORT_DAYS = listOf(
@@ -130,7 +131,7 @@ fun rememberNames(): Names {
 }
 
 /** The same day as a `java.time.LocalDate`. */
-val LocalDate.java: java.time.LocalDate get() = java.time.LocalDate.ofEpochDay(daysSinceEpoch.toLong())
+val LocalDate.javaDate: JavaLocalDate get() = JavaLocalDate.ofEpochDay(daysSinceEpoch.toLong())
 
 /** e.g. "10:00–11:40" */
 val ClassSession.timeRange: String get() = "$start–$end"
