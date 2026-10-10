@@ -5,9 +5,9 @@ Date: 2026-10-10 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
 ## Status
 
 - **Android (StudyHour / 学时)**: stages 1–4 of [`docs/android-plan.md`](docs/android-plan.md) §7 are built and on
-  `main` (CI green, run MAIN_RUN). Stage 4 added the class and to-do alerts, the Focus tab with sounds and Settings →
+  `main` (CI green, run 38066439361). Stage 4 added the class and to-do alerts, the Focus tab with sounds and Settings →
   Reliable Reminders (design and code map: [`android/README.md`](android/README.md) "Alerts and focus"). APK:
-  `C:\Users\AI\Downloads\CourseTable\StudyHour-0.3.0-debug-APK_RUN.apk` (installs over 0.1.0/0.2.0).
+  `C:\Users\AI\Downloads\CourseTable\StudyHour-0.3.0-debug-16.apk` (installs over 0.1.0/0.2.0).
   **The owner hasn't reported a phone test of 0.2.0 or 0.3.0 yet** — the checklist below. No Words yet.
 - **iOS**: unchanged. 0.3.1 (build 5) IPA built (`C:\Users\AI\Downloads\CourseTable\CourseTable-0.3.1.ipa`); the
   owner's device test of 0.3.1 was not reported. `docs/v3-development-record.md` still unwritten.
