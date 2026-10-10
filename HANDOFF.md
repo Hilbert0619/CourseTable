@@ -1,6 +1,6 @@
 # Session Handoff — CourseTable (iOS v0.3 built · next: the Android version)
 
-Date: 2026-10-09 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (private)
+Date: 2026-10-09 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public)
 
 ## Status
 
@@ -12,8 +12,9 @@ Date: 2026-10-09 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
   37968936694. The layout fixes after those screenshots (`2265f4f`) were only compiled. Not written yet:
   `docs/v3-development-record.md`.
 - **Android**: decided on 2026-10-09, nothing built yet. Plan: [`docs/android-plan.md`](docs/android-plan.md).
-- CI: the free plan's 2,000 minutes a month are one pool (macOS 10×, Linux 1×). October used ≈ 1,700 (≈ 170 macOS
-  minutes), so until the reset only ~250 Linux minutes are left.
+- **The repo is public since 2026-10-09** (after a security check of all history: no secrets), so GitHub Actions on
+  standard runners (Linux, macOS) is free and unlimited; checked: run 38021692623 billed 0 ms. Secret scanning + push
+  protection on, fork PR workflows need approval for all external contributors, workflow token read-only.
 
 ## Handoff prompt for the next session
 
@@ -27,7 +28,7 @@ docs/android-plan.md (decisions, feature parity table, architecture, stages, ope
 docs/todos-focus-spec.md and docs/vocabulary-spec.md (the specs), HANDOFF.md (status, facts). The iOS app is the
 reference: its logic is in CourseKit/ (Swift package: CourseKit = timetable, VocabKit = vocabulary; ~4,100 lines,
 ~220 tests) and its UI in CourseTable/ and CourseTableWidget/. Repo D:\Projects\CourseTable → github.com/Hilbert0619/CourseTable
-(private), branch main.
+(public), branch main.
 
 ## Goal
 Android users get the same app with the functionality as unchanged as possible: timetable (courses, import/export,
@@ -67,8 +68,9 @@ Report at the end of each stage with run links and screenshots (Roborazzi on Lin
   the manual Linux workflow `Sounds` rebuild them).
 - Android on Chinese brands: no Google Play services (no FCM); aggressive background killing — plan a "reliable
   reminders" settings page (docs/android-plan.md §5).
-- CI budget: see Status. Linux runs are cheap but the pool is nearly used up this month. Docs-only commits and
-  `[skip ci]` commits don't run workflows.
+- The repo is public: Actions minutes are free (standard runners), but everything committed and every workflow log
+  is visible to anyone. Never commit secrets (push protection blocks known key formats); keep keystores, passwords
+  and tokens in GitHub secrets. Docs-only commits and `[skip ci]` commits don't run workflows.
 - Auto mode blocks Claude from running downloaded third-party binaries and from starting backend-deploy.yml; gh run
   list/view/download and workflow_dispatch of the other workflows work.
 

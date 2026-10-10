@@ -91,8 +91,7 @@ android/
 - Auto mode blocked Claude from running downloaded third-party binaries before (Supabase CLI, a Swift package).
   Gradle downloads and runs plugins and compilers, so **local Gradle builds by Claude may be blocked**; check early.
   Fallback: build and test on GitHub Actions **Linux** runners and let the owner run the app from Android Studio or
-  install the APK. The free plan has one pool of 2,000 minutes a month: Linux counts 1×, macOS 10×. October's iOS
-  work used about 1,700 of it, so until the reset only ~250 Linux minutes are left (an Android CI run takes ~3–5).
+  install the APK. The repo is public, so CI on standard GitHub runners is free and unlimited (since 2026-10-09).
 - CI: `android.yml` on Ubuntu, path-filtered to `android/**` (and `content/`, `CourseTable/Sounds/`, `spec/`):
   `./gradlew :core:test :app:testDebugUnitTest :app:verifyRoborazziDebug :app:assembleDebug`; a manual `apk.yml`
   builds a signed release APK (keystore and passwords as GitHub secrets, created by the owner; never in chat).
