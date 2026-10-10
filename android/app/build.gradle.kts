@@ -48,6 +48,14 @@ android {
     }
 }
 
+// Robolectric reaches into JDK internals (file descriptors for the shared memory of Android 16+).
+tasks.withType<Test>().configureEach {
+    jvmArgs(
+        "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+    )
+}
+
 dependencies {
     implementation(project(":core"))
     implementation(libs.androidx.core.ktx)
