@@ -10,7 +10,7 @@ Date: 2026-10-10 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
     (OriginOS 6 menus, Live Updates, sounds and background alerts all fine).
   - Stage 5: VocabKit ported to `android/core` (package `io.github.hilbert0619.vocabkit`, 74 ported tests); new shared
     cases `spec/fixtures/vocab-*.json` (generated from the Swift implementation, checked by both suites — Swift
-    `VocabSharedFixtureTests.swift`, Kotlin `VocabSharedFixtureTests.kt`). CI run: STAGE5_RUN. No app changes, so no
+    `VocabSharedFixtureTests.swift`, Kotlin `VocabSharedFixtureTests.kt`). CI runs: Android 38070022304, CourseKit 38070025315. No app changes, so no
     new APK.
 - **iOS**: app unchanged. Only `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift` was added (reads the new
   fixtures). 0.3.1 (build 5) IPA built; the owner's device test of 0.3.1 was not reported. `docs/v3-development-record.md`
