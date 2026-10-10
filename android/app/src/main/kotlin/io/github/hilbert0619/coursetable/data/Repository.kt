@@ -26,7 +26,11 @@ class Repository(
     private val dao = database.dao()
 
     private fun today() = LocalDate.from(clock.instant(), clock.zone)
-    private fun now() = clock.millis()
+    private var lastStamp = 0L
+
+    /** The time for a new row's `createdAt`: never the same twice, so rows keep the order they were added in. */
+    @Synchronized
+    private fun now(): Long = maxOf(clock.millis(), lastStamp + 1).also { lastStamp = it }
 
     /** The term, bell schedule and courses. Before the settings row exists, the term starts this week. */
     val timetable: Flow<Timetable> = combine(dao.settings(), dao.courses()) { settings, courses ->
@@ -67,8 +71,7 @@ class Repository(
 
     /** Adds imported courses in their order, after removing every course if [replacingExisting]. */
     suspend fun addCourses(courses: List<Course>, replacingExisting: Boolean = false) {
-        val start = now()
-        val entities = courses.mapIndexed { index, course -> CourseEntity.from(course, start + index) }
+        val entities = courses.map { course -> CourseEntity.from(course, now()) }
         if (replacingExisting) dao.replaceCourses(entities) else dao.insertCourses(entities)
         onChange()
     }
@@ -91,8 +94,7 @@ class Repository(
 
     /** Adds course-list entries, keeping their order. */
     suspend fun addTemplates(templates: List<CourseTemplate>) {
-        val start = now()
-        dao.insertTemplates(templates.mapIndexed { index, template -> CourseTemplateEntity.from(template, start + index) })
+        dao.insertTemplates(templates.map { template -> CourseTemplateEntity.from(template, now()) })
         onChange()
     }
 
@@ -136,9 +138,9 @@ class Repository(
         dao.upsertSettings(SettingsEntity.from(Semester(today.adding(-28)), PeriodSchedule.STANDARD))
         val courses = DemoData.courses(today, chinese)
         addCourses(courses)
-        val created = now() - 10_000
-        DemoData.todos(today, courses, chinese).forEachIndexed { index, todo ->
-            dao.upsertTodo(TodoEntity.from(todo, created + index, if (todo.isDone) created else null))
+        DemoData.todos(today, courses, chinese).forEach { todo ->
+            val created = now()
+            dao.upsertTodo(TodoEntity.from(todo, created, if (todo.isDone) created else null))
         }
         onChange()
     }
