@@ -1,5 +1,8 @@
 package io.github.hilbert0619.coursetable
 
+import android.Manifest
+import android.app.Application
+import android.os.PowerManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasScrollAction
@@ -10,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -52,6 +56,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.shadows.ShadowAlarmManager
 import org.robolectric.shadows.ShadowBuild
 
 /**
@@ -248,8 +254,17 @@ class ScreenshotTests {
 
     // Settings
 
+    /** Notifications and exact alarms allowed and battery optimisation off, as after following Reliable Reminders. */
+    private fun allowEverything() {
+        val application = ApplicationProvider.getApplicationContext<Application>()
+        shadowOf(application).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        shadowOf(application.getSystemService(PowerManager::class.java)).setIgnoringBatteryOptimizations(application.packageName, true)
+    }
+
     @Test
     fun settingsReminders() {
+        allowEverything()
         show { RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.SETTINGS, reminders = ReminderSettings(remindersEnabled = true)) }
         compose.onNode(hasScrollAction()).performScrollToNode(hasText("Reliable Reminders"))
         compose.onNodeWithText("Live class notification").assertExists()
@@ -258,6 +273,7 @@ class ScreenshotTests {
 
     @Test
     fun reliableReminders() {
+        allowEverything()
         show { ReliableRemindersScreen(AppActions.None, onBack = {}) }
         compose.onNodeWithText("Send a Test Reminder").assertExists()
         capture()

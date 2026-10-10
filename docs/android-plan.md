@@ -31,12 +31,12 @@ does what iOS does (see `README.md`, `docs/vocabulary-spec.md`, `docs/todos-focu
 | Weekly grid (swipe weeks, tap a slot) | Compose `HorizontalPager` + custom grid layout (port of `WeekGrid`) | — |
 | Today: day switcher, classes + to-dos in order | Port of `DayAgenda`; same screen | — |
 | To-dos (any date; any time / at a time / after a class) | Room table `todos`; same editor | — |
-| Class reminders (notification before class) | `AlarmManager.setExactAndAllowWhileIdle` per class (permission `SCHEDULE_EXACT_ALARM`, asked for), re-scheduled on boot/time change (`BOOT_COMPLETED`, `TIME_SET`); no 64 limit | ColorOS/OriginOS/MagicOS may delay or drop alarms unless the app may run in the background (§5) |
-| Class Live Activity (Dynamic Island, Lock Screen) | An **ongoing notification per class**, posted by an alarm at the reminder time: countdown (`setUsesChronometer` + `setChronometerCountDown`), at the start an alarm switches it to "Until 09:40" + progress, at the end an alarm removes it; Close action. On **Android 16+**: a promoted **Live Update** (`Notification.ProgressStyle`, `setRequestPromotedOngoing`), which ColorOS 16 / OriginOS / MagicOS show in their status-bar capsule (流体云 / 原子岛 / 胶囊) | Android can switch and remove it on time (alarms run code), so no stale-date workaround or 8 h limit is needed. How each brand shows it must be checked on the phone |
+| Class reminders (notification before class) | **One exact alarm** (`setExactAndAllowWhileIdle`, `USE_EXACT_ALARM`) for the next event of any alert; each sync (`AlertPlanner`) posts what is due now and sets the next one. Re-synced on start, every change, boot, app update, clock/time zone change; only for classes without the live notification | ColorOS/OriginOS/MagicOS may delay or drop alarms unless the app may run in the background (§5) |
+| Class Live Activity (Dynamic Island, Lock Screen) | An **ongoing notification per class** from the reminder time: countdown to the start (`setUsesChronometer` + `setChronometerCountDown`), at the start re-posted silently as "Until 09:40" counting down to the end, removed at the end; after-class to-dos (`BigTextStyle`) and a Close action. On **Android 16+** it asks to be a promoted **Live Update** (`setRequestPromotedOngoing`), which ColorOS 16 / OriginOS / MagicOS may show in their status-bar capsule (流体云 / 原子岛 / 胶囊). One closed or swiped away stays gone; one the system removed (restart) comes back silently | Android can switch and remove it on time (alarms run code), so no stale-date workaround or 8 h limit is needed. How each brand shows it must be checked on the phone |
 | No duplicate alerts | The class notification **is** the live notification: one alert per class | Simpler than iOS |
 | Widgets (Home: small/medium; Lock Screen widgets) | Jetpack **Glance** app widgets (small: current/next class; medium: rest of today), updated at class starts/ends | Android has no Lock Screen widgets: the ongoing notification covers the Lock Screen |
-| Focus timer (Pomodoro, pause/skip/stop, history) | Port of `Focus` (plan + run); a **foreground service** (type `mediaPlayback` while a sound plays, else `specialUse`) with an ongoing notification (chronometer, Pause/Stop actions; Live Update on Android 16+); exact alarms for phase switches | — |
-| Background sounds (9 CC0 loops, mix with music) | Media3 ExoPlayer, `REPEAT_MODE_ONE` (gapless with the same `.m4a` files) or `AudioTrack` with the decoded loop; audio focus "may duck" | Check the seam on the phone |
+| Focus timer (Pomodoro, pause/skip/stop, history) | Port of `Focus` (plan + run) in `FocusEngine` (run in `SharedPreferences`); an ongoing notification (chronometer, Pause/Resume and Stop actions; Live Update on Android 16+); an exact alarm at each switch posts its notification. A **foreground service** (type `mediaPlayback`) only while a sound plays | Without a sound the app may be stopped in the background; the alarms and the notification's buttons start it again |
+| Background sounds (9 CC0 loops, mix with music) | Media3 ExoPlayer, `REPEAT_MODE_ONE` with the same `.m4a` files (packed as assets from `CourseTable/Sounds`), **no audio focus** (mixes with music, like `.mixWithOthers`), a local wake lock | Check the seam on the phone |
 | Words: sign-up/in by email link | `supabase-kt` Auth, implicit flow, deep link `io.github.hilbert0619.coursetable://auth-callback` (intent filter) — the same redirect the backend already allows | Some Chinese browsers ask before opening the app |
 | Words: books, study session, modes, FSRS-6, search, favourites, hard words, stats, sync | Port of `VocabKit` (FSRS, Scheduler, StudyClock, DailyPlan, StudySession, AnswerGrader, ChoicePool, WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink); Room for the vocabulary store; WorkManager for background sync; charts with Compose Canvas or Vico | — |
 | Speech (US/UK) | `TextToSpeech` with `Locale.US` / `Locale.UK` | Some phones lack English voices: show a hint |
@@ -75,7 +75,7 @@ android/
   Settings → "Reliable reminders" page that checks and links to: notifications allowed, exact alarms allowed, battery
   optimisation off (`ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`), and the brand's auto-start / background page
   (see dontkillmyapp.com for each brand). Verify on the owner's phone.
-- Permissions: `POST_NOTIFICATIONS` (Android 13+), `SCHEDULE_EXACT_ALARM` (Android 12+, user grants it on 14+),
+- Permissions: `POST_NOTIFICATIONS` (Android 13+), `USE_EXACT_ALARM` (Android 13+, granted at install; `SCHEDULE_EXACT_ALARM` up to 12), `POST_PROMOTED_NOTIFICATIONS`, `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, `WAKE_LOCK`,
   `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `RECEIVE_BOOT_COMPLETED`, `INTERNET`.
 - No Google Play services (most phones in China lack them): no FCM, no Play-only APIs. Everything above works
   without them.
@@ -123,7 +123,8 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
 - **Stage 1 (set-up): done 2026-10-09.** `android/` (core + app), `android.yml`, debug APK signed with a fixed debug key (repo secret `ANDROID_DEBUG_KEYSTORE`).
 - **Stage 2 (`:core` timetable logic): done 2026-10-09.** All of CourseKit ported with its tests; shared cases in `spec/fixtures/` read by both test suites.
 - **Stage 3 (timetable app): done 2026-10-09.** Room storage, Today with to-dos, week grid with placing, course editor, course list, import/export, settings, Glance widget; APK 0.2.0 (10). Not yet tested on the phone.
-- **Next: stage 4 (alerts and focus)** — see `HANDOFF.md` for the design.
+- **Stage 4 (alerts and focus): built 2026-10-10** (CI green, run 38065463387). One exact alarm for classes and to-dos (`AlertPlanner`), the live class notification, class reminders, to-do notifications, Settings → Reliable Reminders, the Focus tab with notifications, history and the 9 sounds; APK 0.3.0. **Waiting for the phone test** (checklist in `HANDOFF.md`).
+- **Next: stage 5 (`:core` vocabulary logic)** once the phone test of stage 4 is through — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 
