@@ -81,7 +81,7 @@ class FocusEngineTest {
         assertEquals("Calculus review", run!!.goal)
         // Another engine (a new process) continues the same session.
         assertEquals(run, newEngine().state.value.run)
-        val alarm = shadowOf(application.getSystemService(AlarmManager::class.java)).peekNextScheduledAlarm()
+        val alarm = shadowOf(application.getSystemService(AlarmManager::class.java)).peekNextScheduledAlarm()!!
         assertEquals(clock.instant().plus(Duration.ofMinutes(25)).toEpochMilli(), alarm.triggerAtMs)
         assertTrue(notifications.activeNotifications.any { it.id == NotificationIds.FOCUS_RUNNING })
     }
