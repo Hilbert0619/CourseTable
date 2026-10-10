@@ -14,9 +14,11 @@ does what iOS does (see `README.md`, `docs/vocabulary-spec.md`, `docs/todos-focu
 | Backend | **The same Supabase project and schema, unchanged** (`supabase/migrations`, row-level security). Android uses the official Kotlin client (`supabase-kt`). One account works on both platforms; answers sync between them. |
 | Timetable data | Local on the device, as on iOS. Moving between phones: the existing CSV export/import. |
 | Distribution | **APK files** first, built and signed by CI and installed directly (like the IPA). No store for now. |
-| Test phone | An **OPPO / OnePlus / vivo / Honor** phone (ColorOS / OxygenOS / OriginOS / MagicOS). Exact model and Android version: ask at the start. The Android emulator on this PC for everything else. |
+| Test phone | **iQOO Neo 9 (vivo), OriginOS 6 = Android 16** (confirmed 2026-10-09). No emulator: Android Studio/SDK are not installed on this PC (owner's choice, "not now"). |
 | Look | Native Android (Material 3, dynamic colour off; the course palette and layout as on iOS). Same features and texts, Android controls. |
 | Languages | English + Simplified Chinese, with the iOS translations reused (§6). |
+| Name and icon | **StudyHour / 学时** on Android only (the iOS app stays "Course Table / 课程表"); the iOS icon redrawn as an adaptive icon. `applicationId` stays `io.github.hilbert0619.coursetable`. |
+| Builds | The app builds and tests on **Linux CI only** (no SDK here); `:core` also builds and tests on this PC with just the JDK (`settings.gradle.kts` leaves `:app` out without an SDK). |
 
 ## 2. Feature parity
 
@@ -116,7 +118,14 @@ android/
 Each stage ends with a short report, run links, and screenshots; the owner tests on the phone at the end of stages
 1, 4, 6 and 7.
 
-## 8. Open questions for the start
+## 8. Progress
+
+- **Stage 1 (set-up): done 2026-10-09.** `android/` (core + app), `android.yml`, debug APK signed with a fixed debug key (repo secret `ANDROID_DEBUG_KEYSTORE`).
+- **Stage 2 (`:core` timetable logic): done 2026-10-09.** All of CourseKit ported with its tests; shared cases in `spec/fixtures/` read by both test suites.
+- **Stage 3 (timetable app): done 2026-10-09.** Room storage, Today with to-dos, week grid with placing, course editor, course list, import/export, settings, Glance widget; APK 0.2.0 (10). Not yet tested on the phone.
+- **Next: stage 4 (alerts and focus)** — see `HANDOFF.md` for the design.
+
+## 9. Open questions at the start (answered 2026-10-09)
 
 - The phone: brand, model, Android version, ColorOS/OriginOS/MagicOS version.
 - May Android Studio + SDK be installed, and where (D:)?
