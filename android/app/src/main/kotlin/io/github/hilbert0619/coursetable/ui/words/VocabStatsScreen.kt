@@ -146,6 +146,16 @@ private fun WordsChart(days: List<DayStats>, today: Int, label: (Int) -> String,
         val chartHeight = size.height - labelHeight
         val slot = size.width / days.size
         val barWidth = slot * 0.7f
+        // A line and a date every week, behind the bars.
+        days.forEachIndexed { index, day ->
+            if ((today - day.day) % 7 == 6) {
+                val center = index * slot + slot / 2
+                drawLine(grid, Offset(center, 0f), Offset(center, chartHeight), strokeWidth = 0.5.dp.toPx())
+                val text = measurer.measure(label(day.day), labelStyle)
+                val x = (center - text.size.width / 2f).coerceIn(0f, size.width - text.size.width)
+                drawText(text, topLeft = Offset(x, chartHeight + 2.dp.toPx()))
+            }
+        }
         drawLine(grid, Offset(0f, chartHeight), Offset(size.width, chartHeight), strokeWidth = 1.dp.toPx())
         days.forEachIndexed { index, day ->
             val x = index * slot + (slot - barWidth) / 2
@@ -153,10 +163,6 @@ private fun WordsChart(days: List<DayStats>, today: Int, label: (Int) -> String,
             val new = chartHeight * day.newWords / maximum
             if (day.newWords > 0) drawRect(NEW_BLUE, Offset(x, chartHeight - new), Size(barWidth, new))
             if (day.reviewedWords > 0) drawRect(GOOD_GREEN, Offset(x, chartHeight - new - reviewed), Size(barWidth, reviewed))
-            if ((today - day.day) % 7 == 6) {
-                drawLine(grid, Offset(index * slot + slot / 2, 0f), Offset(index * slot + slot / 2, chartHeight), strokeWidth = 0.5.dp.toPx())
-                drawText(measurer, label(day.day), Offset(index * slot, chartHeight + 2.dp.toPx()), labelStyle)
-            }
         }
         drawText(measurer, "$maximum", Offset(0f, 0f), labelStyle)
     }
@@ -173,13 +179,17 @@ private fun AccuracyChart(days: List<DayStats>, modifier: Modifier, percent: (Do
         val left = 36.dp.toPx()
         val width = size.width - left
         val slot = width / days.size
+        // Room above 100% and below 0% for the labels, which sit centred on their lines.
+        val top = 8.dp.toPx()
+        val height = size.height - 2 * top
+        fun y(fraction: Double) = top + height * (1 - fraction).toFloat()
         for (fraction in listOf(0.0, 0.5, 1.0)) {
-            val y = size.height * (1 - fraction).toFloat()
-            drawLine(grid, Offset(left, y), Offset(size.width, y), strokeWidth = 0.5.dp.toPx())
-            drawText(measurer, percent(fraction), Offset(0f, (y - 7.dp.toPx()).coerceIn(0f, size.height - 14.dp.toPx())), labelStyle)
+            drawLine(grid, Offset(left, y(fraction)), Offset(size.width, y(fraction)), strokeWidth = 0.5.dp.toPx())
+            val text = measurer.measure(percent(fraction), labelStyle)
+            drawText(text, topLeft = Offset(0f, y(fraction) - text.size.height / 2f))
         }
         val points = days.mapIndexedNotNull { index, day ->
-            day.accuracy?.let { Offset(left + index * slot + slot / 2, size.height * (1 - it).toFloat()) }
+            day.accuracy?.let { Offset(left + index * slot + slot / 2, y(it)) }
         }
         if (points.size >= 2) {
             val path = Path().apply {

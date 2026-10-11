@@ -6,7 +6,7 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 | Module | What it is |
 |---|---|
 | `core/` | Plain Kotlin (JVM 17, no Android): the port of `CourseKit` (package `io.github.hilbert0619.coursekit`: dates, term, periods, courses, timetable, week grid, CSV import/export, course list, reminders, live class windows, to-dos, focus) and `VocabKit` (package `io.github.hilbert0619.vocabkit`: FSRS-6 and the scheduler, study days, daily plan, study session, answer grading, multiple choice, word entries, ECDICT word lists, word-list import, search, statistics, sync merge, sign-in links), with their tests ported one for one, plus the shared cases in `spec/fixtures/`. JSON (kotlinx.serialization) in the same shapes as Swift's `Codable`. |
-| `app/` | The Android app (`io.github.hilbert0619.coursetable`, minSdk 26, targetSdk 37): Compose UI, Room, the Glance widget, alerts and the focus timer; JVM tests, Robolectric + Roborazzi screenshot tests. |
+| `app/` | The Android app (`io.github.hilbert0619.coursetable`, minSdk 26, targetSdk 37): Compose UI, Room, the Glance widget, alerts and the focus timer, the Words tab; JVM tests, Robolectric + Roborazzi screenshot tests. |
 
 ## Alerts and focus (`app/…/alerts`, `app/…/focus`)
 
@@ -25,6 +25,26 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
   focus (they mix with music); a `mediaPlayback` foreground service runs only while a session plays a sound.
 - **Settings → Reliable Reminders** checks notifications, exact alarms, battery optimisation and Live Updates, links to
   vivo/iQOO's auto-start page, and sends a test reminder. Notifications themselves are checked on the phone.
+
+## Words (`core/…/vocabkit/backend`, `core/…/vocabkit/store`, `app/…/words`, `app/…/ui/words`)
+
+- **The same cloud project as iOS** (Supabase, `docs/vocabulary-spec.md`): one account studies on both. The URL and
+  the publishable key (public by design; row-level security protects the data) are in `SupabaseBackend.kt`.
+- **Logic in `core`, tested on the JVM**: `VocabApp` (account state, email links, sign-out, deleting the account),
+  `SyncEngine` (own books → book list → the current book's words → answers up → answers down → favourites →
+  settings; answers are append-only and replayed through FSRS, the rest is newest edit wins; a pull cursor with a
+  10-minute overlap, pages of 1000, uploads of 500), `VocabModel` (the state the screens read) and `VocabStore` (the
+  storage interface). `DemoBackend` + `InMemoryVocabStore` stand in for the server and Room in the tests and the
+  screenshots.
+- **The app** adds `SupabaseBackend` (supabase-kt: auth + PostgREST over Ktor/OkHttp), `RoomVocabStore` (its own
+  database, `vocabulary.db`; times in microseconds as on the server) and the screens. Studying works offline; the app
+  syncs when it comes to the front, after a session, on pull-to-refresh and with Sync Now.
+- **Email links** (sign-up confirmation, password reset) use the implicit flow and come back to
+  `io.github.hilbert0619.coursetable://auth-callback` (an intent filter on `MainActivity`); the session in the link's
+  fragment is imported, so the link must be opened on the phone. The session is kept by supabase-kt and restored
+  offline at the next start.
+- **Speech**: Android's text-to-speech (`Pronunciation`), US and UK English; a phone without an English voice shows
+  a message instead.
 
 ## Building
 

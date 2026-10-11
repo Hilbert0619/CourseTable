@@ -341,6 +341,7 @@
     <string name="not_synced_yet">Not synced yet</string>
     <string name="synced_ago">Synced %1$s</string>
     <string name="sync_now">Sync Now</string>
+    <string name="synced_just_now">Synced just now</string>
     <string name="sync_offline">Offline. Your answers are saved on this phone and will upload later.</string>
     <string name="answers_waiting">%1$d answers waiting to upload</string>
 

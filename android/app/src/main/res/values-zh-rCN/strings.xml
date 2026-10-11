@@ -303,6 +303,7 @@
     <string name="not_synced_yet">尚未同步</string>
     <string name="synced_ago">已同步 · %1$s</string>
     <string name="sync_now">立即同步</string>
+    <string name="synced_just_now">已同步 · 刚刚</string>
     <string name="sync_offline">离线中。你的答题记录已保存在这台手机上，稍后会自动上传。</string>
     <string name="answers_waiting">%1$d 条答题记录等待上传</string>
     <string name="new_word">新词</string>

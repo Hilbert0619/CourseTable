@@ -41,6 +41,7 @@ import io.github.hilbert0619.coursetable.ui.components.EditorDialog
 import io.github.hilbert0619.coursetable.ui.components.EditorScaffold
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
+import io.github.hilbert0619.coursetable.ui.components.TabsAsSpaces
 import io.github.hilbert0619.coursetable.ui.components.ValueRow
 import io.github.hilbert0619.coursetable.ui.components.WarningRow
 import io.github.hilbert0619.coursetable.ui.timetable.FileText
@@ -207,6 +208,7 @@ fun WordListImportScreen(onDismiss: () -> Unit, initialText: String = "") {
                 value = text,
                 onValueChange = { text = it },
                 textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                visualTransformation = TabsAsSpaces,
                 minLines = 6,
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
             )

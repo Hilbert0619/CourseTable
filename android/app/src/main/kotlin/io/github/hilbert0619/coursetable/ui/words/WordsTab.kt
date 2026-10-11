@@ -339,6 +339,8 @@ fun SyncStatusRow() {
                     Text(
                         if (last == null) {
                             stringResource(R.string.not_synced_yet)
+                        } else if (controller.now().toEpochMilli() - last.toEpochMilli() < DateUtils.MINUTE_IN_MILLIS) {
+                            stringResource(R.string.synced_just_now)
                         } else {
                             val ago = DateUtils.getRelativeTimeSpanString(last.toEpochMilli(), controller.now().toEpochMilli(), DateUtils.MINUTE_IN_MILLIS)
                             stringResource(R.string.synced_ago, ago.toString())

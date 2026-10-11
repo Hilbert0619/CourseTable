@@ -47,6 +47,7 @@ import io.github.hilbert0619.coursetable.ui.components.EditorDialog
 import io.github.hilbert0619.coursetable.ui.components.EditorScaffold
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
+import io.github.hilbert0619.coursetable.ui.components.TabsAsSpaces
 import io.github.hilbert0619.coursetable.ui.components.WarningRow
 import io.github.hilbert0619.coursetable.ui.rememberNames
 import io.github.hilbert0619.coursetable.ui.theme.CoursePalette
@@ -100,6 +101,7 @@ fun ImportContent(timetable: Timetable, actions: AppActions, onDismiss: () -> Un
                 onValueChange = { text = it },
                 minLines = 6,
                 textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                visualTransformation = TabsAsSpaces,
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
             )
             ActionRow(R.drawable.ic_file_open, stringResource(R.string.choose_file)) {

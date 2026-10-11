@@ -30,7 +30,6 @@ import io.github.hilbert0619.coursetable.ui.words.WordListImportScreen
 import io.github.hilbert0619.coursetable.ui.words.WordSearchScreen
 import io.github.hilbert0619.coursetable.ui.words.WordsController
 import io.github.hilbert0619.coursetable.ui.words.WordsTab
-import io.github.hilbert0619.vocabkit.ReviewMode
 import io.github.hilbert0619.vocabkit.SeededRandom
 import io.github.hilbert0619.vocabkit.SessionMode
 import io.github.hilbert0619.vocabkit.StudyItem
@@ -82,6 +81,15 @@ class WordsScreenshotTests {
 
     private fun capture() = compose.onRoot().captureRoboImage()
 
+    /** The session the study screen starts, made the same way, and its first question. */
+    private fun firstQuestion(controller: WordsController): Pair<StudySession, StudyItem> {
+        val state = controller.vocab.model.state.value
+        val session = StudySession(state.cards, state.plan(now).newWords, now, state.scheduler, state.clock, state.settings.reviewMode, seed = now.toEpochMilli().toULong())
+        val item = session.next(now)!!
+        check(item.kind != StudyItem.Kind.NEW) { "The first question is $item" }
+        return session to item
+    }
+
     @Test
     fun signIn() {
         val controller = words(signedIn = false, history = false)
@@ -127,11 +135,9 @@ class WordsScreenshotTests {
     @Test
     fun multipleChoiceAnswered() {
         val controller = words(mode = SessionMode.CHOICE)
-        // The question the screen asks first, made the same way, so a wrong option can be picked.
+        // Pick a wrong option of the first question.
+        val (session, item) = firstQuestion(controller)
         val state = controller.vocab.model.state.value
-        val session = StudySession(state.cards, state.plan(now).newWords, now, state.scheduler, state.clock, state.settings.reviewMode, seed = now.toEpochMilli().toULong())
-        val item = session.next(now)!!
-        check(item.mode == ReviewMode.CHOICE && item.kind != StudyItem.Kind.NEW) { "The first question is $item" }
         val question = state.choicePool.question(state.entry(item.headword)!!, SeededRandom.seed(session.seed.toString(), item.headword, "1"))!!
         show(controller) { StudySessionScreen(onClose = {}) }
         compose.onNodeWithText(question.options[(question.correctIndex + 1) % question.options.size]).performClick()
@@ -143,8 +149,10 @@ class WordsScreenshotTests {
     @Config(qualifiers = "+zh-rCN")
     fun spellingWrongChinese() {
         val controller = words(mode = SessionMode.SPELLING)
+        val word = firstQuestion(controller).second.headword
         show(controller) { StudySessionScreen(onClose = {}) }
-        compose.onNode(hasSetTextAction()).performTextInput("acommodate")
+        // One letter wrong (advocate → advacate).
+        compose.onNode(hasSetTextAction()).performTextInput(word.replaceFirst('o', 'a'))
         compose.onNodeWithText("检查").performClick()
         capture()
     }
