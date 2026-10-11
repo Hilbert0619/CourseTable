@@ -37,6 +37,8 @@ import io.github.hilbert0619.coursetable.alerts.ReminderSettings
 import io.github.hilbert0619.coursetable.focus.FocusActions
 import io.github.hilbert0619.coursetable.focus.FocusState
 import io.github.hilbert0619.coursetable.ui.focus.FocusScreen
+import io.github.hilbert0619.coursetable.ui.words.WordsController
+import io.github.hilbert0619.coursetable.ui.words.WordsTab
 import io.github.hilbert0619.coursetable.ui.settings.SettingsScreen
 import io.github.hilbert0619.coursetable.ui.timetable.TimetableScreen
 import io.github.hilbert0619.coursetable.ui.today.TodayScreen
@@ -68,6 +70,7 @@ fun RootScreen(
     reminders: ReminderSettings = ReminderSettings(),
     requestedTab: Tab? = null,
     onTabShown: () -> Unit = {},
+    words: WordsController? = null,
 ) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
     LaunchedEffect(requestedTab) {
@@ -100,7 +103,7 @@ fun RootScreen(
             Tab.TODAY -> TodayScreen(data.timetable, data.todos, actions, content)
             Tab.TIMETABLE -> TimetableScreen(data.timetable, data.templates, actions, content)
             Tab.FOCUS -> FocusScreen(focus, data.focusSessions, focusActions, content)
-            Tab.WORDS -> Placeholder(tab, R.string.placeholder_words, content)
+            Tab.WORDS -> if (words != null) WordsTab(words, content) else Placeholder(tab, R.string.placeholder_words, content)
             Tab.SETTINGS -> SettingsScreen(data.timetable, reminders, actions, content)
         }
     }

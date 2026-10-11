@@ -179,14 +179,14 @@ private fun ImportedCourseRow(course: Course, timetable: Timetable, names: Names
     }
 }
 
-private sealed interface FileText {
+internal sealed interface FileText {
     data class Text(val text: String) : FileText
     data object TooLarge : FileText
     data object Unreadable : FileText
 }
 
 /** The file's text if it is small enough and decodes (UTF-8, UTF-16 with a byte-order mark, or GB18030). */
-private fun readText(context: Context, uri: Uri): FileText {
+internal fun readText(context: Context, uri: Uri): FileText {
     val bytes = runCatching {
         context.contentResolver.openInputStream(uri)?.use { stream ->
             val buffer = ByteArray(ImportedText.MAX_BYTES + 1)

@@ -37,5 +37,16 @@
   "channel_focus_timer": "专注计时",
   "test_reminder_title": "测试提醒",
   "test_reminder_text": "这台手机可以按时收到提醒。",
-  "sound_footer": "离开 App 或锁屏后声音会继续播放，也可以和音乐同时播放。录音来自 Freesound，属于公共领域（CC0）。"
+  "sound_footer": "离开 App 或锁屏后声音会继续播放，也可以和音乐同时播放。录音来自 Freesound，属于公共领域（CC0）。",
+  "sign_up_footer": "至少 8 个字符。我们会给你发一封邮件，在这台手机上打开邮件里的链接即可完成注册。",
+  "check_inbox_confirm": "请查收邮件：在这台手机上点击邮件里的链接以确认账户。",
+  "reset_link_sent": "我们已发送重置密码的链接，请在这台手机上打开并设置新密码。",
+  "store_problem": "目前无法在这台手机上保存单词：%1$s",
+  "sync_offline": "离线中。你的答题记录已保存在这台手机上，稍后会自动上传。",
+  "no_english_voice": "这台手机没有英语语音，可以在系统的文字转语音设置中添加。",
+  "no_results": "没有找到“%1$s”",
+  "more": "更多",
+  "account_footer": "退出登录会从这台手机上移除单词数据，但它们仍保存在你的账户中。删除账户会永久删除你的全部答题记录、词表和设置。",
+  "delete_account_message": "你的所有答题记录、词表和设置都将从服务器和这台手机上删除，且无法恢复。",
+  "words_credits": "考研词汇来自 skywind3000 的 ECDICT（MIT 许可）。发音使用手机自带的语音。"
 }

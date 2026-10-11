@@ -20,6 +20,9 @@ import io.github.hilbert0619.coursetable.ui.AppViewModel
 import io.github.hilbert0619.coursetable.ui.RootScreen
 import io.github.hilbert0619.coursetable.ui.Tab
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
+import io.github.hilbert0619.coursetable.ui.words.WordsController
+import io.github.hilbert0619.vocabkit.AuthLink
+import java.time.Instant
 
 class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels { AppViewModel.Factory }
@@ -28,6 +31,9 @@ class MainActivity : ComponentActivity() {
     /** The tab a notification asked for ([EXTRA_TAB]), until it's shown. */
     private var requestedTab by mutableStateOf<Tab?>(null)
 
+    /** The Words tab's actions run in the app's scope, so leaving a screen doesn't cut a sync short. */
+    private val words by lazy { WordsController(app.vocab, app.scope, app.pronunciation::speak, Instant::now) }
+
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         Alerts.requestSync(this)
     }
@@ -35,7 +41,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        if (savedInstanceState == null) requestedTab = tabOf(intent)
+        if (savedInstanceState == null) {
+            requestedTab = tabOf(intent)
+            openLink(intent)
+        }
         askForNotificationsOnce()
         setContent {
             StudyHourTheme {
@@ -44,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 val reminders by app.alertPreferences.settings.collectAsStateWithLifecycle()
                 RootScreen(
                     data, viewModel,
-                    focus = focus, focusActions = app.focus, reminders = reminders,
+                    focus = focus, focusActions = app.focus, reminders = reminders, words = words,
                     requestedTab = requestedTab, onTabShown = { requestedTab = null },
                 )
             }
@@ -54,6 +63,14 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         tabOf(intent)?.let { requestedTab = it }
+        openLink(intent)
+    }
+
+    /** A sign-in email link (`io.github.hilbert0619.coursetable://auth-callback#…`): shows its result in the Words tab. */
+    private fun openLink(intent: Intent?) {
+        val url = intent?.data?.takeIf { it.scheme.equals(AuthLink.SCHEME, ignoreCase = true) }?.toString() ?: return
+        requestedTab = Tab.WORDS
+        words.launch { open(url) }
     }
 
     override fun onStart() {
@@ -61,6 +78,8 @@ class MainActivity : ComponentActivity() {
         // Catch up with whatever happened while the app wasn't running.
         Alerts.requestSync(this)
         app.focus.refresh()
+        // Coming back uploads answers given offline and fetches other devices' answers.
+        app.vocabIfCreated?.let { vocab -> words.launch { vocab.syncNow() } }
     }
 
     override fun onStop() {
