@@ -38,7 +38,7 @@ does what iOS does (see `README.md`, `docs/vocabulary-spec.md`, `docs/todos-focu
 | Focus timer (Pomodoro, pause/skip/stop, history) | Port of `Focus` (plan + run) in `FocusEngine` (run in `SharedPreferences`); an ongoing notification (chronometer, Pause/Resume and Stop actions; Live Update on Android 16+); an exact alarm at each switch posts its notification. A **foreground service** (type `mediaPlayback`) only while a sound plays | Without a sound the app may be stopped in the background; the alarms and the notification's buttons start it again |
 | Background sounds (9 CC0 loops, mix with music) | Media3 ExoPlayer, `REPEAT_MODE_ONE` with the same `.m4a` files (packed as assets from `CourseTable/Sounds`), **no audio focus** (mixes with music, like `.mixWithOthers`), a local wake lock | Check the seam on the phone |
 | Words: sign-up/in by email link | `supabase-kt` Auth, implicit flow, deep link `io.github.hilbert0619.coursetable://auth-callback` (intent filter) — the same redirect the backend already allows | Some Chinese browsers ask before opening the app |
-| Words: books, study session, modes, FSRS-6, search, favourites, hard words, stats, sync | Port of `VocabKit` (FSRS, Scheduler, StudyClock, DailyPlan, StudySession, AnswerGrader, ChoicePool, WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink); Room for the vocabulary store; WorkManager for background sync; charts with Compose Canvas or Vico | — |
+| Words: books, study session, modes, FSRS-6, search, favourites, hard words, stats, sync | Port of `VocabKit` (FSRS, Scheduler, StudyClock, DailyPlan, StudySession, AnswerGrader, ChoicePool, WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink); Room for the vocabulary store (`vocabulary.db`); sync when the app comes to the front, after a session, on pull-to-refresh and with Sync Now (as on iOS, no background sync); charts drawn with Compose Canvas | — |
 | Speech (US/UK) | `TextToSpeech` with `Locale.US` / `Locale.UK` | Some phones lack English voices: show a hint |
 | Notifications while the app is open | Default on Android | — |
 
@@ -130,7 +130,14 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   `io.github.hilbert0619.vocabkit`) with its 74 tests (all but the 3 for `SeedSQL`, a PC-side tool that stays in Swift);
   new shared cases `spec/fixtures/vocab-*.json` (FSRS replays, seeded quizzes and sessions, grading, import, search),
   generated from the Swift implementation and checked by both test suites.
-- **Next: stage 6 (Words app)** — see `HANDOFF.md`.
+- **Stage 6 (Words app): built 2026-10-11** (CI runs 38113777448, 38114283979 on `android-stage-6`; main 38116324090). The
+  Words tab: sign-up / sign-in / password reset by email link (implicit flow, `…://auth-callback`), the 考研 book and own
+  lists (TXT/CSV with preview), Today card, study sessions in every question type, search, word page with US/UK
+  speech, favourites, hard words, settings, statistics, sync, sign out and delete account. Account and sync logic in
+  `android/core` (`VocabApp`, `SyncEngine`, `VocabModel`, `VocabStore`; 340 core tests), Room store `vocabulary.db`
+  (v1), `SupabaseBackend` on supabase-kt 3.8.0 + Ktor 3.5.1 (OkHttp); 13 Words screenshots. APK 0.4.0 (4), **to be
+  tested on the phone by the owner with their account** (checklist in `HANDOFF.md`).
+- **Next: the owner's phone test of 0.4.0, then stage 7 (release)** — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 
