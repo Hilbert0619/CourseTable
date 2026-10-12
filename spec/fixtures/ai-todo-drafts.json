@@ -1,0 +1,91 @@
+{
+  "about": "AI answers to the quick-add prompt, read into a to-do draft for today = 2026-10-12. timing: \"anytime\", \"at HH:mm\" or \"after <course name>\"; error: true when unreadable.",
+  "today": "2026-10-12",
+  "courses": [
+    {
+      "id": "0D1A1E5C-0000-4000-8000-000000000001",
+      "name": "高等数学"
+    },
+    {
+      "id": "0D1A1E5C-0000-4000-8000-000000000002",
+      "name": "大学英语"
+    },
+    {
+      "id": "0D1A1E5C-0000-4000-8000-000000000003",
+      "name": "Physics"
+    },
+    {
+      "id": "0D1A1E5C-0000-4000-8000-000000000004",
+      "name": "Physical Education"
+    }
+  ],
+  "cases": [
+    {
+      "name": "Fenced JSON, after a class by its exact name",
+      "answer": "```json\n{\"title\": \"交论文\", \"date\": \"2026-10-13\", \"time\": null, \"afterCourse\": \"高等数学\"}\n```",
+      "title": "交论文",
+      "date": "2026-10-13",
+      "timing": "after 高等数学"
+    },
+    {
+      "name": "Text around the JSON, a clock time",
+      "answer": "Sure! {\"title\": \"Pick up the package\", \"date\": \"2026-10-12\", \"time\": \"12:00\", \"afterCourse\": null} Hope that helps.",
+      "title": "Pick up the package",
+      "date": "2026-10-12",
+      "timing": "at 12:00"
+    },
+    {
+      "name": "An abbreviation of a course name",
+      "answer": "{\"title\": \"问作业\", \"date\": \"2026-10-16\", \"time\": null, \"afterCourse\": \"高数\"}",
+      "title": "问作业",
+      "date": "2026-10-16",
+      "timing": "after 高等数学"
+    },
+    {
+      "name": "Part of a course name",
+      "answer": "{\"title\": \"借书\", \"date\": \"2026-10-12\", \"time\": null, \"afterCourse\": \"英语\"}",
+      "title": "借书",
+      "date": "2026-10-12",
+      "timing": "after 大学英语"
+    },
+    {
+      "name": "A longer name that contains a course name",
+      "answer": "{\"title\": \"Return the goggles\", \"date\": \"2026-10-14\", \"time\": null, \"afterCourse\": \"Physics lab\"}",
+      "title": "Return the goggles",
+      "date": "2026-10-14",
+      "timing": "after Physics"
+    },
+    {
+      "name": "An unknown course falls back to its time or any time",
+      "answer": "{\"title\": \"Hand in the lab report\", \"date\": \"2026-10-12\", \"time\": null, \"afterCourse\": \"Chemistry\"}",
+      "title": "Hand in the lab report",
+      "date": "2026-10-12",
+      "timing": "anytime",
+      "unknownCourse": "Chemistry"
+    },
+    {
+      "name": "No date means today; one-digit hours",
+      "answer": "{\"title\": \"Call home\", \"time\": \"9:05\"}",
+      "title": "Call home",
+      "date": "2026-10-12",
+      "timing": "at 09:05"
+    },
+    {
+      "name": "Both a time and a class: the class wins",
+      "answer": "{\"title\": \"Meet Li\", \"date\": \"2026-10-12\", \"time\": \"18:00\", \"afterCourse\": \"Physical Education\"}",
+      "title": "Meet Li",
+      "date": "2026-10-12",
+      "timing": "after Physical Education"
+    },
+    {
+      "name": "An empty title is unreadable",
+      "answer": "{\"title\": \"  \", \"date\": \"2026-10-12\"}",
+      "error": true
+    },
+    {
+      "name": "Not JSON",
+      "answer": "Sorry, I can only help with study questions.",
+      "error": true
+    }
+  ]
+}

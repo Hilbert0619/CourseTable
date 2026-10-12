@@ -1,0 +1,82 @@
+{
+  "about": "HTTP error responses and the error kind they map to; message is the provider message kept for display (when given).",
+  "errors": [
+    {
+      "name": "OpenAI wrong key",
+      "status": 401,
+      "body": "{\"error\":{\"message\":\"Incorrect API key provided: sk-abc***\",\"type\":\"invalid_request_error\",\"code\":\"invalid_api_key\"}}",
+      "kind": "wrongKey",
+      "message": "Incorrect API key provided: sk-abc***"
+    },
+    {
+      "name": "OpenAI out of credit (429)",
+      "status": 429,
+      "body": "{\"error\":{\"message\":\"You exceeded your current quota, please check your plan and billing details.\",\"type\":\"insufficient_quota\",\"code\":\"insufficient_quota\"}}",
+      "kind": "noCredit"
+    },
+    {
+      "name": "OpenAI rate limit",
+      "status": 429,
+      "body": "{\"error\":{\"message\":\"Rate limit reached for requests\",\"type\":\"requests\",\"code\":\"rate_limit_exceeded\"}}",
+      "kind": "rateLimited"
+    },
+    {
+      "name": "A per-minute quota is a rate limit",
+      "status": 429,
+      "body": "{\"error\":{\"code\":429,\"message\":\"Quota exceeded for metric: requests per minute\",\"status\":\"RESOURCE_EXHAUSTED\"}}",
+      "kind": "rateLimited"
+    },
+    {
+      "name": "DeepSeek out of credit",
+      "status": 402,
+      "body": "{\"error\":{\"message\":\"Insufficient Balance\",\"type\":\"unknown_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+      "kind": "noCredit"
+    },
+    {
+      "name": "Anthropic out of credit (400)",
+      "status": 400,
+      "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API.\"}}",
+      "kind": "noCredit"
+    },
+    {
+      "name": "Aliyun account in arrears",
+      "status": 400,
+      "body": "{\"error\":{\"code\":\"Arrearage\",\"message\":\"Access denied, please make sure your account is in good standing.\",\"type\":\"Arrearage\"}}",
+      "kind": "noCredit"
+    },
+    {
+      "name": "Numeric error code",
+      "status": 401,
+      "body": "{\"error\":{\"code\":1001,\"message\":\"Authorization header is missing\"}}",
+      "kind": "wrongKey",
+      "message": "Authorization header is missing"
+    },
+    {
+      "name": "Ollama: error as a plain string",
+      "status": 404,
+      "body": "{\"error\":\"model \\\"llama9\\\" not found, try pulling it first\"}",
+      "kind": "notFound",
+      "message": "model \"llama9\" not found, try pulling it first"
+    },
+    {
+      "name": "Unknown model with a Chinese message",
+      "status": 400,
+      "body": "{\"error\":{\"code\":\"1211\",\"message\":\"模型不存在，请检查模型代码。\"}}",
+      "kind": "rejected",
+      "message": "模型不存在，请检查模型代码。"
+    },
+    {
+      "name": "Anthropic overloaded",
+      "status": 529,
+      "body": "{\"type\":\"error\",\"error\":{\"type\":\"overloaded_error\",\"message\":\"Overloaded\"}}",
+      "kind": "busy"
+    },
+    {
+      "name": "A gateway page instead of JSON",
+      "status": 502,
+      "body": "<html><body>Bad Gateway</body></html>",
+      "kind": "busy",
+      "message": "<html><body>Bad Gateway</body></html>"
+    }
+  ]
+}
