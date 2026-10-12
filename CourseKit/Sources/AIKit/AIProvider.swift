@@ -28,7 +28,8 @@ public struct AIProvider: Identifiable, Hashable, Sendable {
     public var needsKey: Bool
     /// Where to get a key.
     public var keyPage: String?
-    /// Suggested models, best default first. Model names change often; "Load models" asks the provider.
+    /// Suggested models, best default first (checked against the providers' docs 2026-10-12). Model names change
+    /// often; "Load models" asks the provider, and an empty list means "pick from the provider's list".
     public var models: [String]
     /// Accepts `stream_options: {"include_usage": true}` (token counts at the end of a stream).
     public var reportsStreamUsage: Bool
@@ -57,33 +58,33 @@ public struct AIProvider: Identifiable, Hashable, Sendable {
     /// The list shown when adding a connection, in this order.
     public static let presets: [AIProvider] = [
         AIProvider(id: "deepseek", name: "DeepSeek", region: .china, baseURL: "https://api.deepseek.com",
-                   keyPage: "https://platform.deepseek.com/api_keys", models: ["deepseek-chat", "deepseek-reasoner"],
+                   keyPage: "https://platform.deepseek.com/api_keys", models: ["deepseek-v4-flash", "deepseek-v4-pro"],
                    reportsStreamUsage: true, supportsJSONMode: true),
         AIProvider(id: "qwen", name: "Qwen 通义千问", region: .china,
                    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-                   keyPage: "https://bailian.console.aliyun.com/?apiKey=1", models: ["qwen-plus", "qwen-turbo", "qwen-max"],
+                   keyPage: "https://bailian.console.aliyun.com/?apiKey=1", models: ["qwen-plus", "qwen-flash", "qwen3-max"],
                    reportsStreamUsage: true, supportsJSONMode: true),
         AIProvider(id: "kimi", name: "Kimi", region: .china, baseURL: "https://api.moonshot.cn/v1",
-                   keyPage: "https://platform.moonshot.cn/console/api-keys", models: ["kimi-latest", "moonshot-v1-8k"],
+                   keyPage: "https://platform.moonshot.cn/console/api-keys", models: ["kimi-k2.6"],
                    supportsJSONMode: true),
         AIProvider(id: "glm", name: "GLM 智谱", region: .china, baseURL: "https://open.bigmodel.cn/api/paas/v4",
-                   keyPage: "https://open.bigmodel.cn/usercenter/apikeys", models: ["glm-4-flash", "glm-4-plus"],
+                   keyPage: "https://open.bigmodel.cn/usercenter/apikeys", models: ["glm-4.7-flash"],
                    supportsJSONMode: true),
         AIProvider(id: "doubao", name: "Doubao 豆包", region: .china, baseURL: "https://ark.cn-beijing.volces.com/api/v3",
                    keyPage: "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey", models: [],
                    reportsStreamUsage: true, supportsJSONMode: true),
         AIProvider(id: "siliconflow", name: "SiliconFlow 硅基流动", region: .china, baseURL: "https://api.siliconflow.cn/v1",
-                   keyPage: "https://cloud.siliconflow.cn/account/ak", models: ["deepseek-ai/DeepSeek-V3", "Qwen/Qwen2.5-7B-Instruct"],
+                   keyPage: "https://cloud.siliconflow.cn/account/ak", models: [],
                    reportsStreamUsage: true, supportsJSONMode: true),
         AIProvider(id: "openai", name: "OpenAI", region: .international, baseURL: "https://api.openai.com/v1",
-                   keyPage: "https://platform.openai.com/api-keys", models: ["gpt-4o-mini", "gpt-4o"],
+                   keyPage: "https://platform.openai.com/api-keys", models: ["gpt-5.5", "gpt-5.4-mini"],
                    reportsStreamUsage: true, supportsJSONMode: true),
         AIProvider(id: "anthropic", name: "Claude", region: .international, format: .anthropic,
                    baseURL: "https://api.anthropic.com", keyPage: "https://console.anthropic.com/settings/keys",
                    models: ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]),
         AIProvider(id: "gemini", name: "Gemini", region: .international,
                    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
-                   keyPage: "https://aistudio.google.com/apikey", models: ["gemini-2.5-flash"],
+                   keyPage: "https://aistudio.google.com/apikey", models: ["gemini-flash-latest"],
                    supportsJSONMode: true),
         AIProvider(id: "openrouter", name: "OpenRouter", region: .international, baseURL: "https://openrouter.ai/api/v1",
                    keyPage: "https://openrouter.ai/keys", models: [], reportsStreamUsage: true, supportsJSONMode: true),

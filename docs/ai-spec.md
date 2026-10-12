@@ -64,7 +64,8 @@ URL, 429 too many requests, 5xx/529 the provider is busy, network failure, an an
   formats, error bodies, to-do drafts) that the Kotlin port must pass too.
 - UI tests and screenshots use a fake transport (launch argument `-aiDemo`) with canned streamed answers; CI never
   holds a real key.
-- The owner tests with a real key on the phone (any preset; DeepSeek or Qwen cost a few yuan to try).
+- The owner tests with a real key on the phone (any preset; GLM-4.7-Flash on BigModel is free, DeepSeek or Qwen
+  cost a few yuan to try).
 
 ## 5. Stages (iOS)
 
@@ -77,7 +78,8 @@ Android: the same features as a stage after its release (stage 7), porting AIKit
 
 ## 6. Notes
 
-- Provider URLs and model names are checked against the providers' docs when stage 2 wires the UI; Custom covers
-  anything missing.
+- Provider URLs and suggested models were checked on 2026-10-12 (e.g. DeepSeek's `deepseek-chat` is deprecated in
+  favour of `deepseek-v4-flash`; Gemini uses the `gemini-flash-latest` alias). Kimi's and OpenAI's suggestions come
+  from secondary sources; "Load models" and Custom cover anything that moved.
 - With bring-your-own-key, the user deals with the provider directly; the app is a client. It labels AI content and
   sends no personal data it doesn't need. (Not legal advice.)

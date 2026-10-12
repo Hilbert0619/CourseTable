@@ -20,7 +20,7 @@ import VocabKit
         #expect(request.headers["Authorization"] == "Bearer sk-test")
         #expect(request.headers["x-api-key"] == nil)
         let body = try json(request)
-        #expect(body["model"] as? String == "deepseek-chat")
+        #expect(body["model"] as? String == "deepseek-v4-flash")
         #expect(body["stream"] as? Bool == true)
         #expect((body["stream_options"] as? [String: Bool]) == ["include_usage": true])
         #expect((body["response_format"] as? [String: String]) == ["type": "json_object"])
