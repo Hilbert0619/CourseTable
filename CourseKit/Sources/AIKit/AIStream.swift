@@ -260,3 +260,68 @@ private struct AnthropicEvent: Decodable {
     var usage: Usage?
     var error: ErrorBody?
 }
+
+extension AIStreamDecoder {
+    /// Reads a response that came back whole instead of streamed (some proxies ignore `stream: true`): the answer's
+    /// text and events, or the error it carries. `nil` when the body is neither.
+    public func decodeComplete(_ data: Data) throws -> [AIStreamEvent]? {
+        guard let response = try? JSONDecoder().decode(CompleteResponse.self, from: data) else { return nil }
+        if let error = response.error { throw AIError.from(status: nil, details: error.details) }
+        var events: [AIStreamEvent] = []
+        switch format {
+        case .openAI:
+            guard let choice = response.choices?.first else { return nil }
+            if let text = choice.message?.content, !text.isEmpty { events.append(.text(text)) }
+            if let reason = choice.finishReason { events.append(.stop(Self.openAIStop(reason))) }
+            if let usage = response.usage {
+                events.append(.usage(input: usage.promptTokens ?? usage.inputTokens,
+                                     output: usage.completionTokens ?? usage.outputTokens))
+            }
+        case .anthropic:
+            guard let content = response.content else { return nil }
+            let text = content.filter { $0.type == "text" }.compactMap(\.text).joined()
+            if !text.isEmpty { events.append(.text(text)) }
+            if let reason = response.stopReason { events.append(.stop(Self.anthropicStop(reason))) }
+            if let usage = response.usage { events.append(.usage(input: usage.inputTokens, output: usage.outputTokens)) }
+        }
+        events.append(.end)
+        return events
+    }
+}
+
+private struct CompleteResponse: Decodable {
+    struct Choice: Decodable {
+        struct Message: Decodable { var content: String? }
+        var message: Message?
+        var finishReason: String?
+        enum CodingKeys: String, CodingKey {
+            case message
+            case finishReason = "finish_reason"
+        }
+    }
+    struct Block: Decodable {
+        var type: String
+        var text: String?
+    }
+    struct Usage: Decodable {
+        var promptTokens: Int?
+        var completionTokens: Int?
+        var inputTokens: Int?
+        var outputTokens: Int?
+        enum CodingKeys: String, CodingKey {
+            case promptTokens = "prompt_tokens"
+            case completionTokens = "completion_tokens"
+            case inputTokens = "input_tokens"
+            case outputTokens = "output_tokens"
+        }
+    }
+    var choices: [Choice]?
+    var content: [Block]?
+    var stopReason: String?
+    var usage: Usage?
+    var error: ErrorBody?
+    enum CodingKeys: String, CodingKey {
+        case choices, content, usage, error
+        case stopReason = "stop_reason"
+    }
+}

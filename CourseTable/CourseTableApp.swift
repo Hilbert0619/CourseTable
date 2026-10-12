@@ -10,6 +10,8 @@ struct CourseTableApp: App {
     @State private var vocab = VocabApp.makeForLaunch()
     /// To-dos and focus history (Planner.store).
     @State private var planner: PlannerModel
+    /// AI connections (keys in the Keychain), usage and saved answers.
+    @State private var ai = AIStore.makeForLaunch()
 
     init() {
         do {
@@ -33,6 +35,7 @@ struct CourseTableApp: App {
             RootView()
                 .environment(vocab)
                 .environment(planner)
+                .environment(ai)
         }
         .modelContainer(container)
         // Ends class Live Activities whose class is over, whenever iOS grants a refresh after one ends.

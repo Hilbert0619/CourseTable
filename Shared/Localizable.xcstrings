@@ -41,6 +41,16 @@
         }
       }
     },
+    "%lld answers are saved on this iPhone so that opening them again is free." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 iPhone 上保存了 %lld 条回答，再次打开无需付费。"
+          }
+        }
+      }
+    },
     "%lld answers haven't been uploaded yet. They'll be lost if you sign out while offline." : {
       "localizations" : {
         "zh-Hans" : {
@@ -299,6 +309,76 @@
         }
       }
     },
+    "AI" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI"
+          }
+        }
+      }
+    },
+    "AI Help" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 帮助"
+          }
+        }
+      }
+    },
+    "AI answers can be wrong. The dictionary still decides what counts as a correct answer." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 的回答可能有误。判断答题对错仍以词典为准。"
+          }
+        }
+      }
+    },
+    "AI help uses the connection with the check mark. Swipe right on another to use it instead." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 帮助使用带勾号的连接。在其他连接上向右轻扫可改用它。"
+          }
+        }
+      }
+    },
+    "AI-generated · %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 生成 · %@"
+          }
+        }
+      }
+    },
+    "API Key" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 密钥"
+          }
+        }
+      }
+    },
+    "API key" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 密钥"
+          }
+        }
+      }
+    },
     "About" : {
       "localizations" : {
         "zh-Hans" : {
@@ -355,6 +435,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加"
+          }
+        }
+      }
+    },
+    "Add Connection" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加连接"
           }
         }
       }
@@ -425,6 +515,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请先添加课程，然后点击空白格子放置。"
+          }
+        }
+      }
+    },
+    "Address" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地址"
           }
         }
       }
@@ -559,6 +659,26 @@
         }
       }
     },
+    "Ask Again" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新提问"
+          }
+        }
+      }
+    },
+    "Asking %@…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在询问 %@…"
+          }
+        }
+      }
+    },
     "At a time" : {
       "localizations" : {
         "zh-Hans" : {
@@ -595,6 +715,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上课时"
+          }
+        }
+      }
+    },
+    "Available models" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可用模型"
           }
         }
       }
@@ -799,6 +929,16 @@
         }
       }
     },
+    "Choose a model first." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先选择模型。"
+          }
+        }
+      }
+    },
     "Clashes with %@ (%@, periods %lld–%lld)" : {
       "localizations" : {
         "zh-Hans" : {
@@ -899,6 +1039,16 @@
         }
       }
     },
+    "Collocations" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搭配"
+          }
+        }
+      }
+    },
     "Color" : {
       "localizations" : {
         "zh-Hans" : {
@@ -939,6 +1089,16 @@
         }
       }
     },
+    "Compare" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "辨析"
+          }
+        }
+      }
+    },
     "Confirm your email first: tap the link in the email we sent you." : {
       "localizations" : {
         "zh-Hans" : {
@@ -959,6 +1119,26 @@
         }
       }
     },
+    "Connected. The model answered." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接成功，模型已回答。"
+          }
+        }
+      }
+    },
+    "Connections" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接"
+          }
+        }
+      }
+    },
     "Continue" : {
       "localizations" : {
         "zh-Hans" : {
@@ -969,12 +1149,32 @@
         }
       }
     },
+    "Copy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拷贝"
+          }
+        }
+      }
+    },
     "Correct" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "正确"
+          }
+        }
+      }
+    },
+    "Couldn't reach the provider. Check your internet connection." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法连接到服务商。请检查网络连接。"
           }
         }
       }
@@ -1089,6 +1289,16 @@
         }
       }
     },
+    "Delete Connection" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除连接"
+          }
+        }
+      }
+    },
     "Delete Course" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1099,12 +1309,32 @@
         }
       }
     },
+    "Delete Saved Answers" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除已保存的回答"
+          }
+        }
+      }
+    },
     "Delete To-Do" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除待办"
+          }
+        }
+      }
+    },
+    "Delete all saved AI answers?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除所有已保存的 AI 回答？"
           }
         }
       }
@@ -1189,6 +1419,16 @@
         }
       }
     },
+    "Each feature sends only what it needs: a word and its dictionary entry, a sentence you paste, or a to-do note with your course names." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每项功能只发送所需内容：一个单词及其词典释义、你粘贴的句子，或一条待办备注和你的课程名称。"
+          }
+        }
+      }
+    },
     "Easy" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1269,6 +1509,16 @@
         }
       }
     },
+    "Enter the provider's OpenAI-compatible base URL, ending before /chat/completions." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入服务商兼容 OpenAI 的基础网址（不含 /chat/completions）。"
+          }
+        }
+      }
+    },
     "Even weeks" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1305,6 +1555,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "考试日期"
+          }
+        }
+      }
+    },
+    "Explain" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "讲解"
+          }
+        }
+      }
+    },
+    "Explanations, memory aids, comparisons and collocations from an AI provider you choose, with your own key." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由你选择的 AI 服务商（使用你自己的密钥）提供讲解、记忆方法、辨析和搭配。"
           }
         }
       }
@@ -1517,6 +1787,16 @@
         }
       }
     },
+    "Get a Key from %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从 %@ 获取密钥"
+          }
+        }
+      }
+    },
     "Goal, e.g. Calculus review" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1663,6 +1943,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "填入示例"
+          }
+        }
+      }
+    },
+    "International" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "国际"
           }
         }
       }
@@ -1865,6 +2155,16 @@
         }
       }
     },
+    "Load Models from the Provider" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从服务商加载模型列表"
+          }
+        }
+      }
+    },
     "Long break" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1925,6 +2225,16 @@
         }
       }
     },
+    "Memory Aid" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记忆"
+          }
+        }
+      }
+    },
     "Missing %@." : {
       "localizations" : {
         "zh-Hans" : {
@@ -1941,6 +2251,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "混合"
+          }
+        }
+      }
+    },
+    "Model" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型"
           }
         }
       }
@@ -2041,6 +2361,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新词"
+          }
+        }
+      }
+    },
+    "New Connection" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新建连接"
           }
         }
       }
@@ -2225,6 +2555,16 @@
         }
       }
     },
+    "No VPN needed in mainland China" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中国大陆无需 VPN"
+          }
+        }
+      }
+    },
     "No classes on this day" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2395,6 +2735,16 @@
         }
       }
     },
+    "Off" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        }
+      }
+    },
     "Offline. Your answers are saved on this iPhone and will upload later." : {
       "localizations" : {
         "zh-Hans" : {
@@ -2491,6 +2841,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选填"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他"
           }
         }
       }
@@ -2655,6 +3015,16 @@
         }
       }
     },
+    "Plain http sends the key unencrypted. Use it only for a computer on your own network." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "普通 http 会以明文发送密钥，只应用于你自己网络中的电脑。"
+          }
+        }
+      }
+    },
     "Plural" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2701,6 +3071,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上一周"
+          }
+        }
+      }
+    },
+    "Privacy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私"
+          }
+        }
+      }
+    },
+    "Provider" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商"
           }
         }
       }
@@ -2995,6 +3385,16 @@
         }
       }
     },
+    "Saved — type to replace" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存——输入新密钥以替换"
+          }
+        }
+      }
+    },
     "Schedule" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3041,6 +3441,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 结束本次专注"
+          }
+        }
+      }
+    },
+    "Set Up AI Help…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置 AI 帮助…"
           }
         }
       }
@@ -3295,6 +3705,16 @@
         }
       }
     },
+    "Stored only in this iPhone's Keychain, never synced or exported." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只保存在这台 iPhone 的钥匙串中，不会同步或导出。"
+          }
+        }
+      }
+    },
     "Stream" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3351,6 +3771,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在学习"
+          }
+        }
+      }
+    },
+    "Suggested: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推荐：%@"
           }
         }
       }
@@ -3543,6 +3973,16 @@
         }
       }
     },
+    "Test Connection" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "测试连接"
+          }
+        }
+      }
+    },
     "That doesn't look like an email address." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3579,6 +4019,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "单词首页会显示倒计时，并估算你需要的学习进度。"
+          }
+        }
+      }
+    },
+    "The address isn't a valid http(s) URL." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地址不是有效的 http(s) 网址。"
+          }
+        }
+      }
+    },
+    "The answer was cut off by the provider's length limit." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回答因服务商的长度限制被截断。"
           }
         }
       }
@@ -3623,6 +4083,76 @@
         }
       }
     },
+    "The provider declined to answer this." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商拒绝回答此问题。"
+          }
+        }
+      }
+    },
+    "The provider doesn't know this model or address. Check them in Settings → AI." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商找不到这个模型或地址。请在“设置 → AI 帮助”中检查。"
+          }
+        }
+      }
+    },
+    "The provider is busy. Try again soon." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商繁忙，请稍后再试。"
+          }
+        }
+      }
+    },
+    "The provider refused the key. Check it in Settings → AI." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商拒绝了这个密钥。请在“设置 → AI 帮助”中检查。"
+          }
+        }
+      }
+    },
+    "The provider rejected the request." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商拒绝了此请求。"
+          }
+        }
+      }
+    },
+    "The provider sent an empty answer." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务商返回了空回答。"
+          }
+        }
+      }
+    },
+    "The provider's answer couldn't be read." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取服务商的回答。"
+          }
+        }
+      }
+    },
     "The server can't send email to this address yet. Use the email of the project's owner for now." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3659,6 +4189,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "小组件无法读取课表，因为当前安装的 App 没有 App Group。请通过 Xcode、TestFlight、iloader、SideStore 或 AltStore 安装以使用小组件。"
+          }
+        }
+      }
+    },
+    "Thinking…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在思考…"
           }
         }
       }
@@ -3717,6 +4257,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这个链接已过期或已被使用，请重新获取。"
+          }
+        }
+      }
+    },
+    "This month: %lld requests · %lld tokens" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本月：%lld 次请求 · %lld 个 token"
           }
         }
       }
@@ -3821,12 +4371,32 @@
         }
       }
     },
+    "Too many requests right now. Try again in a minute." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前请求过多，请一分钟后再试。"
+          }
+        }
+      }
+    },
     "Train" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "火车"
+          }
+        }
+      }
+    },
+    "Try Again" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试"
           }
         }
       }
@@ -3897,6 +4467,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 下课"
+          }
+        }
+      }
+    },
+    "Use for AI Help" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于 AI 帮助"
+          }
+        }
+      }
+    },
+    "Used for AI help" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于 AI 帮助"
           }
         }
       }
@@ -4031,6 +4621,16 @@
         }
       }
     },
+    "Why?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为什么？"
+          }
+        }
+      }
+    },
     "Widget" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4047,6 +4647,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "内置词书"
+          }
+        }
+      }
+    },
+    "Word explanations and more from an AI provider you choose, with your own key." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由你选择的 AI 服务商（使用你自己的密钥）提供单词讲解等帮助。"
           }
         }
       }
@@ -4171,6 +4781,26 @@
         }
       }
     },
+    "Your account with this provider has no credit or quota left." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你在该服务商的账户已没有余额或额度。"
+          }
+        }
+      }
+    },
+    "Your computer's address on this Wi-Fi with the server's port and /v1, e.g. http://192.168.1.2:11434/v1 for Ollama or :1234/v1 for LM Studio." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "电脑在此 Wi-Fi 中的地址，加上服务端口和 /v1，例如 Ollama 用 http://192.168.1.2:11434/v1，LM Studio 用 :1234/v1。"
+          }
+        }
+      }
+    },
     "Your course list" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4207,6 +4837,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用你的释义"
+          }
+        }
+      }
+    },
+    "Your questions go straight from this iPhone to the provider you chose, under their terms, and are paid from your account with them. CourseTable's server never sees them. Keys stay in this iPhone's Keychain." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的提问直接从这台 iPhone 发送到你选择的服务商，适用其条款，费用从你在该服务商的账户中扣除。课程表的服务器不会看到这些内容。密钥只保存在这台 iPhone 的钥匙串中。"
           }
         }
       }

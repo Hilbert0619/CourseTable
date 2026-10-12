@@ -18,6 +18,24 @@
           }
         }
       }
+    },
+    "NSLocalNetworkUsageDescription" : {
+      "comment" : "Why the app may reach the local network (AI help through a model on the user's computer)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI help can use a model running on a computer on your Wi-Fi, such as Ollama or LM Studio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 帮助可以使用同一 Wi-Fi 下电脑上运行的模型，例如 Ollama 或 LM Studio。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

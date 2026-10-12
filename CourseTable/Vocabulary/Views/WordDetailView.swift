@@ -30,6 +30,7 @@ struct WordDetailView: View {
                         FormsView(entry: entry)
                     }
                 }
+                WordAISection(entry: entry)
                 Section("About the Word") {
                     if !examLists(entry).isEmpty {
                         LabeledContent("Word lists") {

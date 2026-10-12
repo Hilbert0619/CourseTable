@@ -11,6 +11,7 @@
 		C0DE00000000000000000051 /* CourseKit in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000092 /* CourseKit */; };
 		C0DE00000000000000000053 /* VocabKit in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000094 /* VocabKit */; };
 		C0DE00000000000000000054 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000095 /* Supabase */; };
+		C0DE00000000000000000055 /* AIKit in Frameworks */ = {isa = PBXBuildFile; productRef = C0DE00000000000000000096 /* AIKit */; };
 		C0DE00000000000000000052 /* CourseTableWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C0DE00000000000000000011 /* CourseTableWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -120,6 +121,7 @@
 				C0DE00000000000000000050 /* CourseKit in Frameworks */,
 				C0DE00000000000000000053 /* VocabKit in Frameworks */,
 				C0DE00000000000000000054 /* Supabase in Frameworks */,
+				C0DE00000000000000000055 /* AIKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +199,7 @@
 				C0DE00000000000000000091 /* CourseKit */,
 				C0DE00000000000000000094 /* VocabKit */,
 				C0DE00000000000000000095 /* Supabase */,
+				C0DE00000000000000000096 /* AIKit */,
 			);
 			productName = CourseTable;
 			productReference = C0DE00000000000000000010 /* CourseTable.app */;
@@ -719,6 +722,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C0DE00000000000000000093 /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		C0DE00000000000000000096 /* AIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0DE00000000000000000090 /* XCLocalSwiftPackageReference "CourseKit" */;
+			productName = AIKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

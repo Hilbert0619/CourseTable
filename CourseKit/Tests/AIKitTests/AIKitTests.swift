@@ -194,3 +194,66 @@ import VocabKit
         #expect(full.contains("Simplified Chinese"))
     }
 }
+
+@Suite struct MarkdownBlockTests {
+    @Test func answersSplitIntoBlocks() {
+        let text = """
+            ## Meaning
+            **abandon** means to leave
+            for good.
+
+            - first *sense*
+              - nested
+            * second
+            1. one
+            2) two
+            > a quote
+            ---
+            ```
+            let x = 1
+            ```
+            #not a heading
+            """
+        #expect(MarkdownBlock.parse(text) == [
+            .heading(level: 2, text: "Meaning"),
+            .paragraph("**abandon** means to leave\nfor good."),
+            .bullet(depth: 0, text: "first *sense*"),
+            .bullet(depth: 1, text: "nested"),
+            .bullet(depth: 0, text: "second"),
+            .numbered(depth: 0, number: "1", text: "one"),
+            .numbered(depth: 0, number: "2", text: "two"),
+            .quote("a quote"),
+            .rule,
+            .code("let x = 1"),
+            .paragraph("#not a heading"),
+        ])
+    }
+
+    @Test func anAnswerCutOffMidCodeKeepsItsCode() {
+        #expect(MarkdownBlock.parse("Text\n```\npartial") == [.paragraph("Text"), .code("partial")])
+        #expect(MarkdownBlock.parse("**bold** start") == [.paragraph("**bold** start")])
+        #expect(MarkdownBlock.parse("").isEmpty)
+    }
+}
+
+@Suite struct CompleteResponseTests {
+    @Test func wholeOpenAIResponses() throws {
+        let body = #"{"choices":[{"message":{"role":"assistant","content":"OK"},"finish_reason":"stop"}],"usage":{"prompt_tokens":5,"completion_tokens":1}}"#
+        let events = try AIStreamDecoder(format: .openAI).decodeComplete(Data(body.utf8))
+        #expect(events == [.text("OK"), .stop(.complete), .usage(input: 5, output: 1), .end])
+    }
+
+    @Test func wholeAnthropicResponses() throws {
+        let body = #"{"type":"message","content":[{"type":"thinking","thinking":""},{"type":"text","text":"OK"}],"stop_reason":"end_turn","usage":{"input_tokens":9,"output_tokens":2}}"#
+        let events = try AIStreamDecoder(format: .anthropic).decodeComplete(Data(body.utf8))
+        #expect(events == [.text("OK"), .stop(.complete), .usage(input: 9, output: 2), .end])
+    }
+
+    @Test func errorsInsideASuccessfulResponse() throws {
+        let body = #"{"error":{"message":"Insufficient Balance"}}"#
+        #expect(throws: AIError.noCredit(message: "Insufficient Balance")) {
+            try AIStreamDecoder(format: .openAI).decodeComplete(Data(body.utf8))
+        }
+        #expect(try AIStreamDecoder(format: .openAI).decodeComplete(Data("data: x".utf8)) == nil)
+    }
+}

@@ -77,6 +77,8 @@ private struct SettingsForm: View {
 
             ReminderSection()
 
+            AISettingsSection()
+
             Section {
                 LabeledContent("Version") {
                     Text(verbatim: appVersion)
@@ -94,6 +96,32 @@ private struct SettingsForm: View {
         }
         .sheet(isPresented: $importing) {
             ImportView(timetable: timetable)
+        }
+    }
+}
+
+/// Settings → AI, with the connection in use.
+private struct AISettingsSection: View {
+    @Environment(AIStore.self) private var ai
+
+    var body: some View {
+        Section {
+            NavigationLink {
+                AISettingsView()
+            } label: {
+                LabeledContent {
+                    if let connection = ai.defaultConnection {
+                        Text(verbatim: connection.name)
+                    } else {
+                        Text("Off")
+                    }
+                } label: {
+                    Label("AI Help", systemImage: "sparkles")
+                }
+            }
+            .accessibilityIdentifier("aiSettingsLink")
+        } footer: {
+            Text("Word explanations and more from an AI provider you choose, with your own key.")
         }
     }
 }

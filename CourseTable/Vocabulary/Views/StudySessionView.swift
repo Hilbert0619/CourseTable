@@ -320,6 +320,7 @@ private struct ChoiceQuestionView: View {
             if picked != question.correctIndex {
                 MeaningsView(entry: entry)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                WhyWrongButton(entry: entry, picked: question.options[picked])
             }
             ContinueButton {
                 onDone(question.isCorrect(picked))
@@ -372,6 +373,9 @@ private struct SpellingQuestion: View {
             .accessibilityIdentifier("spellingField")
         if let result {
             SpellingResultView(entry: entry, typed: typed, result: result)
+            if result == .wrong {
+                WhyWrongButton(entry: entry, typed: typed)
+            }
             ContinueButton { onDone(result) }
         } else {
             HStack {

@@ -13,6 +13,8 @@ enum UITestLaunch {
     static let vocabReviewMode = UserDefaults.standard.string(forKey: "vocabMode")
     /// Open the Focus tab with a session running (`-focusDemo`).
     static let wantsFocusDemo = isActive && ProcessInfo.processInfo.arguments.contains("-focusDemo")
+    /// One AI connection answered by canned text instead of a provider (`-aiDemo`).
+    static let wantsAIDemo = isActive && ProcessInfo.processInfo.arguments.contains("-aiDemo")
     /// Start a demo class Live Activity (`-liveActivityDemo before|during|switch`).
     static let liveActivityDemo = isActive ? UserDefaults.standard.string(forKey: "liveActivityDemo") : nil
 }
