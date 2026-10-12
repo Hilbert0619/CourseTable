@@ -103,7 +103,8 @@ struct AssistantView: View {
             }
             .padding()
         }
-        .defaultScrollAnchor(.bottom)
+        // An empty chat starts at the top; a conversation follows its latest message.
+        .defaultScrollAnchor(conversation.messages.isEmpty && !run.hasContent ? .top : .bottom)
         .scrollDismissesKeyboard(.interactively)
         .safeAreaInset(edge: .bottom) { inputBar }
     }

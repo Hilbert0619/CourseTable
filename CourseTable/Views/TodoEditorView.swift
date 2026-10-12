@@ -207,7 +207,9 @@ struct TodoEditorView: View {
         let today = LocalDate(.now)
         let courses = timetable.courses
         let names = Array(Set(courses.map(\.name))).sorted()
-        noteRun.start(AIPrompts.todoDraft(note, today: today, now: TimeOfDay(.now), courses: names), store: ai) { answer in
+        let classes = AIPrompts.upcomingClasses(timetable, from: today)
+        let request = AIPrompts.todoDraft(note, today: today, now: TimeOfDay(.now), courses: names, classes: classes)
+        noteRun.start(request, store: ai) { answer in
             guard let parsed = try? TodoDraft.parse(answer.text, today: today, courses: courses) else {
                 noteProblem = .unreadable
                 return

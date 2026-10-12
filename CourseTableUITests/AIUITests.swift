@@ -22,10 +22,14 @@ final class AIUITests: XCTestCase {
             let explain = element(app, "aiHelp-explain")
             for _ in 0..<4 where !(explain.exists && explain.isHittable) { app.swipeUp() }
             tap(explain)
-            XCTAssertTrue(element(app, "aiAskAgain").waitForExistence(timeout: 15), "The answer didn't finish")
-            XCTAssertTrue(element(app, "aiAnswer").exists)
-            snapshot(app, "\(language)-ai-1-word-help")
+            XCTAssertTrue(element(app, "aiAnswer").waitForExistence(timeout: 15), "No answer")
+            Thread.sleep(forTimeInterval: 2)
             app.swipeUp()
+            snapshot(app, "\(language)-ai-1-word-help")
+            // "Ask Again" is in the row below the answer; off-screen rows aren't in the tree, so scroll to it.
+            let again = element(app, "aiAskAgain")
+            for _ in 0..<4 where !(again.exists && again.isHittable) { app.swipeUp() }
+            XCTAssertTrue(again.exists, "The answer didn't finish")
             snapshot(app, "\(language)-ai-1-word-help-bottom")
 
             app.tabBars.buttons.element(boundBy: 4).tap()
@@ -72,6 +76,9 @@ final class AIUITests: XCTestCase {
         tap(element(app, "aiWhy"))
         XCTAssertTrue(element(app, "aiAnswer").waitForExistence(timeout: 15), "No explanation")
         Thread.sleep(forTimeInterval: 1.5)
+        // Each word once (two overlapping requests once interleaved their text).
+        let start = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "You left out letters in the middle.")).firstMatch
+        XCTAssertTrue(start.exists, "The explanation isn't shown as sent")
         snapshot(app, "en-ai-4-why")
     }
 

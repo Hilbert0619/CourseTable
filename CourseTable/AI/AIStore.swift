@@ -92,7 +92,12 @@ final class AIStore {
             return AIStore(defaults: .standard, cacheURL: support?.appendingPathComponent("AIAnswers.json"),
                            transport: URLSessionAITransport())
         }
-        // UI tests: a fresh store each launch; with -aiDemo, one connection answered by canned text.
+        // UI tests: a fresh store each launch; with -aiDemo, one connection answered by canned text. The screens'
+        // drafts and switches (kept with @AppStorage) start empty too.
+        for key in ["ai.sentenceDraft", "ai.essayDraft", "ai.essayPrompt", "ai.essayTask", "ai.includeSchedule",
+                    "ai.includeHardWords"] {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
         let defaults = UserDefaults(suiteName: "ui-test-ai-\(UUID().uuidString)") ?? .standard
         let store = AIStore(defaults: defaults, cacheURL: nil, transport: DemoAITransport(), memoryKeys: [:])
         if UITestLaunch.wantsAIDemo, let deepSeek = AIProvider.preset(id: "deepseek") {

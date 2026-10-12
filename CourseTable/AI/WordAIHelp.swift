@@ -143,7 +143,8 @@ private struct WhyWrongSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
-        .task { ask() }
+        // Once: the sheet's task can run again when the sheet is laid out anew.
+        .task { if !run.hasContent { ask() } }
         .onDisappear { run.cancel() }
     }
 

@@ -187,18 +187,23 @@ struct DemoAITransport: AITransport {
             """
     }
 
-    /// Tomorrow, after the first course in the list (or at 17:30 without courses).
+    /// After the first class from tomorrow on in the prompt's class list (lines like
+    /// `Tue 2026-10-13 08:00–09:40 Calculus (A101)`), or tomorrow at 17:30 without one.
     private static func todoAnswer(_ prompt: String) -> String {
         let today = prompt.range(of: #"Today is \d{4}-\d{2}-\d{2}"#, options: .regularExpression)
             .flatMap { LocalDate(String(prompt[$0].suffix(10))) } ?? LocalDate(.now)
-        let courses = prompt.components(separatedBy: "Courses:\n").last ?? ""
-        let course = courses.components(separatedBy: "\n").prefix { !$0.isEmpty }
-            .first { $0.hasPrefix("- ") }.map { String($0.dropFirst(2)) }
-        let date = today.adding(days: 1)
-        if let course {
-            return #"{"title": "交论文", "date": "\#(date)", "time": null, "afterCourse": "\#(course)"}"#
+        let tomorrow = today.adding(days: 1)
+        let list = prompt.components(separatedBy: "Classes in the next 7 days:\n").last ?? ""
+        for line in list.components(separatedBy: "\n").prefix(while: { !$0.isEmpty }) {
+            let parts = line.split(separator: " ").map(String.init)
+            guard parts.count >= 4, let day = LocalDate(parts[1]), day >= tomorrow else { continue }
+            var name = parts[3...].joined(separator: " ")
+            if name.hasSuffix(")"), let open = name.range(of: " (", options: .backwards) {
+                name = String(name[..<open.lowerBound])
+            }
+            return #"{"title": "交论文", "date": "\#(day)", "time": null, "afterCourse": "\#(name)"}"#
         }
-        return #"{"title": "交论文", "date": "\#(date)", "time": "17:30", "afterCourse": null}"#
+        return #"{"title": "交论文", "date": "\#(tomorrow)", "time": "17:30", "afterCourse": null}"#
     }
 
     private static let chatEN = """

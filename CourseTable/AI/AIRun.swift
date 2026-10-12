@@ -11,6 +11,8 @@ final class AIRun {
     /// The model answering, for the "AI-generated" label.
     private(set) var model = ""
     private var task: Task<Void, Never>?
+    /// Counts requests; events from an older one are ignored.
+    private var generation = 0
 
     /// The longest conversation sent, in characters (older turns are dropped first).
     static let maxCharacters = 60_000
@@ -34,17 +36,21 @@ final class AIRun {
             return
         }
         isRunning = true
+        generation += 1
+        let current = generation
         let stream = store.transport.stream(http, format: connection.format)
         task = Task { [weak self] in
             var failure: AIError?
             do {
                 for try await event in stream {
-                    self?.answer.apply(event)
+                    // A replaced request may still deliver a few events; only the latest one's count.
+                    guard let self, self.generation == current else { break }
+                    self.answer.apply(event)
                 }
             } catch {
                 failure = error as? AIError ?? .network(message: error.localizedDescription)
             }
-            guard let self, !Task.isCancelled else { return }
+            guard let self, self.generation == current, !Task.isCancelled else { return }
             isRunning = false
             store.record(answer, for: connection)
             if let failure {
@@ -71,6 +77,7 @@ final class AIRun {
     }
 
     func cancel() {
+        generation += 1
         task?.cancel()
         task = nil
         isRunning = false

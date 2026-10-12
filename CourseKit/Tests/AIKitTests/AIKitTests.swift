@@ -174,13 +174,17 @@ import VocabKit
     @Test func todoDraftPromptGivesTheDateAndCourses() {
         let today = LocalDate(year: 2026, month: 10, day: 12)  // a Monday
         let request = AIPrompts.todoDraft("明天高数课后交论文", today: today, now: TimeOfDay(hour: 9, minute: 5),
-                                          courses: ["高等数学", "大学英语"])
+                                          courses: ["高等数学", "大学英语"], classes: "Tue 2026-10-13 08:00–09:40 高等数学")
         #expect(request.wantsJSON)
         #expect(request.system.contains("JSON"))
         let user = request.messages[0].text
         #expect(user.contains("Today is 2026-10-12 (Monday), now 09:05."))
         #expect(user.contains("- 高等数学\n- 大学英语"))
+        #expect(user.contains("Classes in the next 7 days:\nTue 2026-10-13 08:00–09:40 高等数学"))
         #expect(user.contains("<note>\n明天高数课后交论文\n</note>"))
+        let noClasses = AIPrompts.todoDraft("x", today: today, now: TimeOfDay(hour: 9, minute: 5), courses: [])
+        #expect(noClasses.messages[0].text.contains("Courses:\n(none)"))
+        #expect(noClasses.messages[0].text.contains("Classes in the next 7 days:\n(none)"))
     }
 
     @Test func theWeeksClassesAsText() {
@@ -194,6 +198,10 @@ import VocabKit
         #expect(lines.count == 2)
         #expect(lines[0].hasPrefix("Mon 2026-10-12 ") && lines[0].hasSuffix(" Calculus (A101)"))
         #expect(lines[1].hasPrefix("Wed 2026-10-14 ") && lines[1].hasSuffix(" English"))
+
+        // From Tuesday on, seven days: Wednesday this week, then next Monday.
+        let upcoming = AIPrompts.upcomingClasses(timetable, from: monday.adding(days: 1)).split(separator: "\n")
+        #expect(upcoming.map { String($0.prefix(14)) } == ["Wed 2026-10-14", "Mon 2026-10-19"])
     }
 
     @Test func assistantContextIsOptIn() {
