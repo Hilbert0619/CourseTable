@@ -16,9 +16,10 @@ final class AIRun {
     static let maxCharacters = 60_000
 
     /// Asks `request` through the default connection (or `connection` with `key`, e.g. a connection being edited).
-    /// `onComplete` gets the answer when it finished normally (not cut off, refused or failed).
+    /// `onComplete` gets the answer when it finished normally (not cut off, refused or failed); `onEnd` gets it
+    /// whenever the stream ends without being cancelled, whatever happened.
     func start(_ request: AIRequest, store: AIStore, connection: AIConnection? = nil, key: String? = nil,
-               onComplete: (@MainActor (AIAnswer) -> Void)? = nil) {
+               onComplete: (@MainActor (AIAnswer) -> Void)? = nil, onEnd: (@MainActor (AIAnswer) -> Void)? = nil) {
         cancel()
         answer = AIAnswer()
         error = nil
@@ -53,6 +54,7 @@ final class AIRun {
             } else if answer.stop != .cutOff && answer.stop != .refused {
                 onComplete?(answer)
             }
+            onEnd?(answer)
         }
     }
 

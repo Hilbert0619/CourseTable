@@ -18,6 +18,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Photograph English text, such as a sentence or your essay, to read it into AI help. The photo stays on your iPhone.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>AI help can use a model running on a computer on your Wi-Fi, such as Ollama or LM Studio.</string>
 	<key>CFBundleURLTypes</key>

@@ -19,6 +19,24 @@
         }
       }
     },
+    "NSCameraUsageDescription" : {
+      "comment" : "Why the app asks for the camera (reading text for AI help)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph English text, such as a sentence or your essay, to read it into AI help. The photo stays on your iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拍摄英文文字（如句子或你的作文），读取后用于 AI 帮助。照片只保留在你的 iPhone 上。"
+          }
+        }
+      }
+    },
     "NSLocalNetworkUsageDescription" : {
       "comment" : "Why the app may reach the local network (AI help through a model on the user's computer)",
       "extractionState" : "manual",

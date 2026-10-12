@@ -1,5 +1,6 @@
 import Foundation
 import AIKit
+import CourseKit
 
 /// Sends AI requests. The real one uses URLSession; UI tests and screenshots use canned answers.
 protocol AITransport: Sendable {
@@ -92,8 +93,7 @@ struct URLSessionAITransport: AITransport {
 /// Canned answers for UI tests and screenshots (`-aiDemo`): streamed word by word, never touching the network.
 struct DemoAITransport: AITransport {
     func stream(_ request: AIHTTPRequest, format: AIWireFormat) -> AsyncThrowingStream<AIStreamEvent, Error> {
-        let body = request.body.map { String(decoding: $0, as: UTF8.self) } ?? ""
-        let text = Self.answer(for: body)
+        let text = Self.answer(for: Self.promptText(request.body))
         return AsyncThrowingStream { continuation in
             let task = Task {
                 var pieces: [String] = []
@@ -125,12 +125,29 @@ struct DemoAITransport: AITransport {
         Data(#"{"object":"list","data":[{"id":"deepseek-v4-flash"},{"id":"deepseek-v4-pro"}]}"#.utf8)
     }
 
-    /// Unescaped JSON body text tells the requests apart.
+    /// The system prompt and messages of a request body, which tell the requests apart.
+    private static func promptText(_ body: Data?) -> String {
+        guard let body, let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else { return "" }
+        var parts = [json["system"] as? String ?? ""]
+        for message in json["messages"] as? [[String: Any]] ?? [] {
+            parts.append(message["content"] as? String ?? "")
+        }
+        return parts.joined(separator: "\n")
+    }
+
     private static func answer(for body: String) -> String {
         let chinese = body.contains("简体中文")
         if body.contains("single word OK") { return "OK" }
-        if body.contains("one to-do item") {
-            return #"{"title": "交论文", "date": "2026-10-13", "time": null, "afterCourse": "高等数学"}"#
+        if body.contains("one to-do item") { return todoAnswer(body) }
+        if body.contains("long-sentence") { return chinese ? sentenceZH : sentenceEN }
+        if body.contains("exam marker") { return chinese ? essayZH : essayEN }
+        if body.contains("study assistant in CourseTable") {
+            return body.contains("The user's language: Simplified Chinese") ? chatZH : chatEN
+        }
+        if body.contains("I spelled it like this") {
+            return chinese
+                ? "你漏掉了中间的字母。按音节拆开记：**a·ban·don** —— 每个音节都有一个元音。\n\n**小技巧：** 先慢慢读出三个音节，再一个音节一个音节地拼写。"
+                : "You left out letters in the middle. Split it into syllables: **a·ban·don** — each one has its own vowel.\n\n**Tip:** say the three syllables slowly, then spell one syllable at a time."
         }
         if body.contains("got this word wrong") {
             return chinese
@@ -169,4 +186,90 @@ struct DemoAITransport: AITransport {
                他们弃车步行走完了剩下的路。
             """
     }
+
+    /// Tomorrow, after the first course in the list (or at 17:30 without courses).
+    private static func todoAnswer(_ prompt: String) -> String {
+        let today = prompt.range(of: #"Today is \d{4}-\d{2}-\d{2}"#, options: .regularExpression)
+            .flatMap { LocalDate(String(prompt[$0].suffix(10))) } ?? LocalDate(.now)
+        let courses = prompt.components(separatedBy: "Courses:\n").last ?? ""
+        let course = courses.components(separatedBy: "\n").prefix { !$0.isEmpty }
+            .first { $0.hasPrefix("- ") }.map { String($0.dropFirst(2)) }
+        let date = today.adding(days: 1)
+        if let course {
+            return #"{"title": "交论文", "date": "\#(date)", "time": null, "afterCourse": "\#(course)"}"#
+        }
+        return #"{"title": "交论文", "date": "\#(date)", "time": "17:30", "afterCourse": null}"#
+    }
+
+    private static let chatEN = """
+        Here's a simple plan for this week:
+
+        1. **Mornings (30 min):** new words and reviews in the Words tab.
+        2. **After classes:** one long sentence from a past paper each day.
+        3. **Weekend:** one essay, then check it with *Writing Feedback*.
+
+        Short, regular sessions beat long cramming.
+        """
+    private static let chatZH = """
+        这周可以这样安排：
+
+        1. **每天早上（30 分钟）：** 在“单词”里学新词、做复习。
+        2. **下课后：** 每天分析一个真题长难句。
+        3. **周末：** 写一篇作文，再用“作文批改”检查。
+
+        短而规律的学习，比临时突击更有效。
+        """
+
+    private static let sentenceEN = """
+        ## Main clause
+        **The study** (subject) **suggests** (verb) **that…** (object clause)
+
+        ## Clauses and modifiers
+        - *that people who sleep less are more likely to abandon their goals* — object clause of **suggests**
+        - *who sleep less* — relative clause modifying **people**
+
+        ## Translation
+        这项研究表明，睡眠较少的人更有可能放弃自己的目标。
+
+        ## Key words
+        - **abandon** — 放弃
+        - **be likely to** — 很可能
+        """
+    private static let sentenceZH = """
+        ## 主干
+        **The study**（主语）**suggests**（谓语）**that…**（宾语从句）
+
+        ## 从句与修饰成分
+        - *that people who sleep less are more likely to abandon their goals*：**suggests** 的宾语从句
+        - *who sleep less*：定语从句，修饰 **people**
+
+        ## 译文
+        这项研究表明，睡眠较少的人更有可能放弃自己的目标。
+
+        ## 重点词汇
+        - **abandon**：放弃
+        - **be likely to**：很可能
+        """
+    private static let essayEN = """
+        ## Score
+        Band 3 (estimated **12/20**): clear ideas, some errors.
+
+        ## Errors
+        1. "people *is* busy" → "people **are** busy"
+        2. "more and more *peoples*" → "more and more **people**"
+
+        ## A better version
+        As is vividly depicted in the picture, …
+        """
+    private static let essayZH = """
+        ## 评分
+        第三档（估计 **12/20**）：观点清楚，有一些语言错误。
+
+        ## 错误
+        1. "people *is* busy" → "people **are** busy"（主谓一致）
+        2. "more and more *peoples*" → "more and more **people**"
+
+        ## 改进版本
+        As is vividly depicted in the picture, …
+        """
 }

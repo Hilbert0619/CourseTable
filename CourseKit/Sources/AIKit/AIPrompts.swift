@@ -158,6 +158,22 @@ public enum AIPrompts {
         return lines.joined(separator: "\n\n")
     }
 
+    /// The week's classes from `day`'s Monday, one line each, for the Assistant's context:
+    /// `Mon 2026-10-12 08:00–09:40 Calculus (A101)`.
+    public static func weekSchedule(_ timetable: Timetable, around day: LocalDate) -> String {
+        let names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        var lines: [String] = []
+        for offset in 0..<7 {
+            let date = day.startOfWeek.adding(days: offset)
+            for session in timetable.sessions(on: date) {
+                var line = "\(names[date.weekday.rawValue - 1]) \(date) \(session.start)–\(session.end) \(session.course.name)"
+                if !session.course.room.isEmpty { line += " (\(session.course.room))" }
+                lines.append(line)
+            }
+        }
+        return lines.joined(separator: "\n")
+    }
+
     /// The dictionary entry the help is about, so the answer matches the book.
     static func dictionaryCard(_ entry: WordEntry) -> String {
         var lines = ["Word: \(entry.display)"]

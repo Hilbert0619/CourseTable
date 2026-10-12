@@ -8,6 +8,7 @@ struct TodayView: View {
     /// The day shown; `nil` follows the clock (today).
     @State private var pickedDay: LocalDate?
     @State private var editing: TodoEditorTarget?
+    @State private var showingAssistant = false
 
     var body: some View {
         NavigationStack {
@@ -21,6 +22,14 @@ struct TodayView: View {
             }
             .navigationTitle("Today")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showingAssistant = true
+                    } label: {
+                        Label("Assistant", systemImage: "sparkles")
+                    }
+                    .accessibilityIdentifier("assistantButton")
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         editing = .new(day: pickedDay ?? LocalDate(.now))
@@ -32,6 +41,9 @@ struct TodayView: View {
             }
             .sheet(item: $editing) { target in
                 TodoEditorView(timetable: timetable, target: target)
+            }
+            .sheet(isPresented: $showingAssistant) {
+                AssistantView()
             }
         }
     }

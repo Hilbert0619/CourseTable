@@ -69,11 +69,11 @@ struct AISettingsView: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
 
-            if ai.savedAnswerCount > 0 {
+            if ai.savedAnswerCount > 0 || !ai.conversations.isEmpty {
                 Section {
                     Button("Delete Saved Answers", role: .destructive) { confirmingClear = true }
                 } footer: {
-                    Text("\(ai.savedAnswerCount) answers are saved on this iPhone so that opening them again is free.")
+                    Text("\(ai.savedAnswerCount) answers and \(ai.conversations.count) Assistant chats are saved on this iPhone, so opening them again is free.")
                 }
             }
         }
@@ -84,7 +84,7 @@ struct AISettingsView: View {
             case .edit(let connection): AIConnectionEditor(connection: connection)
             }
         }
-        .confirmationDialog("Delete all saved AI answers?", isPresented: $confirmingClear, titleVisibility: .visible) {
+        .confirmationDialog("Delete all saved AI answers and Assistant chats?", isPresented: $confirmingClear, titleVisibility: .visible) {
             Button("Delete Saved Answers", role: .destructive) { ai.clearSavedAnswers() }
         }
     }

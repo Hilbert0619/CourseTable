@@ -81,6 +81,34 @@ import AIKit
         #expect(ai.usage(of: deepSeek).requests == 1)
     }
 
+    @Test func chatsAreKeptNewestFirstAndCapped() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("ai-chats-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let url = folder.appendingPathComponent("AIAnswers.json")
+        let ai = store(cacheURL: url)
+        var first = AIConversation()
+        first.messages = [AIMessage(.user, "Plan my week for the exam, please, with all the details you can give"), AIMessage(.assistant, "Sure")]
+        ai.saveConversation(first)
+        ai.saveConversation(AIConversation())  // empty: not kept
+        var second = AIConversation()
+        second.messages = [AIMessage(.user, "Hi")]
+        ai.saveConversation(second)
+        #expect(ai.conversations.map(\.id) == [second.id, first.id])
+        #expect(ai.conversations[1].title == "Plan my week for the exam, please, with …")
+        #expect(store(cacheURL: url).conversations.map(\.id) == [second.id, first.id])
+
+        for _ in 0..<(AIStore.maxConversations + 3) {
+            var chat = AIConversation()
+            chat.messages = [AIMessage(.user, "x")]
+            ai.saveConversation(chat)
+        }
+        #expect(ai.conversations.count == AIStore.maxConversations)
+        ai.deleteConversation(ai.conversations[0].id)
+        #expect(ai.conversations.count == AIStore.maxConversations - 1)
+        ai.clearSavedAnswers()
+        #expect(store(cacheURL: url).conversations.isEmpty)
+    }
+
     @MainActor final class Box {
         var answer: AIAnswer?
     }

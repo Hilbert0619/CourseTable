@@ -10,11 +10,30 @@ enum WordsRoute: Hashable {
     case books
     case settings
     case word(String)
+    case sentences
+    case essay
+
+    /// The screen for this place (also used by the Assistant, whose study tools link to words).
+    @MainActor @ViewBuilder
+    var destination: some View {
+        switch self {
+        case .search: WordSearchView()
+        case .favorites: WordListView(kind: .favorites)
+        case .hardWords: WordListView(kind: .hardWords)
+        case .statistics: VocabStatsView()
+        case .books: BooksView()
+        case .settings: VocabSettingsView()
+        case .word(let headword): WordDetailView(headword: headword)
+        case .sentences: SentenceAnalysisView()
+        case .essay: EssayFeedbackView()
+        }
+    }
 }
 
 struct WordsHomeView: View {
     @Environment(VocabApp.self) private var vocab
     @State private var studying = false
+    @State private var showingAssistant = false
 
     private var model: VocabModel { vocab.model }
 
@@ -59,11 +78,31 @@ struct WordsHomeView: View {
                 .accessibilityIdentifier("statisticsLink")
             }
             Section {
+                NavigationLink(value: WordsRoute.sentences) {
+                    Label("Long Sentences", systemImage: "text.alignleft")
+                }
+                .accessibilityIdentifier("sentencesLink")
+                NavigationLink(value: WordsRoute.essay) {
+                    Label("Writing Feedback", systemImage: "pencil.and.list.clipboard")
+                }
+                .accessibilityIdentifier("essayLink")
+            } header: {
+                Text("AI Tools")
+            }
+            Section {
                 SyncStatusRow()
             }
         }
         .navigationTitle("Words")
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showingAssistant = true
+                } label: {
+                    Label("Assistant", systemImage: "sparkles")
+                }
+                .accessibilityIdentifier("wordsAssistantButton")
+            }
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink(value: WordsRoute.settings) {
                     Image(systemName: "gearshape")
@@ -73,19 +112,12 @@ struct WordsHomeView: View {
             }
         }
         .refreshable { await vocab.syncNow() }
-        .navigationDestination(for: WordsRoute.self) { route in
-            switch route {
-            case .search: WordSearchView()
-            case .favorites: WordListView(kind: .favorites)
-            case .hardWords: WordListView(kind: .hardWords)
-            case .statistics: VocabStatsView()
-            case .books: BooksView()
-            case .settings: VocabSettingsView()
-            case .word(let headword): WordDetailView(headword: headword)
-            }
-        }
+        .navigationDestination(for: WordsRoute.self) { $0.destination }
         .fullScreenCover(isPresented: $studying) {
             StudySessionView()
+        }
+        .sheet(isPresented: $showingAssistant) {
+            AssistantView()
         }
     }
 

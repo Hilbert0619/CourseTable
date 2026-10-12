@@ -52,10 +52,21 @@ final class AIUITests: XCTestCase {
         let app = launch(language: "en", reviewMode: "spelling")
         app.tabBars.buttons.element(boundBy: 3).tap()
         tap(app.buttons["startStudy"])
-        for _ in 0..<10 where !app.textFields["spellingField"].exists {
-            if app.buttons["learnWord"].waitForExistence(timeout: 5) { app.buttons["learnWord"].tap() }
-        }
+        // Answer whatever comes first (new words, recall) until a spelling question is on screen.
         let field = app.textFields["spellingField"]
+        for _ in 0..<20 where !field.waitForExistence(timeout: 3) {
+            if app.buttons["learnWord"].exists {
+                app.buttons["learnWord"].tap()
+            } else if app.buttons["showAnswer"].exists {
+                app.buttons["showAnswer"].tap()
+                tap(app.buttons["rating-3"])
+            } else if app.buttons["choice-0"].exists {
+                app.buttons["choice-0"].tap()
+                tap(app.buttons["continue"])
+            } else if app.buttons["continue"].exists {
+                app.buttons["continue"].tap()
+            }
+        }
         tap(field)
         field.typeText("qqqq\n")
         tap(element(app, "aiWhy"))
@@ -64,10 +75,88 @@ final class AIUITests: XCTestCase {
         snapshot(app, "en-ai-4-why")
     }
 
+    /// Long sentences and writing feedback in the Words tab, and quick add in the to-do editor.
+    @MainActor
+    func testStudyToolsAndQuickAdd() throws {
+        for language in ["en", "zh-Hans"] {
+            let app = launch(language: language, demoTimetable: true)
+            app.tabBars.buttons.element(boundBy: 3).tap()
+
+            open(app, "sentencesLink")
+            let sentence = field(app, "sentenceField")
+            tap(sentence)
+            sentence.typeText("The study suggests that people who sleep less are more likely to abandon their goals.")
+            tap(element(app, "analyseSentence"))
+            XCTAssertTrue(element(app, "aiAnswer").waitForExistence(timeout: 15), "No analysis")
+            Thread.sleep(forTimeInterval: 2)
+            snapshot(app, "\(language)-ai-5-sentence")
+            app.swipeUp()
+            app.swipeUp()
+            snapshot(app, "\(language)-ai-5-sentence-bottom")
+            app.navigationBars.buttons.element(boundBy: 0).tap()
+
+            open(app, "essayLink")
+            let essay = field(app, "essayField")
+            tap(essay)
+            essay.typeText("As is shown in the picture, more and more people is busy with their phones. In my opinion, this phenomenon deserves our attention, because it affects our health and our families.")
+            tap(element(app, "markEssay"))
+            XCTAssertTrue(element(app, "aiAnswer").waitForExistence(timeout: 15), "No feedback")
+            Thread.sleep(forTimeInterval: 2)
+            app.swipeUp()
+            snapshot(app, "\(language)-ai-6-essay")
+            app.navigationBars.buttons.element(boundBy: 0).tap()
+
+            app.tabBars.buttons.element(boundBy: 0).tap()
+            tap(app.buttons["addTodo"])
+            let note = field(app, "todoQuickAdd")
+            tap(note)
+            note.typeText(language == "en" ? "hand in the paper after class tomorrow" : "明天下课后交论文")
+            tap(element(app, "todoFillIn"))
+            let title = field(app, "todoTitle")
+            XCTAssertTrue(title.waitForValue("交论文", timeout: 15), "The fields weren't filled in")
+            snapshot(app, "\(language)-ai-7-quick-add")
+            app.terminate()
+        }
+    }
+
+    /// The Assistant from the Today tab: an empty chat with its study tools, then a question and its answer.
+    @MainActor
+    func testAssistant() throws {
+        for language in ["en", "zh-Hans"] {
+            let app = launch(language: language, demoTimetable: true)
+            tap(element(app, "assistantButton"))
+            XCTAssertTrue(element(app, "assistantInput").waitForExistence(timeout: 10), "The Assistant didn't open")
+            snapshot(app, "\(language)-ai-8-assistant-empty")
+            let input = field(app, "assistantInput")
+            tap(input)
+            input.typeText(language == "en" ? "How should I plan this week?" : "这周怎么安排复习？")
+            tap(element(app, "assistantSend"))
+            XCTAssertTrue(element(app, "assistantReply").waitForExistence(timeout: 15), "No reply")
+            snapshot(app, "\(language)-ai-8-assistant")
+            app.terminate()
+        }
+    }
+
     // MARK: - Helpers
 
+    /// Opens a link on the Words home screen, scrolling until it's there.
     @MainActor
-    private func launch(language: String, reviewMode: String? = nil) -> XCUIApplication {
+    private func open(_ app: XCUIApplication, _ identifier: String) {
+        let link = element(app, identifier)
+        _ = link.waitForExistence(timeout: 2)
+        for _ in 0..<5 where !(link.exists && link.isHittable) { app.swipeUp() }
+        tap(link)
+    }
+
+    /// A one-line or multi-line text field.
+    @MainActor
+    private func field(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let single = app.textFields[identifier]
+        return single.waitForExistence(timeout: 5) ? single : app.textViews[identifier]
+    }
+
+    @MainActor
+    private func launch(language: String, reviewMode: String? = nil, demoTimetable: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-AppleLanguages", "(\(language))",
@@ -77,6 +166,7 @@ final class AIUITests: XCTestCase {
             "-aiDemo", "YES",
         ]
         if let reviewMode { app.launchArguments += ["-vocabMode", reviewMode] }
+        if demoTimetable { app.launchArguments += ["-demoData", "YES"] }
         app.launch()
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 30), "The app didn't show its tab bar")
         return app
@@ -100,5 +190,18 @@ final class AIUITests: XCTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+}
+
+private extension XCUIElement {
+    /// Waits until the element's value is `expected`.
+    @MainActor
+    func waitForValue(_ expected: String, timeout: TimeInterval) -> Bool {
+        let deadline = Date.now.addingTimeInterval(timeout)
+        while Date.now < deadline {
+            if (value as? String) == expected { return true }
+            Thread.sleep(forTimeInterval: 0.3)
+        }
+        return false
     }
 }

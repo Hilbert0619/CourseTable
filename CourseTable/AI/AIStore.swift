@@ -16,6 +16,20 @@ struct CachedAIAnswer: Hashable, Codable {
     var date: Date
 }
 
+/// An Assistant chat, kept on the device.
+struct AIConversation: Identifiable, Hashable, Codable {
+    var id = UUID()
+    var messages: [AIMessage] = []
+    var updated = Date.now
+
+    /// The first question, shortened.
+    var title: String {
+        let first = messages.first { $0.role == .user }?.text ?? ""
+        let line = first.split(separator: "\n").first.map(String.init) ?? ""
+        return line.count > 40 ? String(line.prefix(40)) + "…" : line
+    }
+}
+
 /// The user's AI connections (keys in the Keychain), the default one, monthly usage and saved answers
 /// (docs/ai-spec.md). Nothing here talks to CourseTable's own server.
 @MainActor @Observable
@@ -24,6 +38,9 @@ final class AIStore {
     private(set) var defaultID: UUID?
     private(set) var usage: [String: AIUsageTotal] = [:]
     let transport: any AITransport
+
+    /// Assistant chats, newest first.
+    private(set) var conversations: [AIConversation] = []
 
     private let defaults: UserDefaults
     private let cacheURL: URL?
@@ -57,6 +74,16 @@ final class AIStore {
            let saved = try? decoder.decode([String: CachedAIAnswer].self, from: data) {
             cache = saved
         }
+        if let url = cacheURL?.deletingLastPathComponent().appendingPathComponent("AIConversations.json"),
+           let data = try? Data(contentsOf: url),
+           let saved = try? decoder.decode([AIConversation].self, from: data) {
+            conversations = saved
+        }
+    }
+
+    /// Next to the saved answers.
+    private var conversationsURL: URL? {
+        cacheURL?.deletingLastPathComponent().appendingPathComponent("AIConversations.json")
     }
 
     static func makeForLaunch() -> AIStore {
@@ -166,12 +193,40 @@ final class AIStore {
         try? JSONEncoder().encode(cache).write(to: cacheURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
 
+    /// Deletes the saved answers and the Assistant chats.
     func clearSavedAnswers() {
         cache = [:]
+        conversations = []
         if let cacheURL { try? FileManager.default.removeItem(at: cacheURL) }
+        if let url = conversationsURL { try? FileManager.default.removeItem(at: url) }
     }
 
     var savedAnswerCount: Int { cache.count }
+
+    // MARK: Assistant chats
+
+    static let maxConversations = 30
+
+    func saveConversation(_ conversation: AIConversation) {
+        guard !conversation.messages.isEmpty else { return }
+        var updated = conversation
+        updated.updated = .now
+        conversations.removeAll { $0.id == conversation.id }
+        conversations.insert(updated, at: 0)
+        if conversations.count > Self.maxConversations { conversations.removeLast(conversations.count - Self.maxConversations) }
+        persistConversations()
+    }
+
+    func deleteConversation(_ id: UUID) {
+        conversations.removeAll { $0.id == id }
+        persistConversations()
+    }
+
+    private func persistConversations() {
+        guard let url = conversationsURL else { return }
+        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? JSONEncoder().encode(conversations).write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    }
 
     // MARK: Language
 

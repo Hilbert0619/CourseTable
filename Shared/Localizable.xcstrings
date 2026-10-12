@@ -11,6 +11,16 @@
         }
       }
     },
+    "%@ has no class on that day. Check the date." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 在那天没有课，请检查日期。"
+          }
+        }
+      }
+    },
     "%@ until %@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -41,12 +51,12 @@
         }
       }
     },
-    "%lld answers are saved on this iPhone so that opening them again is free." : {
+    "%lld answers and %lld Assistant chats are saved on this iPhone, so opening them again is free." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台 iPhone 上保存了 %lld 条回答，再次打开无需付费。"
+            "value" : "这台 iPhone 上保存了 %lld 条回答和 %lld 个助手对话，再次打开无需付费。"
           }
         }
       }
@@ -325,6 +335,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AI 帮助"
+          }
+        }
+      }
+    },
+    "AI Tools" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 工具"
           }
         }
       }
@@ -629,6 +649,16 @@
         }
       }
     },
+    "Analyse" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析"
+          }
+        }
+      }
+    },
     "Answers" : {
       "localizations" : {
         "zh-Hans" : {
@@ -669,12 +699,42 @@
         }
       }
     },
+    "Ask about your studies, English or anything else, using an AI provider you choose with your own key." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用你选择的 AI 服务商（使用你自己的密钥）询问学习、英语或其他任何问题。"
+          }
+        }
+      }
+    },
+    "Ask about your studies, English, planning or anything else." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以问学习、英语、计划或其他任何问题。"
+          }
+        }
+      }
+    },
     "Asking %@…" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在询问 %@…"
+          }
+        }
+      }
+    },
+    "Assistant" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助手"
           }
         }
       }
@@ -819,6 +879,16 @@
         }
       }
     },
+    "Camera" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相机"
+          }
+        }
+      }
+    },
     "Campfire" : {
       "localizations" : {
         "zh-Hans" : {
@@ -865,6 +935,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "检查"
+          }
+        }
+      }
+    },
+    "Check scanned text before analysing it: the camera can misread letters." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析前请检查扫描出的文字：相机可能会认错字母。"
           }
         }
       }
@@ -1329,12 +1409,12 @@
         }
       }
     },
-    "Delete all saved AI answers?" : {
+    "Delete all saved AI answers and Assistant chats?" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除所有已保存的 AI 回答？"
+            "value" : "删除所有已保存的 AI 回答和助手对话？"
           }
         }
       }
@@ -1365,6 +1445,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入前先删除课程表中已有的课程。"
+          }
+        }
+      }
+    },
+    "Describe the to-do in your own words; AI fills in the fields below for you to check." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用自己的话描述待办，AI 会填写下面的内容，由你检查后保存。"
           }
         }
       }
@@ -1425,6 +1515,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每项功能只发送所需内容：一个单词及其词典释义、你粘贴的句子，或一条待办备注和你的课程名称。"
+          }
+        }
+      }
+    },
+    "Earlier Chats" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以前的对话"
           }
         }
       }
@@ -1499,6 +1599,46 @@
         }
       }
     },
+    "English I · Long (picture essay)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语一 · 大作文（图画作文）"
+          }
+        }
+      }
+    },
+    "English I · Short (letter or notice)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语一 · 小作文（书信或通知）"
+          }
+        }
+      }
+    },
+    "English II · Long (chart essay)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语二 · 大作文（图表作文）"
+          }
+        }
+      }
+    },
+    "English II · Short (letter or notice)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语二 · 小作文（书信或通知）"
+          }
+        }
+      }
+    },
     "Enter a course name." : {
       "localizations" : {
         "zh-Hans" : {
@@ -1515,6 +1655,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入服务商兼容 OpenAI 的基础网址（不含 /chat/completions）。"
+          }
+        }
+      }
+    },
+    "Essay" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "作文"
           }
         }
       }
@@ -1595,6 +1745,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "收藏"
+          }
+        }
+      }
+    },
+    "Fill In with AI" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用 AI 填写"
           }
         }
       }
@@ -2165,6 +2325,16 @@
         }
       }
     },
+    "Long Sentences" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长难句"
+          }
+        }
+      }
+    },
     "Long break" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2181,6 +2351,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每 %lld 段后长休息"
+          }
+        }
+      }
+    },
+    "Mark My Essay" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批改作文"
           }
         }
       }
@@ -2231,6 +2411,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记忆"
+          }
+        }
+      }
+    },
+    "Message" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "消息"
           }
         }
       }
@@ -2361,6 +2551,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新词"
+          }
+        }
+      }
+    },
+    "New Chat" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新对话"
           }
         }
       }
@@ -2565,6 +2765,16 @@
         }
       }
     },
+    "No class called “%@” in your timetable, so the time was left open." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课表中没有名为“%@”的课程，所以未设置时间。"
+          }
+        }
+      }
+    },
     "No classes on this day" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2611,6 +2821,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天的课已上完"
+          }
+        }
+      }
+    },
+    "No text found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到文字"
           }
         }
       }
@@ -2835,12 +3055,32 @@
         }
       }
     },
+    "Open a word to see it in full or add it to your favourites." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开单词可查看完整释义或加入收藏。"
+          }
+        }
+      }
+    },
     "Optional" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "选填"
+          }
+        }
+      }
+    },
+    "Options" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项"
           }
         }
       }
@@ -2901,6 +3141,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "粘贴 CSV 或表格内容"
+          }
+        }
+      }
+    },
+    "Paste an English sentence or passage" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴英文句子或段落"
           }
         }
       }
@@ -3005,6 +3255,16 @@
         }
       }
     },
+    "Photo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片"
+          }
+        }
+      }
+    },
     "Place Courses" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3091,6 +3351,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务商"
+          }
+        }
+      }
+    },
+    "Quick Add" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速添加"
           }
         }
       }
@@ -3425,6 +3695,26 @@
         }
       }
     },
+    "Send" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发送"
+          }
+        }
+      }
+    },
+    "Sentence" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "句子"
+          }
+        }
+      }
+    },
     "Session Complete" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3461,6 +3751,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "Share My Hard Words" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享我的难词"
+          }
+        }
+      }
+    },
+    "Share This Week's Classes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享本周课程"
           }
         }
       }
@@ -3915,6 +4225,16 @@
         }
       }
     },
+    "Task" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "题目"
+          }
+        }
+      }
+    },
     "Teacher" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4009,6 +4329,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法读取该文件中的文本。"
+          }
+        }
+      }
+    },
+    "The AI's answer couldn't be read. Try describing it differently." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取 AI 的回答，请换一种说法试试。"
           }
         }
       }
@@ -4153,6 +4483,16 @@
         }
       }
     },
+    "The score is an AI estimate, not an official mark." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分数是 AI 的估计，不是官方评分。"
+          }
+        }
+      }
+    },
     "The server can't send email to this address yet. Use the email of the project's owner for now." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4169,6 +4509,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "离开 App 或锁定 iPhone 后声音会继续播放，也可以和音乐同时播放。录音来自 Freesound，属于公共领域（CC0）。"
+          }
+        }
+      }
+    },
+    "The task's instructions (optional)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "题目要求（可选）"
           }
         }
       }
@@ -4209,6 +4559,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回到本周"
+          }
+        }
+      }
+    },
+    "This chat can see this week's classes and your hard words." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此对话可以看到本周课程和你的难词。"
+          }
+        }
+      }
+    },
+    "This chat can see this week's classes." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此对话可以看到本周课程。"
+          }
+        }
+      }
+    },
+    "This chat can see your hard words." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此对话可以看到你的难词。"
           }
         }
       }
@@ -4357,6 +4737,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天"
+          }
+        }
+      }
+    },
+    "Too long: up to %lld characters." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太长了：最多 %lld 个字符。"
           }
         }
       }
@@ -4711,6 +5101,16 @@
         }
       }
     },
+    "Words from Your Book" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "词书中的单词"
+          }
+        }
+      }
+    },
     "Words not started" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4747,6 +5147,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "学会后又遗忘两次及以上的单词会出现在这里。"
+          }
+        }
+      }
+    },
+    "Writing Feedback" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "作文批改"
           }
         }
       }
@@ -4831,6 +5241,16 @@
         }
       }
     },
+    "Your essay" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的作文"
+          }
+        }
+      }
+    },
     "Your own meaning" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4877,6 +5297,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "课程名"
+          }
+        }
+      }
+    },
+    "e.g. hand in the paper after Calculus tomorrow" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：明天高数课后交论文"
           }
         }
       }

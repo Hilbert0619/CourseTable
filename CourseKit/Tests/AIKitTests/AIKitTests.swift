@@ -183,6 +183,19 @@ import VocabKit
         #expect(user.contains("<note>\n明天高数课后交论文\n</note>"))
     }
 
+    @Test func theWeeksClassesAsText() {
+        let monday = LocalDate(year: 2026, month: 10, day: 12)
+        let calculus = Course(name: "Calculus", room: "A101", weekday: .monday, startPeriod: 1,
+                              weeks: CourseWeeks(first: 1, last: 16))
+        let english = Course(name: "English", weekday: .wednesday, startPeriod: 3, weeks: CourseWeeks(first: 1, last: 16))
+        let timetable = Timetable(semester: Semester(startingOn: monday.adding(days: -14)), courses: [calculus, english])
+        let text = AIPrompts.weekSchedule(timetable, around: monday.adding(days: 3))
+        let lines = text.split(separator: "\n").map(String.init)
+        #expect(lines.count == 2)
+        #expect(lines[0].hasPrefix("Mon 2026-10-12 ") && lines[0].hasSuffix(" Calculus (A101)"))
+        #expect(lines[1].hasPrefix("Wed 2026-10-14 ") && lines[1].hasSuffix(" English"))
+    }
+
     @Test func assistantContextIsOptIn() {
         let today = LocalDate(year: 2026, month: 10, day: 12)
         let plain = AIPrompts.assistant(language: .english, today: today, schedule: nil, weakWords: nil)
@@ -255,5 +268,23 @@ import VocabKit
             try AIStreamDecoder(format: .openAI).decodeComplete(Data(body.utf8))
         }
         #expect(try AIStreamDecoder(format: .openAI).decodeComplete(Data("data: x".utf8)) == nil)
+    }
+}
+
+@Suite struct SentenceWordsTests {
+    let book: [String: WordEntry] = Dictionary(uniqueKeysWithValues: [
+        "abandon", "study", "stop", "evidence", "reduce", "happy", "apply", "class", "well-known",
+    ].map { ($0, WordEntry(headword: $0, translation: "x")) })
+
+    @Test func inflectedFormsFindTheirWords() {
+        let text = "Having abandoned their studies, they stopped; the evidence reduced. Happily, classes applied the well-known rule. Abandon!"
+        let found = SentenceWords.entries(in: text) { book[$0] }.map(\.headword)
+        #expect(found == ["abandon", "study", "stop", "evidence", "reduce", "happy", "class", "apply", "well-known"])
+    }
+
+    @Test func shortAndUnknownWordsAreLeftOut() {
+        #expect(SentenceWords.entries(in: "the cat sat on a mat") { book[$0] }.isEmpty)
+        #expect(SentenceWords.candidates("classes").contains("class"))
+        #expect(!SentenceWords.candidates("class").contains("clas"))
     }
 }

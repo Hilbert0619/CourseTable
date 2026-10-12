@@ -1,9 +1,11 @@
 import SwiftUI
 import CourseKit
+import AIKit
 
 /// Adds or edits a to-do: what, which day, and when (any time, at a time, or after one of that day's classes).
 struct TodoEditorView: View {
     @Environment(PlannerModel.self) private var planner
+    @Environment(AIStore.self) private var ai
     @Environment(\.dismiss) private var dismiss
 
     let timetable: Timetable
@@ -13,9 +15,19 @@ struct TodoEditorView: View {
     @State private var time: TimeOfDay
     @State private var courseID: UUID?
     @FocusState private var titleFocused: Bool
+    /// Quick add: a note the AI turns into the fields below.
+    @State private var note = ""
+    @State private var noteRun = AIRun()
+    @State private var noteProblem: NoteProblem?
 
     enum Kind: Hashable {
         case anytime, at, afterClass
+    }
+
+    enum NoteProblem: Hashable {
+        case unknownCourse(String)
+        case noClassThatDay(String)
+        case unreadable
     }
 
     init(timetable: Timetable, target: TodoEditorTarget) {
@@ -72,6 +84,9 @@ struct TodoEditorView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if isNew && ai.isSetUp {
+                    quickAddSection
+                }
                 Section {
                     TextField("What to do", text: $draft.title, axis: .vertical)
                         .focused($titleFocused)
@@ -145,6 +160,88 @@ struct TodoEditorView: View {
         }
     }
 
+    private var quickAddSection: some View {
+        Section {
+            TextField("e.g. hand in the paper after Calculus tomorrow", text: $note, axis: .vertical)
+                .accessibilityIdentifier("todoQuickAdd")
+            Button {
+                fillIn()
+            } label: {
+                HStack {
+                    Label("Fill In with AI", systemImage: "sparkles")
+                    if noteRun.isRunning {
+                        Spacer()
+                        ProgressView()
+                    }
+                }
+            }
+            .disabled(note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || noteRun.isRunning)
+            .accessibilityIdentifier("todoFillIn")
+            if let error = noteRun.error {
+                AIErrorView(error: error)
+            }
+            if let noteProblem {
+                Group {
+                    switch noteProblem {
+                    case .unknownCourse(let name):
+                        Text("No class called “\(name)” in your timetable, so the time was left open.")
+                    case .noClassThatDay(let name):
+                        Text("\(name) has no class on that day. Check the date.")
+                    case .unreadable:
+                        Text("The AI's answer couldn't be read. Try describing it differently.")
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(.orange)
+            }
+        } header: {
+            Text("Quick Add")
+        } footer: {
+            Text("Describe the to-do in your own words; AI fills in the fields below for you to check.")
+        }
+    }
+
+    private func fillIn() {
+        titleFocused = false
+        noteProblem = nil
+        let today = LocalDate(.now)
+        let courses = timetable.courses
+        let names = Array(Set(courses.map(\.name))).sorted()
+        noteRun.start(AIPrompts.todoDraft(note, today: today, now: TimeOfDay(.now), courses: names), store: ai) { answer in
+            guard let parsed = try? TodoDraft.parse(answer.text, today: today, courses: courses) else {
+                noteProblem = .unreadable
+                return
+            }
+            apply(parsed)
+        }
+    }
+
+    /// Fills in the fields from the AI's draft. The course is set before the day and the kind, so the checks
+    /// that follow a change of day keep it.
+    private func apply(_ parsed: TodoDraft) {
+        draft.title = parsed.title
+        switch parsed.timing {
+        case .anytime:
+            draft.day = parsed.day
+            kind = .anytime
+        case .at(let clock):
+            time = clock
+            draft.day = parsed.day
+            kind = .at
+        case .afterClass(let id):
+            if timetable.sessions(on: parsed.day).contains(where: { $0.course.id == id }) {
+                courseID = id
+                draft.day = parsed.day
+                kind = .afterClass
+            } else {
+                draft.day = parsed.day
+                kind = .anytime
+                noteProblem = .noClassThatDay(timetable.courses.first { $0.id == id }?.name ?? "")
+            }
+        }
+        if let unknown = parsed.unknownCourse { noteProblem = .unknownCourse(unknown) }
+    }
+
     private var dayBinding: Binding<Date> {
         Binding(get: { draft.day.date() }, set: { draft.day = LocalDate($0) })
     }
@@ -171,4 +268,5 @@ struct TodoEditorView: View {
     let timetable = Timetable(semester: Semester(startingOn: today.adding(days: -28)), courses: courses)
     return TodoEditorView(timetable: timetable, target: .new(day: today))
         .environment(PlannerModel.preview(courses: courses, today: today))
+        .environment(AIStore.makeForLaunch())
 }
