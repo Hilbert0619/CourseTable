@@ -31,6 +31,7 @@ struct AISettingsView: View {
                                       usage: ai.usage(of: connection))
                     }
                     .tint(.primary)
+                    .accessibilityIdentifier("aiConnection")
                     .swipeActions(edge: .leading) {
                         if connection.id != ai.defaultConnection?.id {
                             Button {
@@ -73,11 +74,11 @@ struct AISettingsView: View {
                 Section {
                     Button("Delete Saved Answers", role: .destructive) { confirmingClear = true }
                 } footer: {
-                    Text("\(ai.savedAnswerCount) answers and \(ai.conversations.count) Assistant chats are saved on this iPhone, so opening them again is free.")
+                    Text("Answers and Assistant chats are saved on this iPhone, so opening them again is free.")
                 }
             }
         }
-        .navigationTitle("AI")
+        .navigationTitle("AI Help")
         .sheet(item: $editing) { target in
             switch target {
             case .new: AIConnectionEditor(connection: nil)
@@ -103,9 +104,14 @@ private struct ConnectionRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 if usage.requests > 0 {
-                    Text("This month: \(usage.requests) requests · \(usage.inputTokens + usage.outputTokens) tokens")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    let tokens = usage.inputTokens + usage.outputTokens
+                    HStack(spacing: 4) {
+                        Text("This month: \(usage.requests) requests")
+                        Text(verbatim: "·")
+                        Text("\(tokens) tokens")
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
                 }
             }
             Spacer()

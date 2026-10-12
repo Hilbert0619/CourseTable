@@ -61,6 +61,9 @@ public enum MarkdownBlock: Hashable, Sendable {
             } else if trimmed.hasPrefix(">") {
                 flush()
                 blocks.append(.quote(String(trimmed.dropFirst()).trimmingCharacters(in: .whitespaces)))
+            } else if paragraph.isEmpty, depth > 0, let item = blocks.last, let continued = item.continued(with: trimmed) {
+                // An indented line right after a list item belongs to it, e.g. an example's translation.
+                blocks[blocks.count - 1] = continued
             } else {
                 paragraph.append(trimmed)
             }
@@ -68,6 +71,15 @@ public enum MarkdownBlock: Hashable, Sendable {
         if let lines = code { blocks.append(.code(lines.joined(separator: "\n"))) }  // an answer cut off mid-block
         flush()
         return blocks
+    }
+
+    /// A list item with `line` added on a new line; `nil` for other blocks.
+    private func continued(with line: String) -> MarkdownBlock? {
+        switch self {
+        case .bullet(let depth, let text): .bullet(depth: depth, text: text + "\n" + line)
+        case .numbered(let depth, let number, let text): .numbered(depth: depth, number: number, text: text + "\n" + line)
+        default: nil
+        }
     }
 
     private static func indentation(of line: String) -> Int {

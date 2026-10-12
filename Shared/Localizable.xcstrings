@@ -51,16 +51,6 @@
         }
       }
     },
-    "%lld answers and %lld Assistant chats are saved on this iPhone, so opening them again is free." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这台 iPhone 上保存了 %lld 条回答和 %lld 个助手对话，再次打开无需付费。"
-          }
-        }
-      }
-    },
     "%lld answers haven't been uploaded yet. They'll be lost if you sign out while offline." : {
       "localizations" : {
         "zh-Hans" : {
@@ -251,6 +241,34 @@
         }
       }
     },
+    "%lld tokens" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld token"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld tokens"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个 token"
+          }
+        }
+      }
+    },
     "%lld words" : {
       "localizations" : {
         "en" : {
@@ -315,16 +333,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "第三人称单数"
-          }
-        }
-      }
-    },
-    "AI" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AI"
           }
         }
       }
@@ -665,6 +673,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "答题次数"
+          }
+        }
+      }
+    },
+    "Answers and Assistant chats are saved on this iPhone, so opening them again is free." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回答和助手对话保存在这台 iPhone 上，再次打开无需付费。"
           }
         }
       }
@@ -4641,12 +4659,30 @@
         }
       }
     },
-    "This month: %lld requests · %lld tokens" : {
+    "This month: %lld requests" : {
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "This month: %lld request"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "This month: %lld requests"
+                }
+              }
+            }
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本月：%lld 次请求 · %lld 个 token"
+            "value" : "本月：%lld 次请求"
           }
         }
       }

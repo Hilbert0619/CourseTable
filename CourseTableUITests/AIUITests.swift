@@ -39,7 +39,7 @@ final class AIUITests: XCTestCase {
             XCTAssertTrue(element(app, "aiAddConnection").waitForExistence(timeout: 10), "Settings → AI didn't open")
             snapshot(app, "\(language)-ai-2-settings")
 
-            tap(app.cells.firstMatch)
+            tap(element(app, "aiConnection"))
             XCTAssertTrue(element(app, "aiSave").waitForExistence(timeout: 10), "The connection didn't open")
             let test = element(app, "aiTest")
             for _ in 0..<4 where !(test.exists && test.isHittable) { app.swipeUp() }

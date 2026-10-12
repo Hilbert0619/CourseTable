@@ -255,6 +255,15 @@ import VocabKit
         #expect(MarkdownBlock.parse("**bold** start") == [.paragraph("**bold** start")])
         #expect(MarkdownBlock.parse("").isEmpty)
     }
+
+    @Test func indentedLinesBelongToTheListItemAbove() {
+        let text = "1. They *abandoned* the car.\n   他们弃车了。\n2. Second\n\n   Still the second item\n\nA new paragraph"
+        #expect(MarkdownBlock.parse(text) == [
+            .numbered(depth: 0, number: "1", text: "They *abandoned* the car.\n他们弃车了。"),
+            .numbered(depth: 0, number: "2", text: "Second\nStill the second item"),
+            .paragraph("A new paragraph"),
+        ])
+    }
 }
 
 @Suite struct CompleteResponseTests {
