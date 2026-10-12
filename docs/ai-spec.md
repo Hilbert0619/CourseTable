@@ -1,7 +1,8 @@
 # AI helpers — spec and plan (iOS 0.4, then Android)
 
-Status: proposed 2026-10-12 from the owner's request: "configure custom API access to various LLMs for supplementary
-learning and everyday use; define the most suitable solution". iOS is built first; Android ports it after its stage 7.
+Status: from the owner's request on 2026-10-12, "configure custom API access to various LLMs for supplementary
+learning and everyday use; define the most suitable solution", which the owner approved. iOS stages 1–4 were built
+on 2026-10-12 (0.4.0); Android ports it after its stage 7.
 
 ## 1. Decisions
 
@@ -69,10 +70,14 @@ URL, 429 too many requests, 5xx/529 the provider is busy, network failure, an an
 
 ## 5. Stages (iOS)
 
-1. AIKit: presets, request building, SSE parser, stream decoding, errors, prompts, to-do drafts; tests and fixtures.
-2. AI settings (Keychain, test, models), the transport, Word help and "Why?".
-3. Sentence analysis (with scanning), writing feedback, quick add to-do.
-4. Assistant chat, screenshots, strings, IPA 0.4.0 → the owner's device test.
+1. ✓ AIKit: presets, request building, SSE parser, stream decoding, errors, prompts, to-do drafts; tests and fixtures.
+2. ✓ AI settings (Keychain, test, models), the transport, Word help and "Why?".
+3. ✓ Sentence analysis (with scanning), writing feedback, quick add to-do.
+4. ✓ Assistant chat, screenshots, strings, IPA 0.4.0 → the owner's device test.
+
+Where things are: `CourseKit/Sources/AIKit` (logic), `CourseTable/AI` (store, transport, screens), quick add in
+`TodoEditorView`, word help in `WordDetailView`, "Why?" in `StudySessionView`, the study tools linked from the Words
+home screen and the Assistant. UI tests: `CourseTableUITests/AIUITests.swift` (screenshots `*-ai-*`).
 
 Android: the same features as a stage after its release (stage 7), porting AIKit to `android/core`.
 

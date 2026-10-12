@@ -11,8 +11,14 @@ Date: 2026-10-11 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
     `C:\Users\AI\Downloads\CourseTable\StudyHour-0.4.0-debug-20.apk` (0.4.0, versionCode 4; installs over 0.3.0, timetable data stays).
     CI: branch runs 38113777448 and 38114283979 (`android-stage-6`), main 38116324090. Code map:
     [`android/README.md`](android/README.md) "Words". Checklist below.
-- **iOS**: app unchanged. 0.3.1 (build 5) IPA built; the owner's device test of 0.3.1 was not reported.
-  `docs/v3-development-record.md` still unwritten.
+- **iOS**: 0.3.1 passed the owner's device test (2026-10-11); the owner published GitHub Releases themselves (IPAs
+  0.1.0–0.3.1 and the Android 0.4.0 *debug* APK renamed `StudyHour-0.3.1.apk`; every tag points at e6479e7, not the
+  build commits; no LICENSE yet). Those release fixes wait for the owner's OK. `docs/v3-development-record.md` is still
+  unwritten.
+- **AI help** ([`docs/ai-spec.md`](docs/ai-spec.md), bring your own key), built on iOS 2026-10-12 as 0.4.0 (build 6):
+  AIKit + settings, word help, "Why?", long sentences, writing feedback, quick-add to-dos, Assistant. Waiting for the
+  owner's device test with a real key. Android gets it after its stage 7, porting AIKit to `android/core` against the
+  shared cases `spec/fixtures/ai-*.json`.
 
 ## Phone test of 0.4.0 (owner)
 

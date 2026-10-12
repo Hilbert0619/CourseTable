@@ -6,7 +6,7 @@ A native iOS class-schedule app with an English vocabulary trainer for 考研: *
 [![iOS](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml)
 [![Backend](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml)
 
-Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
+Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
 
 ## Features
 
@@ -42,6 +42,17 @@ Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0
 - **Search** your downloaded words by English prefix, inflected form, similar spelling or Chinese meaning. A **word page** has speech, meanings, the English definition, forms, the exam lists the word is on and your progress. **Favourites** and **Hard Words** (forgotten twice or more) have their own lists.
 - **Statistics**: today, study streak, words a day over 30 days, accuracy trend, learned words by when they're due, and book progress. Every threshold is spelled out.
 - **Sync**: answers are kept as an append-only log and uploaded automatically (at launch, after a session, when the app comes back) or with **Sync Now**; card state is replayed from the log, so two devices can't conflict. Studying works offline.
+
+### AI help (v0.4, optional)
+
+Bring your own key ([spec](docs/ai-spec.md)): requests go straight from the iPhone to the provider you choose, nothing passes through CourseTable's server, and without a connection the app works as before.
+
+- **Settings → AI Help**: add a connection from a preset (DeepSeek, Qwen, Kimi, GLM, Doubao and SiliconFlow work in mainland China without a VPN; OpenAI, Claude, Gemini, OpenRouter; Ollama / LM Studio on your Wi-Fi; or any OpenAI-compatible URL), paste the key (kept in this iPhone's Keychain only), pick or load a model, and test it. Monthly requests and tokens are shown per connection.
+- **Word page**: Explain, Memory Aid, Compare, Collocations, streamed and saved on the device, so opening one again is free. **"Why?"** after a wrong choice or spelling explains the mistake.
+- **Long Sentences** (长难句) and **Writing Feedback** (作文, 英语一/二) in the Words tab and the Assistant: paste, or read text from a photo on the device.
+- **Quick Add** in the to-do editor: "明天高数课后交论文" fills in the title, date and "after 高等数学" for you to check.
+- **Assistant** (✨ on Today and Words): a chat kept on the device; this week's classes and your hard words are shared only if you switch them on.
+- Answers are labelled "AI-generated · model". The dictionary still decides what counts as a correct answer.
 
 ## Import format
 
@@ -80,7 +91,9 @@ CourseKit/            Swift package with all timetable and vocabulary logic; bui
                         StudySession, AnswerGrader, ChoicePool, WordEntry, ECDICT + ContentFile + SeedSQL,
                         WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink
   Sources/VocabContent/ `vocab-content` tool: ECDICT's ecdict.csv → content/kaoyan-ecdict.csv → the Supabase seed migration
-  Tests/                Swift Testing unit tests (CourseKitTests, VocabKitTests)
+  Sources/AIKit/        AI help (docs/ai-spec.md): AIProvider presets, AIConnection requests (OpenAI-compatible and
+                        Anthropic), SSEParser + AIStreamDecoder, AIError, AIPrompts, TodoDraft, MarkdownBlock, SentenceWords
+  Tests/                Swift Testing unit tests (CourseKitTests, VocabKitTests, AIKitTests)
 content/              Word lists built from ECDICT (MIT, see content/ECDICT-LICENSE); content/.cache/ holds the
                       downloaded source and is not committed
 CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
@@ -89,6 +102,9 @@ CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
   Focus/                FocusEngine (the running session, its Live Activity and notifications), FocusView,
                         SoundPlayer (gapless loops)
   Sounds/               sound-<id>.m4a, built by tools/make_sounds.py from content/sounds/sources.json
+  AI/                   AIStore (connections, Keychain keys, usage, saved answers and chats), AITransport (URLSession;
+                        DemoAITransport for -aiDemo), AIRun, AISettingsView, WordAIHelp, StudyToolsViews, TextScanner,
+                        AssistantView
   Vocabulary/           The Words tab: VocabApp.swift (coordinator: sign-in state, email links, sign-out; speech)
     Backend/              VocabBackend protocol + DTOs; SupabaseBackend (the only file that uses supabase-swift);
                           DemoBackend + VocabDemo (in memory, for tests, previews and UI tests)
