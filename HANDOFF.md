@@ -16,8 +16,9 @@ Date: 2026-10-11 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
   build commits; no LICENSE yet). Those release fixes wait for the owner's OK. `docs/v3-development-record.md` is still
   unwritten.
 - **AI help** ([`docs/ai-spec.md`](docs/ai-spec.md), bring your own key), built on iOS 2026-10-12 as 0.4.0 (build 6):
-  AIKit + settings, word help, "Why?", long sentences, writing feedback, quick-add to-dos, Assistant. Waiting for the
-  owner's device test with a real key. Android gets it after its stage 7, porting AIKit to `android/core` against the
+  AIKit + settings, word help, "Why?", long sentences, writing feedback, quick-add to-dos, Assistant. All AI UI tests
+  pass (screenshots run 38291069568); IPA run 38293172237 (commit 16570b5), saved as
+  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.4.0.ipa`. Waiting for the owner's device test with a real key. Android gets it after its stage 7, porting AIKit to `android/core` against the
   shared cases `spec/fixtures/ai-*.json`.
 
 ## Phone test of 0.4.0 (owner)
