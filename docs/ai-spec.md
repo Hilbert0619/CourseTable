@@ -79,7 +79,11 @@ Where things are: `CourseKit/Sources/AIKit` (logic), `CourseTable/AI` (store, tr
 `TodoEditorView`, word help in `WordDetailView`, "Why?" in `StudySessionView`, the study tools linked from the Words
 home screen and the Assistant. UI tests: `CourseTableUITests/AIUITests.swift` (screenshots `*-ai-*`).
 
-Android: the same features as a stage after its release (stage 7), porting AIKit to `android/core`.
+Android: the same features, porting AIKit to `android/core` (moved ahead of its stage 7 at the owner's choice,
+2026-10-15). Stages: **A1** ✓ AIKit in `android/core` (package `io.github.hilbert0619.aikit`, 52 tests incl. every
+shared `ai-*.json` case); **A2** keys (Android Keystore), the Ktor transport, Settings → AI, word help, "Why?";
+**A3** sentence analysis (with scanning), writing feedback, quick add to-do; **A4** the Assistant with the agent, timetable
+from a photo, Analyse My Progress, strings, screenshots, APK. Progress in `docs/android-plan.md` §8.
 
 Next (requested 2026-10-15): the AI agent — to-dos, vocabulary progress and timetables from photos through tool
 calling, every change confirmed by the user: [`ai-agent-spec.md`](ai-agent-spec.md).

@@ -148,7 +148,15 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   (`IslandCountdown`). Settings → Reliable Reminders → Send a Test Live Update shows whether the system promoted it.
   vivo's own 原子通知 API (`notification.superx.*` extras) is not used: it needs access granted by vivo by email.
   **Not yet confirmed on a phone** (checklist in `HANDOFF.md`: the owner's iQOO Neo 9 or a user's phone).
-- **Next: the island check of 0.4.1, then stage 7 (release)** — see `HANDOFF.md`.
+- **AI help and the agent (moved ahead of stage 7 at the owner's choice, 2026-10-15)**, stages in `docs/ai-spec.md` §5:
+  **A1 done 2026-10-15**: AIKit ported to `android/core` (package `io.github.hilbert0619.aikit`: providers,
+  connections, request bodies for both wire formats, SSE parser, stream decoding with tool calls, errors, prompts, to-do
+  drafts, Markdown blocks, sentence words, tools and argument checks, the agent loop, the app's tools over an
+  `AgentWorld` snapshot, timetable photos). 52 tests, ported from `AIKitTests`/`AIAgentTests` plus every shared case in
+  `spec/fixtures/ai-*.json`; 392 core tests in all. Swift character counts (graphemes, CR LF as one) are kept by
+  `characterCount`/`prefixCharacters`.
+- **Next: A2 (keys, transport, Settings → AI, word help, "Why?")**; the island check of 0.4.1 and stage 7 (release)
+  wait — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 

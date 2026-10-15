@@ -5,8 +5,9 @@ Both implementations of the app's logic read these files in their tests and must
 - iOS: `CourseKit/Tests/CourseKitTests/SharedFixtureTests.swift`, `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift`,
   `CourseKit/Tests/AIKitTests/AISharedFixtureTests.swift` and `AIAgentFixtureTests.swift` (`swift test` in `CourseKit/`,
   CI `coursekit.yml`)
-- Android: `android/core/src/test/kotlin/io/github/hilbert0619/coursekit/SharedFixtureTests.kt` and
-  `.../vocabkit/VocabSharedFixtureTests.kt` (`./gradlew :core:test` in `android/`, CI `android.yml`)
+- Android: `android/core/src/test/kotlin/io/github/hilbert0619/coursekit/SharedFixtureTests.kt`,
+  `.../vocabkit/VocabSharedFixtureTests.kt`, `.../aikit/AISharedFixtureTests.kt` and `.../aikit/AIAgentFixtureTests.kt`
+  (`./gradlew :core:test` in `android/`, CI `android.yml`)
 
 | File | What it checks |
 |---|---|
