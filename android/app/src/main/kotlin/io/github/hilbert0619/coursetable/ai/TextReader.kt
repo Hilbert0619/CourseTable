@@ -27,7 +27,11 @@ object TextReader {
     /** The phone can't recognise text (the recogniser isn't built for its processor). */
     class Unavailable(cause: Throwable) : Exception(cause)
 
+    /** The recognizer's library is only in the app for 64-bit ARM (`app/build.gradle.kts`). */
+    val isAvailable: Boolean get() = "arm64-v8a" in android.os.Build.SUPPORTED_ABIS
+
     suspend fun read(context: Context, picture: Uri): Reading = withContext(Dispatchers.IO) {
+        if (!isAvailable) throw Unavailable(UnsupportedOperationException("No text recognizer for ${android.os.Build.SUPPORTED_ABIS.joinToString()}"))
         val image = InputImage.fromFilePath(context, picture)
         val recognizer = try {
             TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())

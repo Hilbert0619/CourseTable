@@ -39,6 +39,16 @@ android {
         buildConfig = true
     }
 
+    packaging {
+        jniLibs {
+            // ML Kit's text recognizer (AI help) only for 64-bit ARM, every current phone (owner's choice, 2026-10-15):
+            // its library is 7–12 MB per processor type. Elsewhere scanning reports itself unavailable.
+            excludes += listOf("x86", "x86_64", "armeabi-v7a").map { "lib/$it/libmlkit_google_ocr_pipeline.so" }
+            // Compressed in the APK (installed apps unpack them), so the file to share stays small.
+            useLegacyPackaging = true
+        }
+    }
+
     androidResources {
         // English and Simplified Chinese, also offered in the system's per-app language setting (Android 13+).
         localeFilters += listOf("en", "zh-rCN")
