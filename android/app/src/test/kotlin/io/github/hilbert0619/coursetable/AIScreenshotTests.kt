@@ -7,6 +7,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -102,6 +103,9 @@ class AIScreenshotTests {
 
     private fun capture() = compose.onRoot().captureRoboImage()
 
+    /** The word page's scrolling column (the help chips scroll sideways too). */
+    private fun page() = compose.onAllNodes(hasScrollAction()).onFirst()
+
     @Test
     fun aiSettings() {
         val store = store()
@@ -147,9 +151,9 @@ class AIScreenshotTests {
         val store = store()
         store.saveAnswer(DemoAnswers.answer("explain"), "deepseek-v4-flash", "word|abandon|explain|english")
         show(store, words()) { WordDetailScreen("abandon", onBack = {}) }
-        compose.onNode(hasScrollAction()).performScrollToNode(hasText("Explain"))
+        page().performScrollToNode(hasText("Explain"))
         compose.onNodeWithText("Explain").performClick()
-        compose.onNode(hasScrollAction()).performScrollToNode(hasText("Ask Again"))
+        page().performScrollToNode(hasText("Ask Again"))
         compose.onNodeWithText("AI-generated · deepseek-v4-flash").assertExists()
         capture()
     }
@@ -159,11 +163,11 @@ class AIScreenshotTests {
     fun wordPageAIHelpChinese() {
         val store = store()
         show(store, words()) { WordDetailScreen("abandon", onBack = {}) }
-        compose.onNode(hasScrollAction()).performScrollToNode(hasText("搭配"))
+        page().performScrollToNode(hasText("搭配"))
         compose.onNodeWithText("讲解").performClick()
         // Not saved yet: asked through the demo transport.
         compose.waitUntil(5_000) { compose.onAllNodesWithText("重新提问").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNode(hasScrollAction()).performScrollToNode(hasText("重新提问"))
+        page().performScrollToNode(hasText("重新提问"))
         capture()
     }
 
