@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- What FileProvider may share: the exported CSV (Settings → Export as CSV). -->
+<!-- What FileProvider may share: the exported CSV (Settings → Export as CSV), and the file the camera app writes a
+     photo to for text scanning (AI tools). -->
 <paths>
     <cache-path name="exports" path="exports/" />
+    <cache-path name="scans" path="scans/" />
 </paths>

@@ -21,7 +21,12 @@ import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursekit.TodoTiming
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.aikit.TodoDraft
 import io.github.hilbert0619.coursetable.ui.AppActions
+import io.github.hilbert0619.coursetable.ui.ai.LocalAI
+import io.github.hilbert0619.coursetable.ui.ai.TodoQuickAddSection
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.ChoiceRow
@@ -85,7 +90,37 @@ fun TodoEditorContent(timetable: Timetable, target: TodoEditorTarget, actions: A
     val isNew = target is TodoEditorTarget.New
     val focus = remember { FocusRequester() }
     val askForNotifications = rememberNotificationRequest()
-    LaunchedEffect(Unit) { if (isNew) runCatching { focus.requestFocus() } }
+    val ai = LocalAI.current
+    val aiReady = ai?.state?.collectAsStateWithLifecycle()?.value?.isSetUp == true
+    LaunchedEffect(Unit) { if (isNew && !aiReady) runCatching { focus.requestFocus() } }
+    val resources = LocalContext.current.resources
+
+    /** Fills in the fields from the AI's draft; the class is set before the day, so the check that follows keeps it. */
+    fun applyDraft(draft: TodoDraft): String? {
+        title = draft.title
+        when (val drafted = draft.timing) {
+            TodoTiming.Anytime -> {
+                day = draft.day
+                kind = TodoKind.ANYTIME
+            }
+            is TodoTiming.At -> {
+                time = drafted.time
+                day = draft.day
+                kind = TodoKind.AT
+            }
+            is TodoTiming.AfterClass -> if (timetable.sessions(draft.day).any { it.course.id == drafted.courseId }) {
+                courseId = drafted.courseId
+                day = draft.day
+                kind = TodoKind.AFTER_CLASS
+            } else {
+                day = draft.day
+                kind = TodoKind.ANYTIME
+                val name = timetable.courses.firstOrNull { it.id == drafted.courseId }?.name.orEmpty()
+                return resources.getString(R.string.ai_todo_no_class, name)
+            }
+        }
+        return draft.unknownCourse?.let { resources.getString(R.string.ai_todo_unknown_course, it) }
+    }
 
     EditorScaffold(
         title = stringResource(if (isNew) R.string.new_todo else R.string.edit_todo),
@@ -101,6 +136,7 @@ fun TodoEditorContent(timetable: Timetable, target: TodoEditorTarget, actions: A
             }
         },
     ) {
+        if (isNew && ai != null && aiReady) TodoQuickAddSection(ai, timetable, ::applyDraft)
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },

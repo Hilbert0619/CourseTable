@@ -46,6 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ui.ai.EssayFeedbackScreen
+import io.github.hilbert0619.coursetable.ui.ai.LocalAI
+import io.github.hilbert0619.coursetable.ui.ai.SentenceAnalysisScreen
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
 import io.github.hilbert0619.coursetable.ui.components.EditorDialog
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
@@ -67,6 +70,8 @@ sealed interface WordsRoute {
     data object Statistics : WordsRoute
     data object Books : WordsRoute
     data object Settings : WordsRoute
+    data object Sentences : WordsRoute
+    data object Essay : WordsRoute
     data class Word(val headword: String) : WordsRoute
 
     val key: String
@@ -77,13 +82,15 @@ sealed interface WordsRoute {
             Statistics -> "stats"
             Books -> "books"
             Settings -> "settings"
+            Sentences -> "sentences"
+            Essay -> "essay"
             is Word -> "word:$headword"
         }
 
     companion object {
         fun of(key: String): WordsRoute? = when {
             key.startsWith("word:") -> Word(key.removePrefix("word:"))
-            else -> listOf(Search, Favorites, HardWords, Statistics, Books, Settings).firstOrNull { it.key == key }
+            else -> listOf(Search, Favorites, HardWords, Statistics, Books, Settings, Sentences, Essay).firstOrNull { it.key == key }
         }
     }
 }
@@ -143,6 +150,14 @@ private fun WordsNavigation(modifier: Modifier, initialRoutes: List<WordsRoute>)
         WordsRoute.Books -> BooksScreen(onBack = ::pop, modifier = modifier)
         WordsRoute.Settings -> VocabSettingsScreen(onBack = ::pop, modifier = modifier)
         is WordsRoute.Word -> WordDetailScreen(route.headword, onBack = ::pop, modifier = modifier)
+        WordsRoute.Sentences, WordsRoute.Essay -> {
+            val ai = LocalAI.current
+            when {
+                ai == null -> LaunchedEffect(Unit) { pop() }
+                route == WordsRoute.Sentences -> SentenceAnalysisScreen(ai, onOpenWord = { push(WordsRoute.Word(it)) }, onBack = ::pop, modifier = modifier)
+                else -> EssayFeedbackScreen(ai, onBack = ::pop, modifier = modifier)
+            }
+        }
     }
 }
 
@@ -190,6 +205,13 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
                     LinkRow(R.drawable.ic_hard_words, stringResource(R.string.hard_words), "${state.hardWords.size}") { onOpen(WordsRoute.HardWords) }
                     RowDivider()
                     LinkRow(R.drawable.ic_bar_chart, stringResource(R.string.statistics)) { onOpen(WordsRoute.Statistics) }
+                }
+                if (LocalAI.current != null) {
+                    Section(title = stringResource(R.string.ai_tools)) {
+                        LinkRow(R.drawable.ic_notes, stringResource(R.string.ai_long_sentences)) { onOpen(WordsRoute.Sentences) }
+                        RowDivider()
+                        LinkRow(R.drawable.ic_edit_note, stringResource(R.string.ai_writing_feedback)) { onOpen(WordsRoute.Essay) }
+                    }
                 }
                 Section { SyncStatusRow() }
                 Spacer(Modifier.heightIn(min = 8.dp))

@@ -58,6 +58,9 @@ supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 # The HTTP engine for supabase-kt: OkHttp needs no Google Play services.
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+# On-device text recognition for AI help (sentence scanning, timetable photos): the bundled Chinese+Latin model, no
+# Google Play services needed (checked 2026-10-15: 16.0.1 is the latest).
+mlkit-text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version = "16.0.1" }
 # The AI transport's tests: canned HTTP responses instead of a server.
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }

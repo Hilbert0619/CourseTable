@@ -3,6 +3,16 @@ package io.github.hilbert0619.coursetable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.performTextInput
+import io.github.hilbert0619.coursekit.Semester
+import io.github.hilbert0619.coursekit.Timetable
+import io.github.hilbert0619.coursetable.data.DemoData
+import io.github.hilbert0619.coursetable.ui.AppActions
+import io.github.hilbert0619.coursetable.ui.ai.EssayFeedbackScreen
+import io.github.hilbert0619.coursetable.ui.ai.SentenceAnalysisScreen
+import io.github.hilbert0619.coursetable.ui.today.TodoEditorContent
+import io.github.hilbert0619.coursetable.ui.today.TodoEditorTarget
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -193,5 +203,46 @@ class AIScreenshotTests {
         compose.onNodeWithText("Why?").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Tip:", substring = true).fetchSemanticsNodes().isNotEmpty() }
         compose.onAllNodes(isRoot()).onLast().captureRoboImage()
+    }
+
+    // AI tools and quick add
+
+    @Test
+    fun sentenceAnalysis() {
+        val store = store()
+        show(store, words()) { SentenceAnalysisScreen(store, onOpenWord = {}, onBack = {}) }
+        compose.onNode(hasSetTextAction()).performTextInput("The study suggests that people who sleep less are more likely to abandon their goals.")
+        compose.onNodeWithText("Analyse").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Main clause").fetchSemanticsNodes().isNotEmpty() }
+        page().performScrollToNode(hasText("Main clause"))
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN")
+    fun essayFeedbackChinese() {
+        val store = store()
+        show(store, words()) { EssayFeedbackScreen(store, onBack = {}) }
+        val essay = "As is vividly depicted in the picture, more and more peoples is busy with their phones. " +
+            "In my opinion, we should spend more time with our families and friends instead."
+        compose.onAllNodes(hasSetTextAction())[1].performTextInput(essay)
+        page().performScrollToNode(hasText("批改作文"))
+        compose.onNodeWithText("批改作文").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("评分").fetchSemanticsNodes().isNotEmpty() }
+        page().performScrollToNode(hasText("评分"))
+        capture()
+    }
+
+    @Test
+    fun todoQuickAdd() {
+        val store = store()
+        val today = LocalDate(2026, 9, 28)
+        val timetable = Timetable(Semester(today.adding(-28)), courses = DemoData.courses(today))
+        show(store) { TodoEditorContent(timetable, TodoEditorTarget.New(today), AppActions.None, onDismiss = {}) }
+        compose.onAllNodes(hasSetTextAction())[0].performTextInput("hand in the paper after class tomorrow")
+        compose.onNodeWithText("Fill In with AI").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("交论文").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("After a class").assertExists()
+        capture()
     }
 }
