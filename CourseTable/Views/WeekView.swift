@@ -121,6 +121,7 @@ struct WeekView: View {
                             } label: {
                                 Label("Import Courses…", systemImage: "square.and.arrow.down")
                             }
+                            .accessibilityIdentifier("importCourses")
                         } label: {
                             Label("Add Course", systemImage: "plus")
                         }

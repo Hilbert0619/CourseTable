@@ -55,7 +55,7 @@ final class AIRun {
             store.record(answer, for: connection)
             if let failure {
                 self.error = failure
-            } else if answer.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && answer.stop != .refused {
+            } else if !answer.hasResult {
                 self.error = .empty
             } else if answer.stop != .cutOff && answer.stop != .refused {
                 onComplete?(answer)

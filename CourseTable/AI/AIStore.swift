@@ -21,6 +21,25 @@ struct AIConversation: Identifiable, Hashable, Codable {
     var id = UUID()
     var messages: [AIMessage] = []
     var updated = Date.now
+    /// What the chat shows for each tool call, by call ID.
+    var cards: [String: AgentCard] = [:]
+
+    init(id: UUID = UUID(), messages: [AIMessage] = [], cards: [String: AgentCard] = [:]) {
+        self.id = id
+        self.messages = messages
+        self.cards = cards
+    }
+
+    private enum CodingKeys: String, CodingKey { case id, messages, updated, cards }
+
+    // Chats saved by 0.4 have no cards.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        messages = try container.decode([AIMessage].self, forKey: .messages)
+        updated = try container.decodeIfPresent(Date.self, forKey: .updated) ?? .now
+        cards = try container.decodeIfPresent([String: AgentCard].self, forKey: .cards) ?? [:]
+    }
 
     /// The first question, shortened.
     var title: String {
@@ -216,6 +235,8 @@ final class AIStore {
         guard !conversation.messages.isEmpty else { return }
         var updated = conversation
         updated.updated = .now
+        // Pictures and thinking blocks stay in the open chat only.
+        updated.messages = conversation.messages.map(\.forStorage)
         conversations.removeAll { $0.id == conversation.id }
         conversations.insert(updated, at: 0)
         if conversations.count > Self.maxConversations { conversations.removeLast(conversations.count - Self.maxConversations) }

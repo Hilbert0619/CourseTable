@@ -2,25 +2,49 @@ import SwiftUI
 import SwiftData
 import CoreTransferable
 import UniformTypeIdentifiers
+import AIKit
 import CourseKit
 
-/// Paste CSV or spreadsheet rows (or open a file), preview the courses, then add them.
+/// Paste CSV or spreadsheet rows (or open a file, or read a photo with AI), preview the courses, then add them.
 struct ImportView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(AIStore.self) private var ai
 
     let timetable: Timetable
-    @State private var text = ""
+    /// The Assistant's import: told what was added. Closing without importing tells it nothing.
+    var onImport: ((_ added: [Course], _ skipped: Int) -> Void)?
+    @State private var text: String
     @State private var replacesExisting = false
     @State private var choosingFile = false
     @State private var confirmingReplace = false
     @State private var fileError: String?
+    @State private var photo = TimetablePhotoReader()
+    /// Period times read from a photo, and whether to use them.
+    @State private var photoPeriods: PeriodSchedule?
+    @State private var usesPhotoPeriods = false
+
+    init(timetable: Timetable, text: String = "", onImport: ((_ added: [Course], _ skipped: Int) -> Void)? = nil) {
+        self.timetable = timetable
+        self.onImport = onImport
+        _text = State(initialValue: text)
+    }
+
+    /// The timetable the import is checked against: with the photo's period times when they're used.
+    private var target: Timetable {
+        var target = timetable
+        if usesPhotoPeriods, let photoPeriods { target.periods = photoPeriods }
+        return target
+    }
 
     var body: some View {
-        let result = CourseImporter(for: timetable).parse(text)
-        let plan = timetable.planningImport(of: result.courses, replacingExisting: replacesExisting)
+        let result = CourseImporter(for: target).parse(text)
+        let plan = target.planningImport(of: result.courses, replacingExisting: replacesExisting)
         NavigationStack {
             Form {
+                if onImport == nil {
+                    photoSection
+                }
                 Section {
                     TextEditor(text: $text)
                         .font(.system(.footnote, design: .monospaced))
@@ -33,6 +57,10 @@ struct ImportView: View {
                     Text("Paste CSV or spreadsheet rows")
                 } footer: {
                     Text("One course per line with the columns name, teacher, room, weekday, periods and weeks. Add a header row (English or Chinese) to use any column order. Rows copied from Excel or Numbers work too.")
+                }
+
+                if let photoPeriods, photoPeriods != timetable.periods {
+                    PhotoPeriodsSection(periods: photoPeriods, uses: $usesPhotoPeriods)
                 }
 
                 if let fileError {
@@ -52,7 +80,7 @@ struct ImportView: View {
                     ImportPreview(result: result, plan: plan)
                 }
             }
-            .navigationTitle("Import Courses")
+            .navigationTitle(onImport == nil ? Text("Import Courses") : Text("Check the Courses"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -68,6 +96,7 @@ struct ImportView: View {
                         }
                     }
                     .disabled(plan.added.isEmpty)
+                    .accessibilityIdentifier("importButton")
                 }
             }
             .confirmationDialog("Replace all current courses?", isPresented: $confirmingReplace, titleVisibility: .visible) {
@@ -109,7 +138,80 @@ struct ImportView: View {
         }
     }
 
+    @ViewBuilder
+    private var photoSection: some View {
+        Section {
+            if ai.isSetUp {
+                PhotoSourceButtons { data in
+                    photo.read(data, store: ai, timetable: timetable, onReading: usePhoto)
+                }
+                .disabled(photo.isWorking)
+                photoStatus
+            } else {
+                AISetupLink()
+            }
+        } header: {
+            Text("From a Photo (AI)")
+        } footer: {
+            if let connection = ai.defaultConnection {
+                let provider = connection.name
+                if connection.pictureConnection != nil {
+                    Text("The photo goes to \(provider), which writes the courses below for you to check.")
+                } else {
+                    Text("This iPhone reads the text in the photo; the text goes to \(provider), which writes the courses below for you to check.")
+                }
+            } else {
+                Text("A photo or screenshot of your timetable becomes courses for you to check.")
+            }
+        }
+    }
+
+    private func usePhoto(_ reading: TimetablePhoto.Reading) {
+        text = reading.csv
+        photoPeriods = reading.periods
+        usesPhotoPeriods = false
+    }
+
+    @ViewBuilder
+    private var photoStatus: some View {
+        switch photo.phase {
+        case .scanning:
+            Label { Text("Reading the text in the photo…") } icon: { ProgressView() }
+                .foregroundStyle(.secondary)
+        case .asking:
+            if let error = photo.run.error {
+                AIErrorView(error: error) { photo.retry(store: ai, timetable: timetable, onReading: usePhoto) }
+            } else {
+                let model = photo.run.model
+                Label { Text("Asking \(model)…") } icon: { ProgressView() }
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("photoAsking")
+            }
+        case .noText:
+            Label("No text found in the photo.", systemImage: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+        case .noTimetable:
+            Label("The answer had no courses in it. Try a clearer photo.", systemImage: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+        case .done:
+            let model = photo.run.model
+            Label {
+                Text("AI-generated · \(model). Check every course before importing.")
+            } icon: {
+                Image(systemName: "sparkles")
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .accessibilityIdentifier("photoDone")
+        case .idle:
+            EmptyView()
+        }
+    }
+
     private func apply(_ plan: ImportPlan) {
+        if usesPhotoPeriods, let photoPeriods {
+            Persistence.settings(in: context).periods = photoPeriods
+        }
         if plan.replacesExisting {
             for record in (try? context.fetch(FetchDescriptor<CourseRecord>())) ?? [] {
                 context.delete(record)
@@ -119,7 +221,29 @@ struct ImportView: View {
             context.insert(CourseRecord(course))
         }
         try? context.save()
+        onImport?(plan.added, plan.duplicates.count)
         dismiss()
+    }
+}
+
+/// Period times read from a timetable photo, to use instead of the current ones.
+private struct PhotoPeriodsSection: View {
+    let periods: PeriodSchedule
+    @Binding var uses: Bool
+
+    var body: some View {
+        Section {
+            Toggle("Use These Period Times", isOn: $uses)
+                .accessibilityIdentifier("usePhotoPeriods")
+            let list = periods.periods.enumerated().map { "\($0.offset + 1)  \($0.element.start)–\($0.element.end)" }
+            Text(verbatim: list.joined(separator: "\n"))
+                .font(.footnote.monospacedDigit())
+                .foregroundStyle(.secondary)
+        } header: {
+            Text("Period Times in the Photo")
+        } footer: {
+            Text("Replaces the class times in Settings when you import.")
+        }
     }
 }
 
@@ -244,4 +368,5 @@ extension ImportColumn {
     let timetable = Timetable(semester: Semester(startingOn: today), courses: SampleCourses.all(today: today))
     return ImportView(timetable: timetable)
         .modelContainer(Persistence.previewContainer())
+        .environment(AIStore.makeForLaunch())
 }

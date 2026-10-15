@@ -7,6 +7,7 @@ import VocabKit
 /// depends on a threshold says what the threshold is.
 struct VocabStatsView: View {
     @Environment(VocabApp.self) private var vocab
+    @State private var analysing = false
 
     var body: some View {
         let model = vocab.model
@@ -20,6 +21,17 @@ struct VocabStatsView: View {
         let buckets = VocabStats.buckets(model.cards.values, today: today)
         let book = VocabStats.progress(book: model.bookWords, cards: model.cards, today: today)
         List {
+            Section {
+                Button {
+                    analysing = true
+                } label: {
+                    Label("Analyse My Progress", systemImage: "sparkles")
+                }
+                .accessibilityIdentifier("analyseProgress")
+            } footer: {
+                Text("The Assistant reads these numbers and your hard words, and explains how you're doing.")
+            }
+
             Section("Today") {
                 LabeledContent("New words") { Text(verbatim: "\(todayStats.newWords)") }
                 LabeledContent("Words reviewed") { Text(verbatim: "\(todayStats.reviewedWords)") }
@@ -106,6 +118,9 @@ struct VocabStatsView: View {
             }
         }
         .navigationTitle("Statistics")
+        .sheet(isPresented: $analysing) {
+            AssistantView(startMessage: String(localized: "Analyse my vocabulary progress: how am I doing, which words do I keep forgetting, and will I finish the book before the exam?"))
+        }
     }
 
     private func percent(_ value: Double?) -> Text {

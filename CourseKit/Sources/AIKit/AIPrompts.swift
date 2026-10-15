@@ -227,6 +227,12 @@ public enum AIPrompts {
         """
     }
 
+    /// A message the user sent, without the text read from a photo (`photoText`) that went with it.
+    public static func typedPart(of message: String) -> (text: String, hasPhotoText: Bool) {
+        guard let range = message.range(of: TimetablePhoto.ocrExplanation) else { return (message, false) }
+        return (String(message[..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines), true)
+    }
+
     /// Reading a timetable from a picture into the import format: the picture itself (`ocrText` nil, the
     /// picture goes with the message) or the text the phone read from it.
     public static func timetableFromPhoto(image: AIImage?, ocrText: String?, timetable: Timetable,

@@ -81,7 +81,7 @@ enum TextRecognizer {
         }.value
     }
 
-    private static func orientation(_ orientation: UIImage.Orientation) -> CGImagePropertyOrientation {
+    static func orientation(_ orientation: UIImage.Orientation) -> CGImagePropertyOrientation {
         switch orientation {
         case .up: .up
         case .upMirrored: .upMirrored
@@ -97,7 +97,7 @@ enum TextRecognizer {
 }
 
 /// The system camera, returning one photo (or `nil` when cancelled).
-private struct CameraPicker: UIViewControllerRepresentable {
+struct CameraPicker: UIViewControllerRepresentable {
     let onFinish: (UIImage?) -> Void
 
     func makeUIViewController(context: Context) -> UIImagePickerController {

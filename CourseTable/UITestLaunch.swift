@@ -15,6 +15,8 @@ enum UITestLaunch {
     static let wantsFocusDemo = isActive && ProcessInfo.processInfo.arguments.contains("-focusDemo")
     /// One AI connection answered by canned text instead of a provider (`-aiDemo`).
     static let wantsAIDemo = isActive && ProcessInfo.processInfo.arguments.contains("-aiDemo")
+    /// Photo buttons also offer a drawn sample timetable (`-aiDemoPhoto`), since UI tests can't pick photos.
+    static let wantsAIDemoPhoto = isActive && ProcessInfo.processInfo.arguments.contains("-aiDemoPhoto")
     /// Start a demo class Live Activity (`-liveActivityDemo before|during|switch`).
     static let liveActivityDemo = isActive ? UserDefaults.standard.string(forKey: "liveActivityDemo") : nil
 }

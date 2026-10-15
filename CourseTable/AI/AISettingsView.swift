@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import AIKit
 
 /// Settings → AI: the user's connections (provider, key, model), which one AI help uses, this month's usage,
@@ -63,6 +64,8 @@ struct AISettingsView: View {
             Section {
                 Text("Your questions go straight from this iPhone to the provider you chose, under their terms, and are paid from your account with them. CourseTable's server never sees them. Keys stay in this iPhone's Keychain.")
                 Text("Each feature sends only what it needs: a word and its dictionary entry, a sentence you paste, or a to-do note with your course names.")
+                Text("With tools, the Assistant also looks at your to-dos, classes, focus sessions and vocabulary numbers while you chat, and sends what it looks at. It changes nothing until you tap Confirm.")
+                Text("A timetable photo goes to the provider only when you choose one. For a model that can't read photos, this iPhone reads the text and sends only the text.")
                 Text("AI answers can be wrong. The dictionary still decides what counts as a correct answer.")
             } header: {
                 Text("Privacy")
@@ -143,16 +146,31 @@ struct AIConnectionEditor: View {
     @State private var loaded = false
     /// A new connection's ID, the same for its test and its save.
     @State private var newID = UUID()
+    @State private var toolsOn = true
+    @State private var imagesOn = false
+    @State private var photoModel = ""
+    @State private var toolTest = AIRun()
+    @State private var imageTest = AIRun()
+    /// What the test found: the model called the test tool / read the test picture.
+    @State private var toolsWork: Bool?
+    @State private var toolsTurnedOff = false
+    @State private var readsPhotos: Bool?
 
     private var provider: AIProvider? { AIProvider.preset(id: providerID) }
     private var hasStoredKey: Bool { connection.map(ai.hasKey) ?? false }
 
-    /// The connection as currently filled in.
+    /// The connection as currently filled in. The switches are kept only where they differ from the preset.
     private var draft: AIConnection {
-        AIConnection(id: connection?.id ?? newID, providerID: providerID,
-                     name: name.trimmingCharacters(in: .whitespaces).isEmpty ? (provider?.name ?? "AI") : name,
-                     format: provider?.format ?? .openAI, baseURL: baseURL,
-                     model: model.trimmingCharacters(in: .whitespaces))
+        var draft = AIConnection(id: connection?.id ?? newID, providerID: providerID,
+                                 name: name.trimmingCharacters(in: .whitespaces).isEmpty ? (provider?.name ?? "AI") : name,
+                                 format: provider?.format ?? .openAI, baseURL: baseURL,
+                                 model: model.trimmingCharacters(in: .whitespaces))
+        let preset = draft
+        draft.toolsSwitch = toolsOn == preset.usesTools ? nil : toolsOn
+        draft.imagesSwitch = imagesOn == preset.readsImages ? nil : imagesOn
+        let photo = photoModel.trimmingCharacters(in: .whitespaces)
+        draft.photoModelChoice = photo == (preset.photoModel ?? "") ? nil : photo
+        return draft
     }
 
     /// The key to use: the one typed, or the stored one.
@@ -262,6 +280,21 @@ struct AIConnectionEditor: View {
                 }
 
                 Section {
+                    Toggle("Use the App's Tools", isOn: $toolsOn)
+                        .accessibilityIdentifier("aiToolsSwitch")
+                    Toggle("Model Reads Photos", isOn: $imagesOn)
+                    if !imagesOn {
+                        TextField("Photo Model", text: $photoModel, prompt: Text("None"))
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    }
+                } header: {
+                    Text("Assistant")
+                } footer: {
+                    Text("Tools let the Assistant look at your to-dos, classes, focus and vocabulary numbers and suggest changes; they need a model that can call tools. Timetable photos go to a model that reads photos (this one, or the photo model); without one, this iPhone reads the text and sends only the text.")
+                }
+
+                Section {
                     Button {
                         runTest()
                     } label: {
@@ -277,6 +310,34 @@ struct AIConnectionEditor: View {
                         Label("Connected. The model answered.", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(.green)
                             .accessibilityIdentifier("aiTestOK")
+                    }
+                    if toolTest.isRunning || imageTest.isRunning {
+                        ProgressView()
+                    }
+                    if toolsTurnedOff {
+                        Label("This model can't use tools, so Tools is now off.", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                    } else if let toolsWork {
+                        if toolsWork {
+                            Label("Tools work: the model called the test tool.", systemImage: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                                .accessibilityIdentifier("aiToolsOK")
+                        } else {
+                            Label("The model didn't call the test tool, so the Assistant may not manage the app's tools with it.",
+                                  systemImage: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                    if let readsPhotos {
+                        if readsPhotos {
+                            Label("Photos work: the model read the test picture.", systemImage: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                                .accessibilityIdentifier("aiPhotosOK")
+                        } else {
+                            Label("The model couldn't read the test picture. Turn off Model Reads Photos or choose another photo model.",
+                                  systemImage: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                        }
                     }
                 }
 
@@ -311,10 +372,22 @@ struct AIConnectionEditor: View {
                 model = provider.defaultModel
                 models = []
                 modelsError = nil
-                testedOK = false
-                test.reset()
+                resetTests()
+                setSwitches(for: AIConnection(provider: provider))
             }
-            .onDisappear { test.cancel() }
+            .onChange(of: model) { old, _ in
+                // A model the user changed gets the preset's answer for whether it reads photos (not the one
+                // filled in when the editor opens).
+                guard loaded, !old.isEmpty else { return }
+                var plain = draft
+                plain.imagesSwitch = nil
+                imagesOn = plain.readsImages
+            }
+            .onDisappear {
+                test.cancel()
+                toolTest.cancel()
+                imageTest.cancel()
+            }
         }
     }
 
@@ -332,10 +405,28 @@ struct AIConnectionEditor: View {
             name = connection.name
             baseURL = connection.baseURL
             model = connection.model
+            setSwitches(for: connection)
         } else if let provider {
             baseURL = provider.baseURL
             model = provider.defaultModel
+            setSwitches(for: AIConnection(provider: provider))
         }
+    }
+
+    private func setSwitches(for connection: AIConnection) {
+        toolsOn = connection.usesTools
+        imagesOn = connection.readsImages
+        photoModel = connection.photoModel ?? ""
+    }
+
+    private func resetTests() {
+        testedOK = false
+        toolsWork = nil
+        toolsTurnedOff = false
+        readsPhotos = nil
+        test.reset()
+        toolTest.reset()
+        imageTest.reset()
     }
 
     private func loadModels() {
@@ -361,10 +452,51 @@ struct AIConnectionEditor: View {
         }
     }
 
+    /// Asks for a one-word answer; then, with tools on, for a call of a test tool; then, when photos go
+    /// somewhere, what colour a red picture is.
     private func runTest() {
-        testedOK = false
-        test.start(AIPrompts.connectionTest, store: ai, connection: draft, key: effectiveKey) { _ in
+        resetTests()
+        let connection = draft
+        let key = effectiveKey
+        test.start(AIPrompts.connectionTest, store: ai, connection: connection, key: key) { _ in
             testedOK = true
+            if toolsOn {
+                testTools(connection, key: key)
+            } else {
+                testPhotos(connection, key: key)
+            }
         }
+    }
+
+    private func testTools(_ connection: AIConnection, key: String?) {
+        toolTest.start(AIPrompts.toolTest, store: ai, connection: connection, key: key, onEnd: { answer in
+            if let error = toolTest.error {
+                if error.rejectsTools {
+                    toolsOn = false
+                    toolsTurnedOff = true
+                } else {
+                    toolsWork = false
+                }
+            } else {
+                toolsWork = answer.toolCalls.contains { $0.name == "ping" }
+            }
+            testPhotos(connection, key: key)
+        })
+    }
+
+    private func testPhotos(_ connection: AIConnection, key: String?) {
+        guard let pictures = connection.pictureConnection, let picture = Self.redSquare() else { return }
+        imageTest.start(AIPrompts.imageTest(AIImage(data: picture)), store: ai, connection: pictures, key: key, onEnd: { answer in
+            readsPhotos = imageTest.error == nil && answer.text.lowercased().contains("red")
+        })
+    }
+
+    private static func redSquare() -> Data? {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: CGSize(width: 64, height: 64), format: format).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 64, height: 64))
+        }.jpegData(compressionQuality: 0.9)
     }
 }
