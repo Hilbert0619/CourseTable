@@ -6,7 +6,7 @@ A native iOS class-schedule app with an English vocabulary trainer for 考研: *
 [![iOS](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml)
 [![Backend](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml)
 
-Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
+Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md) · [AI agent (planned)](docs/ai-agent-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
 
 ## Features
 

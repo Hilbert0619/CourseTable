@@ -1,6 +1,25 @@
-# Session Handoff — CourseTable (Android stages 1–6 built · next: the owner's test of 0.4.0, then stage 7)
+# Session Handoff — CourseTable (next: the AI agent, iOS 0.5 · Android stage 7 waits on its own track)
 
-Date: 2026-10-11 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+Date: 2026-10-15 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+
+## Next: the AI agent (the owner's request, 2026-10-15)
+
+> "The AI should be able to utilize agent capabilities to perform simple tasks, such as: adding reminders, tracking
+> and analyzing vocabulary learning progress, and automatically adding corresponding courses based on imported class
+> schedules using image recognition."
+
+The full spec is [`docs/ai-agent-spec.md`](docs/ai-agent-spec.md); nothing is built yet. In short:
+- The Assistant calls the app's own **tools** through the user's connection: to-dos (list, add, edit, tick off,
+  delete), the schedule and courses (read; add through the import preview), and the learner's vocabulary numbers
+  (read-only).
+- **Every change is a proposal card the user confirms**; read tools run on their own.
+- **Timetable from a photo**: the image goes to a model that reads images, or else on-device OCR with text positions
+  goes to a text model. Either way the model writes the app's CSV import format, and the user checks it in the
+  existing import preview.
+- Stages: AIKit (tool calls in both wire formats, agent loop, OCR formatting, fixtures) → app (executors, cards, demo
+  scripts, UI tests) → photo import → progress analysis, docs, IPA 0.5.0.
+- Before coding, ask the owner the three questions in spec §9, and how the iOS 0.4.0 test with a real key went (fix
+  that first). Handoff prompt A below.
 
 ## Status
 
@@ -18,10 +37,24 @@ Date: 2026-10-11 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbe
 - **AI help** ([`docs/ai-spec.md`](docs/ai-spec.md), bring your own key), built on iOS 2026-10-12 as 0.4.0 (build 6):
   AIKit + settings, word help, "Why?", long sentences, writing feedback, quick-add to-dos, Assistant. All AI UI tests
   pass (screenshots run 38291069568); IPA run 38293172237 (commit 16570b5), saved as
-  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.4.0.ipa`. Waiting for the owner's device test with a real key. Android gets it after its stage 7, porting AIKit to `android/core` against the
-  shared cases `spec/fixtures/ai-*.json`.
+  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.4.0.ipa`. **The owner's device test with a real key was not reported
+  yet** (checklist below). Android gets AI help after its stage 7, porting AIKit to `android/core` against the shared
+  cases `spec/fixtures/ai-*.json`.
 
-## Phone test of 0.4.0 (owner)
+## iOS 0.4.0 AI help test (owner, with a real key)
+
+Get a key yourself (GLM-4.7-Flash on open.bigmodel.cn is free; DeepSeek costs a few yuan) and paste it only into the
+app.
+1. Settings → AI Help → Add Connection → provider → key → Test Connection shows "Connected".
+2. A word page → Explain streams in with "AI-generated · model"; opening it again is instant.
+3. A wrong answer in a study session → Why?
+4. Words → Long Sentences: photo of a past-paper sentence → check the text → Analyse; the book's words are listed.
+5. Words → Writing Feedback: paste an essay → Mark My Essay.
+6. New to-do → Quick Add "明天下课后交论文" → check title, date, class → Save.
+7. Assistant (✨ on Today): ask something; switch on "Share This Week's Classes" and ask about the week.
+8. Airplane mode → a clear "couldn't reach the provider" message.
+
+## Android phone test of 0.4.0 (owner)
 
 Use the account you already use on the iPhone (same Supabase project). The built-in Supabase email only reaches the
 project team's addresses, a few an hour, so a brand-new account with another address won't get its email.
@@ -45,9 +78,45 @@ project team's addresses, a few an hour, so a brand-new account with another add
    come back. **Don't test Delete Account with your real account** (it deletes the iPhone's progress too).
 9. Statistics, search (English, prefix or Chinese), hard words; Chinese and dark mode if you use them.
 
-## Handoff prompt for the next session
+## Handoff prompts
 
-> Copy the whole block into a new Claude Code session opened in `D:\Projects\CourseTable`.
+> Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A is next** (the owner's
+> latest request); B is the Android track.
+
+### A. The AI agent (iOS 0.5)
+
+```
+[PROJECT HANDOFF] CourseTable — the AI agent: reminders, vocabulary progress, timetable from a photo (iOS 0.5)
+
+## Read first
+HANDOFF.md (status, facts, gotchas), docs/ai-agent-spec.md (the request, decisions, tools, protocol, stages, the
+questions to ask me), docs/ai-spec.md (AI help as built in 0.4.0), README "AI help" and "Import format",
+spec/fixtures/README.md.
+
+## Goal
+0. Ask me how the iOS 0.4.0 AI help test went (HANDOFF checklist) and fix what I report first.
+1. Ask me the three questions in docs/ai-agent-spec.md §9 (one AskUserQuestion, recommendations first).
+2. Build the agent in the spec's stages: AIKit (tool calls in both wire formats, agent loop, validation, OCR line
+   formatting) with tests and shared fixtures → the app (tool executors, proposal cards with Confirm/Undo, the
+   Assistant with tools, capability flags, demo transport scripts, UI tests + screenshots) → timetable from a photo
+   (image path and on-device OCR path → CSV → the existing import preview) → Analyse My Progress, strings, docs.
+3. Bump to 0.5.0 (build 7), build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give me a device-test
+   checklist.
+
+## Decided with me — don't reverse; ask if unsure
+Everything in docs/ai-spec.md §1 (bring your own key, requests straight to the provider, no server, keys in the
+Keychain, AI optional, answers labelled). The agent changes nothing without my tap. Swift + SwiftUI only; logic in the
+CourseKit package (AIKit target) with tests that run on Windows (`swift test` in CourseKit/); the app compiles on
+GitHub Actions only. Never put a real API key in code, tests, CI or chat.
+
+## How to work
+Logic first in AIKit with tests (and spec/fixtures cases for the later Android port), then the app; push to main
+(iOS CI builds and runs the app tests), dispatch screenshots.yml with only=CourseTableUITests/AIUITests (and new
+agent tests), download the screenshots and look at them (they found real bugs in 0.4.0). Use the Write/Edit tools for
+code, never Python with backslashes through a bash heredoc. Short report at the end of each stage with run links.
+```
+
+### B. Android: the owner's results for 0.4.0 (Words), then stage 7
 
 ```
 [PROJECT HANDOFF] CourseTable — Android: the owner's results for 0.4.0 (Words), then stage 7 (release)
@@ -150,15 +219,24 @@ links.
 - Never round-trip UTF-8 files through PowerShell 5.1; write helper scripts with the Write tool and run them with python.
 - Commit email for this repo is set per repo (253035987+Hilbert0619@users.noreply.github.com).
 
-## The iOS app (reference; change it only when I ask)
+## The iOS app (change it only when I ask; the AI agent is asked for)
 
 - Swift 6 + SwiftUI + SwiftData + WidgetKit + ActivityKit, iOS 17+. Tabs: Today, Timetable, Focus, Words, Settings.
-- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.3.1 / 5 now),
+- AI code: `CourseKit/Sources/AIKit` (presets, requests, SSE parser, stream decoding, errors, prompts, TodoDraft,
+  MarkdownBlock, SentenceWords; 26 tests) and `CourseTable/AI` (AIStore with Keychain keys, usage, saved answers and
+  chats; AITransport with `DemoAITransport` for `-aiDemo`; AIRun with a generation token; settings, word help, study
+  tools, TextScanner, AssistantView). UI tests `CourseTableUITests/AIUITests.swift`.
+- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.4.0 / 6 now),
   `gh workflow run ipa.yml`, download to `C:\Users\AI\Downloads\CourseTable\CourseTable-<version>.ipa`, installed
   with iloader.
-- Loose ends (when I ask): my device test of 0.3.1; `docs/v3-development-record.md`; later Words items and the
-  timetable backlog (long words in grid blocks, dark-mode screenshots, "All weeks" view, per-course reminder mute,
-  school import, multiple terms).
+- Gotchas from the AI work: List rows off screen aren't in the XCUITest tree (scroll first; the first cell can be a
+  section header, so tap rows by identifier); a sheet's `.task` can run twice; `@AppStorage` drafts survive between
+  UI-test launches (`AIStore.makeForLaunch` clears them); PowerShell's execution policy blocks `.ps1` scripts (CI
+  waits use a bash loop calling gh).
+- Loose ends (when I ask): `docs/v3-development-record.md` (and a v0.4 record); the release fixes (debug APK in the
+  public release, tags at the wrong commit, no LICENSE, no third-party notices); later Words items and the timetable
+  backlog (long words in grid blocks, dark-mode screenshots, "All weeks" view, per-course reminder mute, school
+  import, multiple terms).
 
 ## How I like to work
 

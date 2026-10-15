@@ -81,6 +81,9 @@ home screen and the Assistant. UI tests: `CourseTableUITests/AIUITests.swift` (s
 
 Android: the same features as a stage after its release (stage 7), porting AIKit to `android/core`.
 
+Next (requested 2026-10-15): the AI agent — to-dos, vocabulary progress and timetables from photos through tool
+calling, every change confirmed by the user: [`ai-agent-spec.md`](ai-agent-spec.md).
+
 ## 6. Notes
 
 - Provider URLs and suggested models were checked on 2026-10-12 (e.g. DeepSeek's `deepseek-chat` is deprecated in
