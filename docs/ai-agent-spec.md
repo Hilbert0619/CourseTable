@@ -102,6 +102,11 @@ characters with "…and N more". The exact texts are in `spec/fixtures/ai-agent-
 
 ## 6. Presets: tool calling and images (searched 2026-10-15; verify when building)
 
+As built (`AIProvider.presets`): every preset offers tools except where a connection turns them off; the main model
+reads pictures for Kimi, OpenAI, Claude and Gemini; photo models `qwen3-vl-plus` (Qwen) and `glm-4.6v-flash` (GLM);
+DeepSeek has none (its vision model is experimental), so its photos are read on the device. The owner's device test
+should confirm the GLM and Qwen photo model names.
+
 | Provider | Tools | Images |
 |---|---|---|
 | DeepSeek | yes (`deepseek-v4-flash`, `-pro`) | only `deepseek-v4-flash-vision-exp` (experimental, Aug 2026; text models answer 400 to images) |
@@ -122,14 +127,35 @@ characters with "…and N more". The exact texts are in `spec/fixtures/ai-agent-
 
 ## 8. Stages (iOS first; Android after its release stage)
 
-1. AIKit: message parts, tool definitions and validation, tool-call stream decoding and follow-up requests (both
-   formats), image parts, the agent loop, OCR line formatting; fixtures and tests.
-2. App: tool executors, proposal cards and undo, the Assistant with tools, capability flags and the tool check, demo
+1. ✓ AIKit: message parts, tool definitions and validation, tool-call stream decoding and follow-up requests (both
+   formats), image parts, the agent loop, OCR line formatting; fixtures and tests (270a976).
+2. ✓ App: tool executors, proposal cards and undo, the Assistant with tools, capability flags and the tool check, demo
    transport scripts, UI tests and screenshots.
-3. Timetable from a photo: Vision OCR with positions, the image path, CSV → the import preview, period times.
-4. Analyse My Progress, polish, strings (zh-Hans), docs, IPA 0.5.0 → the owner's device test.
+3. ✓ Timetable from a photo: Vision OCR with positions, the image path, CSV → the import preview, period times.
+4. ✓ Analyse My Progress, polish, strings (zh-Hans), docs, IPA 0.5.0 (build 7) → the owner's device test.
 
-## 9. Ask the owner first (recommendations first)
+Where things are (as built 2026-10-15):
+
+- AIKit: `JSONValue`, `AITool` (parameters → JSON Schema, `validate`), `AIRequest` (messages with pictures, tool
+  calls and results, reasoning, thinking blocks; `trimmed` keeps whole turns), `AIStream` (tool-call events in both
+  formats), `AIAgentSession` (the loop as plain state), `AppTools` (definitions, reading answers, proposals over an
+  `AgentWorld` snapshot), `TimetablePhoto` (OCR position lines; CSV and period times from an answer), prompts in
+  `AIPrompts` (`assistant(… usesTools:)`, `timetableFromPhoto`, `photoText`, `toolTest`, `imageTest`).
+- App (`CourseTable/AI`): `AgentRun` (rounds through `AIRun`; cards; confirm / cancel / undo; `AgentContext` builds the
+  world and applies changes), `AssistantView` (rows, cards, suggestions, photo attachments), `TimetablePhotoReader`
+  (picture model or on-device text), `ImportView` (From a Photo (AI), period times, the Assistant's preview),
+  `AISettingsView` (Tools / Photos switches, photo model, tool and photo checks), `VocabStatsView` (Analyse My
+  Progress). `DemoAITransport` scripts the tool calls for `-aiDemo`; `-aiDemoPhoto` offers a drawn sample timetable.
+- Thinking blocks (Anthropic) live only within a turn and are never saved; `reasoning_content` (DeepSeek and others)
+  is kept with each answer and sent back, which DeepSeek requires once tools are on. A provider that rejects the
+  tools turns them off for that chat; a rejected thinking signature is retried once without thinking blocks.
+- Tests: AIKit `AIAgentTests`, `AIAgentFixtureTests` (+ `spec/fixtures/ai-tool-*.json`, `ai-agent-tools.json`,
+  `ai-timetable-photo.json`); app `AgentRunTests`; UI `AgentUITests` (screenshots `*-agent-*`).
+
+## 9. Ask the owner first (answered 2026-10-15)
+
+The owner chose: 1. confirm every change with a tap; 2. on-device OCR with positions for text-only models; 3. to-dos
+and adding courses, **plus starting Focus** (vocabulary settings later). The questions as asked:
 
 1. **Changes**: confirm every change with a tap (recommended), or let the model add to-dos directly?
 2. **Photos with a text-only model**: on-device OCR with positions (recommended; works with DeepSeek's text model),

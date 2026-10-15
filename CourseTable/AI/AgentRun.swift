@@ -280,6 +280,8 @@ final class AgentRun {
         changes[id] = nil
         undos[id] = .deleteCourses(added.map(\.id))
         conversation.cards[id]?.state = .confirmed
+        conversation.cards[id]?.lines = [String(localized: "\(added.count) courses added")]
+            + (skipped > 0 ? [String(localized: "\(skipped) already in your timetable")] : [])
         session.resolve(id, content: AppTools.importedResult(added: added.count, skipped: skipped))
         save(store)
         nextRound(store: store, context: context)
@@ -353,10 +355,15 @@ extension AgentCard {
             if problems > 0 { lines.append(String(localized: "\(problems) lines can't be read")) }
         case .startFocus(let goal, let settings):
             let length = Duration.seconds(settings.totalMinutes * 60).formatted(.units(allowed: [.hours, .minutes], width: .wide))
-            let rhythm = settings.usesBreaks
-                ? String(localized: "\(settings.focusMinutes)-minute blocks with breaks")
-                : String(localized: "No breaks")
-            lines = [goal, "\(length) · \(rhythm)"].filter { !$0.isEmpty }
+            // Breaks only come between blocks, so a session no longer than one block has none.
+            let rhythm: String? = if !settings.usesBreaks {
+                String(localized: "No breaks")
+            } else if settings.totalMinutes > settings.focusMinutes {
+                String(localized: "\(settings.focusMinutes)-minute blocks with breaks")
+            } else {
+                nil
+            }
+            lines = [goal, [length, rhythm].compactMap { $0 }.joined(separator: " · ")].filter { !$0.isEmpty }
         }
         return AgentCard(id: id, tool: tool, title: title(of: tool), lines: lines, state: .waiting)
     }

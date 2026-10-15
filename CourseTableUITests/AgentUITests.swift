@@ -78,6 +78,7 @@ final class AgentUITests: XCTestCase {
             XCTAssertTrue(element(app, "photoDone").waitForExistence(timeout: 30), "The photo wasn't read into courses")
             snapshot(app, "\(language)-agent-7-import-photo")
             let periods = element(app, "usePhotoPeriods")
+            app.swipeUp()
             for _ in 0..<4 where !(periods.exists && periods.isHittable) { app.swipeUp() }
             XCTAssertTrue(periods.exists, "The photo's period times aren't offered")
             snapshot(app, "\(language)-agent-7-import-photo-periods")

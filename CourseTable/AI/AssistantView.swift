@@ -541,7 +541,11 @@ struct AgentCardView: View {
 
     private var proposal: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label { Text(verbatim: card.title).font(.headline) } icon: { Image(systemName: icon) }
+            Label {
+                Text(verbatim: card.title).font(.headline)
+            } icon: {
+                Image(systemName: icon).foregroundStyle(Color.accentColor)
+            }
             ForEach(Array(card.lines.enumerated()), id: \.offset) { index, line in
                 Text(verbatim: line)
                     .font(index == 0 ? .body : .subheadline)
