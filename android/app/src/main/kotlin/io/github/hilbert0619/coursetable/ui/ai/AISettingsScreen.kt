@@ -339,8 +339,8 @@ fun AIConnectionEditor(store: AIStore, connection: AIConnection?, onDismiss: () 
                     OutlinedTextField(
                         value = key,
                         onValueChange = { key = it },
-                        label = { Text(stringResource(R.string.ai_api_key)) },
-                        placeholder = { Text(stringResource(if (hasStoredKey) R.string.ai_key_saved else R.string.ai_api_key)) },
+                        // An empty field shows its label, so a saved key is mentioned there.
+                        label = { Text(stringResource(if (hasStoredKey) R.string.ai_key_saved else R.string.ai_api_key)) },
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false),

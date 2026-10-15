@@ -143,6 +143,7 @@ class AIScreenshotTests {
         compose.onNodeWithText("Test Connection").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Tools work: the model called the test tool.").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Connected. The model answered.").assertExists()
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText("Delete Connection"))
         capture()
     }
 
