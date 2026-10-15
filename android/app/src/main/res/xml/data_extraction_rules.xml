@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 and newer: cloud backups and device transfers leave out the AI connections' encrypted keys (they can
+     only be read with a key that stays in this phone's Keystore). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="ai_keys.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="ai_keys.xml" />
+    </device-transfer>
+</data-extraction-rules>

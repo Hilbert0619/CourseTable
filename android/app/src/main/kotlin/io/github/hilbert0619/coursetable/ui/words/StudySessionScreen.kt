@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursekit.TimeOfDay
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ui.ai.WhyWrongButton
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
@@ -273,7 +274,10 @@ private fun ChoiceQuestionView(entry: WordEntry, question: ChoiceQuestion, onDon
     }
     val chosen = picked
     if (chosen != null) {
-        if (chosen != question.correctIndex) MeaningsView(entry, Modifier.fillMaxWidth())
+        if (chosen != question.correctIndex) {
+            MeaningsView(entry, Modifier.fillMaxWidth())
+            WhyWrongButton(entry, picked = question.options[chosen])
+        }
         ContinueButton { onDone(question.isCorrect(chosen)) }
     }
 }
@@ -318,6 +322,7 @@ private fun SpellingQuestion(entry: WordEntry, onDone: (Answer.SpellingResult) -
     val outcome = result
     if (outcome != null) {
         SpellingResultView(entry, typed, outcome)
+        if (outcome == Answer.SpellingResult.WRONG) WhyWrongButton(entry, typed = typed)
         ContinueButton { onDone(outcome) }
     } else {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

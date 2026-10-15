@@ -35,6 +35,9 @@ import io.github.hilbert0619.coursetable.alerts.ReminderSettings
 import io.github.hilbert0619.coursetable.alerts.SystemSettings
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
+import io.github.hilbert0619.coursetable.ui.ai.AISettingsScreen
+import io.github.hilbert0619.coursetable.ui.ai.LocalAI
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.DayPickerDialog
 import io.github.hilbert0619.coursetable.ui.components.MenuRow
@@ -54,6 +57,8 @@ import java.io.File
 fun SettingsScreen(timetable: Timetable, reminders: ReminderSettings, actions: AppActions, modifier: Modifier = Modifier) {
     var editingPeriods by rememberSaveable { mutableStateOf(false) }
     var showingReliable by rememberSaveable { mutableStateOf(false) }
+    var showingAI by rememberSaveable { mutableStateOf(false) }
+    val ai = LocalAI.current
     when {
         editingPeriods -> {
             BackHandler { editingPeriods = false }
@@ -63,9 +68,13 @@ fun SettingsScreen(timetable: Timetable, reminders: ReminderSettings, actions: A
             BackHandler { showingReliable = false }
             ReliableRemindersScreen(actions, onBack = { showingReliable = false }, modifier = modifier)
         }
+        showingAI && ai != null -> {
+            BackHandler { showingAI = false }
+            AISettingsScreen(ai, onBack = { showingAI = false }, modifier = modifier)
+        }
         else -> SettingsList(
             timetable, reminders, actions, onEditPeriods = { editingPeriods = true }, onShowReliable = { showingReliable = true },
-            modifier = modifier,
+            onShowAI = { showingAI = true }, modifier = modifier,
         )
     }
 }
@@ -77,6 +86,7 @@ private fun SettingsList(
     actions: AppActions,
     onEditPeriods: () -> Unit,
     onShowReliable: () -> Unit,
+    onShowAI: () -> Unit,
     modifier: Modifier,
 ) {
     val names = rememberNames()
@@ -111,6 +121,13 @@ private fun SettingsList(
             }
 
             ReminderSection(reminders, actions, onShowReliable)
+
+            LocalAI.current?.let { ai ->
+                val aiState by ai.state.collectAsStateWithLifecycle()
+                Section(footer = stringResource(R.string.ai_settings_footer)) {
+                    ValueRow(stringResource(R.string.ai_help), aiState.defaultConnection?.name ?: stringResource(R.string.status_off), onClick = onShowAI)
+                }
+            }
 
             Section(title = stringResource(R.string.about)) {
                 ValueRow(stringResource(R.string.version), BuildConfig.VERSION_NAME)

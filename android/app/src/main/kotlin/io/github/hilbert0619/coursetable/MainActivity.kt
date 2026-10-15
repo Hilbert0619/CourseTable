@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,6 +20,7 @@ import io.github.hilbert0619.coursetable.alerts.Alerts
 import io.github.hilbert0619.coursetable.ui.AppViewModel
 import io.github.hilbert0619.coursetable.ui.RootScreen
 import io.github.hilbert0619.coursetable.ui.Tab
+import io.github.hilbert0619.coursetable.ui.ai.LocalAI
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
 import io.github.hilbert0619.coursetable.ui.words.WordsController
 import io.github.hilbert0619.vocabkit.AuthLink
@@ -51,11 +53,13 @@ class MainActivity : ComponentActivity() {
                 val data by viewModel.data.collectAsStateWithLifecycle()
                 val focus by app.focus.state.collectAsStateWithLifecycle()
                 val reminders by app.alertPreferences.settings.collectAsStateWithLifecycle()
-                RootScreen(
-                    data, viewModel,
-                    focus = focus, focusActions = app.focus, reminders = reminders, words = words,
-                    requestedTab = requestedTab, onTabShown = { requestedTab = null },
-                )
+                CompositionLocalProvider(LocalAI provides app.ai) {
+                    RootScreen(
+                        data, viewModel,
+                        focus = focus, focusActions = app.focus, reminders = reminders, words = words,
+                        requestedTab = requestedTab, onTabShown = { requestedTab = null },
+                    )
+                }
             }
         }
     }

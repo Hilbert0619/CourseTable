@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older: back up everything except the AI connections' encrypted keys (they can only be read with a
+     key that stays in this phone's Keystore). -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="ai_keys.xml" />
+</full-backup-content>

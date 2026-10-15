@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.platform.LocalContext
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ui.ai.WordAISection
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
@@ -113,6 +114,7 @@ fun WordDetailScreen(headword: String, onBack: () -> Unit, modifier: Modifier = 
             if (entry.forms.isNotEmpty()) {
                 Section(title = stringResource(R.string.forms)) { FormsView(entry, Modifier.padding(16.dp)) }
             }
+            WordAISection(entry)
             AboutSection(entry)
             ProgressSection(entry)
         }

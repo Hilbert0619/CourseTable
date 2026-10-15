@@ -2,6 +2,7 @@ package io.github.hilbert0619.coursetable
 
 import android.app.Application
 import android.util.Log
+import io.github.hilbert0619.coursetable.ai.AIStore
 import io.github.hilbert0619.coursetable.alerts.AlertPreferences
 import io.github.hilbert0619.coursetable.alerts.Alerts
 import io.github.hilbert0619.coursetable.alerts.Channels
@@ -50,6 +51,9 @@ class StudyHourApp : Application() {
     val vocabIfCreated: VocabApp? get() = if (vocabLazy.isInitialized()) vocab else null
 
     val pronunciation: Pronunciation by lazy { Pronunciation(this) }
+
+    /** AI help: the user's connections (keys in the Android Keystore) and saved answers. */
+    val ai: AIStore by lazy { AIStore.create(this) }
 
     override fun onCreate() {
         super.onCreate()
