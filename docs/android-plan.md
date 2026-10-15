@@ -136,19 +136,19 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   speech, favourites, hard words, settings, statistics, sync, sign out and delete account. Account and sync logic in
   `android/core` (`VocabApp`, `SyncEngine`, `VocabModel`, `VocabStore`; 340 core tests), Room store `vocabulary.db`
   (v1), `SupabaseBackend` on supabase-kt 3.8.0 + Ktor 3.5.1 (OkHttp); 13 Words screenshots. APK 0.4.0 (4),
-  **tested on the phone by the owner (2026-10-15): no major issues**, but the live class notification never showed in
-  vivo's Atom Island (原子岛).
-- **0.4.1 (5), 2026-10-15: the Atom Island.** Android 16 has two promotion rule sets, picked by the platform flag
-  `ui_rich_ongoing`: the Live Update rules (asks for promotion, *not* colorized) and the first Android 16 release's
-  (colorized, no style or a promotable one). Our notifications suited only the first, so a build with the original
-  rules never promoted them. `LiveUpdates.build` now asks the phone's own `hasPromotableCharacteristics()` and posts
+  **tested on the phone by the owner (2026-10-15): no major issues**. Users reported (second-hand, phones and OriginOS
+  versions unknown) that vivo's Atom Island (原子岛) doesn't display StudyHour correctly; the owner hasn't seen it.
+- **0.4.1 (5), 2026-10-15: the Atom Island, both likely causes.** Android 16 has two promotion rule sets, picked by
+  the platform flag `ui_rich_ongoing`: the Live Update rules (asks for promotion, *not* colorized) and the first Android
+  16 release's (colorized, no style or a promotable one). Our notifications met only the Live Update rules, so a build
+  with the original rules never promoted them (nothing in the island). `LiveUpdates.build` now asks the phone's own `hasPromotableCharacteristics()` and posts
   the colorized variant when only that qualifies. The vivo, OPPO and Xiaomi islands ignore the countdown chronometer
   (they show the app name; measured by tigerduck-app/android-dynamic-island-test), so there the class and focus
   notifications carry "25 min" as short critical text, posted again at each minute by a non-waking exact alarm
   (`IslandCountdown`). Settings → Reliable Reminders → Send a Test Live Update shows whether the system promoted it.
   vivo's own 原子通知 API (`notification.superx.*` extras) is not used: it needs access granted by vivo by email.
-  **To be checked on the phone by the owner** (checklist in `HANDOFF.md`).
-- **Next: the owner's island check of 0.4.1, then stage 7 (release)** — see `HANDOFF.md`.
+  **Not yet confirmed on a phone** (checklist in `HANDOFF.md`: the owner's iQOO Neo 9 or a user's phone).
+- **Next: the island check of 0.4.1, then stage 7 (release)** — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 

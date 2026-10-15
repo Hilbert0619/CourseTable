@@ -24,15 +24,17 @@ Handoff prompt A below picks up the owner's results.
 - **Android (StudyHour / 学时)**: stages 1–6 of [`docs/android-plan.md`](docs/android-plan.md) §7 are on `main`.
   - Stage 4 (alerts, Focus, Reliable Reminders): APK 0.3.0, **tested on the phone by the owner: no issues**.
   - Stage 5: VocabKit ported to `android/core` with shared cases `spec/fixtures/vocab-*.json`.
-  - Stage 6 (the Words tab): APK 0.4.0, **tested on the phone by the owner (2026-10-15): no major issues**, except that
-    the live class notification never showed in vivo's Atom Island (原子岛).
-  - **0.4.1 (versionCode 5), 2026-10-15: the Atom Island fix, waiting for the owner's island check.** APK
-    `C:\Users\AI\Downloads\CourseTable\StudyHour-0.4.1-debug-28.apk` (installs over 0.4.0). Cause: Android 16 has two
-    promotion rule sets (platform flag `ui_rich_ongoing`: not colorized vs colorized); our notifications only suited the
-    first. `LiveUpdates.build` now lets the phone's `hasPromotableCharacteristics()` pick; vivo/OPPO/Xiaomi islands get
-    "25 min" text refreshed each minute; Settings → Reliable Reminders → Send a Test Live Update reports what the
-    system did. CI: branch 38784060888 (`android-island`), main 38784460423. Details: `docs/android-plan.md` §8.
-    Checklist below.
+  - Stage 6 (the Words tab): APK 0.4.0, **tested on the phone by the owner (2026-10-15): no major issues**.
+  - **Users report** (second-hand, 2026-10-15; the owner hasn't seen it on their own phone) that the Atom Island (原子岛)
+    on vivo/iQOO "doesn't display correctly". Phone models, OriginOS versions and the exact symptom are not known yet.
+  - **0.4.1 (versionCode 5), 2026-10-15: a fix for both likely causes, not yet confirmed on a phone.** APK
+    `C:\Users\AI\Downloads\CourseTable\StudyHour-0.4.1-debug-28.apk` (installs over 0.4.0). (1) *Nothing in the
+    island*: Android 16 has two promotion rule sets (platform flag `ui_rich_ongoing`: must not be colorized vs must be
+    colorized) and our notifications only met the not-colorized one; `LiveUpdates.build` now lets the phone's
+    `hasPromotableCharacteristics()` pick. (2) *The app name instead of the countdown*: vivo/OPPO/Xiaomi islands ignore
+    the chronometer, so they now get "25 min" text refreshed each minute. Settings → Reliable Reminders → Send a Test
+    Live Update reports what the system did. CI: branch 38784060888 (`android-island`), main 38784460423. Details:
+    `docs/android-plan.md` §8. Checklist below.
 - **iOS**: 0.3.1 passed the owner's device test (2026-10-11); the owner published GitHub Releases themselves (IPAs
   0.1.0–0.3.1 and the Android 0.4.0 *debug* APK renamed `StudyHour-0.3.1.apk`; every tag points at e6479e7, not the
   build commits; no LICENSE yet). Those release fixes wait for the owner's OK. `docs/v3-development-record.md` is still
@@ -65,10 +67,12 @@ that calls tools: DeepSeek (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or
 8. Earlier Chats: reopen the chat; cards keep their state. Airplane mode: a clear error and Try Again.
 9. Anything odd: note the provider and model, what you asked, and what the card or answer said.
 
-## Android 0.4.1 Atom Island check (owner)
+## Android 0.4.1 Atom Island check (the owner's iQOO Neo 9, or a user's vivo/iQOO phone)
 
-Install `StudyHour-0.4.1-debug-28.apk` over 0.4.0 (everything stays). The island hides while StudyHour itself is on
-screen, so always go to the Home Screen to look.
+Before updating, on 0.4.0: start a Focus session, go to the Home Screen and note what the island shows (this
+reproduces the users' report on a known phone). Then install `StudyHour-0.4.1-debug-28.apk` over 0.4.0 (everything
+stays). The island hides while StudyHour itself is on screen, so always go to the Home Screen to look. From a user, also
+get the phone model and the OriginOS version (设置 → 系统升级, or 关于手机).
 1. Settings → Reminders → Reliable Reminders: the **实时更新 / Live Updates** row says 已允许 / Allowed (if not, tap it).
 2. At the bottom: **发送测试实时更新 / Send a Test Live Update** → go to the Home Screen: the island should show the
    StudyHour icon and "2 分钟". Come back: the line under the button says whether the phone made it a Live Update, plus
@@ -115,18 +119,19 @@ green, fast-forward main. Use the Write/Edit tools (or Python scripts written wi
 backslashes through a bash heredoc. Short report at the end with run links.
 ```
 
-### B. Android: the owner's Atom Island check of 0.4.1, then stage 7
+### B. Android: the Atom Island check of 0.4.1, then stage 7
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the owner's Atom Island check of 0.4.1, then stage 7 (release)
+[PROJECT HANDOFF] CourseTable — Android: the Atom Island check of 0.4.1, then stage 7 (release)
 
 ## Read first
 HANDOFF.md (status, the 0.4.1 checklist, facts, gotchas), docs/android-plan.md (§1 decisions, §7 stages, §8 progress
 incl. the 0.4.1 entry), android/README.md ("Live Updates and the brands' islands"), app/…/alerts/LiveUpdates.kt.
 
 ## Goal
-1. I tell you how the 0.4.1 island check went (with the Reliable Reminders screenshot): fix what I report on a branch
-   (CI green, then fast-forward main, new APK, versionCode +1).
+1. I tell you how the 0.4.1 island check went, on my phone or from users (the island report came from users; I may
+   only have their words and screenshots, and their phone model and OriginOS version): fix what's reported on a
+   branch (CI green, then fast-forward main, new APK, versionCode +1).
 2. Stage 7 (release): a signed release APK. Ask me first how the release keystore is made and kept (it will be a repo
    secret I set myself; switching from the debug key means one uninstall, data moves by CSV export and the Words
    account), the version number and the release notes. Then docs: an Android development record
