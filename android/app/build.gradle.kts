@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    // The AI store's saved connections, usage and answers (JSON).
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
