@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import UIKit
 import AIKit
 import CourseKit
 import VocabKit

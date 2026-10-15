@@ -41,6 +41,44 @@
         }
       }
     },
+    "%@: not possible" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：无法完成"
+          }
+        }
+      }
+    },
+    "%lld already in your timetable" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld already in your timetable"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld already in your timetable"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 门已在课程表中"
+          }
+        }
+      }
+    },
     "%lld already in your timetable and will be skipped." : {
       "localizations" : {
         "zh-Hans" : {
@@ -183,6 +221,34 @@
         }
       }
     },
+    "%lld lines can't be read" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld line can't be read"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lines can't be read"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 行无法读取"
+          }
+        }
+      }
+    },
     "%lld min" : {
       "localizations" : {
         "zh-Hans" : {
@@ -307,6 +373,16 @@
         }
       }
     },
+    "%lld-minute blocks with breaks" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每段 %lld 分钟，含休息"
+          }
+        }
+      }
+    },
     "+%lld more" : {
       "localizations" : {
         "zh-Hans" : {
@@ -333,6 +409,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "第三人称单数"
+          }
+        }
+      }
+    },
+    "A photo or screenshot of your timetable becomes courses for you to check." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把课程表的照片或截图变成课程，供你核对。"
+          }
+        }
+      }
+    },
+    "A timetable photo goes to the provider only when you choose one. For a model that can't read photos, this iPhone reads the text and sends only the text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有你选择课程表照片时，照片才会发送给服务商。如果模型不能识别图片，这台 iPhone 会先识别文字，只发送文字。"
           }
         }
       }
@@ -383,6 +479,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AI 生成 · %@"
+          }
+        }
+      }
+    },
+    "AI-generated · %@. Check every course before importing." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 生成 · %@。导入前请逐一核对。"
           }
         }
       }
@@ -487,6 +593,16 @@
         }
       }
     },
+    "Add Courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加课程"
+          }
+        }
+      }
+    },
     "Add Courses…" : {
       "localizations" : {
         "zh-Hans" : {
@@ -513,6 +629,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加待办"
+          }
+        }
+      }
+    },
+    "Add a Photo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加照片"
           }
         }
       }
@@ -663,6 +789,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分析"
+          }
+        }
+      }
+    },
+    "Analyse My Progress" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析我的进度"
+          }
+        }
+      }
+    },
+    "Analyse my vocabulary progress: how am I doing, which words do I keep forgetting, and will I finish the book before the exam?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析一下我的单词学习进度：学得怎么样，哪些词总是忘，考试前能学完整本词书吗？"
           }
         }
       }
@@ -937,12 +1083,32 @@
         }
       }
     },
+    "Cancelled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已取消"
+          }
+        }
+      }
+    },
     "Chance of recall today" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天记得的概率"
+          }
+        }
+      }
+    },
+    "Change To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修改待办"
           }
         }
       }
@@ -963,6 +1129,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分析前请检查扫描出的文字：相机可能会认错字母。"
+          }
+        }
+      }
+    },
+    "Check the Courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "核对课程"
           }
         }
       }
@@ -1193,6 +1369,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辨析"
+          }
+        }
+      }
+    },
+    "Confirm" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确认"
           }
         }
       }
@@ -1955,6 +2141,16 @@
         }
       }
     },
+    "From a Photo (AI)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从照片导入（AI）"
+          }
+        }
+      }
+    },
     "From week %lld" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2031,6 +2227,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记录"
+          }
+        }
+      }
+    },
+    "How are my words going?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的单词学得怎么样？"
           }
         }
       }
@@ -2373,6 +2579,96 @@
         }
       }
     },
+    "Looked at your classes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的课程安排"
+          }
+        }
+      }
+    },
+    "Looked at your courses" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的课程"
+          }
+        }
+      }
+    },
+    "Looked at your focus sessions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的专注记录"
+          }
+        }
+      }
+    },
+    "Looked at your hard words" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的难词"
+          }
+        }
+      }
+    },
+    "Looked at your study history" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的学习记录"
+          }
+        }
+      }
+    },
+    "Looked at your to-dos" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的待办"
+          }
+        }
+      }
+    },
+    "Looked at your vocabulary progress" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看了你的单词学习进度"
+          }
+        }
+      }
+    },
+    "Looked up a word" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查了一个单词"
+          }
+        }
+      }
+    },
+    "Looked up “%@”" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查了“%@”"
+          }
+        }
+      }
+    },
     "Mark My Essay" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2469,6 +2765,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "模型"
+          }
+        }
+      }
+    },
+    "Model Reads Photos" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型可识别图片"
           }
         }
       }
@@ -2783,6 +3089,16 @@
         }
       }
     },
+    "No breaks" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不休息"
+          }
+        }
+      }
+    },
     "No class called “%@” in your timetable, so the time was left open." : {
       "localizations" : {
         "zh-Hans" : {
@@ -2853,6 +3169,16 @@
         }
       }
     },
+    "No text found in the photo." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片中没有找到文字。"
+          }
+        }
+      }
+    },
     "No upcoming classes" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2869,6 +3195,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "该周次范围内没有符合单双周设置的周。"
+          }
+        }
+      }
+    },
+    "None" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无"
           }
         }
       }
@@ -3243,6 +3579,16 @@
         }
       }
     },
+    "Period Times in the Photo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片中的节次时间"
+          }
+        }
+      }
+    },
     "Period times" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3279,6 +3625,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "照片"
+          }
+        }
+      }
+    },
+    "Photo Model" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图片模型"
+          }
+        }
+      }
+    },
+    "Photos work: the model read the test picture." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图片可用：模型识别出了测试图片。"
           }
         }
       }
@@ -3403,6 +3769,16 @@
         }
       }
     },
+    "Reading the text in the photo…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在识别照片中的文字…"
+          }
+        }
+      }
+    },
     "Recall and rate" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3433,12 +3809,32 @@
         }
       }
     },
+    "Remind me to hand in the paper after class tomorrow" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒我明天下课后交论文"
+          }
+        }
+      }
+    },
     "Reminders" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除"
           }
         }
       }
@@ -3533,6 +3929,16 @@
         }
       }
     },
+    "Replaces the class times in Settings when you import." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入时会替换设置中的上课时间。"
+          }
+        }
+      }
+    },
     "Reset" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3623,6 +4029,16 @@
         }
       }
     },
+    "Review…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看…"
+          }
+        }
+      }
+    },
     "Room" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3639,6 +4055,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "超出学期结束（第 %lld 周）。"
+          }
+        }
+      }
+    },
+    "Sample" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "示例"
           }
         }
       }
@@ -3913,12 +4339,32 @@
         }
       }
     },
+    "Start Focus" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始专注"
+          }
+        }
+      }
+    },
     "Start Focusing" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始专注"
+          }
+        }
+      }
+    },
+    "Start a 25-minute focus session" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始 25 分钟专注"
           }
         }
       }
@@ -4321,6 +4767,16 @@
         }
       }
     },
+    "Text from a photo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片中的文字"
+          }
+        }
+      }
+    },
     "That doesn't look like an email address." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4361,6 +4817,36 @@
         }
       }
     },
+    "The Assistant can look at your to-dos, classes, focus sessions and vocabulary progress to answer, sending what it looks at to %@. It suggests changes as cards; nothing changes until you tap Confirm." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助手可以查看你的待办、课程、专注记录和单词进度来回答，查看的内容会发送给 %@。它会用卡片提出修改，你点“确认”之前不会有任何改动。"
+          }
+        }
+      }
+    },
+    "The Assistant reads these numbers and your hard words, and explains how you're doing." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助手会读取这些数据和你的难词，解释你的学习情况。"
+          }
+        }
+      }
+    },
+    "The Assistant stopped after too many steps. Ask again to go on." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助手执行的步骤太多，已停止。再问一次即可继续。"
+          }
+        }
+      }
+    },
     "The Words home screen counts down to it and estimates the pace you need." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4377,6 +4863,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "地址不是有效的 http(s) 网址。"
+          }
+        }
+      }
+    },
+    "The answer had no courses in it. Try a clearer photo." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回答里没有课程。换一张更清晰的照片试试。"
           }
         }
       }
@@ -4427,6 +4923,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "结束周不能早于开始周。"
+          }
+        }
+      }
+    },
+    "The model couldn't read the test picture. Turn off Model Reads Photos or choose another photo model." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型没能识别测试图片。请关闭“模型可识别图片”或换一个图片模型。"
+          }
+        }
+      }
+    },
+    "The model didn't call the test tool, so the Assistant may not manage the app's tools with it." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型没有调用测试工具，助手用它可能无法正常使用应用工具。"
+          }
+        }
+      }
+    },
+    "The photo goes to %@, which writes the courses below for you to check." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片会发送给 %@，由它把课程写在下方供你核对。"
           }
         }
       }
@@ -4649,12 +5175,42 @@
         }
       }
     },
+    "This iPhone reads the text in the photo; the text goes to %@, which writes the courses below for you to check." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 iPhone 先识别照片中的文字，再把文字发送给 %@，由它把课程写在下方供你核对。"
+          }
+        }
+      }
+    },
     "This link has expired or was already used. Ask for a new one." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "这个链接已过期或已被使用，请重新获取。"
+          }
+        }
+      }
+    },
+    "This model can't use the app's tools, so this chat goes on without them. Pick another model in Settings → AI Help." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个模型不能使用应用的工具，本次对话将不用工具继续。可以在“设置 → AI 帮助”里换一个模型。"
+          }
+        }
+      }
+    },
+    "This model can't use tools, so Tools is now off." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个模型不能使用工具，已关闭“使用应用工具”。"
           }
         }
       }
@@ -4807,6 +5363,26 @@
         }
       }
     },
+    "Tools let the Assistant look at your to-dos, classes, focus and vocabulary numbers and suggest changes; they need a model that can call tools. Timetable photos go to a model that reads photos (this one, or the photo model); without one, this iPhone reads the text and sends only the text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具让助手可以查看你的待办、课程、专注和单词数据，并提出修改；需要支持工具调用（function calling）的模型。课程表照片会发送给能识别图片的模型（本模型或图片模型）；如果没有，这台 iPhone 会先识别文字，只发送文字。"
+          }
+        }
+      }
+    },
+    "Tools work: the model called the test tool." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具可用：模型调用了测试工具。"
+          }
+        }
+      }
+    },
     "Train" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4887,6 +5463,26 @@
         }
       }
     },
+    "Undo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "撤销"
+          }
+        }
+      }
+    },
+    "Undone" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已撤销"
+          }
+        }
+      }
+    },
     "Until %@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4897,12 +5493,32 @@
         }
       }
     },
+    "Use These Period Times" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用这些节次时间"
+          }
+        }
+      }
+    },
     "Use for AI Help" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "用于 AI 帮助"
+          }
+        }
+      }
+    },
+    "Use the App's Tools" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用应用工具"
           }
         }
       }
@@ -4933,6 +5549,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音量"
+          }
+        }
+      }
+    },
+    "Was: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原来：%@"
           }
         }
       }
@@ -5063,6 +5689,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "小组件"
+          }
+        }
+      }
+    },
+    "With tools, the Assistant also looks at your to-dos, classes, focus sessions and vocabulary numbers while you chat, and sends what it looks at. It changes nothing until you tap Confirm." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启工具后，助手在对话中还会查看你的待办、课程、专注记录和单词数据，并发送它查看的内容。你点“确认”之前它不会做任何修改。"
           }
         }
       }

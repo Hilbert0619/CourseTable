@@ -345,7 +345,7 @@ extension AgentCard {
                 lines.append(String(localized: "Was: \(when(before, timetable))"))
             }
             if before.isDone != after.isDone {
-                lines.append(after.isDone ? String(localized: "Mark as done") : String(localized: "Mark as not done"))
+                lines.append(after.isDone ? String(localized: "Mark as Done") : String(localized: "Mark as Not Done"))
             }
         case .addCourses(_, let courses, let duplicates, let problems):
             lines = [String(localized: "\(courses) courses to add")]
@@ -364,11 +364,15 @@ extension AgentCard {
     /// "Fri, Oct 16 · 17:30" or "· after Calculus".
     static func when(_ todo: Todo, _ timetable: Timetable) -> String {
         let day = todo.day.date().formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
-        let timing = switch todo.timing {
-        case .anytime: String(localized: "Any time")
-        case .at(let time): todo.day.date(at: time).formatted(date: .omitted, time: .shortened)
+        let timing: String
+        switch todo.timing {
+        case .anytime:
+            timing = String(localized: "Any time")
+        case .at(let time):
+            timing = todo.day.date(at: time).formatted(date: .omitted, time: .shortened)
         case .afterClass(let id):
-            String(localized: "After \(timetable.courses.first { $0.id == id }?.name ?? "")")
+            let name = timetable.courses.first { $0.id == id }?.name ?? ""
+            timing = String(localized: "After \(name)")
         }
         return "\(day) · \(timing)"
     }
