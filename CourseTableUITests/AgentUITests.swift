@@ -70,6 +70,20 @@ final class AgentUITests: XCTestCase {
     func testTimetablePhoto() throws {
         for language in ["en", "zh-Hans"] {
             let app = launch(language: language, photo: true)
+            // The import screen reads the photo by itself (then is cancelled, so the Assistant can add the courses).
+            app.tabBars.buttons.element(boundBy: 1).tap()
+            tap(element(app, "addMenu"))
+            tap(element(app, "importCourses"))
+            tap(element(app, "samplePhoto"))
+            XCTAssertTrue(element(app, "photoDone").waitForExistence(timeout: 30), "The photo wasn't read into courses")
+            snapshot(app, "\(language)-agent-7-import-photo")
+            let periods = element(app, "usePhotoPeriods")
+            for _ in 0..<4 where !(periods.exists && periods.isHittable) { app.swipeUp() }
+            XCTAssertTrue(periods.exists, "The photo's period times aren't offered")
+            snapshot(app, "\(language)-agent-7-import-photo-periods")
+            tap(element(app, "cancel"))
+
+            app.tabBars.buttons.element(boundBy: 0).tap()
             tap(element(app, "assistantButton"))
             tap(element(app, "assistantAttach"))
             XCTAssertTrue(element(app, "assistantAttachment").waitForExistence(timeout: 30), "The photo wasn't read")
@@ -78,26 +92,14 @@ final class AgentUITests: XCTestCase {
             input.typeText(language == "en" ? "Add these courses" : "把这些课加进课程表")
             tap(element(app, "assistantSend"))
             XCTAssertTrue(element(app, "agentConfirm").waitForExistence(timeout: 20), "No courses were proposed")
-            snapshot(app, "\(language)-agent-7-photo-card")
+            snapshot(app, "\(language)-agent-8-photo-card")
             tap(element(app, "agentConfirm"))
             XCTAssertTrue(element(app, "importButton").waitForExistence(timeout: 10), "The import preview didn't open")
-            snapshot(app, "\(language)-agent-8-photo-preview")
+            snapshot(app, "\(language)-agent-9-photo-preview")
             tap(element(app, "importButton"))
             XCTAssertTrue(element(app, "agentUndo").waitForExistence(timeout: 10), "The courses weren't imported")
             XCTAssertTrue(element(app, "assistantReply").waitForExistence(timeout: 15), "No reply after the import")
-            snapshot(app, "\(language)-agent-9-photo-done")
-            app.navigationBars.buttons.element(boundBy: 0).tap()  // Done
-
-            app.tabBars.buttons.element(boundBy: 1).tap()
-            tap(element(app, "addMenu"))
-            tap(element(app, "importCourses"))
-            tap(element(app, "samplePhoto"))
-            XCTAssertTrue(element(app, "photoDone").waitForExistence(timeout: 30), "The photo wasn't read into courses")
-            snapshot(app, "\(language)-agent-10-import-photo")
-            let periods = element(app, "usePhotoPeriods")
-            for _ in 0..<4 where !(periods.exists && periods.isHittable) { app.swipeUp() }
-            XCTAssertTrue(periods.exists, "The photo's period times aren't offered")
-            snapshot(app, "\(language)-agent-10-import-photo-periods")
+            snapshot(app, "\(language)-agent-10-photo-done")
             app.terminate()
         }
     }

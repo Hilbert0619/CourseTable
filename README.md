@@ -6,7 +6,7 @@ A native iOS class-schedule app with an English vocabulary trainer for 考研: *
 [![iOS](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml)
 [![Backend](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml)
 
-Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md) · [AI agent (planned)](docs/ai-agent-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
+Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md) · [AI agent](docs/ai-agent-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
 
 ## Features
 
@@ -54,6 +54,16 @@ Bring your own key ([spec](docs/ai-spec.md)): requests go straight from the iPho
 - **Assistant** (✨ on Today and Words): a chat kept on the device; this week's classes and your hard words are shared only if you switch them on.
 - Answers are labelled "AI-generated · model". The dictionary still decides what counts as a correct answer.
 
+### AI agent (v0.5, optional)
+
+With a model that can call tools ([spec](docs/ai-agent-spec.md)), the Assistant uses the app itself:
+
+- It **looks things up** on its own: your to-dos, classes and courses, focus sessions, and vocabulary progress (today's plan, streak, accuracy, hard words, one word's record, the exam pace). Each lookup shows as a small line ("Looked at your to-dos").
+- It **suggests changes as cards**: add, change, tick off or delete a to-do ("remind me to hand in the paper after Calculus tomorrow"), add courses, or start a focus session. Nothing changes until you tap **Confirm**; afterwards **Undo** is there while the chat is open.
+- **Timetable from a photo**: Import Courses → From a Photo (AI), or a photo in the Assistant. A model that reads pictures gets the photo; otherwise this iPhone reads the text and where it sits, and only the text is sent. The courses always land in the import preview for you to check; period times seen in the photo are offered too.
+- **Analyse My Progress** in Words → Statistics opens the Assistant with that request.
+- Settings → AI Help: per connection, **Use the App's Tools**, **Model Reads Photos** and an optional **Photo Model** (e.g. `glm-4.6v-flash` for GLM, `qwen3-vl-plus` for Qwen); Test Connection checks tool calls and photos too.
+
 ## Import format
 
 One course per line. Columns are separated by commas, tabs (spreadsheet paste), semicolons or full-width commas `，`; the separator is detected automatically. Put a field in double quotes if it contains the separator, e.g. `"1-8,10-16"`.
@@ -92,7 +102,9 @@ CourseKit/            Swift package with all timetable and vocabulary logic; bui
                         WordListImport, WordSearch, VocabStats, SyncMerge, AuthLink
   Sources/VocabContent/ `vocab-content` tool: ECDICT's ecdict.csv → content/kaoyan-ecdict.csv → the Supabase seed migration
   Sources/AIKit/        AI help (docs/ai-spec.md): AIProvider presets, AIConnection requests (OpenAI-compatible and
-                        Anthropic), SSEParser + AIStreamDecoder, AIError, AIPrompts, TodoDraft, MarkdownBlock, SentenceWords
+                        Anthropic), SSEParser + AIStreamDecoder, AIError, AIPrompts, TodoDraft, MarkdownBlock, SentenceWords;
+                        the agent (docs/ai-agent-spec.md): AITool + JSONValue, tool calls in both formats, AIAgentSession,
+                        AppTools (the app's tools over an AgentWorld snapshot), TimetablePhoto
   Tests/                Swift Testing unit tests (CourseKitTests, VocabKitTests, AIKitTests)
 content/              Word lists built from ECDICT (MIT, see content/ECDICT-LICENSE); content/.cache/ holds the
                       downloaded source and is not committed
@@ -103,8 +115,10 @@ CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
                         SoundPlayer (gapless loops)
   Sounds/               sound-<id>.m4a, built by tools/make_sounds.py from content/sounds/sources.json
   AI/                   AIStore (connections, Keychain keys, usage, saved answers and chats), AITransport (URLSession;
-                        DemoAITransport for -aiDemo), AIRun, AISettingsView, WordAIHelp, StudyToolsViews, TextScanner,
-                        AssistantView
+                        DemoAITransport for -aiDemo, with scripted tool calls), AIRun, AISettingsView, WordAIHelp,
+                        StudyToolsViews, TextScanner, AssistantView (chat, tool lines and change cards), AgentRun (the
+                        agent's rounds; AgentContext reads and changes the app's data), TimetablePhotoReader (photo →
+                        picture model or on-device text → CSV)
   Vocabulary/           The Words tab: VocabApp.swift (coordinator: sign-in state, email links, sign-out; speech)
     Backend/              VocabBackend protocol + DTOs; SupabaseBackend (the only file that uses supabase-swift);
                           DemoBackend + VocabDemo (in memory, for tests, previews and UI tests)

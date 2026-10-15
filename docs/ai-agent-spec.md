@@ -1,8 +1,10 @@
 # AI agent — spec and plan (iOS 0.5, then Android)
 
-Status: requested by the owner on 2026-10-15 and handed over to a new session; **nothing built yet**. It builds on AI
-help ([`ai-spec.md`](ai-spec.md), iOS 0.4.0): the user's own key, requests straight from the phone to the provider,
-no server. Confirm the three questions in §9 with the owner before coding.
+Status: requested by the owner on 2026-10-15; the owner confirmed the §9 choices the same day (every change
+confirmed with a tap; on-device OCR for text-only models; to-dos, adding courses **and starting Focus**). Built on iOS
+for 0.5.0: stage 1 (AIKit) and stage 2–4 (app, photo import, progress analysis); see §8. It builds on AI help
+([`ai-spec.md`](ai-spec.md), iOS 0.4.0): the user's own key, requests straight from the phone to the provider, no
+server.
 
 ## 1. The request
 
@@ -20,13 +22,13 @@ So, three jobs for the Assistant, done by the model calling the app's own functi
 3. **Timetable from a picture**: a photo or screenshot of the school timetable (教务系统 page, printed sheet) becomes
    courses, checked by the user in the existing import preview before anything is saved.
 
-## 2. Decisions (proposed; §9 lists what to confirm)
+## 2. Decisions (confirmed by the owner 2026-10-15)
 
 | Topic | Proposal |
 |---|---|
 | Mechanism | **Tool calling** (function calling) through the user's connection, in both wire formats. No server, no new keys. |
 | Reading vs changing | Read tools run on their own and show as a small "Looked at your to-dos" line. **Every change is a proposal card** in the chat (exactly what will be added or changed) with **Confirm / Cancel**; nothing changes without a tap. After Confirm: "Added · Undo". |
-| What the model may change (v0.5) | To-dos (add, edit, tick off, delete) and courses (add, through the import preview). Not: deleting courses, settings, the Words account, anything on the network. |
+| What the model may change (v0.5) | To-dos (add, edit, tick off, delete), courses (add, through the import preview) and **starting a focus session**. Not: deleting courses, settings, vocabulary settings, the Words account, anything on the network. |
 | Limits | At most 8 tool rounds per message; each tool result ≤ 4,000 characters (lists are cut with "…and N more"); arguments validated before anything runs. |
 | Models | Needs a model that can call tools. A provider that rejects `tools` gets "This model can't use the app's tools; pick another in Settings → AI Help" and the chat carries on without them. Each connection gets two capability flags, **Tools** and **Images**, with defaults from the preset, a manual switch, and a check in "Test Connection". |
 | Photos of timetables | Both ways, chosen automatically: if the connection (or its **photo model**, below) reads images, the photo goes to it (downscaled JPEG, ≤ 1600 px); otherwise the phone reads the text with **on-device OCR (Vision) including each text box's position**, and a text-only model rebuilds the grid from the positions. Either way the model writes the app's **CSV import format** (README "Import format", Chinese headers allowed), which goes through the existing `CourseImporter` + `ImportPlan` into the **existing import preview** (clashes, duplicates, unreadable lines). Period times seen in the picture are offered separately (confirm). |
@@ -51,7 +53,13 @@ So, three jobs for the Assistant, done by the model calling the app's own functi
 | `get_word_progress` | read | `word` | state, answers, lapses, next review, chance of recall | `VocabModel.cards` |
 
 Words tools need a signed-in Words account; without one they return "not signed in" (the model says so). Later
-candidates (not v0.5): `set_daily_new_words`, `add_favourites`, `start_focus`, class-reminder settings.
+candidates (not v0.5): `set_daily_new_words`, `add_favourites`, class-reminder settings.
+
+Added with the owner's answer: `start_focus` (change; `minutes` 15–240, `goal?`, `breaks?`; refused while a session
+runs; `FocusEngine` settings and goal, then `start()`) and `get_focus_history` (read; `days` ≤ 31: minutes per day,
+each session, the session running now). As built, to-do IDs are the first 8 hex digits of the UUID; `list_courses`
+answers with the term, the period times and the courses as import CSV; every reading tool's answer is cut at 4,000
+characters with "…and N more". The exact texts are in `spec/fixtures/ai-agent-tools.json`.
 
 ## 4. Protocol (AIKit)
 
