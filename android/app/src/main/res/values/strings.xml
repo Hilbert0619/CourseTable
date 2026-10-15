@@ -231,6 +231,10 @@
     <string name="send_test_reminder">Send a Test Reminder</string>
     <string name="test_footer">A test reminder arrives 10 seconds after you tap. Lock your phone to check that it comes.</string>
     <string name="test_sent">Test reminder set: lock your phone and wait 10 seconds.</string>
+    <string name="send_test_live_update">Send a Test Live Update</string>
+    <string name="test_live_footer">Shows a %1$d-minute countdown as a Live Update, like the live class notification. Then go to the Home Screen: it should show in the status bar or the island at the top.</string>
+    <string name="test_live_promoted">This phone shows the test as a Live Update. Go to the Home Screen to see it in the status bar or the island.</string>
+    <string name="test_live_not_promoted">This phone shows the test only as an ordinary notification, not as a Live Update.</string>
 
     <!-- Notifications -->
     <string name="channel_todos">To-dos</string>
@@ -242,6 +246,9 @@
     <string name="after_class_todos">After class: %1$s</string>
     <string name="test_reminder_title">Test reminder</string>
     <string name="test_reminder_text">Reminders arrive on time on this phone.</string>
+    <string name="test_live_title">Test Live Update</string>
+    <string name="test_live_text">Counts down %1$d minutes, then closes.</string>
+    <string name="minutes_short">%1$d min</string>
 
     <!-- Focus -->
     <string name="focus_goal_hint">Goal, e.g. Calculus review</string>

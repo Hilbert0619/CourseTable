@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +33,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.alerts.AlertNotifications
+import io.github.hilbert0619.coursetable.alerts.LiveUpdates
+import io.github.hilbert0619.coursetable.alerts.NotificationIds
 import io.github.hilbert0619.coursetable.alerts.SystemSettings
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
@@ -43,8 +47,9 @@ import io.github.hilbert0619.coursetable.ui.rememberSystemState
 
 /**
  * Settings → Reminders → Reliable Reminders: what keeps alerts on time on Android (notifications, exact alarms,
- * battery optimisation, Live Updates) with a way to fix each, the steps for vivo/iQOO's background limits, and a test.
- * Each check is read again when coming back from the system settings.
+ * battery optimisation, Live Updates) with a way to fix each, the steps for vivo/iQOO's background limits, a test
+ * reminder, and on Android 16 a test Live Update with how the phone shows it. Each check is read again when coming
+ * back from the system settings.
  */
 @Composable
 fun ReliableRemindersScreen(actions: AppActions, onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -55,6 +60,8 @@ fun ReliableRemindersScreen(actions: AppActions, onBack: () -> Unit, modifier: M
     val liveUpdates = rememberSystemState { SystemSettings.liveUpdatesAllowed(context) }
     val askForNotifications = rememberNotificationRequest { allowed -> if (!allowed) SystemSettings.openNotificationSettings(context) }
     var testSent by remember { mutableStateOf(false) }
+    var liveTestsSent by remember { mutableIntStateOf(0) }
+    val liveTest = rememberSystemState(refresh = liveTestsSent) { LiveUpdates.shown(context, NotificationIds.TEST_LIVE) }
 
     Scaffold(
         modifier = modifier,
@@ -114,6 +121,22 @@ fun ReliableRemindersScreen(actions: AppActions, onBack: () -> Unit, modifier: M
                     askForNotifications()
                     actions.sendTestReminder()
                     testSent = true
+                }
+            }
+
+            // Android 16: how this phone shows a live notification (status bar chip or the brand's island).
+            if (liveUpdates != null) {
+                val footer = when {
+                    liveTest == null -> stringResource(R.string.test_live_footer, AlertNotifications.TEST_LIVE_MINUTES)
+                    liveTest.promoted -> stringResource(R.string.test_live_promoted) + "\n" + liveTest.details
+                    else -> stringResource(R.string.test_live_not_promoted) + "\n" + liveTest.details
+                }
+                Section(title = stringResource(R.string.live_updates), footer = footer) {
+                    ActionRow(R.drawable.ic_live_update, stringResource(R.string.send_test_live_update)) {
+                        askForNotifications()
+                        actions.sendTestLiveUpdate()
+                        liveTestsSent++
+                    }
                 }
             }
         }

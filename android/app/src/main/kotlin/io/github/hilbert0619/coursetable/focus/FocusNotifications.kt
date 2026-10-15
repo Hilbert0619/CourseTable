@@ -10,6 +10,8 @@ import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.alerts.AlertNotifications
 import io.github.hilbert0619.coursetable.alerts.AlertReceiver
 import io.github.hilbert0619.coursetable.alerts.Channels
+import io.github.hilbert0619.coursetable.alerts.LiveUpdates
+import io.github.hilbert0619.coursetable.alerts.LiveUpdates.countdown
 import io.github.hilbert0619.coursetable.alerts.NotificationIds
 import io.github.hilbert0619.coursetable.ui.Tab
 import java.time.Instant
@@ -22,7 +24,8 @@ object FocusNotifications {
 
     /**
      * "Focus · Block 2 of 5" / "Calculus review · ends at 21:30" with a countdown to the end of the phase, Pause or
-     * Resume, and Stop. A Live Update on Android 16. `null` without a session.
+     * Resume, and Stop. A Live Update on Android 16; on an island that shows a text instead of the countdown, the
+     * minutes left or "Paused" ([LiveUpdates]). `null` without a session.
      */
     fun running(context: Context, state: FocusState, now: Instant): Notification? {
         val run = state.run ?: return null
@@ -53,12 +56,14 @@ object FocusNotifications {
             )
             .addAction(R.drawable.ic_stop, context.getString(R.string.stop), AlertReceiver.focusIntent(context, AlertReceiver.ACTION_FOCUS_STOP))
             .setRequestPromotedOngoing(true)
+        val islandText = LiveUpdates.islandNeedsText(context)
         if (status.isPaused) {
             builder.setShowWhen(false)
+            if (islandText) builder.setShortCriticalText(context.getString(R.string.paused))
         } else {
-            builder.setWhen(phaseEnd.toEpochMilli()).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true)
+            builder.countdown(context, phaseEnd, now, islandText)
         }
-        return builder.build()
+        return LiveUpdates.build(builder)
     }
 
     fun postRunning(context: Context, state: FocusState, now: Instant) {

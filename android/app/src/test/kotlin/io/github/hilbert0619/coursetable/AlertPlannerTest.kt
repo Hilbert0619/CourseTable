@@ -70,6 +70,25 @@ class AlertPlannerTest {
     }
 
     @Test
+    fun aShowingClassIsKeptAndCountsDownToItsStart() {
+        // Nothing to change: the sync only posts it again if an island's minutes changed.
+        val plan = plan("07:55", posted = listOf(posted(calculus, started = false)))
+        assertTrue(plan.postLive.isEmpty())
+        val kept = plan.keepLive.single()
+        assertEquals("Calculus", kept.window.session.course.name)
+        assertEquals(Moment(monday, TimeOfDay.parse("08:00")!!), kept.countdownTarget)
+    }
+
+    @Test
+    fun aStartedClassCountsDownToItsEnd() {
+        val plan = plan("08:00", posted = listOf(posted(calculus, started = false)))
+        val post = plan.postLive.single()
+        assertEquals(true, post.started)
+        assertEquals(Moment(monday, TimeOfDay.parse("09:40")!!), post.countdownTarget)
+        assertTrue(plan.keepLive.isEmpty())
+    }
+
+    @Test
     fun aClassAppearsAtItsReminderTimeWithAnAlert() {
         val plan = plan("07:50")
         val post = plan.postLive.single()

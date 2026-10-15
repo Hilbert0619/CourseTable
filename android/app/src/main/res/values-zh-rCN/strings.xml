@@ -201,6 +201,10 @@
     <string name="send_test_reminder">发送测试提醒</string>
     <string name="test_footer">点按 10 秒后会收到一条测试提醒。可以锁屏看看它是否按时到达。</string>
     <string name="test_sent">测试提醒已设定：锁屏并等待 10 秒。</string>
+    <string name="send_test_live_update">发送测试实时更新</string>
+    <string name="test_live_footer">以实时更新显示 %1$d 分钟的倒计时，和上课实时通知一样。然后回到桌面：它应该出现在状态栏或顶部的岛（如原子岛）中。</string>
+    <string name="test_live_promoted">这台手机把测试显示为实时更新。回到桌面，可以在状态栏或岛中看到它。</string>
+    <string name="test_live_not_promoted">这台手机只把测试显示为普通通知，没有显示为实时更新。</string>
     <string name="channel_todos">待办</string>
     <string name="channel_focus_alerts">专注提醒</string>
     <string name="channel_focus_timer">专注计时</string>
@@ -210,6 +214,9 @@
     <string name="after_class_todos">下课后：%1$s</string>
     <string name="test_reminder_title">测试提醒</string>
     <string name="test_reminder_text">这台手机可以按时收到提醒。</string>
+    <string name="test_live_title">测试实时更新</string>
+    <string name="test_live_text">倒计时 %1$d 分钟后自动关闭。</string>
+    <string name="minutes_short">%1$d 分钟</string>
     <string name="focus_goal_hint">目标，例如：高数复习</string>
     <string name="length">总时长</string>
     <string name="breaks_pomodoro">休息（番茄钟）</string>

@@ -48,12 +48,28 @@ object Alerts {
         val plan = AlertPlanner.plan(input)
         for (tag in plan.cancelLive) manager.cancel(tag, NotificationIds.LIVE)
         for (tag in plan.cancelTodos) manager.cancel(tag, NotificationIds.TODO)
-        for (post in plan.postLive) AlertNotifications.postLive(context, post, now, zone)
+        val islandText = LiveUpdates.islandNeedsText(context)
+        for (post in plan.postLive) AlertNotifications.postLive(context, post, now, zone, islandText)
+        if (islandText) {
+            // The island shows the minutes left: post again those whose number changed.
+            val shown = active.filter { it.id == NotificationIds.LIVE }.associate { it.tag to LiveUpdates.islandText(it.notification) }
+            for (post in plan.keepLive) {
+                if (shown[post.tag] != LiveUpdates.minutesText(context, post.countdownTarget.toInstant(zone), now)) {
+                    AlertNotifications.postLive(context, post, now, zone, islandText)
+                }
+            }
+        }
         for (reminder in plan.reminders) AlertNotifications.postReminder(context, reminder, zone)
         for (todo in plan.todos) AlertNotifications.postTodo(context, todo)
         preferences.dismissed = plan.dismissed
         preferences.notified = plan.notified
         Alarms.set(context, Alarms.SYNC, plan.nextAlarm)
+        val minute = if (islandText) {
+            (plan.postLive + plan.keepLive).mapNotNull { IslandCountdown.nextChange(it.countdownTarget.toInstant(zone), now) }.minOrNull()
+        } else {
+            null
+        }
+        Alarms.setWhileAwake(context, Alarms.ISLAND, minute)
         Log.d(TAG, "Synced: ${plan.postLive.size} live, ${plan.reminders.size} reminders, ${plan.todos.size} to-dos; next ${plan.nextAlarm}")
     }
 
@@ -79,6 +95,12 @@ object Alarms {
     /** Settings → Reliable Reminders → Send a Test Reminder. */
     const val TEST = AlertReceiver.ACTION_TEST
 
+    /** The next minute in the island of a live class notification ([LiveUpdates]). */
+    const val ISLAND = AlertReceiver.ACTION_ISLAND
+
+    /** The next minute in the island of the focus notification. */
+    const val FOCUS_ISLAND = AlertReceiver.ACTION_FOCUS_ISLAND
+
     /** Whether exact alarms are allowed (always on Android 13+ with USE_EXACT_ALARM, and before 12). */
     fun canScheduleExact(context: Context): Boolean =
         Build.VERSION.SDK_INT < 31 || context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
@@ -99,6 +121,22 @@ object Alarms {
         }
     }
 
+    /**
+     * Runs [AlertReceiver] with [action] at [at] while the phone is awake, else as soon as it wakes (no wake-up, no
+     * Doze allowance): for what only shows with the screen on, like an island's minutes. `null` cancels it.
+     */
+    fun setWhileAwake(context: Context, action: String, at: Instant?) {
+        if (at == null) return cancel(context, action)
+        val alarms = context.getSystemService(AlarmManager::class.java)
+        val intent = AlertReceiver.alarmIntent(context, action)
+        val millis = at.toEpochMilli()
+        try {
+            if (canScheduleExact(context)) alarms.setExact(AlarmManager.RTC, millis, intent) else alarms.set(AlarmManager.RTC, millis, intent)
+        } catch (error: SecurityException) {
+            alarms.set(AlarmManager.RTC, millis, intent)
+        }
+    }
+
     fun cancel(context: Context, action: String) {
         context.getSystemService(AlarmManager::class.java).cancel(AlertReceiver.alarmIntent(context, action))
     }
@@ -106,6 +144,8 @@ object Alarms {
     internal fun requestCode(action: String): Int = when (action) {
         SYNC -> 1
         FOCUS -> 2
+        ISLAND -> 4
+        FOCUS_ISLAND -> 5
         else -> 3
     }
 

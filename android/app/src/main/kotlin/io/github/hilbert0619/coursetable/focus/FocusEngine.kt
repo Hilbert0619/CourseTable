@@ -8,6 +8,8 @@ import io.github.hilbert0619.coursekit.FocusRun
 import io.github.hilbert0619.coursekit.FocusSettings
 import io.github.hilbert0619.coursekit.plusSeconds
 import io.github.hilbert0619.coursetable.alerts.Alarms
+import io.github.hilbert0619.coursetable.alerts.IslandCountdown
+import io.github.hilbert0619.coursetable.alerts.LiveUpdates
 import io.github.hilbert0619.coursetable.alerts.NotificationIds
 import io.github.hilbert0619.coursetable.data.FocusSessionRecord
 import io.github.hilbert0619.coursetable.data.Repository
@@ -159,6 +161,15 @@ class FocusEngine(
         if (run.status(now).isFinished) finish(run, now, finished = true) else afterChange(now)
     }
 
+    /** The minute in the island changed ([LiveUpdates]): the ongoing notification again, and the next minute. */
+    fun islandMinute() {
+        val run = run ?: return
+        val now = clock.instant()
+        if (run.status(now).isFinished) return refresh()
+        FocusNotifications.postRunning(context, _state.value, now)
+        setIslandMinute(run, now)
+    }
+
     private fun apply(run: FocusRun, now: Instant) {
         change { it.copy(run = run) }
         afterChange(now)
@@ -171,6 +182,18 @@ class FocusEngine(
         FocusNotifications.postRunning(context, _state.value, now)
         val next = run.upcomingSwitches(now, limit = 1).firstOrNull()
         if (next != null) Alarms.set(context, Alarms.FOCUS, next.date) else Alarms.cancel(context, Alarms.FOCUS)
+        setIslandMinute(run, now)
+    }
+
+    /** On an island that shows the minutes left, an alarm when the number changes (the switch has its own). */
+    private fun setIslandMinute(run: FocusRun, now: Instant) {
+        val status = run.status(now)
+        val minute = if (!status.isPaused && LiveUpdates.islandNeedsText(context)) {
+            IslandCountdown.nextChange(now.plusSeconds(status.phaseRemaining), now)
+        } else {
+            null
+        }
+        Alarms.setWhileAwake(context, Alarms.FOCUS_ISLAND, minute)
     }
 
     private fun finish(run: FocusRun, at: Instant, finished: Boolean) {
@@ -183,6 +206,7 @@ class FocusEngine(
         scope.launch { repository.recordFocus(record) }
         change { it.copy(run = null) }
         Alarms.cancel(context, Alarms.FOCUS)
+        Alarms.cancel(context, Alarms.FOCUS_ISLAND)
         updateSound()
         NotificationManagerCompat.from(context).cancel(NotificationIds.FOCUS_RUNNING)
     }

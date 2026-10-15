@@ -6,14 +6,17 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import io.github.hilbert0619.coursetable.alerts.AlertNotifications
+import kotlinx.coroutines.delay
 
 /**
  * Asks for notifications (Android 13+; the system shows its prompt at most twice) when a feature that needs them is
@@ -35,13 +38,23 @@ fun rememberNotificationRequest(onResult: (Boolean) -> Unit = {}): () -> Unit {
     }
 }
 
-/** A system state read again whenever the screen comes back (e.g. from the system settings). */
+/**
+ * A system state read again whenever the screen comes back (e.g. from the system settings), and a second after
+ * [refresh] changes (the system shows a posted notification a moment later).
+ */
 @Composable
-fun <T> rememberSystemState(read: () -> T): T {
+fun <T> rememberSystemState(refresh: Int = 0, read: () -> T): T {
     var value by remember { mutableStateOf(read()) }
+    val currentRead by rememberUpdatedState(read)
     LifecycleResumeEffect(Unit) {
-        value = read()
+        value = currentRead()
         onPauseOrDispose { }
+    }
+    LaunchedEffect(refresh) {
+        if (refresh != 0) {
+            delay(1_000)
+            value = currentRead()
+        }
     }
     return value
 }

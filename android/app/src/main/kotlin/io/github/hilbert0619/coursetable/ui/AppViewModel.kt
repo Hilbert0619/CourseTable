@@ -12,6 +12,7 @@ import io.github.hilbert0619.coursekit.Semester
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursetable.StudyHourApp
+import io.github.hilbert0619.coursetable.alerts.AlertNotifications
 import io.github.hilbert0619.coursetable.alerts.Alarms
 import io.github.hilbert0619.coursetable.alerts.Alerts
 import io.github.hilbert0619.coursetable.alerts.ReminderSettings
@@ -53,6 +54,9 @@ interface AppActions {
     /** A test notification from an alarm 10 seconds from now (Settings → Reliable Reminders). */
     fun sendTestReminder()
 
+    /** A test Live Update, posted now (Settings → Reliable Reminders). */
+    fun sendTestLiveUpdate()
+
     /** Does nothing: for previews and screenshots. */
     object None : AppActions {
         override fun saveCourse(course: Course) = Unit
@@ -69,6 +73,7 @@ interface AppActions {
         override fun setLiveNotificationsEnabled(enabled: Boolean) = Unit
         override fun setLeadMinutes(minutes: Int) = Unit
         override fun sendTestReminder() = Unit
+        override fun sendTestLiveUpdate() = Unit
     }
 }
 
@@ -103,6 +108,8 @@ class AppViewModel(private val app: StudyHourApp) : ViewModel(), AppActions {
     override fun setLeadMinutes(minutes: Int) = changeReminders { it.copy(leadMinutes = minutes) }
 
     override fun sendTestReminder() = Alarms.set(app, Alarms.TEST, Instant.now().plusSeconds(10))
+
+    override fun sendTestLiveUpdate() = AlertNotifications.postTestLive(app)
 
     private fun changeReminders(transform: (ReminderSettings) -> ReminderSettings) {
         app.alertPreferences.update(transform)

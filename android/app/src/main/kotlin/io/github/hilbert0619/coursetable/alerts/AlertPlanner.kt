@@ -49,6 +49,9 @@ data class AlertInput(
 /** A live class notification to post: a new one (alerting when it comes on time) or a changed one (silently). */
 data class LivePost(val window: ClassActivityWindow, val started: Boolean, val alert: Boolean) {
     val tag: String get() = AlertPlanner.liveTag(window.session)
+
+    /** What it counts down to: the start of the class, then its end. */
+    val countdownTarget: Moment get() = if (started) window.session.endMoment else window.session.startMoment
 }
 
 /** What a sync does now, and when the next one runs. */
@@ -56,6 +59,8 @@ data class AlertPlan(
     /** Live class notifications to remove (tags): finished, outdated, or the feature turned off. */
     val cancelLive: List<String>,
     val postLive: List<LivePost>,
+    /** Live class notifications that stay as they are (only an island's minutes may change: [LiveUpdates]). */
+    val keepLive: List<LivePost>,
     /** Class reminders due now. */
     val reminders: List<ClassReminder>,
     /** To-dos due now. */
@@ -127,11 +132,13 @@ object AlertPlanner {
             posts += LivePost(window, started = moment >= window.session.startMoment, alert = onTime && tag !in postedTags)
         }
         val updates = live.update.associateBy { it.id }
+        val kept = mutableListOf<LivePost>()
         for (posted in input.postedLive) {
             if (posted.tag in live.end) continue
             val window = updates[posted.tag]?.window ?: wanted.firstOrNull { it.signature == posted.signature } ?: continue
             val started = moment >= window.session.startMoment
-            if (posted.tag in updates || posted.started != started) posts += LivePost(window, started, alert = false)
+            val post = LivePost(window, started, alert = false)
+            if (posted.tag in updates || posted.started != started) posts += post else kept += post
         }
         val postTags = posts.map { it.tag }.toSet()
         for (window in wanted) {
@@ -180,6 +187,7 @@ object AlertPlanner {
         return AlertPlan(
             cancelLive = live.end.filter { it !in postTags },
             postLive = posts,
+            keepLive = kept.filter { it.tag !in postTags },
             reminders = reminders,
             todos = todoAlerts,
             cancelTodos = input.postedTodos.filter { it !in openTodos },

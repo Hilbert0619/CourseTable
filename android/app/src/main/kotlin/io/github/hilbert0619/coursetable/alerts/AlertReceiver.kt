@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.app.NotificationManagerCompat
 import io.github.hilbert0619.coursetable.StudyHourApp
 import io.github.hilbert0619.coursetable.widget.ScheduleWidgetUpdates
 import kotlinx.coroutines.launch
@@ -14,15 +15,17 @@ class AlertReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val app = context.applicationContext as StudyHourApp
         when (intent.action) {
-            ACTION_SYNC -> app.runAsync(this) { Alerts.sync(app) }
+            ACTION_SYNC, ACTION_ISLAND -> app.runAsync(this) { Alerts.sync(app) }
             ACTION_CLOSE, ACTION_DISMISSED -> {
                 val signature = intent.getStringExtra(EXTRA_SIGNATURE) ?: return
                 val end = intent.getLongExtra(EXTRA_END, 0)
                 app.runAsync(this) { Alerts.dismiss(app, signature, end, intent.getStringExtra(EXTRA_TAG)) }
             }
             ACTION_TEST -> AlertNotifications.postTest(app)
+            ACTION_TEST_LIVE_CLOSE -> NotificationManagerCompat.from(app).cancel(NotificationIds.TEST_LIVE)
             // The focus engine works on the main thread, where receivers run.
             ACTION_FOCUS_ALARM -> app.focus.refresh()
+            ACTION_FOCUS_ISLAND -> app.focus.islandMinute()
             ACTION_FOCUS_TOGGLE -> app.focus.togglePause()
             ACTION_FOCUS_STOP -> app.focus.stop()
         }
@@ -31,6 +34,9 @@ class AlertReceiver : BroadcastReceiver() {
     companion object {
         const val ACTION_SYNC = "io.github.hilbert0619.coursetable.SYNC_ALERTS"
         const val ACTION_TEST = "io.github.hilbert0619.coursetable.TEST_REMINDER"
+        const val ACTION_TEST_LIVE_CLOSE = "io.github.hilbert0619.coursetable.CLOSE_TEST_LIVE"
+        const val ACTION_ISLAND = "io.github.hilbert0619.coursetable.ISLAND_MINUTE"
+        const val ACTION_FOCUS_ISLAND = "io.github.hilbert0619.coursetable.FOCUS_ISLAND_MINUTE"
         const val ACTION_CLOSE = "io.github.hilbert0619.coursetable.CLOSE_CLASS"
         const val ACTION_DISMISSED = "io.github.hilbert0619.coursetable.CLASS_DISMISSED"
         const val ACTION_FOCUS_ALARM = "io.github.hilbert0619.coursetable.FOCUS_ALARM"
@@ -60,6 +66,10 @@ class AlertReceiver : BroadcastReceiver() {
         /** A button on the focus notification. */
         fun focusIntent(context: Context, action: String): PendingIntent =
             PendingIntent.getBroadcast(context, 0, Intent(context, AlertReceiver::class.java).setAction(action), Alarms.FLAGS)
+
+        /** The Close button of the test Live Update. */
+        fun closeTestLiveIntent(context: Context): PendingIntent =
+            PendingIntent.getBroadcast(context, 0, Intent(context, AlertReceiver::class.java).setAction(ACTION_TEST_LIVE_CLOSE), Alarms.FLAGS)
     }
 }
 

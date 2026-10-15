@@ -22,6 +22,7 @@ import io.github.hilbert0619.coursekit.Moment
 import io.github.hilbert0619.coursekit.ResolvedTodo
 import io.github.hilbert0619.coursetable.MainActivity
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.alerts.LiveUpdates.countdown
 import io.github.hilbert0619.coursetable.ui.Tab
 import io.github.hilbert0619.coursetable.ui.details
 import io.github.hilbert0619.coursetable.ui.theme.CoursePalette
@@ -35,6 +36,7 @@ object NotificationIds {
     const val REMINDER = 2
     const val TODO = 3
     const val TEST = 4
+    const val TEST_LIVE = 5
     const val FOCUS_RUNNING = 10
     const val FOCUS_SWITCH = 11
 }
@@ -91,12 +93,12 @@ object AlertNotifications {
     /**
      * Each class from its window's show time until it ends: "08:00–09:40 · A101 · Li" with a countdown to the start,
      * then "Until 09:40 · A101 · Li" with a countdown to the end, and the to-dos for after class. A Live Update on
-     * Android 16 (the status bar chip shows the countdown).
+     * Android 16: the status bar chip shows the countdown, or with [islandText] the island the minutes left
+     * ([LiveUpdates]).
      */
-    fun postLive(context: Context, post: LivePost, now: Instant, zone: ZoneId) {
+    fun postLive(context: Context, post: LivePost, now: Instant, zone: ZoneId, islandText: Boolean) {
         val window = post.window
         val session = window.session
-        val start = session.startMoment.toInstant(zone).toEpochMilli()
         val end = session.endMoment.toInstant(zone).toEpochMilli()
         val text = listOf(
             if (post.started) context.getString(R.string.until_time, session.end.toString()) else session.timeRange,
@@ -116,10 +118,7 @@ object AlertNotifications {
             .setContentTitle(session.course.name)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(if (todos != null) "$text\n$todos" else text))
-            .setWhen(if (post.started) end else start)
-            .setShowWhen(true)
-            .setUsesChronometer(true)
-            .setChronometerCountDown(true)
+            .countdown(context, post.countdownTarget.toInstant(zone), now, islandText)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setSilent(!post.alert)
@@ -132,7 +131,7 @@ object AlertNotifications {
             .setTimeoutAfter(maxOf(end - now.toEpochMilli(), 0) + 60_000)
             .setRequestPromotedOngoing(true)
             .addExtras(extras)
-        notify(context, post.tag, NotificationIds.LIVE, builder.build())
+        notify(context, post.tag, NotificationIds.LIVE, LiveUpdates.build(builder))
     }
 
     /** Reads a live class notification back ([postLive]), or `null` for any other notification. */
@@ -198,6 +197,36 @@ object AlertNotifications {
             .setContentIntent(openApp(context, Tab.SETTINGS))
             .build()
         notify(context, null, NotificationIds.TEST, notification)
+    }
+
+    /** How long the test Live Update counts down. */
+    const val TEST_LIVE_MINUTES = 2
+
+    /**
+     * Settings → Reliable Reminders → Send a Test Live Update: a notification like the live class one, counting down
+     * [TEST_LIVE_MINUTES] minutes from now, to see how this phone shows it ([LiveUpdates.shown]).
+     */
+    fun postTestLive(context: Context, now: Instant = Instant.now()) {
+        val end = now.plusSeconds(TEST_LIVE_MINUTES * 60L)
+        val text = context.getString(R.string.test_live_text, TEST_LIVE_MINUTES)
+        val builder = NotificationCompat.Builder(context, Channels.CLASSES)
+            .setSmallIcon(R.drawable.ic_notification_class)
+            .setColor(CoursePalette.color(0).toArgb())
+            .setContentTitle(context.getString(R.string.test_live_title))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .countdown(context, end, now, LiveUpdates.islandNeedsText(context))
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
+            .setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(openApp(context, Tab.SETTINGS))
+            .addAction(0, context.getString(R.string.close), AlertReceiver.closeTestLiveIntent(context))
+            .setTimeoutAfter(TEST_LIVE_MINUTES * 60_000L)
+            .setRequestPromotedOngoing(true)
+        notify(context, null, NotificationIds.TEST_LIVE, LiveUpdates.build(builder))
     }
 
     /** "Hand in the paper · Return the book +1": the first two and how many more (iOS `todoSummary`). */
