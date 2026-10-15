@@ -32,7 +32,7 @@ does what iOS does (see `README.md`, `docs/vocabulary-spec.md`, `docs/todos-focu
 | Today: day switcher, classes + to-dos in order | Port of `DayAgenda`; same screen | — |
 | To-dos (any date; any time / at a time / after a class) | Room table `todos`; same editor | — |
 | Class reminders (notification before class) | **One exact alarm** (`setExactAndAllowWhileIdle`, `USE_EXACT_ALARM`) for the next event of any alert; each sync (`AlertPlanner`) posts what is due now and sets the next one. Re-synced on start, every change, boot, app update, clock/time zone change; only for classes without the live notification | ColorOS/OriginOS/MagicOS may delay or drop alarms unless the app may run in the background (§5) |
-| Class Live Activity (Dynamic Island, Lock Screen) | An **ongoing notification per class** from the reminder time: countdown to the start (`setUsesChronometer` + `setChronometerCountDown`), at the start re-posted silently as "Until 09:40" counting down to the end, removed at the end; after-class to-dos (`BigTextStyle`) and a Close action. On **Android 16+** it asks to be a promoted **Live Update** (`setRequestPromotedOngoing`), which ColorOS 16 / OriginOS / MagicOS may show in their status-bar capsule (流体云 / 原子岛 / 胶囊). One closed or swiped away stays gone; one the system removed (restart) comes back silently | Android can switch and remove it on time (alarms run code), so no stale-date workaround or 8 h limit is needed. How each brand shows it must be checked on the phone |
+| Class Live Activity (Dynamic Island, Lock Screen) | An **ongoing notification per class** from the reminder time: countdown to the start (`setUsesChronometer` + `setChronometerCountDown`), at the start re-posted silently as "Until 09:40" counting down to the end, removed at the end; after-class to-dos (`BigTextStyle`) and a Close action. On **Android 16+** it asks to be a promoted **Live Update** (`setRequestPromotedOngoing`), which ColorOS 16 / OriginOS / MagicOS may show in their status-bar capsule (流体云 / 原子岛 / 胶囊); colorized where the build uses Android 16's original promotion rules, and with the minutes left as text for the islands that ignore the chronometer (§8, 0.4.1). One closed or swiped away stays gone; one the system removed (restart) comes back silently | Android can switch and remove it on time (alarms run code), so no stale-date workaround or 8 h limit is needed. How each brand shows it must be checked on the phone |
 | No duplicate alerts | The class notification **is** the live notification: one alert per class | Simpler than iOS |
 | Widgets (Home: small/medium; Lock Screen widgets) | Jetpack **Glance** app widgets (small: current/next class; medium: rest of today), updated at class starts/ends | Android has no Lock Screen widgets: the ongoing notification covers the Lock Screen |
 | Focus timer (Pomodoro, pause/skip/stop, history) | Port of `Focus` (plan + run) in `FocusEngine` (run in `SharedPreferences`); an ongoing notification (chronometer, Pause/Resume and Stop actions; Live Update on Android 16+); an exact alarm at each switch posts its notification. A **foreground service** (type `mediaPlayback`) only while a sound plays | Without a sound the app may be stopped in the background; the alarms and the notification's buttons start it again |
@@ -135,9 +135,20 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   lists (TXT/CSV with preview), Today card, study sessions in every question type, search, word page with US/UK
   speech, favourites, hard words, settings, statistics, sync, sign out and delete account. Account and sync logic in
   `android/core` (`VocabApp`, `SyncEngine`, `VocabModel`, `VocabStore`; 340 core tests), Room store `vocabulary.db`
-  (v1), `SupabaseBackend` on supabase-kt 3.8.0 + Ktor 3.5.1 (OkHttp); 13 Words screenshots. APK 0.4.0 (4), **to be
-  tested on the phone by the owner with their account** (checklist in `HANDOFF.md`).
-- **Next: the owner's phone test of 0.4.0, then stage 7 (release)** — see `HANDOFF.md`.
+  (v1), `SupabaseBackend` on supabase-kt 3.8.0 + Ktor 3.5.1 (OkHttp); 13 Words screenshots. APK 0.4.0 (4),
+  **tested on the phone by the owner (2026-10-15): no major issues**, but the live class notification never showed in
+  vivo's Atom Island (原子岛).
+- **0.4.1 (5), 2026-10-15: the Atom Island.** Android 16 has two promotion rule sets, picked by the platform flag
+  `ui_rich_ongoing`: the Live Update rules (asks for promotion, *not* colorized) and the first Android 16 release's
+  (colorized, no style or a promotable one). Our notifications suited only the first, so a build with the original
+  rules never promoted them. `LiveUpdates.build` now asks the phone's own `hasPromotableCharacteristics()` and posts
+  the colorized variant when only that qualifies. The vivo, OPPO and Xiaomi islands ignore the countdown chronometer
+  (they show the app name; measured by tigerduck-app/android-dynamic-island-test), so there the class and focus
+  notifications carry "25 min" as short critical text, posted again at each minute by a non-waking exact alarm
+  (`IslandCountdown`). Settings → Reliable Reminders → Send a Test Live Update shows whether the system promoted it.
+  vivo's own 原子通知 API (`notification.superx.*` extras) is not used: it needs access granted by vivo by email.
+  **To be checked on the phone by the owner** (checklist in `HANDOFF.md`).
+- **Next: the owner's island check of 0.4.1, then stage 7 (release)** — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 

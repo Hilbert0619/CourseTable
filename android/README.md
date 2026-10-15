@@ -19,6 +19,13 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
   Live Update on Android 16 (`setRequestPromotedOngoing`). One the person closes or swipes away stays gone; one the
   system removed (a restart) comes back silently. **Class reminders** only for classes without it (the setting off).
   **To-do notifications** when a to-do is due, removed when it's ticked off or deleted.
+- **Live Updates and the brands' islands** (`LiveUpdates`): Android 16 promotes by one of two rule sets (platform flag
+  `ui_rich_ongoing`): not colorized (the Live Update rules) or colorized (the first Android 16 release). The class and
+  focus notifications are built both ways and the phone's own `hasPromotableCharacteristics()` picks. The vivo/iQOO,
+  OPPO/OnePlus/realme and Xiaomi islands don't run the countdown chronometer, so on those phones the notifications
+  also carry the minutes left as short critical text ("25 min"), posted again at each minute by a non-waking exact
+  alarm (`IslandCountdown`; `AlertPlan.keepLive` lists the class notifications to refresh). Settings → Reliable
+  Reminders → Send a Test Live Update shows how the phone treats one (promoted or not, colorized, build).
 - **Focus**: `FocusEngine` keeps the core `FocusRun` in `SharedPreferences`, so the app, the notification buttons and
   an alarm in a new process share one session; an alarm at each switch posts its notification. The sounds are the iOS
   files (`CourseTable/Sounds`, packed as assets by the variant API), played by Media3 ExoPlayer in a loop without audio
