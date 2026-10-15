@@ -1,4 +1,4 @@
-# Session Handoff — CourseTable (iOS 0.5.0 with the AI agent: waiting for the owner's device test · Android stage 6 test / stage 7)
+# Session Handoff — CourseTable (iOS 0.5.0 with the AI agent: waiting for the owner's device test · Android 0.4.1 Atom Island check, then stage 7)
 
 Date: 2026-10-15 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
@@ -24,10 +24,15 @@ Handoff prompt A below picks up the owner's results.
 - **Android (StudyHour / 学时)**: stages 1–6 of [`docs/android-plan.md`](docs/android-plan.md) §7 are on `main`.
   - Stage 4 (alerts, Focus, Reliable Reminders): APK 0.3.0, **tested on the phone by the owner: no issues**.
   - Stage 5: VocabKit ported to `android/core` with shared cases `spec/fixtures/vocab-*.json`.
-  - **Stage 6 (the Words tab): built, waiting for the owner's phone test.** APK
-    `C:\Users\AI\Downloads\CourseTable\StudyHour-0.4.0-debug-20.apk` (0.4.0, versionCode 4; installs over 0.3.0, timetable data stays).
-    CI: branch runs 38113777448 and 38114283979 (`android-stage-6`), main 38116324090. Code map:
-    [`android/README.md`](android/README.md) "Words". Checklist below.
+  - Stage 6 (the Words tab): APK 0.4.0, **tested on the phone by the owner (2026-10-15): no major issues**, except that
+    the live class notification never showed in vivo's Atom Island (原子岛).
+  - **0.4.1 (versionCode 5), 2026-10-15: the Atom Island fix, waiting for the owner's island check.** APK
+    `C:\Users\AI\Downloads\CourseTable\StudyHour-0.4.1-debug-28.apk` (installs over 0.4.0). Cause: Android 16 has two
+    promotion rule sets (platform flag `ui_rich_ongoing`: not colorized vs colorized); our notifications only suited the
+    first. `LiveUpdates.build` now lets the phone's `hasPromotableCharacteristics()` pick; vivo/OPPO/Xiaomi islands get
+    "25 min" text refreshed each minute; Settings → Reliable Reminders → Send a Test Live Update reports what the
+    system did. CI: branch 38784060888 (`android-island`), main 38784460423. Details: `docs/android-plan.md` §8.
+    Checklist below.
 - **iOS**: 0.3.1 passed the owner's device test (2026-10-11); the owner published GitHub Releases themselves (IPAs
   0.1.0–0.3.1 and the Android 0.4.0 *debug* APK renamed `StudyHour-0.3.1.apk`; every tag points at e6479e7, not the
   build commits; no LICENSE yet). Those release fixes wait for the owner's OK. `docs/v3-development-record.md` is still
@@ -60,34 +65,25 @@ that calls tools: DeepSeek (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or
 8. Earlier Chats: reopen the chat; cards keep their state. Airplane mode: a clear error and Try Again.
 9. Anything odd: note the provider and model, what you asked, and what the card or answer said.
 
-## Android phone test of 0.4.0 (owner)
+## Android 0.4.1 Atom Island check (owner)
 
-Use the account you already use on the iPhone (same Supabase project). The built-in Supabase email only reaches the
-project team's addresses, a few an hour, so a brand-new account with another address won't get its email.
-
-1. **Install** over 0.3.0. The Today/Timetable/Focus tabs and your courses are unchanged.
-2. **Sign in** on the Words tab. The 考研 book downloads (~4,800 words, a few seconds). Today's numbers, "Learned … of …"
-   and the streak should match the iPhone after both have synced.
-3. **Email link**: Forgot password? → open the email **on the phone** → the link should open StudyHour (if the
-   browser asks "Open with StudyHour?", allow it) → choose a new password. A link opened twice says it has expired.
-4. **Study** a session (Start on the Today card): new words with "I Know This", recall-and-rate, multiple choice,
-   spelling (Settings → Review questions switches the type). Close the session, open Words on the iPhone, pull to
-   refresh: the answers are there. Answer on the iPhone, come back to the phone: they arrive (sync runs when the app
-   comes to the front, or pull down on the Words home).
-5. **Favourites / settings / lists**: star a word on the phone, change "New words a day" on the iPhone, import a short
-   list (Books → Import a Word List…, paste or open a .txt/.csv); each shows up on the other device after a sync.
-6. **Speech**: US/UK on a word page. If it says there's no English voice, add one in the phone's text-to-speech
-   settings (search Settings for "text-to-speech"; or install Google's Speech Services) and try again.
-7. **Offline**: airplane mode, study a few words (the Words home shows "… answers waiting to upload"), back online,
-   Sync Now → that line disappears.
-8. **Sign out** (Study Settings → Sign Out): the words leave the phone, the timetable stays; sign in again and they
-   come back. **Don't test Delete Account with your real account** (it deletes the iPhone's progress too).
-9. Statistics, search (English, prefix or Chinese), hard words; Chinese and dark mode if you use them.
+Install `StudyHour-0.4.1-debug-28.apk` over 0.4.0 (everything stays). The island hides while StudyHour itself is on
+screen, so always go to the Home Screen to look.
+1. Settings → Reminders → Reliable Reminders: the **实时更新 / Live Updates** row says 已允许 / Allowed (if not, tap it).
+2. At the bottom: **发送测试实时更新 / Send a Test Live Update** → go to the Home Screen: the island should show the
+   StudyHour icon and "2 分钟". Come back: the line under the button says whether the phone made it a Live Update, plus
+   a details line (`promoted · colorized/standard · build`). **Screenshot that page** either way.
+3. Focus: start a session → Home Screen: the island shows "25 分钟" and counts down a minute at a time; Pause from the
+   notification → "已暂停". Tap the island: does it open the card / the app?
+4. A class with the live class notification on: from the reminder time the island shows the minutes to the start,
+   then the minutes to the end.
+5. If the island stays empty: the screenshot from step 2, and whether Settings → 通知与状态栏 → 原子岛 lists
+   anything for 学时. (vivo's own 原子通知 API needs access granted by vivo by email: last resort.)
 
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.5.0 device test; **B** is the Android track (independent).
+> 0.5.0 device test; **B** is the Android track (independent): the 0.4.1 island check, then stage 7.
 
 ### A. The owner's results for iOS 0.5.0 (the AI agent)
 
@@ -119,18 +115,18 @@ green, fast-forward main. Use the Write/Edit tools (or Python scripts written wi
 backslashes through a bash heredoc. Short report at the end with run links.
 ```
 
-### B. Android: the owner's results for 0.4.0 (Words), then stage 7
+### B. Android: the owner's Atom Island check of 0.4.1, then stage 7
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the owner's results for 0.4.0 (Words), then stage 7 (release)
+[PROJECT HANDOFF] CourseTable — Android: the owner's Atom Island check of 0.4.1, then stage 7 (release)
 
 ## Read first
-HANDOFF.md (status, the 0.4.0 checklist, facts, gotchas), docs/android-plan.md (§1 decisions, §7 stages, §8 progress),
-android/README.md, docs/vocabulary-spec.md for anything about Words.
+HANDOFF.md (status, the 0.4.1 checklist, facts, gotchas), docs/android-plan.md (§1 decisions, §7 stages, §8 progress
+incl. the 0.4.1 entry), android/README.md ("Live Updates and the brands' islands"), app/…/alerts/LiveUpdates.kt.
 
 ## Goal
-1. I tell you how the 0.4.0 phone test went: fix what I report on a branch (CI green, then fast-forward main, new
-   APK, versionCode +1).
+1. I tell you how the 0.4.1 island check went (with the Reliable Reminders screenshot): fix what I report on a branch
+   (CI green, then fast-forward main, new APK, versionCode +1).
 2. Stage 7 (release): a signed release APK. Ask me first how the release keystore is made and kept (it will be a repo
    secret I set myself; switching from the debug key means one uninstall, data moves by CSV export and the Words
    account), the version number and the release notes. Then docs: an Android development record
@@ -206,6 +202,10 @@ links.
 - Material Symbols drawables carry `android:tint="?attr/colorControlNormal"`: remove it after downloading and put the
   `>` back where it ended the tag (check every drawable parses).
 - Android 16 APIs behind feature flags may be missing from the SDK stubs: use the action string.
+- Live Updates: `hasPromotableCharacteristics()` has two rule sets (flag `ui_rich_ongoing`, see AOSP
+  `android16-qpr2-release` Notification.java): not colorized vs colorized, so never hard-code either.
+  `canPostPromotedNotifications()` is a diagnostic, not a gate. vivo/OPPO/Xiaomi islands ignore the chronometer and
+  hide while the app is in front. Device findings: github.com/tigerduck-app/android-dynamic-island-test.
 - Don't name a Kotlin property `java` (it shadows the `java.time` package); Glance `defaultWeight()` is scoped to
   Row/Column (no import).
 - Room ordering uses `createdAt`; `Repository.now()` hands out strictly increasing stamps.
