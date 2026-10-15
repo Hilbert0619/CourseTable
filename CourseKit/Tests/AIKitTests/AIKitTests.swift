@@ -108,9 +108,10 @@ import VocabKit
         let messages = (1...6).map { AIMessage($0 % 2 == 1 ? .user : .assistant, String(repeating: "\($0)", count: 100)) }
         let request = AIRequest(system: String(repeating: "s", count: 50), messages: messages)
         let trimmed = request.trimmed(maxCharacters: 380)
-        // 50 + 300 fits three messages, but the first kept one must be from the user.
+        // 50 + 300 fits three messages, but whole turns are dropped, so the first kept one is from the user.
         #expect(trimmed.messages.map { String($0.text.prefix(1)) } == ["5", "6"])
-        #expect(request.trimmed(maxCharacters: 10).messages.map { String($0.text.prefix(1)) } == ["6"])
+        // The latest turn stays whole even when it alone is too long.
+        #expect(request.trimmed(maxCharacters: 10).messages.map { String($0.text.prefix(1)) } == ["5", "6"])
         #expect(request.trimmed(maxCharacters: 10_000).messages == messages)
     }
 }
@@ -276,7 +277,8 @@ import VocabKit
     @Test func wholeAnthropicResponses() throws {
         let body = #"{"type":"message","content":[{"type":"thinking","thinking":""},{"type":"text","text":"OK"}],"stop_reason":"end_turn","usage":{"input_tokens":9,"output_tokens":2}}"#
         let events = try AIStreamDecoder(format: .anthropic).decodeComplete(Data(body.utf8))
-        #expect(events == [.text("OK"), .stop(.complete), .usage(input: 9, output: 2), .end])
+        #expect(events == [.thinkingBlock(index: 0, redactedData: nil), .text("OK"), .stop(.complete),
+                           .usage(input: 9, output: 2), .end])
     }
 
     @Test func errorsInsideASuccessfulResponse() throws {

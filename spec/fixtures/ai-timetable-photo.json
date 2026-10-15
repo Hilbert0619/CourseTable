@@ -1,0 +1,98 @@
+{
+  "about": "Timetable from a picture (TimetablePhoto). 'ocr': text boxes the phone found (positions as fractions from the top left) and the lines sent to a text model: empty boxes dropped, line breaks inside a box become spaces, rows top to bottom (middles within half a box height are one row), left to right within a row, numbers with two decimals. 'answers': a model's answer and what is read from it: the CSV (the ```csv block, else the first other code block, else the whole answer when there is no block) and the period times (a ```periods block of number,start,end lines, periods 1, 2, … in order without overlaps; otherwise null), or 'none' when there is no CSV.",
+  "ocr": [
+    {
+      "name": "a header row and two cells, slightly uneven",
+      "boxes": [
+        {
+          "text": "星期二",
+          "x": 0.4,
+          "y": 0.101,
+          "width": 0.08,
+          "height": 0.02
+        },
+        {
+          "text": "星期一",
+          "x": 0.2,
+          "y": 0.1,
+          "width": 0.08,
+          "height": 0.02
+        },
+        {
+          "text": "第1-2节",
+          "x": 0.02,
+          "y": 0.2,
+          "width": 0.07,
+          "height": 0.02
+        },
+        {
+          "text": "高等数学\nA101",
+          "x": 0.206,
+          "y": 0.206,
+          "width": 0.09,
+          "height": 0.04
+        },
+        {
+          "text": "  ",
+          "x": 0.5,
+          "y": 0.5,
+          "width": 0.1,
+          "height": 0.1
+        },
+        {
+          "text": "大学英语",
+          "x": 0.402,
+          "y": 0.199,
+          "width": 0.09,
+          "height": 0.02
+        },
+        {
+          "text": "1-16周",
+          "x": 0.206,
+          "y": 0.26,
+          "width": 0.05,
+          "height": 0.02
+        }
+      ],
+      "text": "[x 0.20 y 0.10 w 0.08 h 0.02] 星期一\n[x 0.40 y 0.10 w 0.08 h 0.02] 星期二\n[x 0.02 y 0.20 w 0.07 h 0.02] 第1-2节\n[x 0.21 y 0.21 w 0.09 h 0.04] 高等数学 A101\n[x 0.40 y 0.20 w 0.09 h 0.02] 大学英语\n[x 0.21 y 0.26 w 0.05 h 0.02] 1-16周"
+    }
+  ],
+  "answers": [
+    {
+      "name": "csv and periods blocks",
+      "answer": "Here it is:\n```csv\nname,teacher,room,weekday,periods,weeks\n高等数学,李老师,A101,1,1-2,1-16\n```\n```periods\n1,08:00,08:45\n2,08:55,09:40\n3,10:00,10:45\n```",
+      "csv": "name,teacher,room,weekday,periods,weeks\n高等数学,李老师,A101,1,1-2,1-16",
+      "periods": [
+        [
+          "08:00",
+          "08:45"
+        ],
+        [
+          "08:55",
+          "09:40"
+        ],
+        [
+          "10:00",
+          "10:45"
+        ]
+      ]
+    },
+    {
+      "name": "an unlabelled block, overlapping periods ignored",
+      "answer": "```\n课程,星期,节次\n大学英语,2,3-4\n```\n```periods\n1,08:00,08:45\n2,08:30,09:40\n```",
+      "csv": "课程,星期,节次\n大学英语,2,3-4",
+      "periods": null
+    },
+    {
+      "name": "no code block: the whole answer",
+      "answer": "name,weekday,periods\nCalculus,Mon,1-2\n",
+      "csv": "name,weekday,periods\nCalculus,Mon,1-2",
+      "periods": null
+    },
+    {
+      "name": "only a periods block",
+      "answer": "```periods\n1,08:00,08:45\n2,08:55,09:40\n```",
+      "none": true
+    }
+  ]
+}

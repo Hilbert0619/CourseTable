@@ -1,0 +1,28 @@
+{
+  "about": "Checking a tool call's arguments (AITool.validate) for the tool below. Expect 'values' (the normalised arguments: text trimmed, dates YYYY-MM-DD, times HH:mm, numbers given as text read as integers, choices in their listed spelling; empty text, null and unknown names left out) or 'error' (the problem told to the model).",
+  "tool": {"name": "plan", "description": "A test tool.", "effect": "changes", "parameters": [
+    {"name": "title", "type": "text", "max": 10, "description": "Title", "required": true},
+    {"name": "date", "type": "date", "description": "Day"},
+    {"name": "time", "type": "time", "description": "Time"},
+    {"name": "minutes", "type": "integer", "min": 5, "max": 120, "description": "Length"},
+    {"name": "kind", "type": "choice", "choices": ["home", "school"], "description": "Where"},
+    {"name": "urgent", "type": "boolean", "description": "Urgent"}
+  ]},
+  "cases": [
+    {"name": "all kinds, normalised", "arguments": "{\"title\":\" Read \",\"date\":\"2026-10-16T09:00:00Z\",\"time\":\"9:05\",\"minutes\":\"30\",\"kind\":\"School\",\"urgent\":\"TRUE\",\"extra\":1}",
+     "values": {"title": "Read", "date": "2026-10-16", "time": "09:05", "minutes": 30, "kind": "school", "urgent": true}},
+    {"name": "numbers as numbers, nulls and empty text left out", "arguments": "{\"title\":2026,\"minutes\":45.0,\"date\":null,\"time\":\"\"}",
+     "values": {"title": "2026", "minutes": 45}},
+    {"name": "no arguments at all", "arguments": "", "error": "\"title\" is missing."},
+    {"name": "not an object", "arguments": "[1,2]", "error": "The arguments aren't a JSON object. Call plan again with valid JSON."},
+    {"name": "cut-off JSON", "arguments": "{\"title\":\"Rea", "error": "The arguments aren't a JSON object. Call plan again with valid JSON."},
+    {"name": "too long", "arguments": "{\"title\":\"A very long title\"}", "error": "\"title\" is too long (at most 10 characters)."},
+    {"name": "impossible date", "arguments": "{\"title\":\"x\",\"date\":\"2026-02-30\"}", "error": "\"date\" must be a date like 2026-10-15."},
+    {"name": "12-hour time", "arguments": "{\"title\":\"x\",\"time\":\"5pm\"}", "error": "\"time\" must be a 24-hour time like 08:30."},
+    {"name": "out of range", "arguments": "{\"title\":\"x\",\"minutes\":2}", "error": "\"minutes\" must be between 5 and 120."},
+    {"name": "fraction", "arguments": "{\"title\":\"x\",\"minutes\":2.5}", "error": "\"minutes\" must be a whole number."},
+    {"name": "unknown choice", "arguments": "{\"title\":\"x\",\"kind\":\"library\"}", "error": "\"kind\" must be one of: home, school."},
+    {"name": "not a boolean", "arguments": "{\"title\":\"x\",\"urgent\":\"yes\"}", "error": "\"urgent\" must be true or false."},
+    {"name": "an object for text", "arguments": "{\"title\":{\"a\":1}}", "error": "\"title\" must be text."}
+  ]
+}

@@ -68,6 +68,25 @@ public enum AIError: Error, Hashable, Sendable {
         }
     }
 
+    /// The provider rejected the request because of its tools: the model can't call them.
+    public var rejectsTools: Bool { rejectionMentions(["tool", "function"]) }
+
+    /// The provider rejected the request because of a picture: the model can't read them.
+    public var rejectsImages: Bool { rejectionMentions(["image", "vision", "multimodal", "multi-modal"]) }
+
+    private func rejectionMentions(_ words: [String]) -> Bool {
+        switch self {
+        case .rejected(let status, let message) where status == nil || (400..<500).contains(status!):
+            let text = (message ?? "").lowercased()
+            return words.contains(where: text.contains)
+        case .notFound(let message):
+            let text = (message ?? "").lowercased()
+            return words.contains(where: text.contains)
+        default:
+            return false
+        }
+    }
+
     /// Worth trying again later without changing anything.
     public var isTransient: Bool {
         switch self {

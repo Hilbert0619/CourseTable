@@ -2,8 +2,9 @@
 
 Both implementations of the app's logic read these files in their tests and must give the same answers:
 
-- iOS: `CourseKit/Tests/CourseKitTests/SharedFixtureTests.swift`, `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift`
-  and `CourseKit/Tests/AIKitTests/AISharedFixtureTests.swift` (`swift test` in `CourseKit/`, CI `coursekit.yml`)
+- iOS: `CourseKit/Tests/CourseKitTests/SharedFixtureTests.swift`, `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift`,
+  `CourseKit/Tests/AIKitTests/AISharedFixtureTests.swift` and `AIAgentFixtureTests.swift` (`swift test` in `CourseKit/`,
+  CI `coursekit.yml`)
 - Android: `android/core/src/test/kotlin/io/github/hilbert0619/coursekit/SharedFixtureTests.kt` and
   `.../vocabkit/VocabSharedFixtureTests.kt` (`./gradlew :core:test` in `android/`, CI `android.yml`)
 
@@ -20,6 +21,11 @@ Both implementations of the app's logic read these files in their tests and must
 | `ai-streams.json` | Streamed AI answers in both wire formats (OpenAI-compatible, Anthropic): text, stop reason, token counts, errors inside a stream; any chunk size |
 | `ai-errors.json` | Providers' HTTP error responses and the error kind each maps to (wrong key, no credit, rate limit…) |
 | `ai-todo-drafts.json` | AI answers to the quick-add prompt read into to-do drafts (course names matched exactly, partly or by abbreviation) |
+| `ai-tool-streams.json` | Streamed answers with tool calls in both formats: arguments split across chunks, two calls in one answer, a call without an index, reasoning text, signed and redacted thinking blocks |
+| `ai-tool-requests.json` | Request bodies of conversations with tools (JSON Schema), pictures, tool calls and results, reasoning and thinking blocks sent back, a picture no longer kept |
+| `ai-tool-arguments.json` | A tool call's arguments checked and normalised (types, lengths, dates, times, ranges, choices), or the error told to the model |
+| `ai-agent-tools.json` | The Assistant's app tools on one snapshot (timetable, to-dos, focus, vocabulary): reading tools' texts, proposed changes, errors |
+| `ai-timetable-photo.json` | Text found in a timetable photo turned into position lines for a text model; model answers read into CSV and period times |
 
 JSON values use the Swift `Codable` shapes (dates `"2026-09-28"`, times `"08:05"`, weekdays `1` = Monday, upper-case
 UUIDs, to-do timings `{"at": {"_0": "12:00"}}`), which the Kotlin port reads and writes the same way; 64-bit seeds and random

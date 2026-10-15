@@ -1,0 +1,537 @@
+{
+  "about": "The Assistant's app tools (AppTools) on one snapshot of the app. Times are local: 'at' is 'YYYY-MM-DD HH:mm'. The timetable uses the standard 12 periods. Vocabulary: cards are the replay of the events with the default FSRS parameters; an event's study day is its date, answered at its time; the plan and countdown are for 'now'. For each call (tool name + the model's JSON arguments), validate the arguments, then expect: 'result' (a reading tool's text), 'error' (the text of an error result) or 'proposal' (a change: add/update {title, date, timing: anytime | at HH:mm | after <course id>, done}, delete <todo id>, courses {courses, duplicates, problems}, focus {goal, totalMinutes, usesBreaks}). 'running' adds a focus session running 10:00-11:00 today ('英语阅读'); 'signedOut' leaves the vocabulary out.",
+  "world": {
+    "today": "2026-10-15",
+    "now": "10:30",
+    "semester": {
+      "firstMonday": "2026-09-07",
+      "totalWeeks": 18
+    },
+    "courses": [
+      {
+        "id": "C0000000-0000-0000-0000-000000000001",
+        "name": "高等数学",
+        "teacher": "李老师",
+        "room": "A101",
+        "weekday": 2,
+        "startPeriod": 1,
+        "periodCount": 2,
+        "weeks": {
+          "first": 1,
+          "last": 16,
+          "parity": "every"
+        },
+        "colorIndex": 0
+      },
+      {
+        "id": "C0000000-0000-0000-0000-000000000002",
+        "name": "高等数学",
+        "teacher": "李老师",
+        "room": "A101",
+        "weekday": 4,
+        "startPeriod": 3,
+        "periodCount": 2,
+        "weeks": {
+          "first": 1,
+          "last": 16,
+          "parity": "every"
+        },
+        "colorIndex": 0
+      },
+      {
+        "id": "C0000000-0000-0000-0000-000000000003",
+        "name": "大学英语",
+        "teacher": "王老师",
+        "room": "B204",
+        "weekday": 4,
+        "startPeriod": 1,
+        "periodCount": 2,
+        "weeks": {
+          "first": 1,
+          "last": 16,
+          "parity": "every"
+        },
+        "colorIndex": 1
+      },
+      {
+        "id": "C0000000-0000-0000-0000-000000000004",
+        "name": "Physics Lab",
+        "teacher": "",
+        "room": "Lab 3",
+        "weekday": 5,
+        "startPeriod": 5,
+        "periodCount": 3,
+        "weeks": {
+          "first": 1,
+          "last": 15,
+          "parity": "odd"
+        },
+        "colorIndex": 2
+      }
+    ],
+    "todos": [
+      {
+        "id": "11111111-0000-0000-0000-000000000001",
+        "title": "Pick up the package",
+        "day": "2026-10-15",
+        "timing": {
+          "at": {
+            "_0": "12:10"
+          }
+        },
+        "isDone": false
+      },
+      {
+        "id": "22222222-0000-0000-0000-000000000002",
+        "title": "交论文",
+        "day": "2026-10-15",
+        "timing": {
+          "afterClass": {
+            "courseID": "C0000000-0000-0000-0000-000000000003"
+          }
+        },
+        "isDone": false
+      },
+      {
+        "id": "33333333-0000-0000-0000-000000000003",
+        "title": "Buy milk",
+        "day": "2026-10-15",
+        "timing": {
+          "anytime": {}
+        },
+        "isDone": true
+      },
+      {
+        "id": "44444444-0000-0000-0000-000000000004",
+        "title": "Return the library book",
+        "day": "2026-10-13",
+        "timing": {
+          "anytime": {}
+        },
+        "isDone": false
+      },
+      {
+        "id": "55555555-0000-0000-0000-000000000005",
+        "title": "期中复习",
+        "day": "2026-10-20",
+        "timing": {
+          "afterClass": {
+            "courseID": "C0000000-0000-0000-0000-000000000001"
+          }
+        },
+        "isDone": false
+      }
+    ],
+    "focus": {
+      "settings": {
+        "totalMinutes": 120,
+        "usesBreaks": true,
+        "focusMinutes": 25,
+        "shortBreakMinutes": 5,
+        "longBreakMinutes": 15,
+        "blocksBeforeLongBreak": 4
+      },
+      "sessions": [
+        {
+          "goal": "高数复习",
+          "at": "2026-10-13 19:00",
+          "focusedSeconds": 3000,
+          "finished": true
+        },
+        {
+          "goal": "",
+          "at": "2026-10-15 08:10",
+          "focusedSeconds": 900,
+          "finished": false
+        },
+        {
+          "goal": "Old",
+          "at": "2026-10-01 09:00",
+          "focusedSeconds": 1500,
+          "finished": true
+        }
+      ]
+    },
+    "vocab": {
+      "bookName": "考研词汇",
+      "book": [
+        "abandon",
+        "ability",
+        "able",
+        "abroad",
+        "absence",
+        "absolute"
+      ],
+      "entries": {
+        "abandon": "vt. 放弃, 抛弃\nn. 放任",
+        "ability": "n. 能力, 才能",
+        "able": "a. 能够的, 有能力的",
+        "abroad": "ad. 在国外, 到海外",
+        "absence": "n. 缺席, 不在场",
+        "absolute": "a. 绝对的, 完全的"
+      },
+      "newWordsPerDay": 20,
+      "examDate": "2026-12-19",
+      "events": [
+        {
+          "word": "abandon",
+          "rating": 3,
+          "at": "2026-10-01 20:00",
+          "durationMs": 6000
+        },
+        {
+          "word": "abandon",
+          "rating": 3,
+          "at": "2026-10-02 20:00",
+          "durationMs": 5000
+        },
+        {
+          "word": "abandon",
+          "rating": 1,
+          "at": "2026-10-06 20:00",
+          "durationMs": 7000
+        },
+        {
+          "word": "abandon",
+          "rating": 3,
+          "at": "2026-10-06 20:10",
+          "durationMs": 4000
+        },
+        {
+          "word": "abandon",
+          "rating": 3,
+          "at": "2026-10-07 20:00",
+          "durationMs": 4000
+        },
+        {
+          "word": "abandon",
+          "rating": 1,
+          "at": "2026-10-12 20:00",
+          "durationMs": 8000
+        },
+        {
+          "word": "abandon",
+          "rating": 3,
+          "at": "2026-10-12 20:10",
+          "durationMs": 4000
+        },
+        {
+          "word": "ability",
+          "rating": 3,
+          "at": "2026-10-12 20:01",
+          "durationMs": 3000
+        },
+        {
+          "word": "ability",
+          "rating": 4,
+          "at": "2026-10-14 08:00",
+          "durationMs": 2000
+        },
+        {
+          "word": "able",
+          "rating": 2,
+          "at": "2026-10-14 08:01",
+          "durationMs": 9000
+        },
+        {
+          "word": "abroad",
+          "rating": 3,
+          "at": "2026-10-15 09:00",
+          "durationMs": 3000
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "list to-dos: today and the next 6 days, in time order",
+      "tool": "list_todos",
+      "arguments": "{}",
+      "result": "To-dos from Thu 2026-10-15 to Wed 2026-10-21 (4):\nid 22222222 · Thu 2026-10-15 · after 大学英语 (ends 09:40) · 交论文\nid 11111111 · Thu 2026-10-15 · at 12:10 · Pick up the package\nid 33333333 · Thu 2026-10-15 · any time · Buy milk · done\nid 55555555 · Tue 2026-10-20 · after 高等数学 (ends 09:40) · 期中复习\n1 unfinished to-do on earlier days (ask with an earlier \"from\")."
+    },
+    {
+      "name": "list to-dos: too many days",
+      "tool": "list_todos",
+      "arguments": "{\"from\":\"2026-10-15\",\"to\":\"2026-12-01\"}",
+      "error": "Ask for at most 31 days at a time."
+    },
+    {
+      "name": "add: after a class named by an abbreviation",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"交作业\",\"date\":\"2026-10-20\",\"afterCourse\":\"高数\"}",
+      "proposal": {
+        "add": {
+          "title": "交作业",
+          "date": "2026-10-20",
+          "timing": "after C0000000-0000-0000-0000-000000000001",
+          "done": false
+        }
+      }
+    },
+    {
+      "name": "add: the course's other weekly meeting is picked on Thursday",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"问老师\",\"date\":\"2026-10-22\",\"afterCourse\":\"高等数学\"}",
+      "proposal": {
+        "add": {
+          "title": "问老师",
+          "date": "2026-10-22",
+          "timing": "after C0000000-0000-0000-0000-000000000002",
+          "done": false
+        }
+      }
+    },
+    {
+      "name": "add: at a time, numbers and spaces cleaned",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"  Call home \",\"date\":\"2026-10-15T00:00:00\",\"time\":\"8:05\"}",
+      "proposal": {
+        "add": {
+          "title": "Call home",
+          "date": "2026-10-15",
+          "timing": "at 08:05",
+          "done": false
+        }
+      }
+    },
+    {
+      "name": "add: no class that day (odd weeks only)",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"Lab report\",\"date\":\"2026-10-16\",\"afterCourse\":\"physics lab\"}",
+      "error": "Physics Lab has no class on Fri 2026-10-16; its classes near then: Fri 2026-10-09, Fri 2026-10-23. Pick one of those days or a time."
+    },
+    {
+      "name": "add: a past day",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"x\",\"date\":\"2026-10-14\"}",
+      "error": "Wed 2026-10-14 is before today (Thu 2026-10-15); to-dos are for today or later."
+    },
+    {
+      "name": "add: time and class together",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"x\",\"date\":\"2026-10-16\",\"time\":\"09:00\",\"afterCourse\":\"大学英语\"}",
+      "error": "Give either time or afterCourse, not both."
+    },
+    {
+      "name": "add: unknown course",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"x\",\"date\":\"2026-10-16\",\"afterCourse\":\"化学\"}",
+      "error": "No course is called \"化学\". Courses: Physics Lab, 大学英语, 高等数学."
+    },
+    {
+      "name": "add: bad date",
+      "tool": "add_todo",
+      "arguments": "{\"title\":\"x\",\"date\":\"tomorrow\"}",
+      "error": "Invalid arguments for add_todo: \"date\" must be a date like 2026-10-15."
+    },
+    {
+      "name": "add: missing title",
+      "tool": "add_todo",
+      "arguments": "{\"date\":\"2026-10-16\"}",
+      "error": "Invalid arguments for add_todo: \"title\" is missing."
+    },
+    {
+      "name": "update: a new time, by short id",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"11111111\",\"time\":\"13:00\"}",
+      "proposal": {
+        "update": {
+          "id": "11111111-0000-0000-0000-000000000001",
+          "title": "Pick up the package",
+          "date": "2026-10-15",
+          "timing": "at 13:00",
+          "done": false
+        }
+      }
+    },
+    {
+      "name": "update: moved to a day without that class",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"22222222\",\"date\":\"2026-10-16\"}",
+      "error": "The to-do follows 大学英语, which has no class on Fri 2026-10-16. Give a time, anyTime, or another afterCourse too."
+    },
+    {
+      "name": "update: moved to the course's other weekly meeting",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"55555555\",\"date\":\"2026-10-22\"}",
+      "proposal": {
+        "update": {
+          "id": "55555555-0000-0000-0000-000000000005",
+          "title": "期中复习",
+          "date": "2026-10-22",
+          "timing": "after C0000000-0000-0000-0000-000000000002",
+          "done": false
+        }
+      }
+    },
+    {
+      "name": "update: tick off",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"#44444444\",\"done\":\"true\"}",
+      "proposal": {
+        "update": {
+          "id": "44444444-0000-0000-0000-000000000004",
+          "title": "Return the library book",
+          "date": "2026-10-13",
+          "timing": "anytime",
+          "done": true
+        }
+      }
+    },
+    {
+      "name": "update: nothing changes",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"33333333\",\"done\":true}",
+      "error": "That doesn't change anything."
+    },
+    {
+      "name": "update: two timings",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"33333333\",\"time\":\"09:00\",\"anyTime\":true}",
+      "error": "Give only one of time, afterCourse and anyTime."
+    },
+    {
+      "name": "update: unknown id",
+      "tool": "update_todo",
+      "arguments": "{\"id\":\"9999abcd\",\"title\":\"y\"}",
+      "error": "No to-do has the id \"9999abcd\". Call list_todos for the current ids."
+    },
+    {
+      "name": "delete",
+      "tool": "delete_todo",
+      "arguments": "{\"id\":\"44444444\"}",
+      "proposal": {
+        "delete": "44444444-0000-0000-0000-000000000004"
+      }
+    },
+    {
+      "name": "schedule: today and the next 6 days",
+      "tool": "get_schedule",
+      "arguments": "{}",
+      "result": "The term starts Mon 2026-09-07 and has 18 weeks; today is in week 6.\nClasses from Thu 2026-10-15 to Wed 2026-10-21:\nThu 2026-10-15 08:00–09:40 大学英语 (B204, 王老师) · week 6\nThu 2026-10-15 10:00–11:40 高等数学 (A101, 李老师) · week 6\nTue 2026-10-20 08:00–09:40 高等数学 (A101, 李老师) · week 7"
+    },
+    {
+      "name": "schedule: too many days",
+      "tool": "get_schedule",
+      "arguments": "{\"from\":\"2026-10-15\",\"to\":\"2026-10-30\"}",
+      "error": "Ask for at most 14 days at a time."
+    },
+    {
+      "name": "courses as CSV",
+      "tool": "list_courses",
+      "arguments": "",
+      "result": "The term starts Mon 2026-09-07 and has 18 weeks; today is in week 6.\nClass periods: 1 08:00–08:45, 2 08:55–09:40, 3 10:00–10:45, 4 10:55–11:40, 5 14:00–14:45, 6 14:55–15:40, 7 16:00–16:45, 8 16:55–17:40, 9 19:00–19:45, 10 19:55–20:40, 11 20:50–21:35, 12 21:45–22:30.\nCourses (4):\nname,teacher,room,weekday,periods,weeks\n高等数学,李老师,A101,2,1-2,1-16\n大学英语,王老师,B204,4,1-2,1-16\n高等数学,李老师,A101,4,3-4,1-16\nPhysics Lab,,Lab 3,5,5-7,1-15 odd"
+    },
+    {
+      "name": "add courses: two new, one already there, one bad line",
+      "tool": "add_courses",
+      "arguments": "{\"csv\":\"课程,教师,教室,星期,节次,周次\\n线性代数,赵老师,C305,周三,3-4,1-16周\\n线性代数,赵老师,C305,周五,1-2,1-8周\\n大学英语,王老师,B204,周四,1-2,1-16周\\n体育,,操场,周八,7-8,\"}",
+      "proposal": {
+        "courses": {
+          "courses": 2,
+          "duplicates": 1,
+          "problems": 1
+        }
+      }
+    },
+    {
+      "name": "add courses: nothing readable",
+      "tool": "add_courses",
+      "arguments": "{\"csv\":\"name,teacher\\nCalculus,Li\"}",
+      "error": "No course could be read from the CSV. Problems:\nLine 1: the header row is missing weekday, periods\nUse the header name,teacher,room,weekday,periods,weeks and one line per weekly meeting."
+    },
+    {
+      "name": "add courses: all already there",
+      "tool": "add_courses",
+      "arguments": "{\"csv\":\"大学英语,王老师,B204,4,1-2,1-16\"}",
+      "error": "That course is already in the timetable; nothing to add."
+    },
+    {
+      "name": "start focus without breaks",
+      "tool": "start_focus",
+      "arguments": "{\"minutes\":50,\"goal\":\"高数复习\",\"breaks\":false}",
+      "proposal": {
+        "focus": {
+          "goal": "高数复习",
+          "totalMinutes": 50,
+          "usesBreaks": false
+        }
+      }
+    },
+    {
+      "name": "start focus keeps the user's breaks",
+      "tool": "start_focus",
+      "arguments": "{\"minutes\":\"90\"}",
+      "proposal": {
+        "focus": {
+          "goal": "",
+          "totalMinutes": 90,
+          "usesBreaks": true
+        }
+      }
+    },
+    {
+      "name": "start focus: too long",
+      "tool": "start_focus",
+      "arguments": "{\"minutes\":300}",
+      "error": "Invalid arguments for start_focus: \"minutes\" must be between 15 and 240."
+    },
+    {
+      "name": "start focus while one runs",
+      "tool": "start_focus",
+      "arguments": "{\"minutes\":30}",
+      "running": true,
+      "error": "A focus session (英语阅读) is already running until 11:00. The user can stop it on the Focus tab first."
+    },
+    {
+      "name": "focus history, 3 days, with a running session",
+      "tool": "get_focus_history",
+      "arguments": "{\"days\":3}",
+      "running": true,
+      "result": "Focus, last 3 days (65 min in all):\nRunning now on \"英语阅读\": started 10:00, ends 11:00.\nSetup: 120 minutes, 25-minute blocks with 5-minute breaks.\nTue 2026-10-13: 50 min focused — 19:00 \"高数复习\" 50 min\nWed 2026-10-14: no focus sessions\nThu 2026-10-15: 15 min focused — 08:10 no goal 15 min (stopped early)"
+    },
+    {
+      "name": "vocabulary overview",
+      "tool": "get_vocab_overview",
+      "arguments": "{}",
+      "result": "Book: 考研词汇, 6 words. Learned 4, mastered 0 (stable for 30+ days), not seen yet 2.\nToday: new words 1 of 20, reviews done 0, reviews left 2.\nStreak: 2 days (including today).\nLast 7 days: 3 days studied, 6 answers, 83% right, 0 min.\nLast 30 days: 7 days studied, 11 answers, 82% right, 0 min.\nSettings: 20 new words a day, target recall 90%.\nHard words (forgotten 2+ times): 1.\nExam on Sat 2026-12-19: 65 days left, 2 words not seen yet, needs 1 new word a day to see them all (now 20)."
+    },
+    {
+      "name": "vocabulary history, 5 days",
+      "tool": "get_vocab_history",
+      "arguments": "{\"days\":5}",
+      "result": "Vocabulary study, last 5 days, newest first:\nThu 2026-10-15: 1 answer, 1 new word, 0 reviewed, 100% right, 0 min\nWed 2026-10-14: 2 answers, 1 new word, 1 reviewed, 100% right, 0 min\nTue 2026-10-13: no study\nMon 2026-10-12: 3 answers, 1 new word, 1 reviewed, 67% right, 0 min\nSun 2026-10-11: no study"
+    },
+    {
+      "name": "hard words",
+      "tool": "get_hard_words",
+      "arguments": "{\"limit\":5}",
+      "result": "Hardest words (1):\nabandon · vt. 放弃, 抛弃 · forgotten 2 times · last answer Good on 2026-10-12 · recall chance today 79%"
+    },
+    {
+      "name": "one word's record (any case)",
+      "tool": "get_word_progress",
+      "arguments": "{\"word\":\"Abandon\"}",
+      "result": "abandon — vt. 放弃, 抛弃\nState: learned. Answers: 7, forgotten after learning: 2 times.\nFirst studied: 2026-10-01.\nDue for review today.\nRecall chance today: 79%.\nMemory stability: 1 day.\nLast answers: 2026-10-06 Again (forgot), 2026-10-06 Good, 2026-10-07 Good, 2026-10-12 Again (forgot), 2026-10-12 Good."
+    },
+    {
+      "name": "a word not studied yet",
+      "tool": "get_word_progress",
+      "arguments": "{\"word\":\"absence\"}",
+      "result": "\"absence\" is in the book and hasn't been studied yet."
+    },
+    {
+      "name": "vocabulary without a Words account",
+      "tool": "get_vocab_overview",
+      "arguments": "{}",
+      "signedOut": true,
+      "error": "The user isn't signed in to Words (the vocabulary account), so there are no learning numbers. They can sign in on the Words tab."
+    },
+    {
+      "name": "an unknown tool",
+      "tool": "send_email",
+      "arguments": "{}",
+      "error": "There is no tool named \"send_email\". Tools: list_todos, add_todo, update_todo, delete_todo, get_schedule, list_courses, add_courses, get_vocab_overview, get_vocab_history, get_hard_words, get_word_progress, start_focus, get_focus_history."
+    }
+  ]
+}

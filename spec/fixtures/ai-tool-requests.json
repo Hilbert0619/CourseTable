@@ -1,0 +1,535 @@
+{
+  "about": "Request bodies for conversations with tools, pictures, tool calls and results, in both wire formats. Messages use the AIMessage Codable shape (images' data base64; empty data = a picture no longer kept). Tools: parameters with type text (max), date, time, integer (min, max), boolean or choice (choices). Compare the parsed JSON body with 'body'.",
+  "requests": [
+    {
+      "name": "OpenAI-compatible (DeepSeek): tools, picture parts, tool calls with reasoning, tool messages, a lost picture",
+      "connection": {
+        "providerID": "deepseek",
+        "format": "openAI",
+        "baseURL": "https://api.deepseek.com",
+        "model": "deepseek-v4-flash"
+      },
+      "system": "Be brief.",
+      "tools": [
+        {
+          "name": "add_todo",
+          "description": "Propose a new to-do.",
+          "effect": "changes",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "text",
+              "max": 100,
+              "description": "What to do",
+              "required": true
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "description": "The day",
+              "required": true
+            },
+            {
+              "name": "minutes",
+              "type": "integer",
+              "min": 5,
+              "max": 120,
+              "description": "How long"
+            },
+            {
+              "name": "kind",
+              "type": "choice",
+              "choices": [
+                "home",
+                "school"
+              ],
+              "description": "Where"
+            },
+            {
+              "name": "urgent",
+              "type": "boolean",
+              "description": "Urgent?"
+            },
+            {
+              "name": "time",
+              "type": "time",
+              "description": "When"
+            }
+          ]
+        }
+      ],
+      "messages": [
+        {
+          "role": "user",
+          "text": "Remind me to hand in the paper tomorrow",
+          "images": [
+            {
+              "data": "/9j/4AAQ",
+              "mediaType": "image/jpeg"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "text": "Sure.",
+          "reasoning": "Need a date.",
+          "thinking": [
+            {
+              "text": "",
+              "signature": "sig1"
+            },
+            {
+              "text": "",
+              "redactedData": "red1"
+            }
+          ],
+          "toolCalls": [
+            {
+              "id": "c1",
+              "name": "add_todo",
+              "arguments": "{\"title\":\"Hand in the paper\",\"date\":\"2026-10-16\"}"
+            },
+            {
+              "id": "c2",
+              "name": "list_todos",
+              "arguments": ""
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "text": "",
+          "toolResults": [
+            {
+              "callID": "c1",
+              "content": "Added the to-do (id 1a2b3c4d).",
+              "isError": false
+            },
+            {
+              "callID": "c2",
+              "content": "No such tool.",
+              "isError": true
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "text": "Done!"
+        },
+        {
+          "role": "user",
+          "text": "Thanks",
+          "images": [
+            {
+              "data": "",
+              "mediaType": "image/jpeg"
+            }
+          ],
+          "toolResults": []
+        }
+      ],
+      "body": {
+        "model": "deepseek-v4-flash",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "add_todo",
+              "description": "Propose a new to-do.",
+              "parameters": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "date"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "What to do (at most 100 characters)"
+                  },
+                  "date": {
+                    "type": "string",
+                    "description": "The day (YYYY-MM-DD)"
+                  },
+                  "minutes": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "maximum": 120,
+                    "description": "How long"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "home",
+                      "school"
+                    ],
+                    "description": "Where"
+                  },
+                  "urgent": {
+                    "type": "boolean",
+                    "description": "Urgent?"
+                  },
+                  "time": {
+                    "type": "string",
+                    "description": "When (24-hour HH:mm)"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be brief."
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "image_url",
+                "image_url": {
+                  "url": "data:image/jpeg;base64,/9j/4AAQ"
+                }
+              },
+              {
+                "type": "text",
+                "text": "Remind me to hand in the paper tomorrow"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": "Sure.",
+            "reasoning_content": "Need a date.",
+            "tool_calls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "add_todo",
+                  "arguments": "{\"title\":\"Hand in the paper\",\"date\":\"2026-10-16\"}"
+                }
+              },
+              {
+                "id": "c2",
+                "type": "function",
+                "function": {
+                  "name": "list_todos",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "c1",
+            "content": "Added the to-do (id 1a2b3c4d)."
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "c2",
+            "content": "Error: No such tool."
+          },
+          {
+            "role": "assistant",
+            "content": "Done!"
+          },
+          {
+            "role": "user",
+            "content": "(A photo was sent here earlier; it isn't available any more.)\nThanks"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Anthropic: tools, image blocks, thinking blocks echoed, tool results joined with the next user text",
+      "connection": {
+        "providerID": "anthropic",
+        "format": "anthropic",
+        "baseURL": "https://api.anthropic.com",
+        "model": "claude-opus-5-5"
+      },
+      "system": "Be brief.",
+      "tools": [
+        {
+          "name": "add_todo",
+          "description": "Propose a new to-do.",
+          "effect": "changes",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "text",
+              "max": 100,
+              "description": "What to do",
+              "required": true
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "description": "The day",
+              "required": true
+            },
+            {
+              "name": "minutes",
+              "type": "integer",
+              "min": 5,
+              "max": 120,
+              "description": "How long"
+            },
+            {
+              "name": "kind",
+              "type": "choice",
+              "choices": [
+                "home",
+                "school"
+              ],
+              "description": "Where"
+            },
+            {
+              "name": "urgent",
+              "type": "boolean",
+              "description": "Urgent?"
+            },
+            {
+              "name": "time",
+              "type": "time",
+              "description": "When"
+            }
+          ]
+        }
+      ],
+      "messages": [
+        {
+          "role": "user",
+          "text": "Remind me to hand in the paper tomorrow",
+          "images": [
+            {
+              "data": "/9j/4AAQ",
+              "mediaType": "image/jpeg"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "text": "Sure.",
+          "reasoning": "Need a date.",
+          "thinking": [
+            {
+              "text": "",
+              "signature": "sig1"
+            },
+            {
+              "text": "",
+              "redactedData": "red1"
+            }
+          ],
+          "toolCalls": [
+            {
+              "id": "c1",
+              "name": "add_todo",
+              "arguments": "{\"title\":\"Hand in the paper\",\"date\":\"2026-10-16\"}"
+            },
+            {
+              "id": "c2",
+              "name": "list_todos",
+              "arguments": ""
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "text": "",
+          "toolResults": [
+            {
+              "callID": "c1",
+              "content": "Added the to-do (id 1a2b3c4d).",
+              "isError": false
+            },
+            {
+              "callID": "c2",
+              "content": "No such tool.",
+              "isError": true
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "text": "Also tomorrow?"
+        }
+      ],
+      "body": {
+        "model": "claude-opus-5-5",
+        "max_tokens": 16000,
+        "stream": true,
+        "system": "Be brief.",
+        "tools": [
+          {
+            "name": "add_todo",
+            "description": "Propose a new to-do.",
+            "input_schema": {
+              "type": "object",
+              "required": [
+                "title",
+                "date"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "What to do (at most 100 characters)"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "The day (YYYY-MM-DD)"
+                },
+                "minutes": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 120,
+                  "description": "How long"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "home",
+                    "school"
+                  ],
+                  "description": "Where"
+                },
+                "urgent": {
+                  "type": "boolean",
+                  "description": "Urgent?"
+                },
+                "time": {
+                  "type": "string",
+                  "description": "When (24-hour HH:mm)"
+                }
+              }
+            }
+          }
+        ],
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "image",
+                "source": {
+                  "type": "base64",
+                  "media_type": "image/jpeg",
+                  "data": "/9j/4AAQ"
+                }
+              },
+              {
+                "type": "text",
+                "text": "Remind me to hand in the paper tomorrow"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "thinking",
+                "thinking": "",
+                "signature": "sig1"
+              },
+              {
+                "type": "redacted_thinking",
+                "data": "red1"
+              },
+              {
+                "type": "text",
+                "text": "Sure."
+              },
+              {
+                "type": "tool_use",
+                "id": "c1",
+                "name": "add_todo",
+                "input": {
+                  "title": "Hand in the paper",
+                  "date": "2026-10-16"
+                }
+              },
+              {
+                "type": "tool_use",
+                "id": "c2",
+                "name": "list_todos",
+                "input": {}
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "c1",
+                "content": "Added the to-do (id 1a2b3c4d)."
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "c2",
+                "content": "No such tool.",
+                "is_error": true
+              },
+              {
+                "type": "text",
+                "text": "Also tomorrow?"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "No tools: plain bodies as before (no tools key, text-only messages stay strings)",
+      "connection": {
+        "providerID": "anthropic",
+        "format": "anthropic",
+        "baseURL": "https://api.anthropic.com/v1",
+        "model": "claude-haiku-5-5"
+      },
+      "system": "",
+      "tools": [],
+      "messages": [
+        {
+          "role": "user",
+          "text": "Hi"
+        },
+        {
+          "role": "assistant",
+          "text": ""
+        },
+        {
+          "role": "user",
+          "text": "Hello?"
+        }
+      ],
+      "body": {
+        "model": "claude-haiku-5-5",
+        "max_tokens": 16000,
+        "stream": true,
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "Hi"
+              },
+              {
+                "type": "text",
+                "text": "Hello?"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

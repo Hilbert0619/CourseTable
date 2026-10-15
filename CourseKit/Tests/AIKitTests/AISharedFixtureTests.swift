@@ -39,6 +39,7 @@ enum AISharedFixtures {
         case .complete: "complete"
         case .cutOff: "cutOff"
         case .refused: "refused"
+        case .toolUse: "toolUse"
         case .other(let text): text
         case nil: nil
         }
