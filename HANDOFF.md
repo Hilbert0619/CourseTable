@@ -122,8 +122,13 @@ Tested by the owner on 0.4.1 and 0.5.0: nothing in the China OriginOS island, be
 (see Status). The owner chose to stop; don't reopen it unless the owner asks or vivo's rules change.
 
 Options weighed with the owner (2026-10-16): **A** keep the standard Live Update and re-test after OriginOS updates
-(**chosen**); B apply to vivo (store listing first); C a floating countdown pill below the status bar (悬浮窗);
-D a fake island drawn over the camera through an accessibility service. B–D are not planned.
+(on `main`, no code); B apply to vivo (store listing first, not planned); C a floating countdown pill below the status
+bar (悬浮窗, not planned); **D** StudyHour's own island drawn over the camera hole through an accessibility service:
+**being built as 0.5.1 (versionCode 7) on branch `android-island-overlay`** (2026-10-16). It is merged into `main`
+only after the owner has tried the branch APK on the iQOO Neo 9. Plan: off by default; Settings → Reliable Reminders
+explains it and opens Android's accessibility settings; the service reads no screen content, it only draws a pill
+around the camera (icon left, "25 分钟" right) for the live class countdown and Focus, taps open a card, swipe up hides it
+until the next change, hidden while StudyHour is open.
 
 **Re-test after each OriginOS update** (e.g. OriginOS 7 on the iQOO Neo 9), no new APK needed: Settings → Reminders →
 Reliable Reminders → **发送测试实时更新** → go to the Home Screen and look at the island; come back and screenshot the
