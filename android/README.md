@@ -28,6 +28,16 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
   Reminders → Send a Test Live Update shows how the phone treats one (promoted or not, colorized, build). **China
   OriginOS (vivo/iQOO) shows only apps vivo has approved in its Atom Island** (`docs/android-plan.md` §8, 0.4.1):
   StudyHour isn't one, so nothing appears there (tested on an iQOO Neo 9, 2026-10-16).
+- **The Countdown Island** (`app/…/island`, 0.5.1, off by default): for those phones, StudyHour draws its own island.
+  `IslandService` is an accessibility service the person turns on (Reliable Reminders explains it and opens the
+  accessibility settings); it asks for no events and can't read the screen (`res/xml/island_service.xml`), and only
+  adds a `TYPE_ACCESSIBILITY_OVERLAY` window, the one app window allowed over the status bar and the camera hole.
+  `IslandSource` reads the countdowns back from StudyHour's own active notifications (live class, Focus, the test
+  Live Update), so the island follows them exactly; every post or removal calls `Island.changed()`. `IslandPlanner`
+  (JVM-tested) orders them (running Focus, then the soonest end, then a paused session), writes the pill's minutes,
+  and decides when to look again; `IslandGeometry` centers the pill on the camera hole (`DisplayCutout`), or in the
+  status bar without a centered hole. A tap opens a card with every countdown to the second and the notification's
+  buttons; a swipe up hides it until the countdowns change; it hides while StudyHour is open and in landscape.
 - **Focus**: `FocusEngine` keeps the core `FocusRun` in `SharedPreferences`, so the app, the notification buttons and
   an alarm in a new process share one session; an alarm at each switch posts its notification. The sounds are the iOS
   files (`CourseTable/Sounds`, packed as assets by the variant API), played by Media3 ExoPlayer in a loop without audio
