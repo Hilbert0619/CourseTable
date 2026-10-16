@@ -116,7 +116,7 @@ connection on the phone itself (the same key works on both). Use a model that ca
 9. **以前的对话**: reopen a chat, the cards keep their state. Airplane mode: a clear error and Try Again.
 10. Anything odd: provider and model, what you asked, a screenshot of the card or answer. Never send the key itself.
 
-## Android Atom Island (closed 2026-10-16)
+## Android Atom Island (vivo's: closed 2026-10-16) and the Countdown Island (0.5.1, branch)
 
 Tested by the owner on 0.4.1 and 0.5.0: nothing in the China OriginOS island, because vivo grants it per app
 (see Status). The owner chose to stop; don't reopen it unless the owner asks or vivo's rules change.
@@ -124,11 +124,29 @@ Tested by the owner on 0.4.1 and 0.5.0: nothing in the China OriginOS island, be
 Options weighed with the owner (2026-10-16): **A** keep the standard Live Update and re-test after OriginOS updates
 (on `main`, no code); B apply to vivo (store listing first, not planned); C a floating countdown pill below the status
 bar (悬浮窗, not planned); **D** StudyHour's own island drawn over the camera hole through an accessibility service:
-**being built as 0.5.1 (versionCode 7) on branch `android-island-overlay`** (2026-10-16). It is merged into `main`
-only after the owner has tried the branch APK on the iQOO Neo 9. Plan: off by default; Settings → Reliable Reminders
-explains it and opens Android's accessibility settings; the service reads no screen content, it only draws a pill
-around the camera (icon left, "25 分钟" right) for the live class countdown and Focus, taps open a card, swipe up hides it
-until the next change, hidden while StudyHour is open.
+**built as 0.5.1 (versionCode 7) on branch `android-island-overlay`** (2026-10-16; CI 38954791068, screenshots of the
+pill, the card, the settings section and the dialog checked). APK
+`C:\Users\AI\Downloads\CourseTable\StudyHour-0.5.1-debug-44.apk` (installs over 0.5.0). **Not merged into `main`
+until the owner has tried it** on the iQOO Neo 9: then merge `main` into the branch (it has only docs on `main` since),
+run CI, fast-forward `main`. Design: `android/README.md` ("The Countdown Island"); progress: `docs/android-plan.md`
+§8 on the branch.
+
+**Countdown Island test (owner, 0.5.1 branch APK):**
+1. Settings → Reminders → Reliable Reminders → at the bottom **倒计时岛** (未开启) → read the dialog → **打开无障碍设置**
+   → find 学时 / 倒计时岛 (maybe under 已下载的应用 or 已安装的服务) → turn it on. If Android says 受限制的设置: App info
+   → ⋮ → 允许受限制的设置, then again. Back in StudyHour the row says 已开启.
+2. **试一试：2 分钟倒计时** → go to the Home Screen: a black pill around the camera, icon on the left, "2 分钟" on the
+   right, the camera hole in the middle of it. **Screenshot it** (does the hole sit centered, top and bottom?).
+3. Tap the pill: a card with 测试实时更新, the time counting down to the second, and 关闭. Tap outside: it closes.
+   Tap the card's text: StudyHour opens (the island hides while it's open). Tap 关闭 in the card: the test ends and
+   the island goes away.
+4. Focus: start a session → Home Screen: "25 分钟", a minute at a time. In the card, 暂停 → the pill says 已暂停;
+   继续; 停止 ends it. Swipe the pill up: it hides, and comes back when you pause or resume.
+5. A class with the live class notification: from the reminder time the pill shows the minutes to the start, then
+   to the end. Turn the phone sideways in a video: no island.
+6. Over a day: does the island still work after the screen was off for a while, and does 倒计时岛 stay 已开启 (some
+   phones turn accessibility services off)? Does it clash with vivo's own island (music, charging)?
+7. Report: the screenshots, anything odd; whether to merge it into `main`.
 
 **Re-test after each OriginOS update** (e.g. OriginOS 7 on the iQOO Neo 9), no new APK needed: Settings → Reminders →
 Reliable Reminders → **发送测试实时更新** → go to the Home Screen and look at the island; come back and screenshot the
@@ -138,7 +156,7 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.6.0 device test; **B** is the Android track (independent): the 0.5.0 AI test, then stage 7.
+> 0.6.0 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
 
 ### A. The owner's results for iOS 0.6.0 (icon, Focus wallpapers, Storage)
 
@@ -173,19 +191,21 @@ Use the Write/Edit tools (or Python scripts written with Write) for code, never 
 bash heredoc. Short report at the end with run links.
 ```
 
-### B. Android: the 0.5.0 AI test, then stage 7
+### B. Android: the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the owner's 0.5.0 AI test, then stage 7 (release)
+[PROJECT HANDOFF] CourseTable — Android: the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7 (release)
 
 ## Read first
-HANDOFF.md (status, the Android 0.5.0 AI checklist, facts, gotchas), docs/android-plan.md (§1
+HANDOFF.md (status, the Countdown Island and Android 0.5.0 AI checklists, facts, gotchas), docs/android-plan.md (§1
 decisions, §7 stages, §8 progress incl. the 0.4.1 and AI entries), android/README.md ("Live Updates and the brands'
 islands", "AI help and the Assistant"), docs/ai-spec.md and docs/ai-agent-spec.md (the iOS behaviour Android matches).
 
 ## Goal
-1. I tell you how the 0.5.0 AI checklist went (provider, model, what happened). The Atom Island is closed (vivo
-   grants it per app; I chose not to apply): don't work on it unless I ask. Fix what's reported on a branch (CI green, then fast-forward main, new APK,
+0. The Countdown Island (0.5.1, branch android-island-overlay, HANDOFF "Countdown Island test"): I tell you how it
+   went on my phone. Fix what I report on that branch; when I'm happy, merge main into it, CI, fast-forward main,
+   new APK. vivo's own Atom Island stays closed (vivo grants it per app; I chose not to apply).
+1. I tell you how the 0.5.0 AI checklist went (provider, model, what happened). Fix what's reported on a branch (CI green, then fast-forward main, new APK,
    versionCode +1): AI logic in android/core (package aikit) with tests first, matching iOS; if a fix belongs in the
    shared logic, change iOS AIKit too only after asking me.
 2. Stage 7 (release): a signed release APK. Ask me first how the release keystore is made and kept (it will be a repo
