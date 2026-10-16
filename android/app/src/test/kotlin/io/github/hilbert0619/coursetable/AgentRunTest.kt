@@ -80,9 +80,9 @@ class AgentRunTest {
 
     private class FocusRecorder : FocusActions by FocusActions.None {
         var started = false
-        var goal = ""
+        var chosenGoal = ""
         override fun setGoal(goal: String) {
-            this.goal = goal
+            chosenGoal = goal
         }
         override fun start() {
             started = true
@@ -154,7 +154,7 @@ class AgentRunTest {
         run.confirm(run.cards().last().id)
         advanceUntilIdle()
         assertTrue(focus.started)
-        assertEquals("Calculus review", focus.goal)
+        assertEquals("Calculus review", focus.chosenGoal)
     }
 
     @Test
