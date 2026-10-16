@@ -72,6 +72,11 @@ jobs:
       - name: Apply migrations
         run: supabase db push
 
+      # The Focus wallpapers' pictures (supabase/wallpapers → the public bucket `wallpapers`, config.toml).
+      # Creates or updates the bucket and uploads every file again (same names overwrite); never deletes.
+      - name: Upload the wallpapers
+        run: supabase seed buckets --linked
+
       # Prints the API's error message on failure and, on success, the stored value of each field sent.
       # Free projects using Supabase's built-in email can't change email templates, so the code emails
       # (remote-auth-code-emails.json) are only sent on request, once the project has its own SMTP sender.
@@ -104,4 +109,8 @@ jobs:
             --data "$(jq -Rs '{query: .}' < supabase/checks/deployed.sql)")
           echo "$result" | jq .
           echo "$result" | jq -e '.[0] | .words == 4801 and .kaoyan_entries == 4801 and .rls_on == true
-                                        and .anon_can_read_words == false and .answers_editable == false' > /dev/null
+                                        and .anon_can_read_words == false and .answers_editable == false
+                                        and .wallpapers == 30 and .wallpapers_bucket_public == true' > /dev/null
+          # One picture, as the app fetches it: its public URL, no key.
+          url="https://$PROJECT_REF.supabase.co/storage/v1/object/public/wallpapers/$(ls supabase/wallpapers | head -1)"
+          curl -sS --fail -o /dev/null -w 'Picture: %{http_code} %{content_type} %{size_download} bytes\n' "$url"

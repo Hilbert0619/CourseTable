@@ -30,9 +30,13 @@ jobs:
         with:
           version: 2.118.0
 
-      # Only what the app talks to: Postgres, Auth (gotrue), the REST API (postgrest) and the gateway (kong).
+      # Only what the app talks to: Postgres, Auth (gotrue), the REST API (postgrest), Storage and the gateway (kong).
       - name: Start Supabase
-        run: supabase start -x realtime,storage-api,imgproxy,studio,edge-runtime,logflare,vector,supavisor,postgres-meta
+        run: supabase start -x realtime,imgproxy,studio,edge-runtime,logflare,vector,supavisor,postgres-meta
+
+      # The Focus wallpapers' pictures (config.toml [storage.buckets.wallpapers]), as backend-deploy.yml uploads them.
+      - name: Upload the wallpapers
+        run: supabase seed buckets
 
       - name: Database tests (pgTAP)
         run: supabase test db
@@ -48,7 +52,7 @@ jobs:
         run: |
           result=$(docker exec -i supabase_db_CourseTable psql -U postgres -At -F '|' < supabase/checks/deployed.sql)
           echo "$result"
-          test "$result" = "4801|4801|t|f|f"
+          test "$result" = "4801|4801|t|f|f|30|t"
           jq -e '.site_url as $app | .mailer_autoconfirm == false and (.uri_allow_list | contains($app))' supabase/remote-auth.json > /dev/null
           jq -e '.mailer_templates_confirmation_content | contains("{{ .Token }}")' supabase/remote-auth-code-emails.json > /dev/null
 

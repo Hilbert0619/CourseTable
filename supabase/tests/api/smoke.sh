@@ -52,6 +52,16 @@ check "sign-up returns a session" "true" "$([[ ${#A} -gt 100 ]] && echo true || 
 request GET '/rest/v1/words?select=headword&limit=1' ""
 check "anonymous clients cannot read words" "denied" "$([[ $CODE == 401 || $CODE == 403 ]] && echo denied || echo "$CODE")"
 
+# Focus wallpapers: readable without an account, the pictures in the public bucket (seeded from supabase/wallpapers).
+request GET '/rest/v1/focus_wallpapers?select=id,url,width,height,color,focus_y,author&order=id' ""
+check "anonymous clients read the wallpapers" "30" "$(jq length <<<"$BODY")"
+check "the rows name the files in supabase/wallpapers" "$(ls supabase/wallpapers | wc -l)" \
+  "$(jq -r '.[].url | split("/") | last' <<<"$BODY" | while read -r name; do [[ -f "supabase/wallpapers/$name" ]] && echo "$name"; done | wc -l)"
+file=$(jq -r '.[0].url | split("/") | last' <<<"$BODY")
+picture=$(curl -s -o "$tmp/wallpaper.jpg" -w '%{http_code} %{content_type}' "$API/storage/v1/object/public/wallpapers/$file")
+check "a picture downloads from the public bucket without a key" "200 image/jpeg" "$picture"
+check "it is the file from supabase/wallpapers" "$(sha256sum < "supabase/wallpapers/$file")" "$(sha256sum < "$tmp/wallpaper.jpg")"
+
 # Words and the system book.
 request GET '/rest/v1/words?select=headword&limit=1' "$A" "" 'Prefer: count=exact'
 check "a learner reads words" "4801" "$(grep -i '^content-range:' <<<"$HEADERS" | sed 's/.*\///')"

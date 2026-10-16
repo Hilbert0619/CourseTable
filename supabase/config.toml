@@ -33,3 +33,15 @@ enable_confirmations = false
 double_confirm_changes = true
 otp_length = 6
 otp_expiry = 3600
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+# Focus wallpapers (supabase/migrations/*_focus_wallpapers*.sql): public pictures, uploaded from
+# supabase/wallpapers/ by `supabase seed buckets` (backend.yml locally, backend-deploy.yml to the cloud).
+[storage.buckets.wallpapers]
+public = true
+file_size_limit = "4MiB"
+allowed_mime_types = ["image/jpeg"]
+objects_path = "./wallpapers"
