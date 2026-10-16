@@ -284,7 +284,7 @@ private struct RunningFocusView: View {
                                 if status.isPaused {
                                     Text("Paused")
                                         .font(.subheadline)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(onPhoto ? AnyShapeStyle(Color.white.opacity(0.85)) : AnyShapeStyle(.secondary))
                                 }
                             }
                         }
@@ -296,7 +296,7 @@ private struct RunningFocusView: View {
                         }
                         Text(verbatim: summary(status, now: context.date))
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(onPhoto ? AnyShapeStyle(Color.white.opacity(0.85)) : AnyShapeStyle(.secondary))
                             .multilineTextAlignment(.center)
                         if status.phase.isBreak && !status.isPaused {
                             Button("Skip Break") { engine.skipBreak() }
@@ -403,7 +403,7 @@ private struct WallpaperBackground: View {
                         .offset(x: frame.minX, y: frame.minY)
                         .transition(.opacity)
                 }
-                LinearGradient(colors: [.black.opacity(0.18), .black.opacity(0.32), .black.opacity(0.55)],
+                LinearGradient(colors: [.black.opacity(0.18), .black.opacity(0.38), .black.opacity(0.55)],
                                startPoint: .top, endPoint: .bottom)
             }
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
