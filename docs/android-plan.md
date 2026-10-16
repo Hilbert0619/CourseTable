@@ -160,7 +160,7 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   Taobao Shangou, Meituan, 12306, Amap…). So a debug APK from outside the vivo App Store can't use the China island.
   Listing on the vivo App Store would need stage 7's release signing, a software copyright (软著) and App 备案 in the
   owner's name, and for the AI features vivo's deep-synthesis qualification (review rules 3.1.5, 3.2.14). The AOSP
-  Live Update code stays: it costs nothing and works on global OriginOS, ColorOS, HyperOS and MagicOS.
+  Live Update code stays: it costs nothing and works on global OriginOS, ColorOS, HyperOS and MagicOS. **The owner chose (2026-10-16) to stop here: no vivo application, no more island work.**
 - **AI help and the agent (moved ahead of stage 7 at the owner's choice, 2026-10-15)**, stages in `docs/ai-spec.md` §5:
   **A1 done 2026-10-15**: AIKit ported to `android/core` (package `io.github.hilbert0619.aikit`: providers,
   connections, request bodies for both wire formats, SSE parser, stream decoding with tool calls, errors, prompts, to-do

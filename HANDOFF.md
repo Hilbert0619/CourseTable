@@ -1,4 +1,4 @@
-# Session Handoff — CourseTable (iOS 0.6.0: new icon, Focus wallpapers, Settings → Storage: waiting for the owner's backend deploy and device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, plus the 0.4.1 Atom Island check, then stage 7)
+# Session Handoff — CourseTable (iOS 0.6.0: new icon, Focus wallpapers, Settings → Storage: waiting for the owner's backend deploy and device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
 
 Date: 2026-10-16 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
@@ -48,9 +48,10 @@ Handoff prompt A below picks up the owner's results.
     `PD2338_A_16.2.13.2.W10`). vivo's documents (dev.vivo.com.cn docs 894–896) say third-party apps reach the Atom Island
     only through vivo's own 原子通知 API, **granted by vivo per app and scene**, and only for apps already on the vivo App
     Store (email `oosyztz@vivo.com`, 7–10 working days, design review, staged launch). StudyHour (a debug APK, not on the
-    store) has no such grant; plain Live Updates reach the island only on global OriginOS builds. **No further island
-    work until the owner decides** whether to pursue vivo's route (needs stage 7, 软著, App 备案 and, for the AI
-    features, vivo's deep-synthesis qualification). Full findings: `docs/android-plan.md` §8, the 0.4.1 entry.
+    store) has no such grant; plain Live Updates reach the island only on global OriginOS builds. **The owner chose
+    (2026-10-16) to stop here**: no more island work and no vivo application; the standard Live Update code stays (it
+    works on other brands and on global OriginOS). vivo's route would need stage 7, 软著, App 备案 and, for the AI
+    features, vivo's deep-synthesis qualification. Full findings: `docs/android-plan.md` §8, the 0.4.1 entry.
   - **0.5.0 (versionCode 6), 2026-10-15: AI help and the agent, moved ahead of stage 7 at the owner's choice.** All of
     iOS 0.4/0.5's AI: AIKit ported to `android/core` (package `aikit`, tested against every shared `ai-*.json` case),
     keys encrypted with an Android Keystore key, Settings → AI Help, word help, "Why?", Long Sentences / Writing
@@ -115,27 +116,15 @@ connection on the phone itself (the same key works on both). Use a model that ca
 9. **以前的对话**: reopen a chat, the cards keep their state. Airplane mode: a clear error and Try Again.
 10. Anything odd: provider and model, what you asked, a screenshot of the card or answer. Never send the key itself.
 
-## Android 0.4.1 Atom Island check (the owner's iQOO Neo 9, or a user's vivo/iQOO phone)
+## Android Atom Island (closed 2026-10-16)
 
-Before updating, on 0.4.0: start a Focus session, go to the Home Screen and note what the island shows (this
-reproduces the users' report on a known phone). Then install `StudyHour-0.4.1-debug-28.apk` over 0.4.0 (everything
-stays; 0.5.0 has the same island code, so the check works on it too). The island hides while StudyHour itself is on screen, so always go to the Home Screen to look. From a user, also
-get the phone model and the OriginOS version (设置 → 系统升级, or 关于手机).
-1. Settings → Reminders → Reliable Reminders: the **实时更新 / Live Updates** row says 已允许 / Allowed (if not, tap it).
-2. At the bottom: **发送测试实时更新 / Send a Test Live Update** → go to the Home Screen: the island should show the
-   StudyHour icon and "2 分钟". Come back: the line under the button says whether the phone made it a Live Update, plus
-   a details line (`promoted · colorized/standard · build`). **Screenshot that page** either way.
-3. Focus: start a session → Home Screen: the island shows "25 分钟" and counts down a minute at a time; Pause from the
-   notification → "已暂停". Tap the island: does it open the card / the app?
-4. A class with the live class notification on: from the reminder time the island shows the minutes to the start,
-   then the minutes to the end.
-5. If the island stays empty: the screenshot from step 2, and whether Settings → 通知与状态栏 → 原子岛 lists
-   anything for 学时. (vivo's own 原子通知 API needs access granted by vivo by email: last resort.)
+Tested by the owner on 0.4.1 and 0.5.0: nothing in the China OriginOS island, because vivo grants it per app
+(see Status). The owner chose to stop; don't reopen it unless the owner asks or vivo's rules change.
 
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.6.0 device test; **B** is the Android track (independent): the 0.5.0 AI test and the 0.4.1 island check, then stage 7.
+> 0.6.0 device test; **B** is the Android track (independent): the 0.5.0 AI test, then stage 7.
 
 ### A. The owner's results for iOS 0.6.0 (icon, Focus wallpapers, Storage)
 
@@ -170,20 +159,19 @@ Use the Write/Edit tools (or Python scripts written with Write) for code, never 
 bash heredoc. Short report at the end with run links.
 ```
 
-### B. Android: the 0.5.0 AI test and the Atom Island check, then stage 7
+### B. Android: the 0.5.0 AI test, then stage 7
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the owner's 0.5.0 AI test and the Atom Island check, then stage 7 (release)
+[PROJECT HANDOFF] CourseTable — Android: the owner's 0.5.0 AI test, then stage 7 (release)
 
 ## Read first
-HANDOFF.md (status, the Android 0.5.0 AI and 0.4.1 island checklists, facts, gotchas), docs/android-plan.md (§1
+HANDOFF.md (status, the Android 0.5.0 AI checklist, facts, gotchas), docs/android-plan.md (§1
 decisions, §7 stages, §8 progress incl. the 0.4.1 and AI entries), android/README.md ("Live Updates and the brands'
 islands", "AI help and the Assistant"), docs/ai-spec.md and docs/ai-agent-spec.md (the iOS behaviour Android matches).
 
 ## Goal
-1. I tell you how the 0.5.0 AI checklist went (provider, model, what happened) and how the island check went, on my
-   phone or from users (the island report came from users; I may only have their words and screenshots, and their
-   phone model and OriginOS version). Fix what's reported on a branch (CI green, then fast-forward main, new APK,
+1. I tell you how the 0.5.0 AI checklist went (provider, model, what happened). The Atom Island is closed (vivo
+   grants it per app; I chose not to apply): don't work on it unless I ask. Fix what's reported on a branch (CI green, then fast-forward main, new APK,
    versionCode +1): AI logic in android/core (package aikit) with tests first, matching iOS; if a fix belongs in the
    shared logic, change iOS AIKit too only after asking me.
 2. Stage 7 (release): a signed release APK. Ask me first how the release keystore is made and kept (it will be a repo
