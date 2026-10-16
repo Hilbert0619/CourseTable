@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +39,7 @@ import io.github.hilbert0619.coursetable.alerts.AlertNotifications
 import io.github.hilbert0619.coursetable.alerts.LiveUpdates
 import io.github.hilbert0619.coursetable.alerts.NotificationIds
 import io.github.hilbert0619.coursetable.alerts.SystemSettings
+import io.github.hilbert0619.coursetable.island.Island
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
@@ -48,8 +51,9 @@ import io.github.hilbert0619.coursetable.ui.rememberSystemState
 /**
  * Settings → Reminders → Reliable Reminders: what keeps alerts on time on Android (notifications, exact alarms,
  * battery optimisation, Live Updates) with a way to fix each, the steps for vivo/iQOO's background limits, a test
- * reminder, and on Android 16 a test Live Update with how the phone shows it. Each check is read again when coming
- * back from the system settings.
+ * reminder, on Android 16 a test Live Update with how the phone shows it, and StudyHour's own Countdown Island
+ * ([Island]) for phones whose island doesn't show StudyHour. Each check is read again when coming back from the
+ * system settings.
  */
 @Composable
 fun ReliableRemindersScreen(actions: AppActions, onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -62,6 +66,8 @@ fun ReliableRemindersScreen(actions: AppActions, onBack: () -> Unit, modifier: M
     var testSent by remember { mutableStateOf(false) }
     var liveTestsSent by remember { mutableIntStateOf(0) }
     val liveTest = rememberSystemState(refresh = liveTestsSent) { LiveUpdates.shown(context, NotificationIds.TEST_LIVE) }
+    val island = rememberSystemState { Island.isEnabled(context) }
+    var explainIsland by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -139,7 +145,37 @@ fun ReliableRemindersScreen(actions: AppActions, onBack: () -> Unit, modifier: M
                     }
                 }
             }
+
+            // StudyHour's own island, for phones whose island doesn't show it (vivo/iQOO in China).
+            Section(title = stringResource(R.string.island_title), footer = stringResource(R.string.island_footer)) {
+                StatusRow(
+                    R.drawable.ic_island, stringResource(R.string.island_title), island,
+                    stringResource(if (island) R.string.island_status_on else R.string.island_status_off),
+                ) { if (island) Island.openSettings(context) else explainIsland = true }
+                RowDivider()
+                ActionRow(R.drawable.ic_live_update, stringResource(R.string.island_try, AlertNotifications.TEST_LIVE_MINUTES)) {
+                    askForNotifications()
+                    actions.sendTestLiveUpdate()
+                    liveTestsSent++
+                }
+            }
         }
+    }
+
+    // What the accessibility access is used for, before the system page that turns it on.
+    if (explainIsland) {
+        AlertDialog(
+            onDismissRequest = { explainIsland = false },
+            title = { Text(stringResource(R.string.island_dialog_title)) },
+            text = { Text(stringResource(R.string.island_dialog_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    explainIsland = false
+                    Island.openSettings(context)
+                }) { Text(stringResource(R.string.island_open_settings)) }
+            },
+            dismissButton = { TextButton(onClick = { explainIsland = false }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
 }
 
@@ -158,6 +194,23 @@ private fun CheckRow(@DrawableRes icon: Int, title: String, ok: Boolean, status:
             Text(status, style = MaterialTheme.typography.bodyMedium, color = statusColor)
         }
         AppIcon(if (ok) R.drawable.ic_check_circle else R.drawable.ic_warning, null, Modifier.size(22.dp), tint = statusColor)
+    }
+}
+
+/** An optional feature: whether it's on, and a tap to change it. */
+@Composable
+private fun StatusRow(@DrawableRes icon: Int, title: String, on: Boolean, status: String, onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 60.dp).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        AppIcon(icon, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(status, style = MaterialTheme.typography.bodyMedium, color = if (on) OK_GREEN else MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        AppIcon(R.drawable.ic_chevron_right, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

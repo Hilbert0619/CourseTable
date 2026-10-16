@@ -235,6 +235,15 @@
     <string name="test_live_footer">Shows a %1$d-minute countdown as a Live Update, like the live class notification. Then go to the Home Screen: it should show in the status bar or the island at the top.</string>
     <string name="test_live_promoted">This phone shows the test as a Live Update. Go to the Home Screen to see it in the status bar or the island.</string>
     <string name="test_live_not_promoted">This phone shows the test only as an ordinary notification, not as a Live Update.</string>
+    <string name="island_title">Countdown Island</string>
+    <string name="island_status_on">On</string>
+    <string name="island_status_off">Off</string>
+    <string name="island_footer">For phones whose island doesn\'t show StudyHour, such as vivo and iQOO phones in China. StudyHour draws its own island around the camera with the class countdown and Focus: tap it for details and buttons, or swipe it up to hide it until the next change. It hides while StudyHour is open.</string>
+    <string name="island_try">Try It: a %1$d-Minute Countdown</string>
+    <string name="island_dialog_title">Turn On the Countdown Island?</string>
+    <string name="island_dialog_text">StudyHour uses Android\'s accessibility access only to draw the island at the top of the screen. It doesn\'t read the screen, what you type or other apps.\n\nOn the next page, tap StudyHour or Countdown Island and turn it on; on some phones it\'s under Downloaded Apps or Installed Services. If Android says it\'s a restricted setting, open App Info → ⋮ → Allow Restricted Settings, then try again.</string>
+    <string name="island_open_settings">Open Accessibility Settings</string>
+    <string name="island_service_description">Shows StudyHour\'s class and Focus countdowns in an island around the camera. It only draws at the top of the screen and doesn\'t read the screen or what you type.</string>
 
     <!-- Notifications -->
     <string name="channel_todos">To-dos</string>

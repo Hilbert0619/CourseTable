@@ -13,6 +13,7 @@ import io.github.hilbert0619.coursetable.alerts.LiveUpdates
 import io.github.hilbert0619.coursetable.alerts.NotificationIds
 import io.github.hilbert0619.coursetable.data.FocusSessionRecord
 import io.github.hilbert0619.coursetable.data.Repository
+import io.github.hilbert0619.coursetable.island.Island
 import java.time.Clock
 import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
@@ -209,6 +210,7 @@ class FocusEngine(
         Alarms.cancel(context, Alarms.FOCUS_ISLAND)
         updateSound()
         NotificationManagerCompat.from(context).cancel(NotificationIds.FOCUS_RUNNING)
+        Island.changed()
     }
 
     /** Plays the sound while a session runs (not paused) or a preview is on; the service keeps a session's going. */

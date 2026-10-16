@@ -78,7 +78,8 @@ object SystemSettings {
 
     private fun packageUri(context: Context) = Uri.fromParts("package", context.packageName, null)
 
-    private fun open(context: Context, intent: Intent): Boolean = try {
+    /** Opens a system page; `false` when this phone doesn't have it. */
+    fun open(context: Context, intent: Intent): Boolean = try {
         context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         true
     } catch (error: ActivityNotFoundException) {

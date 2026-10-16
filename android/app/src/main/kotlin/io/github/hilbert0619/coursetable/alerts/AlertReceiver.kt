@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.app.NotificationManagerCompat
 import io.github.hilbert0619.coursetable.StudyHourApp
+import io.github.hilbert0619.coursetable.island.Island
 import io.github.hilbert0619.coursetable.widget.ScheduleWidgetUpdates
 import kotlinx.coroutines.launch
 
@@ -22,7 +23,10 @@ class AlertReceiver : BroadcastReceiver() {
                 app.runAsync(this) { Alerts.dismiss(app, signature, end, intent.getStringExtra(EXTRA_TAG)) }
             }
             ACTION_TEST -> AlertNotifications.postTest(app)
-            ACTION_TEST_LIVE_CLOSE -> NotificationManagerCompat.from(app).cancel(NotificationIds.TEST_LIVE)
+            ACTION_TEST_LIVE_CLOSE -> {
+                NotificationManagerCompat.from(app).cancel(NotificationIds.TEST_LIVE)
+                Island.changed()
+            }
             // The focus engine works on the main thread, where receivers run.
             ACTION_FOCUS_ALARM -> app.focus.refresh()
             ACTION_FOCUS_ISLAND -> app.focus.islandMinute()

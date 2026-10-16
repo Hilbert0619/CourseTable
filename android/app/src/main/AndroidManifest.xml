@@ -99,6 +99,23 @@
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
 
+        <!--
+            StudyHour's own island around the camera hole (island/Island.kt), turned on by the person in the
+            accessibility settings. Only the system can bind it (the permission); it reads no screen content.
+        -->
+        <service
+            android:name=".island.IslandService"
+            android:exported="true"
+            android:label="@string/island_title"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/island_service" />
+        </service>
+
         <!-- Shares the exported CSV with other apps. -->
         <provider
             android:name="androidx.core.content.FileProvider"

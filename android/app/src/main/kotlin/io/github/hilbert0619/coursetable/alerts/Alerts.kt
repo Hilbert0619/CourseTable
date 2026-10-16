@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import io.github.hilbert0619.coursetable.StudyHourApp
+import io.github.hilbert0619.coursetable.island.Island
 import java.time.Instant
 import java.time.ZoneId
 import kotlinx.coroutines.flow.first
@@ -70,6 +71,7 @@ object Alerts {
             null
         }
         Alarms.setWhileAwake(context, Alarms.ISLAND, minute)
+        Island.changed()
         Log.d(TAG, "Synced: ${plan.postLive.size} live, ${plan.reminders.size} reminders, ${plan.todos.size} to-dos; next ${plan.nextAlarm}")
     }
 
@@ -81,6 +83,7 @@ object Alerts {
         val app = context.applicationContext as StudyHourApp
         app.alertPreferences.addDismissed(signature, end)
         if (tag != null) context.getSystemService(NotificationManager::class.java).cancel(tag, NotificationIds.LIVE)
+        Island.changed()
     }
 }
 

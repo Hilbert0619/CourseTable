@@ -10,6 +10,7 @@ import io.github.hilbert0619.coursetable.data.AppDatabase
 import io.github.hilbert0619.coursetable.data.Repository
 import io.github.hilbert0619.coursetable.focus.FocusEngine
 import io.github.hilbert0619.coursetable.focus.SoundPlayer
+import io.github.hilbert0619.coursetable.island.Island
 import io.github.hilbert0619.coursetable.widget.ScheduleWidgetUpdates
 import io.github.hilbert0619.coursetable.words.Pronunciation
 import io.github.hilbert0619.coursetable.words.RoomVocabStore
@@ -58,5 +59,7 @@ class StudyHourApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Channels.create(this)
+        // The island (if turned on) hides while StudyHour is on screen.
+        registerActivityLifecycleCallbacks(Island.visibility)
     }
 }

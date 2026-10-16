@@ -23,6 +23,7 @@ import io.github.hilbert0619.coursekit.ResolvedTodo
 import io.github.hilbert0619.coursetable.MainActivity
 import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.alerts.LiveUpdates.countdown
+import io.github.hilbert0619.coursetable.island.Island
 import io.github.hilbert0619.coursetable.ui.Tab
 import io.github.hilbert0619.coursetable.ui.details
 import io.github.hilbert0619.coursetable.ui.theme.CoursePalette
@@ -77,7 +78,7 @@ object AlertNotifications {
     private const val EXTRA_SIGNATURE = "studyhour.signature"
     private const val EXTRA_SHOW = "studyhour.show"
     private const val EXTRA_TODOS = "studyhour.todos"
-    private const val EXTRA_STARTED = "studyhour.started"
+    internal const val EXTRA_STARTED = "studyhour.started"
 
     /** Whether the app may post notifications at all. */
     fun canNotify(context: Context): Boolean =
@@ -88,6 +89,7 @@ object AlertNotifications {
     @SuppressLint("MissingPermission")
     fun notify(context: Context, tag: String?, id: Int, notification: Notification) {
         if (canNotify(context)) NotificationManagerCompat.from(context).notify(tag, id, notification)
+        Island.changed()
     }
 
     /**
