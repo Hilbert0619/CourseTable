@@ -69,6 +69,8 @@ private struct FocusSetupView: View {
 
             SoundSection(engine: engine)
 
+            WallpaperSection(wallpapers: WallpaperStore.shared)
+
             FocusHistorySection(engine: engine, planner: planner)
         }
         // Always in reach, above the tab bar.
@@ -125,7 +127,22 @@ private struct SoundSection: View {
     }
 }
 
-/// Today's focus time and the latest sessions.
+private struct WallpaperSection: View {
+    @Bindable var wallpapers: WallpaperStore
+
+    var body: some View {
+        Section {
+            Toggle(isOn: $wallpapers.isEnabled) {
+                Label("Wallpaper", systemImage: "photo")
+            }
+            .accessibilityIdentifier("wallpaperToggle")
+        } footer: {
+            Text("A new photo behind the countdown each session. Photos from Unsplash; each is downloaded once (about 0.5 MB) and kept on this iPhone until you clear it in Settings → Storage.")
+        }
+    }
+}
+
+/// Today's focus time and the latest sessions; swipe one to delete it.
 private struct FocusHistorySection: View {
     let engine: FocusEngine
     let planner: PlannerModel
@@ -134,25 +151,101 @@ private struct FocusHistorySection: View {
         let today = planner.focusedSeconds(on: LocalDate(.now))
         let recent = Array(planner.focusSessions.prefix(5))
         if today > 0 || !recent.isEmpty {
-            Section("History") {
+            Section {
                 LabeledContent("Focused today", value: focusDuration(today))
                 ForEach(recent) { session in
+                    FocusSessionRow(session: session)
+                }
+                .onDelete { offsets in
+                    planner.deleteFocusSessions(offsets.map { recent[$0].id })
+                }
+                NavigationLink {
+                    FocusHistoryView(planner: planner)
+                } label: {
+                    LabeledContent("All Sessions") {
+                        Text(verbatim: "\(planner.focusSessionCount)")
+                    }
+                }
+                .accessibilityIdentifier("focusHistoryLink")
+            } header: {
+                Text("History")
+            } footer: {
+                Text("Swipe left on a session to delete it.")
+            }
+        }
+    }
+}
+
+private struct FocusSessionRow: View {
+    let session: FocusSessionSummary
+    var showsDay = true
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: session.goal.isEmpty ? String(localized: "Focus") : session.goal)
+                Text(verbatim: showsDay ? session.startedAt.formatted(date: .abbreviated, time: .shortened)
+                                        : session.startedAt.formatted(date: .omitted, time: .shortened))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Text(verbatim: focusDuration(session.focusedSeconds))
+                .monospacedDigit()
+            Image(systemName: session.finished ? "checkmark.circle.fill" : "stop.circle")
+                .foregroundStyle(session.finished ? Color.green : Color.secondary)
+                .accessibilityLabel(session.finished ? Text("Finished") : Text("Stopped"))
+        }
+    }
+}
+
+/// Every focus session by day, to look back on or delete (one by one, or all).
+private struct FocusHistoryView: View {
+    let planner: PlannerModel
+    @State private var confirmingClear = false
+
+    var body: some View {
+        // Reading the count redraws the list after each delete (the model updates it whenever it saves).
+        let sessions = planner.focusSessionCount == 0 ? [] : planner.allFocusSessions()
+        let days = Dictionary(grouping: sessions) { LocalDate($0.startedAt) }.sorted { $0.key > $1.key }
+        List {
+            ForEach(days, id: \.key) { day, daySessions in
+                Section {
+                    ForEach(daySessions) { session in
+                        FocusSessionRow(session: session, showsDay: false)
+                    }
+                    .onDelete { offsets in
+                        planner.deleteFocusSessions(offsets.map { daySessions[$0].id })
+                    }
+                } header: {
                     HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(verbatim: session.goal.isEmpty ? String(localized: "Focus") : session.goal)
-                            Text(verbatim: session.startedAt.formatted(date: .abbreviated, time: .shortened))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        Text(verbatim: day.date().formatted(date: .abbreviated, time: .omitted))
                         Spacer()
-                        Text(verbatim: focusDuration(session.focusedSeconds))
-                            .monospacedDigit()
-                        Image(systemName: session.finished ? "checkmark.circle.fill" : "stop.circle")
-                            .foregroundStyle(session.finished ? Color.green : Color.secondary)
-                            .accessibilityLabel(session.finished ? Text("Finished") : Text("Stopped"))
+                        Text(verbatim: focusDuration(daySessions.reduce(0) { $0 + $1.focusedSeconds }))
                     }
                 }
             }
+            if !sessions.isEmpty {
+                Section {
+                    Button("Clear History", role: .destructive) { confirmingClear = true }
+                        .accessibilityIdentifier("clearFocusHistory")
+                }
+            }
+        }
+        .overlay {
+            if sessions.isEmpty {
+                ContentUnavailableView("No Focus Sessions", systemImage: "timer",
+                                       description: Text("Finished and stopped sessions appear here."))
+            }
+        }
+        .navigationTitle("Focus History")
+        .toolbar {
+            if !sessions.isEmpty { EditButton() }
+        }
+        .confirmationDialog("Delete all \(sessions.count) focus sessions?", isPresented: $confirmingClear, titleVisibility: .visible) {
+            Button("Clear History", role: .destructive) { planner.deleteAllFocusSessions() }
+        } message: {
+            Text("Today's focus time starts again from zero. This can't be undone.")
         }
     }
 }
@@ -162,23 +255,28 @@ private struct RunningFocusView: View {
     @Bindable var engine: FocusEngine
     let run: FocusRun
     @State private var confirmingStop = false
+    @Environment(\.colorScheme) private var colorScheme
+    private var wallpapers: WallpaperStore { WallpaperStore.shared }
 
     var body: some View {
         Form {
             Section {
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     let status = run.status(at: context.date)
+                    let onPhoto = wallpapers.shown != nil
+                    // On a photo: white, and a light green for breaks; otherwise the app's colours.
+                    let tint = status.phase.isBreak ? (onPhoto ? Color(red: 0.62, green: 0.95, blue: 0.72) : Color.green)
+                                                    : (onPhoto ? Color.white : Color.accentColor)
                     VStack(spacing: 16) {
                         Text(verbatim: phaseTitle(status.phase))
                             .font(.title3.weight(.semibold))
-                            .foregroundStyle(status.phase.isBreak ? Color.green : Color.accentColor)
+                            .foregroundStyle(tint)
                         ZStack {
                             Circle()
-                                .stroke(Color.secondary.opacity(0.2), lineWidth: 14)
+                                .stroke(onPhoto ? Color.white.opacity(0.25) : Color.secondary.opacity(0.2), lineWidth: 14)
                             Circle()
                                 .trim(from: 0, to: status.phaseElapsed / max(TimeInterval(status.phase.seconds), 1))
-                                .stroke(status.phase.isBreak ? Color.green : Color.accentColor,
-                                        style: StrokeStyle(lineWidth: 14, lineCap: .round))
+                                .stroke(tint, style: StrokeStyle(lineWidth: 14, lineCap: .round))
                                 .rotationEffect(.degrees(-90))
                             VStack(spacing: 4) {
                                 Text(verbatim: clock(status.phaseRemaining))
@@ -204,11 +302,18 @@ private struct RunningFocusView: View {
                             Button("Skip Break") { engine.skipBreak() }
                                 .buttonStyle(.bordered)
                         }
+                        if let shown = wallpapers.shown {
+                            WallpaperCredit(shown: shown, isLoading: wallpapers.isLoading) { wallpapers.showAnother() }
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
+                    .shadow(color: .black.opacity(onPhoto ? 0.35 : 0), radius: 5, y: 1)
+                    // Light text and controls on the photo, whatever the system appearance.
+                    .environment(\.colorScheme, onPhoto ? .dark : colorScheme)
                 }
             }
+            .listRowBackground(wallpapers.shown.map { WallpaperBackground(shown: $0) })
 
             Section {
                 HStack(spacing: 12) {
@@ -236,6 +341,7 @@ private struct RunningFocusView: View {
                     }
                     .buttonStyle(.bordered)
                     .tint(.red)
+                    .accessibilityIdentifier("stopFocus")
                 }
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
@@ -248,6 +354,8 @@ private struct RunningFocusView: View {
         } message: {
             Text("The time you've focused so far is kept in the history.")
         }
+        // The session's wallpaper, also after a relaunch.
+        .onAppear { wallpapers.restore() }
     }
 
     private func phaseTitle(_ phase: FocusPhase) -> String {
@@ -271,6 +379,82 @@ private struct RunningFocusView: View {
         let total = Int(seconds.rounded(.up))
         let (hours, minutes, rest) = (total / 3600, total / 60 % 60, total % 60)
         return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, rest) : String(format: "%d:%02d", minutes, rest)
+    }
+}
+
+/// The countdown card's photo: its average colour until it loads, placed so its subject stays in view, and
+/// darkened towards the bottom so the white text reads on any photo.
+private struct WallpaperBackground: View {
+    let shown: WallpaperStore.Shown
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .topLeading) {
+                if let rgb = shown.wallpaper.rgb {
+                    Color(red: rgb.red, green: rgb.green, blue: rgb.blue)
+                } else {
+                    Color.gray
+                }
+                if let image = shown.image {
+                    let frame = FocusWallpaperLayout.frame(imageSize: image.size, in: proxy.size, focusY: shown.wallpaper.focusY)
+                    Image(uiImage: image)
+                        .resizable()
+                        .frame(width: frame.width, height: frame.height)
+                        .offset(x: frame.minX, y: frame.minY)
+                        .transition(.opacity)
+                }
+                LinearGradient(colors: [.black.opacity(0.18), .black.opacity(0.32), .black.opacity(0.55)],
+                               startPoint: .top, endPoint: .bottom)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
+            .clipped()
+            .animation(.easeInOut(duration: 0.5), value: shown)
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// "Photo by … on Unsplash" (opens the photo's page) and a button for another wallpaper.
+private struct WallpaperCredit: View {
+    let shown: WallpaperStore.Shown
+    let isLoading: Bool
+    let another: () -> Void
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        HStack(spacing: 12) {
+            let wallpaper = shown.wallpaper
+            if !wallpaper.author.isEmpty {
+                Button {
+                    if let page = wallpaper.sourceURL { openURL(page) }
+                } label: {
+                    if wallpaper.sourceURL?.host()?.hasSuffix("unsplash.com") == true {
+                        Text("Photo by \(wallpaper.author) on Unsplash")
+                    } else {
+                        Text("Photo by \(wallpaper.author)")
+                    }
+                }
+                .lineLimit(1)
+                .disabled(wallpaper.sourceURL == nil)
+            }
+            Spacer(minLength: 0)
+            Button(action: another) {
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: "shuffle")
+                }
+            }
+            .disabled(isLoading)
+            .accessibilityLabel(Text("Another Wallpaper"))
+            .accessibilityIdentifier("anotherWallpaper")
+        }
+        .buttonStyle(.borderless)
+        .font(.caption)
+        .foregroundStyle(.white.opacity(0.85))
+        .tint(.white)
+        .padding(.top, 4)
     }
 }
 

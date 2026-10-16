@@ -219,13 +219,32 @@ final class AIStore {
 
     /// Deletes the saved answers and the Assistant chats.
     func clearSavedAnswers() {
+        clearAnswers()
+        clearConversations()
+    }
+
+    /// Settings → Storage: the saved answers only (word help, "Why?", sentences, writing).
+    func clearAnswers() {
         cache = [:]
-        conversations = []
         if let cacheURL { try? FileManager.default.removeItem(at: cacheURL) }
-        if let url = conversationsURL { try? FileManager.default.removeItem(at: url) }
     }
 
     var savedAnswerCount: Int { cache.count }
+
+    /// Settings → Storage: the Assistant's earlier chats.
+    func clearConversations() {
+        conversations = []
+        if let url = conversationsURL { try? FileManager.default.removeItem(at: url) }
+    }
+
+    /// Requests counted for Settings → AI Help's monthly usage, over all connections and months.
+    var countedRequests: Int { usage.values.reduce(0) { $0 + $1.requests } }
+
+    /// Settings → Storage: forgets the usage counts (requests and tokens per connection and month).
+    func clearUsage() {
+        usage = [:]
+        defaults.removeObject(forKey: Keys.usage)
+    }
 
     // MARK: Assistant chats
 

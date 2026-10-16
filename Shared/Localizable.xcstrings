@@ -31,6 +31,16 @@
         }
       }
     },
+    "%@ will be deleted from this iPhone. This can't be undone." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将从这台 iPhone 上删除：%@。此操作无法撤销。"
+          }
+        }
+      }
+    },
     "%@ y" : {
       "localizations" : {
         "zh-Hans" : {
@@ -89,6 +99,34 @@
         }
       }
     },
+    "%lld answers" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld answer"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld answers"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条回答"
+          }
+        }
+      }
+    },
     "%lld answers haven't been uploaded yet. They'll be lost if you sign out while offline." : {
       "localizations" : {
         "zh-Hans" : {
@@ -123,6 +161,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 条答题记录等待上传"
+          }
+        }
+      }
+    },
+    "%lld chats" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chat"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chats"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个对话"
           }
         }
       }
@@ -335,6 +401,118 @@
         }
       }
     },
+    "%lld photos · %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld photo · %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld photos · %@"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 张照片 · %@"
+          }
+        }
+      }
+    },
+    "%lld requests counted" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld request counted"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld requests counted"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已统计 %lld 次请求"
+          }
+        }
+      }
+    },
+    "%lld sessions" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld session"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld sessions"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条记录"
+          }
+        }
+      }
+    },
+    "%lld to-dos" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld to-do"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld to-dos"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条待办"
+          }
+        }
+      }
+    },
     "%lld tokens" : {
       "localizations" : {
         "en" : {
@@ -441,6 +619,16 @@
         }
       }
     },
+    "A new photo behind the countdown each session. Photos from Unsplash; each is downloaded once (about 0.5 MB) and kept on this iPhone until you clear it in Settings → Storage." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次专注都在倒计时后面换一张新照片。照片来自 Unsplash，每张只下载一次（约 0.5 MB），保存在这台 iPhone 上，可在“设置 → 存储空间”中清除。"
+          }
+        }
+      }
+    },
     "A photo or screenshot of your timetable becomes courses for you to check." : {
       "localizations" : {
         "zh-Hans" : {
@@ -477,6 +665,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AI 工具"
+          }
+        }
+      }
+    },
+    "AI Usage Counts" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 用量统计"
           }
         }
       }
@@ -781,6 +979,16 @@
         }
       }
     },
+    "All Sessions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部记录"
+          }
+        }
+      }
+    },
     "All of your answers, lists and settings will be deleted from the server and this iPhone. This can't be undone." : {
       "localizations" : {
         "zh-Hans" : {
@@ -837,6 +1045,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分析一下我的单词学习进度：学得怎么样，哪些词总是忘，考试前能学完整本词书吗？"
+          }
+        }
+      }
+    },
+    "Another Wallpaper" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "换一张壁纸"
           }
         }
       }
@@ -927,6 +1145,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "助手"
+          }
+        }
+      }
+    },
+    "Assistant Chats" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助手对话"
           }
         }
       }
@@ -1321,6 +1549,66 @@
         }
       }
     },
+    "Clear" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除"
+          }
+        }
+      }
+    },
+    "Clear History" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除记录"
+          }
+        }
+      }
+    },
+    "Clear Selected" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除所选项"
+          }
+        }
+      }
+    },
+    "Clear focus history, completed to-dos, AI chats and downloaded files." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除专注记录、已完成的待办、AI 对话和下载的文件。"
+          }
+        }
+      }
+    },
+    "Clear the selected data?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除所选数据？"
+          }
+        }
+      }
+    },
+    "Cleared." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已清除。"
+          }
+        }
+      }
+    },
     "Close" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1397,6 +1685,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辨析"
+          }
+        }
+      }
+    },
+    "Completed To-Dos" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成的待办"
           }
         }
       }
@@ -1641,6 +1939,34 @@
         }
       }
     },
+    "Delete all %lld focus sessions?" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Delete the focus session?"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Delete all %lld focus sessions?"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除全部 %lld 条专注记录？"
+          }
+        }
+      }
+    },
     "Delete all saved AI answers and Assistant chats?" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1691,6 +2017,16 @@
         }
       }
     },
+    "Deselect All" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消全选"
+          }
+        }
+      }
+    },
     "Do you remember what it means?" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1717,6 +2053,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天的任务已完成"
+          }
+        }
+      }
+    },
+    "Downloaded Files" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下载的文件"
+          }
+        }
+      }
+    },
+    "Downloaded again when needed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要时会重新下载。"
           }
         }
       }
@@ -2001,6 +2357,16 @@
         }
       }
     },
+    "Finished and stopped sessions appear here." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成或停止的专注会显示在这里。"
+          }
+        }
+      }
+    },
     "First day of term" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2027,6 +2393,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "专注 %lld/%lld"
+          }
+        }
+      }
+    },
+    "Focus History" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注记录"
+          }
+        }
+      }
+    },
+    "Focus Wallpapers" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注壁纸"
           }
         }
       }
@@ -3087,6 +3473,16 @@
         }
       }
     },
+    "No Focus Sessions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有专注记录"
+          }
+        }
+      }
+    },
     "No Hard Words" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3477,6 +3873,16 @@
         }
       }
     },
+    "Other Cached Files" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他缓存文件"
+          }
+        }
+      }
+    },
     "Oxford 3000" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3667,6 +4073,26 @@
         }
       }
     },
+    "Photo by %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摄影：%@"
+          }
+        }
+      }
+    },
+    "Photo by %@ on Unsplash" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摄影：%@ · Unsplash"
+          }
+        }
+      }
+    },
     "Photos work: the model read the test picture." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3813,6 +4239,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回忆并自评"
+          }
+        }
+      }
+    },
+    "Records" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录"
           }
         }
       }
@@ -4127,6 +4563,16 @@
         }
       }
     },
+    "Saved AI Answers" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存的 AI 回答"
+          }
+        }
+      }
+    },
     "Saved — type to replace" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4163,6 +4609,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索单词"
+          }
+        }
+      }
+    },
+    "Select All" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全选"
           }
         }
       }
@@ -4507,6 +4963,16 @@
         }
       }
     },
+    "Storage" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "存储空间"
+          }
+        }
+      }
+    },
     "Stored only in this iPhone's Keychain, never synced or exported." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4623,6 +5089,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "向左轻扫可删除节次。"
+          }
+        }
+      }
+    },
+    "Swipe left on a session to delete it." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在记录上向左轻扫可删除。"
           }
         }
       }
@@ -5361,6 +5837,16 @@
         }
       }
     },
+    "Today's focus time starts again from zero. This can't be undone." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日专注时长将从零开始。此操作无法撤销。"
+          }
+        }
+      }
+    },
     "Too long: up to %lld characters." : {
       "localizations" : {
         "zh-Hans" : {
@@ -5577,6 +6063,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音量"
+          }
+        }
+      }
+    },
+    "Wallpaper" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "壁纸"
           }
         }
       }
@@ -5967,6 +6463,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的提问直接从这台 iPhone 发送到你选择的服务商，适用其条款，费用从你在该服务商的账户中扣除。课程表的服务器不会看到这些内容。密钥只保存在这台 iPhone 的钥匙串中。"
+          }
+        }
+      }
+    },
+    "Your timetable, unfinished to-dos, Words progress and AI connections are never cleared here." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程表、未完成的待办、单词学习进度和 AI 连接不会在这里被清除。"
           }
         }
       }

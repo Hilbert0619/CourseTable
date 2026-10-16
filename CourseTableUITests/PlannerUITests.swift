@@ -74,6 +74,54 @@ final class PlannerUITests: XCTestCase {
         }
     }
 
+    /// The running session's wallpaper (the drawn demo picture in UI tests), then the history it leaves (open all
+    /// sessions, swipe one away) and Settings → Storage clearing the done to-do.
+    @MainActor
+    func testWallpaperHistoryAndStorage() throws {
+        for language in ["en", "zh-Hans"] {
+            let app = launch(language: language, extra: ["-focusDemo", "YES"])
+            XCTAssertTrue(app.buttons["anotherWallpaper"].waitForExistence(timeout: 10), "No wallpaper on the countdown")
+            snapshot(app, "\(language)-wallpaper-1-running")
+
+            app.buttons["stopFocus"].tap()
+            let stop = app.buttons.matching(NSPredicate(format: "label IN %@", ["Stop Session", "结束专注"])).firstMatch
+            XCTAssertTrue(stop.waitForExistence(timeout: 5))
+            stop.tap()
+            XCTAssertTrue(app.buttons["startFocus"].waitForExistence(timeout: 5))
+            let allSessions = app.buttons["focusHistoryLink"]
+            for _ in 0..<5 where !(allSessions.exists && allSessions.isHittable) { app.swipeUp() }
+            snapshot(app, "\(language)-wallpaper-2-history")
+
+            allSessions.tap()
+            XCTAssertTrue(app.buttons["clearFocusHistory"].waitForExistence(timeout: 5))
+            snapshot(app, "\(language)-wallpaper-3-all-sessions")
+            app.cells.firstMatch.swipeLeft()
+            let delete = app.buttons.matching(NSPredicate(format: "label IN %@", ["Delete", "删除"])).firstMatch
+            XCTAssertTrue(delete.waitForExistence(timeout: 5))
+            delete.tap()
+            XCTAssertTrue(app.buttons["clearFocusHistory"].waitForNonExistence(timeout: 5), "The session wasn't deleted")
+            snapshot(app, "\(language)-wallpaper-4-history-empty")
+
+            app.tabBars.buttons.element(boundBy: 4).tap()
+            let storage = app.buttons["storageLink"]
+            for _ in 0..<5 where !(storage.exists && storage.isHittable) { app.swipeUp() }
+            storage.tap()
+            let todos = app.buttons["storage-completedTodos"]
+            XCTAssertTrue(todos.waitForExistence(timeout: 5))
+            snapshot(app, "\(language)-storage-1")
+            todos.tap()
+            app.buttons["clearSelectedStorage"].tap()
+            let clear = app.buttons.matching(NSPredicate(format: "label IN %@", ["Clear", "清除"])).firstMatch
+            XCTAssertTrue(clear.waitForExistence(timeout: 5))
+            snapshot(app, "\(language)-storage-2-confirm")
+            clear.tap()
+            Thread.sleep(forTimeInterval: 0.5)
+            XCTAssertFalse(todos.isEnabled, "The done to-do is still counted")
+            snapshot(app, "\(language)-storage-3-cleared")
+            app.terminate()
+        }
+    }
+
     @MainActor
     private func launch(language: String, extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()

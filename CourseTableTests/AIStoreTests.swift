@@ -109,6 +109,31 @@ import AIKit
         #expect(store(cacheURL: url).conversations.isEmpty)
     }
 
+    @Test func storageClearsAnswersChatsAndUsageSeparately() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("ai-clear-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let url = folder.appendingPathComponent("AIAnswers.json")
+        let defaults = UserDefaults(suiteName: "ai-test-\(UUID().uuidString)")!
+        let ai = store(defaults: defaults, cacheURL: url)
+        let deepSeek = AIConnection(provider: try #require(AIProvider.preset(id: "deepseek")))
+        ai.record(AIAnswer(), for: deepSeek)
+        ai.record(AIAnswer(), for: deepSeek)
+        ai.saveAnswer("Answer", model: "m", for: "key")
+        var chat = AIConversation()
+        chat.messages = [AIMessage(.user, "Hi")]
+        ai.saveConversation(chat)
+        #expect(ai.countedRequests == 2)
+
+        ai.clearConversations()
+        #expect(ai.conversations.isEmpty && ai.savedAnswerCount == 1)
+        ai.clearAnswers()
+        #expect(ai.savedAnswerCount == 0 && ai.countedRequests == 2)
+        ai.clearUsage()
+        #expect(ai.countedRequests == 0)
+        let reopened = store(defaults: defaults, cacheURL: url)
+        #expect(reopened.countedRequests == 0 && reopened.savedAnswerCount == 0 && reopened.conversations.isEmpty)
+    }
+
     @MainActor final class Box {
         var answer: AIAnswer?
     }

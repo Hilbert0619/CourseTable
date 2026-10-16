@@ -75,7 +75,7 @@ jobs:
       # The Focus wallpapers' pictures (supabase/wallpapers → the public bucket `wallpapers`, config.toml).
       # Creates or updates the bucket and uploads every file again (same names overwrite); never deletes.
       - name: Upload the wallpapers
-        run: supabase seed buckets --linked
+        run: supabase seed buckets --linked --yes
 
       # Prints the API's error message on failure and, on success, the stored value of each field sent.
       # Free projects using Supabase's built-in email can't change email templates, so the code emails

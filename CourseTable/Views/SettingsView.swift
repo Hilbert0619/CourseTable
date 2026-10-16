@@ -80,6 +80,17 @@ private struct SettingsForm: View {
             AISettingsSection()
 
             Section {
+                NavigationLink {
+                    StorageView()
+                } label: {
+                    Label("Storage", systemImage: "internaldrive")
+                }
+                .accessibilityIdentifier("storageLink")
+            } footer: {
+                Text("Clear focus history, completed to-dos, AI chats and downloaded files.")
+            }
+
+            Section {
                 LabeledContent("Version") {
                     Text(verbatim: appVersion)
                 }

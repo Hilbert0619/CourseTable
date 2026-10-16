@@ -58,6 +58,34 @@ import CourseKit
         #expect(planner.focusedSeconds(on: today.adding(days: 1)) == 600)
     }
 
+    @Test func focusSessionsAndDoneToDosAreDeleted() throws {
+        let planner = try model()
+        let morning = today.date(at: TimeOfDay(hour: 9, minute: 0))
+        let ids = (0..<3).map { _ in UUID() }
+        for (index, id) in ids.enumerated() {
+            let start = morning.addingTimeInterval(Double(index) * 3600)
+            planner.recordFocus(id: id, goal: "", startedAt: start, endedAt: start.addingTimeInterval(1500),
+                                focusedSeconds: 1500, plannedSeconds: 1500, finished: true)
+        }
+        #expect(planner.focusSessionCount == 3)
+        planner.deleteFocusSessions([ids[1]])
+        #expect(planner.allFocusSessions().map(\.id) == [ids[2], ids[0]])
+        #expect(planner.focusSessionCount == 2)
+        #expect(planner.focusedSeconds(on: today) == 3000)
+        planner.deleteAllFocusSessions()
+        #expect(planner.focusSessions.isEmpty && planner.focusSessionCount == 0)
+        #expect(PlannerModel(container: planner.container).focusSessionCount == 0)
+
+        let done = Todo(title: "Done", day: today, isDone: true)
+        let open = Todo(title: "Open", day: today)
+        planner.save(done)
+        planner.save(open)
+        #expect(planner.completedTodoCount == 1)
+        planner.deleteCompletedTodos()
+        #expect(planner.todos.map(\.title) == ["Open"])
+        #expect(planner.completedTodoCount == 0)
+    }
+
     @Test func toDoNotificationsSayWhen() throws {
         let timetable = Timetable(semester: Semester(startingOn: today), courses: [calculus])
         let noon = timetable.resolve(Todo(title: "Pick up the package", day: today, timing: .at(TimeOfDay(hour: 12, minute: 0))))

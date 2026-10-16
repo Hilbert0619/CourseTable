@@ -24,8 +24,10 @@ final class PlannerModel {
 
     /// Every to-do, oldest first (the order they're shown in within a group).
     private(set) var todos: [Todo] = []
-    /// Ended focus sessions, newest first.
+    /// Ended focus sessions, newest first (the latest `recentSessionLimit`).
     private(set) var focusSessions: [FocusSessionSummary] = []
+    /// How many focus sessions are stored in all.
+    private(set) var focusSessionCount = 0
     /// Set when the store couldn't be opened and an in-memory one is used instead.
     let storeProblem: String?
 
@@ -58,10 +60,8 @@ final class PlannerModel {
         todos = records.map(\.todo)
         var recent = FetchDescriptor<FocusSessionRecord>(sortBy: [SortDescriptor(\.startedAt, order: .reverse)])
         recent.fetchLimit = Self.recentSessionLimit
-        focusSessions = ((try? context.fetch(recent)) ?? []).map {
-            FocusSessionSummary(id: $0.id, goal: $0.goal, startedAt: $0.startedAt, endedAt: $0.endedAt,
-                                focusedSeconds: $0.focusedSeconds, finished: $0.finished)
-        }
+        focusSessions = ((try? context.fetch(recent)) ?? []).map(Self.summary)
+        focusSessionCount = (try? context.fetchCount(FetchDescriptor<FocusSessionRecord>())) ?? focusSessions.count
     }
 
     // MARK: - To-dos
@@ -110,6 +110,48 @@ final class PlannerModel {
     /// Focus time of the sessions that started on `day`.
     func focusedSeconds(on day: LocalDate) -> Int {
         focusSessions.filter { LocalDate($0.startedAt) == day }.reduce(0) { $0 + $1.focusedSeconds }
+    }
+
+    /// Every stored session, newest first (Focus → History → All Sessions).
+    func allFocusSessions() -> [FocusSessionSummary] {
+        let all = FetchDescriptor<FocusSessionRecord>(sortBy: [SortDescriptor(\.startedAt, order: .reverse)])
+        return ((try? context.fetch(all)) ?? []).map(Self.summary)
+    }
+
+    func deleteFocusSessions(_ ids: [UUID]) {
+        let ids = Set(ids)
+        guard !ids.isEmpty else { return }
+        for record in (try? context.fetch(FetchDescriptor<FocusSessionRecord>())) ?? [] where ids.contains(record.id) {
+            context.delete(record)
+        }
+        commit()
+    }
+
+    /// Focus → History → Clear History, and Settings → Storage.
+    func deleteAllFocusSessions() {
+        do {
+            try context.delete(model: FocusSessionRecord.self)
+        } catch {
+            Self.logger.error("Deleting the focus history failed: \(error.localizedDescription)")
+        }
+        commit()
+    }
+
+    private static func summary(_ record: FocusSessionRecord) -> FocusSessionSummary {
+        FocusSessionSummary(id: record.id, goal: record.goal, startedAt: record.startedAt, endedAt: record.endedAt,
+                            focusedSeconds: record.focusedSeconds, finished: record.finished)
+    }
+
+    // MARK: - Clearing
+
+    var completedTodoCount: Int { todos.filter(\.isDone).count }
+
+    /// Settings → Storage: deletes every ticked-off to-do.
+    func deleteCompletedTodos() {
+        for record in (try? context.fetch(FetchDescriptor<TodoRecord>(predicate: #Predicate { $0.isDone == true }))) ?? [] {
+            context.delete(record)
+        }
+        commit()
     }
 
     private func commit() {

@@ -75,6 +75,7 @@ final class FocusEngine {
         self.run = run
         persist()
         player.play(sound)
+        WallpaperStore.shared.sessionStarted()
         Task {
             await FocusLiveActivity.start(run, now: now)
             await FocusReminders.sync(run, now: now)
@@ -152,6 +153,7 @@ final class FocusEngine {
         ticker?.cancel()
         ticker = nil
         player.stop()
+        WallpaperStore.shared.sessionEnded()
         Task {
             await FocusLiveActivity.end()
             await ClassReminders.removePending(withPrefix: Self.notificationPrefix)

@@ -1,0 +1,56 @@
+{
+  "about": "Focus wallpapers (docs/todos-focus-spec.md §7). `rows`: a REST answer from focus_wallpapers; `usable`: the ids the app keeps, in order (non-https, bad ids, no size and repeated ids are left out; missing optional fields get defaults, focus_y is brought into 0-1). `candidates`: which wallpapers the next session may show. `remember`: the recent list after one is shown. `layout`: where a picture of `image` size goes in a `container` ([x, y, width, height], within 0.01). `evictions`: which downloaded pictures to delete (lastUsed in seconds; catalog null = not known).",
+  "rows": [
+    {"id": "lake", "url": "https://example.supabase.co/storage/v1/object/public/wallpapers/lake.jpg", "width": 1290, "height": 2796, "color": "#999f9d", "focus_y": 0.5, "author": "Timo", "author_url": "https://unsplash.com/@timo", "source_url": "https://unsplash.com/photos/lake", "licence": "Unsplash License"},
+    {"id": "moon", "url": "https://example.supabase.co/storage/v1/object/public/wallpapers/moon.jpg", "width": 1290, "height": 2796, "color": "#063650", "focus_y": 1.7, "author": "", "author_url": "", "source_url": "", "licence": ""},
+    {"id": "minimal", "url": "https://example.com/minimal.jpg", "width": 800, "height": 1600},
+    {"id": "plain-http", "url": "http://example.com/a.jpg", "width": 1290, "height": 2796},
+    {"id": "../escape", "url": "https://example.com/b.jpg", "width": 1290, "height": 2796},
+    {"id": "Upper", "url": "https://example.com/c.jpg", "width": 1290, "height": 2796},
+    {"id": "no-size", "url": "https://example.com/d.jpg", "width": 0, "height": 2796},
+    {"id": "missing-url", "width": 1290, "height": 2796},
+    {"id": "lake", "url": "https://example.com/again.jpg", "width": 1290, "height": 2796}
+  ],
+  "usable": ["lake", "moon", "minimal"],
+  "usableDetails": [
+    {"id": "lake", "color": "#999f9d", "focusY": 0.5, "author": "Timo", "authorURL": "https://unsplash.com/@timo", "sourceURL": "https://unsplash.com/photos/lake"},
+    {"id": "moon", "color": "#063650", "focusY": 1.0, "author": "", "authorURL": null, "sourceURL": null},
+    {"id": "minimal", "color": "#808080", "focusY": 0.5, "author": "", "authorURL": null, "sourceURL": null}
+  ],
+  "candidates": [
+    {"about": "online: everything not shown recently", "catalog": ["a", "b", "c", "d"], "downloaded": [], "recent": ["b", "c"], "canDownload": true, "expected": ["a", "d"]},
+    {"about": "offline: only downloaded ones", "catalog": ["a", "b", "c", "d"], "downloaded": ["b", "d"], "recent": ["b"], "canDownload": false, "expected": ["d"]},
+    {"about": "offline, every downloaded one shown recently: they may repeat", "catalog": ["a", "b", "c"], "downloaded": ["b"], "recent": ["b"], "canDownload": false, "expected": ["b"]},
+    {"about": "all shown recently: any of them", "catalog": ["a", "b"], "downloaded": [], "recent": ["a", "b"], "canDownload": true, "expected": ["a", "b"]},
+    {"about": "offline with nothing downloaded: none", "catalog": ["a", "b"], "downloaded": [], "recent": [], "canDownload": false, "expected": []},
+    {"about": "a downloaded picture no longer in the list isn't shown", "catalog": ["a"], "downloaded": ["gone", "a"], "recent": [], "canDownload": false, "expected": ["a"]},
+    {"about": "no list: none", "catalog": [], "downloaded": ["a"], "recent": [], "canDownload": true, "expected": []}
+  ],
+  "remember": [
+    {"id": "a", "recent": [], "catalogCount": 30, "expected": ["a"]},
+    {"id": "c", "recent": ["b", "a"], "catalogCount": 30, "expected": ["c", "b", "a"]},
+    {"id": "a", "recent": ["c", "a", "b"], "catalogCount": 30, "expected": ["a", "c", "b"]},
+    {"id": "e", "recent": ["d", "c", "b", "a"], "catalogCount": 8, "expected": ["e", "d", "c", "b"]},
+    {"id": "x", "recent": ["j", "i", "h", "g", "f", "e", "d", "c", "b", "a"], "catalogCount": 30, "expected": ["x", "j", "i", "h", "g", "f", "e", "d", "c", "b"]},
+    {"id": "b", "recent": ["a"], "catalogCount": 2, "expected": ["b"]},
+    {"id": "a", "recent": [], "catalogCount": 1, "expected": ["a"]}
+  ],
+  "layout": [
+    {"image": [1290, 2796], "container": [360, 450], "focusY": 0.5, "expected": [0, -165.14, 360, 780.28]},
+    {"image": [1290, 2796], "container": [360, 450], "focusY": 0.33, "expected": [0, -32.49, 360, 780.28]},
+    {"image": [1290, 2796], "container": [360, 450], "focusY": 0, "expected": [0, 0, 360, 780.28]},
+    {"image": [1290, 2796], "container": [360, 450], "focusY": 1, "expected": [0, -330.28, 360, 780.28]},
+    {"image": [1290, 2796], "container": [400, 200], "focusY": 0.5, "expected": [0, -333.49, 400, 866.98]},
+    {"image": [3000, 2000], "container": [300, 600], "focusY": 0.9, "expected": [-300, 0, 900, 600]},
+    {"image": [0, 0], "container": [300, 600], "focusY": 0.5, "expected": [0, 0, 300, 600]}
+  ],
+  "evictions": [
+    {"about": "within bounds: nothing", "entries": [{"id": "a", "bytes": 100, "lastUsed": 10}, {"id": "b", "bytes": 100, "lastUsed": 20}], "catalog": ["a", "b"], "keeping": [], "maxFiles": 5, "maxBytes": 1000, "expected": []},
+    {"about": "no longer in the list", "entries": [{"id": "a", "bytes": 100, "lastUsed": 10}, {"id": "gone", "bytes": 100, "lastUsed": 20}], "catalog": ["a"], "keeping": [], "maxFiles": 5, "maxBytes": 1000, "expected": ["gone"]},
+    {"about": "list unknown: kept", "entries": [{"id": "a", "bytes": 100, "lastUsed": 10}, {"id": "gone", "bytes": 100, "lastUsed": 20}], "catalog": null, "keeping": [], "maxFiles": 5, "maxBytes": 1000, "expected": []},
+    {"about": "too many: least recently used first", "entries": [{"id": "a", "bytes": 100, "lastUsed": 30}, {"id": "b", "bytes": 100, "lastUsed": 10}, {"id": "c", "bytes": 100, "lastUsed": 20}], "catalog": ["a", "b", "c"], "keeping": [], "maxFiles": 2, "maxBytes": 1000, "expected": ["b"]},
+    {"about": "too big", "entries": [{"id": "a", "bytes": 400, "lastUsed": 30}, {"id": "b", "bytes": 400, "lastUsed": 10}, {"id": "c", "bytes": 400, "lastUsed": 20}], "catalog": null, "keeping": [], "maxFiles": 10, "maxBytes": 500, "expected": ["b", "c"]},
+    {"about": "the one on screen stays, even if it's the oldest or gone from the list", "entries": [{"id": "a", "bytes": 400, "lastUsed": 30}, {"id": "b", "bytes": 400, "lastUsed": 10}, {"id": "c", "bytes": 400, "lastUsed": 20}], "catalog": ["a", "c"], "keeping": ["b"], "maxFiles": 10, "maxBytes": 500, "expected": ["c", "a"]},
+    {"about": "same time: by id", "entries": [{"id": "b", "bytes": 100, "lastUsed": 10}, {"id": "a", "bytes": 100, "lastUsed": 10}], "catalog": null, "keeping": [], "maxFiles": 1, "maxBytes": 1000, "expected": ["a"]}
+  ]
+}
