@@ -147,7 +147,20 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   notifications carry "25 min" as short critical text, posted again at each minute by a non-waking exact alarm
   (`IslandCountdown`). Settings → Reliable Reminders → Send a Test Live Update shows whether the system promoted it.
   vivo's own 原子通知 API (`notification.superx.*` extras) is not used: it needs access granted by vivo by email.
-  **Not yet confirmed on a phone** (checklist in `HANDOFF.md`: the owner's iQOO Neo 9 or a user's phone).
+  **Result (owner, 2026-10-16): nothing in the island with 0.4.1 or 0.5.0** on the owner's iQOO Neo 9, China OriginOS 6
+  `PD2338_A_16.2.13.2.W10`. What vivo's documents say (dev.vivo.com.cn doc 894 access guide, 895 design rules, 896
+  technical spec): the Atom Island / 原子通知 for third-party apps is vivo's own API (`notification.superx.*` extras on a
+  local notification, updates also through vivo push), and **vivo must grant it per app and per scene**: the app must
+  already be on the vivo App Store; email `oosyztz@vivo.com` (app name, package, contact, scene, a requirements document
+  on vivo's template, a mock-up), 7–10 working days' review, a joint requirements and UI review, then vivo opens the
+  permission, joint testing, and a launch rolled out model by model. The system reports an app or scene without it as
+  "当前应用或场景未开通原子通知权限" (receipt 32008). vivo's documents never mention Android 16 Live Updates. The only
+  vivo phone known to put a plain Android 16 Live Update in the island runs the **global** OriginOS 6
+  (`PD2512F_EX_A_16.1.13.4`, tigerduck-app/android-dynamic-island-test); on China builds, approved apps only (JD,
+  Taobao Shangou, Meituan, 12306, Amap…). So a debug APK from outside the vivo App Store can't use the China island.
+  Listing on the vivo App Store would need stage 7's release signing, a software copyright (软著) and App 备案 in the
+  owner's name, and for the AI features vivo's deep-synthesis qualification (review rules 3.1.5, 3.2.14). The AOSP
+  Live Update code stays: it costs nothing and works on global OriginOS, ColorOS, HyperOS and MagicOS.
 - **AI help and the agent (moved ahead of stage 7 at the owner's choice, 2026-10-15)**, stages in `docs/ai-spec.md` §5:
   **A1 done 2026-10-15**: AIKit ported to `android/core` (package `io.github.hilbert0619.aikit`: providers,
   connections, request bodies for both wire formats, SSE parser, stream decoding with tool calls, errors, prompts, to-do

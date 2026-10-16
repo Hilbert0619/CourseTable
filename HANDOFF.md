@@ -44,6 +44,13 @@ Handoff prompt A below picks up the owner's results.
     the chronometer, so they now get "25 min" text refreshed each minute. Settings → Reliable Reminders → Send a Test
     Live Update reports what the system did. CI: branch 38784060888 (`android-island`), main 38784460423. Details:
     `docs/android-plan.md` §8. Checklist below.
+  - **Island result (owner, 2026-10-16): still nothing, on 0.4.1 and 0.5.0** (iQOO Neo 9, China OriginOS 6
+    `PD2338_A_16.2.13.2.W10`). vivo's documents (dev.vivo.com.cn docs 894–896) say third-party apps reach the Atom Island
+    only through vivo's own 原子通知 API, **granted by vivo per app and scene**, and only for apps already on the vivo App
+    Store (email `oosyztz@vivo.com`, 7–10 working days, design review, staged launch). StudyHour (a debug APK, not on the
+    store) has no such grant; plain Live Updates reach the island only on global OriginOS builds. **No further island
+    work until the owner decides** whether to pursue vivo's route (needs stage 7, 软著, App 备案 and, for the AI
+    features, vivo's deep-synthesis qualification). Full findings: `docs/android-plan.md` §8, the 0.4.1 entry.
   - **0.5.0 (versionCode 6), 2026-10-15: AI help and the agent, moved ahead of stage 7 at the owner's choice.** All of
     iOS 0.4/0.5's AI: AIKit ported to `android/core` (package `aikit`, tested against every shared `ai-*.json` case),
     keys encrypted with an Android Keystore key, Settings → AI Help, word help, "Why?", Long Sentences / Writing

@@ -25,7 +25,9 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
   OPPO/OnePlus/realme and Xiaomi islands don't run the countdown chronometer, so on those phones the notifications
   also carry the minutes left as short critical text ("25 min"), posted again at each minute by a non-waking exact
   alarm (`IslandCountdown`; `AlertPlan.keepLive` lists the class notifications to refresh). Settings → Reliable
-  Reminders → Send a Test Live Update shows how the phone treats one (promoted or not, colorized, build).
+  Reminders → Send a Test Live Update shows how the phone treats one (promoted or not, colorized, build). **China
+  OriginOS (vivo/iQOO) shows only apps vivo has approved in its Atom Island** (`docs/android-plan.md` §8, 0.4.1):
+  StudyHour isn't one, so nothing appears there (tested on an iQOO Neo 9, 2026-10-16).
 - **Focus**: `FocusEngine` keeps the core `FocusRun` in `SharedPreferences`, so the app, the notification buttons and
   an alarm in a new process share one session; an alarm at each switch posts its notification. The sounds are the iOS
   files (`CourseTable/Sounds`, packed as assets by the variant API), played by Media3 ExoPlayer in a loop without audio
