@@ -33,6 +33,31 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 - **Settings → Reliable Reminders** checks notifications, exact alarms, battery optimisation and Live Updates, links to
   vivo/iQOO's auto-start page, and sends a test reminder. Notifications themselves are checked on the phone.
 
+## AI help and the Assistant (`core/…/aikit`, `app/…/ai`, `app/…/ui/ai`)
+
+The same features as iOS 0.4/0.5 (`docs/ai-spec.md`, `docs/ai-agent-spec.md`), bring your own key, nothing through
+our server.
+
+- **Logic in `core`** (`aikit`, the port of AIKit): presets and connections, request bodies for both wire formats,
+  the SSE parser and stream decoding with tool calls, errors, prompts, to-do drafts, Markdown blocks, the agent loop
+  (`AIAgentSession`), the app's tools over an `AgentWorld` snapshot (`AppTools`), timetable photos. Swift's character
+  counts are kept (`characterCount`). Tested with the Swift tests' ports and every shared `spec/fixtures/ai-*.json` case.
+- **Keys**: `KeystoreAIKeys` encrypts each connection's key with AES-GCM under a key that stays in the Android
+  Keystore; the `ai_keys` preferences are left out of backups (`backup_rules.xml`, `data_extraction_rules.xml`).
+- **`AIStore`**: connections and the default one, monthly usage, saved answers (`files/ai/answers.json`, 400) and
+  Assistant chats (`files/ai/conversations.json`, 30). **`KtorAITransport`** (OkHttp engine) streams bytes into
+  `SSEParser`, maps error bodies and reads a whole answer when a proxy doesn't stream; **`DemoAITransport`** +
+  `DemoAgent` answer tests and screenshots with canned text and scripted tool calls. **`AIRun`** is one request as
+  Compose state.
+- **Screens**: Settings → AI Help (`AISettingsScreen`, the connection editor and its test), word help and "Why?"
+  (`WordAIHelp`), Words → AI Tools → Long Sentences / Writing Feedback (`StudyTools`), Quick Add in a new to-do, the
+  Assistant (`AssistantScreen` + `AgentRun`: lookup lines, confirm cards with Undo, photos, earlier chats) from ✨ on
+  Today and Words, Import → From a Photo (AI) with the photo's period times, Words → Statistics → Analyse My Progress.
+  `RootScreen` provides the `AgentContext` (data, actions, focus, Words) the tools read and change.
+- **Text in photos**: ML Kit's bundled Chinese+Latin recognizer (`TextReader`), no Google Play services. Its native
+  library is packed for 64-bit ARM only (`packaging` in `app/build.gradle.kts`, the owner's choice); other phones report
+  scanning unavailable, and a model that reads pictures still works there.
+
 ## Words (`core/…/vocabkit/backend`, `core/…/vocabkit/store`, `app/…/words`, `app/…/ui/words`)
 
 - **The same cloud project as iOS** (Supabase, `docs/vocabulary-spec.md`): one account studies on both. The URL and

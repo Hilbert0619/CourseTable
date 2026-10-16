@@ -155,8 +155,23 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   `AgentWorld` snapshot, timetable photos). 52 tests, ported from `AIKitTests`/`AIAgentTests` plus every shared case in
   `spec/fixtures/ai-*.json`; 392 core tests in all. Swift character counts (graphemes, CR LF as one) are kept by
   `characterCount`/`prefixCharacters`.
-- **Next: A2 (keys, transport, Settings → AI, word help, "Why?")**; the island check of 0.4.1 and stage 7 (release)
-  wait — see `HANDOFF.md`.
+  **A2 done 2026-10-15** (`app/…/ai`, `app/…/ui/ai`): keys AES-GCM-encrypted with an Android Keystore key
+  (`KeystoreAIKeys`, the `ai_keys` preferences left out of backups), `AIStore` (connections, default, monthly usage,
+  saved answers in `files/ai/answers.json`), `KtorAITransport` (OkHttp engine; bytes into `SSEParser`, error bodies,
+  a whole answer when a proxy doesn't stream) and `DemoAITransport` for tests, `AIRun` (Compose state), Settings → AI
+  Help with the connection editor and its test (answer, tool call, red picture), word help on the word page, "Why?"
+  after a wrong choice or spelling. **A3 done 2026-10-15**: Words → AI Tools → Long Sentences and Writing Feedback,
+  Quick Add in a new to-do, Photo/Camera scanning with **ML Kit** (`com.google.mlkit:text-recognition-chinese`
+  16.0.1, bundled model, no Play services; owner's choice: the recognizer's library only for 64-bit ARM, others report
+  scanning unavailable; native libraries compressed in the APK). Debug APK 31 → 40 MB.
+  **A4 done 2026-10-15** (CI run 38828069559 on `android-ai`): the Assistant (`AssistantScreen` + `AgentRun`; ✨ on
+  Today and Words) with the app's tools: lookups as lines, every change as a card to confirm, Undo, photos, earlier
+  chats in `files/ai/conversations.json`; `AgentContext` (in `RootScreen`) reads and changes to-dos, courses, focus and
+  Words. Import → From a Photo (AI) with the photo's period times (`TimetablePhotoReader`: a picture model, or ML Kit
+  text with positions); Words → Statistics → Analyse My Progress. Screenshots of every AI screen, English and Chinese.
+  **APK 0.5.0 (6)**; real keys, the Keystore and ML Kit can only be checked on the phone (checklist in `HANDOFF.md`).
+- **Waiting**: the owner's test of 0.5.0 with a real key, the island check of 0.4.1, then stage 7 (release) — see
+  `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 

@@ -152,6 +152,12 @@ Where things are (as built 2026-10-15):
 - Tests: AIKit `AIAgentTests`, `AIAgentFixtureTests` (+ `spec/fixtures/ai-tool-*.json`, `ai-agent-tools.json`,
   `ai-timetable-photo.json`); app `AgentRunTests`; UI `AgentUITests` (screenshots `*-agent-*`).
 
+Android (StudyHour 0.5.0, built 2026-10-15): the same agent from the same logic. `android/core` package `aikit`
+(`AIAgentSession`, `AppTools`, `TimetablePhoto`; `AIAgentTests` and `AIAgentFixtureTests` ported, the same fixtures),
+app `AgentRun` + `AgentContext` (`AgentRunTest`), `AssistantScreen`, `TimetablePhotoReader` (a picture model, or ML
+Kit text with positions on the phone), Import → From a Photo (AI), Analyse My Progress; screenshots
+`AIScreenshotTests.assistant*`.
+
 ## 9. Ask the owner first (answered 2026-10-15)
 
 The owner chose: 1. confirm every change with a tap; 2. on-device OCR with positions for text-only models; 3. to-dos

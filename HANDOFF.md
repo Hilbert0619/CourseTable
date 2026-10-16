@@ -1,4 +1,4 @@
-# Session Handoff — CourseTable (iOS 0.5.0 with the AI agent: waiting for the owner's device test · Android 0.4.1 Atom Island check, then stage 7)
+# Session Handoff — CourseTable (iOS 0.5.0 with the AI agent: waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, plus the 0.4.1 Atom Island check, then stage 7)
 
 Date: 2026-10-15 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
@@ -35,6 +35,14 @@ Handoff prompt A below picks up the owner's results.
     the chronometer, so they now get "25 min" text refreshed each minute. Settings → Reliable Reminders → Send a Test
     Live Update reports what the system did. CI: branch 38784060888 (`android-island`), main 38784460423. Details:
     `docs/android-plan.md` §8. Checklist below.
+  - **0.5.0 (versionCode 6), 2026-10-15: AI help and the agent, moved ahead of stage 7 at the owner's choice.** All of
+    iOS 0.4/0.5's AI: AIKit ported to `android/core` (package `aikit`, tested against every shared `ai-*.json` case),
+    keys encrypted with an Android Keystore key, Settings → AI Help, word help, "Why?", Long Sentences / Writing
+    Feedback, Quick Add, the Assistant with the tools (cards, Undo, photos, earlier chats), Import → From a Photo (AI),
+    Analyse My Progress. Text in photos: ML Kit bundled Chinese+Latin (the owner's choice: 64-bit ARM phones only; APK
+    31 → 40 MB). CI on `android-ai`: A4 38828069559; screenshots of every AI screen checked (English and Chinese).
+    **Not yet tried with a real key, nor the Keystore or ML Kit on a phone**: checklist below. Code map:
+    `android/README.md` "AI help and the Assistant".
 - **iOS**: 0.3.1 passed the owner's device test (2026-10-11); the owner published GitHub Releases themselves (IPAs
   0.1.0–0.3.1 and the Android 0.4.0 *debug* APK renamed `StudyHour-0.3.1.apk`; every tag points at e6479e7, not the
   build commits; no LICENSE yet). Those release fixes wait for the owner's OK. `docs/v3-development-record.md` is still
@@ -42,8 +50,7 @@ Handoff prompt A below picks up the owner's results.
 - **AI help** ([`docs/ai-spec.md`](docs/ai-spec.md), bring your own key), built on iOS 2026-10-12 as 0.4.0 (build 6);
   **the owner's device test with a real key passed** (2026-10-15).
 - **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7): see "Next"
-  above; checklist below. Android gets AI help and the agent after its stage 7, porting AIKit to `android/core`
-  against the shared cases `spec/fixtures/ai-*.json`.
+  above; checklist below. Android has both since 0.5.0 (above).
 
 ## iOS 0.5.0 AI agent test (owner, with a real key)
 
@@ -67,11 +74,33 @@ that calls tools: DeepSeek (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or
 8. Earlier Chats: reopen the chat; cards keep their state. Airplane mode: a clear error and Try Again.
 9. Anything odd: note the provider and model, what you asked, and what the card or answer said.
 
+## Android 0.5.0 AI test (owner, with a real key)
+
+Install `APK_050` over 0.4.x (timetable, to-dos, Focus and Words stay). Keys don't come over from the iPhone: add the
+connection on the phone itself (the same key works on both). Use a model that calls tools: DeepSeek
+(`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or Qwen.
+1. 设置 → AI 帮助 → 添加连接: provider, key, model → **测试连接**: connected, tools work, and with a Photo Model (GLM
+   `glm-4.6v-flash`, Qwen `qwen3-vl-plus`) photos work. Close StudyHour from Recents and open it again: the connection
+   is still there and the key field's label says a key is saved (the Keystore works).
+2. Words: a word page → the AI buttons stream an answer; open the word again: the answer is saved (no new charge). In a
+   study session, a wrong choice or spelling → **为什么？**.
+3. Words → AI 工具 → **长难句**: **相机** or **照片** reads the text on the phone (ML Kit, works offline) → analyse.
+   **作文批改**: a paragraph → feedback.
+4. A new to-do → **快速添加**: "明天高数课后交论文" → the fields fill in.
+5. Today → ✨ (助手): the iOS checklist's steps 2–4 above (New To-Do card → Confirm → Undo; Change To-Do; a delete you
+   Cancel; a lookup with no card; Start Focus → the Focus tab and its notification run it).
+6. Words → 统计 → **分析我的进度**: lookup lines, then an analysis whose numbers match the statistics.
+7. 课程表 → Import → **从照片导入（AI）**: a 教务系统 photo or screenshot → courses to check (period times too, if the
+   photo shows them) → Import. Once with DeepSeek (text read on the phone), once with a photo model.
+8. 助手 → photo → "把这些课加进课程表" → an Add Courses card → Review… → Import → the card counts them; Undo removes them.
+9. **以前的对话**: reopen a chat, the cards keep their state. Airplane mode: a clear error and Try Again.
+10. Anything odd: provider and model, what you asked, a screenshot of the card or answer. Never send the key itself.
+
 ## Android 0.4.1 Atom Island check (the owner's iQOO Neo 9, or a user's vivo/iQOO phone)
 
 Before updating, on 0.4.0: start a Focus session, go to the Home Screen and note what the island shows (this
 reproduces the users' report on a known phone). Then install `StudyHour-0.4.1-debug-28.apk` over 0.4.0 (everything
-stays). The island hides while StudyHour itself is on screen, so always go to the Home Screen to look. From a user, also
+stays; 0.5.0 has the same island code, so the check works on it too). The island hides while StudyHour itself is on screen, so always go to the Home Screen to look. From a user, also
 get the phone model and the OriginOS version (设置 → 系统升级, or 关于手机).
 1. Settings → Reminders → Reliable Reminders: the **实时更新 / Live Updates** row says 已允许 / Allowed (if not, tap it).
 2. At the bottom: **发送测试实时更新 / Send a Test Live Update** → go to the Home Screen: the island should show the
@@ -87,7 +116,7 @@ get the phone model and the OriginOS version (设置 → 系统升级, or 关于
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.5.0 device test; **B** is the Android track (independent): the 0.4.1 island check, then stage 7.
+> 0.5.0 device test; **B** is the Android track (independent): the 0.5.0 AI test and the 0.4.1 island check, then stage 7.
 
 ### A. The owner's results for iOS 0.5.0 (the AI agent)
 
@@ -119,19 +148,22 @@ green, fast-forward main. Use the Write/Edit tools (or Python scripts written wi
 backslashes through a bash heredoc. Short report at the end with run links.
 ```
 
-### B. Android: the Atom Island check of 0.4.1, then stage 7
+### B. Android: the 0.5.0 AI test and the Atom Island check, then stage 7
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the Atom Island check of 0.4.1, then stage 7 (release)
+[PROJECT HANDOFF] CourseTable — Android: the owner's 0.5.0 AI test and the Atom Island check, then stage 7 (release)
 
 ## Read first
-HANDOFF.md (status, the 0.4.1 checklist, facts, gotchas), docs/android-plan.md (§1 decisions, §7 stages, §8 progress
-incl. the 0.4.1 entry), android/README.md ("Live Updates and the brands' islands"), app/…/alerts/LiveUpdates.kt.
+HANDOFF.md (status, the Android 0.5.0 AI and 0.4.1 island checklists, facts, gotchas), docs/android-plan.md (§1
+decisions, §7 stages, §8 progress incl. the 0.4.1 and AI entries), android/README.md ("Live Updates and the brands'
+islands", "AI help and the Assistant"), docs/ai-spec.md and docs/ai-agent-spec.md (the iOS behaviour Android matches).
 
 ## Goal
-1. I tell you how the 0.4.1 island check went, on my phone or from users (the island report came from users; I may
-   only have their words and screenshots, and their phone model and OriginOS version): fix what's reported on a
-   branch (CI green, then fast-forward main, new APK, versionCode +1).
+1. I tell you how the 0.5.0 AI checklist went (provider, model, what happened) and how the island check went, on my
+   phone or from users (the island report came from users; I may only have their words and screenshots, and their
+   phone model and OriginOS version). Fix what's reported on a branch (CI green, then fast-forward main, new APK,
+   versionCode +1): AI logic in android/core (package aikit) with tests first, matching iOS; if a fix belongs in the
+   shared logic, change iOS AIKit too only after asking me.
 2. Stage 7 (release): a signed release APK. Ask me first how the release keystore is made and kept (it will be a repo
    secret I set myself; switching from the debug key means one uninstall, data moves by CSV export and the Words
    account), the version number and the release notes. Then docs: an Android development record
@@ -140,7 +172,10 @@ incl. the 0.4.1 entry), android/README.md ("Live Updates and the brands' islands
 ## Decided with me — don't reverse; ask if unsure
 Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and schema
 unchanged, supabase-kt, APK, StudyHour/学时 on Android only, iOS unchanged). Keep the repo secret ANDROID_DEBUG_KEYSTORE.
-Don't create or change secrets without asking. No Android Studio/SDK on this PC: the app builds on CI only.
+Don't create or change secrets without asking. No Android Studio/SDK on this PC: the app builds on CI only. AI: bring
+your own key, nothing through our server, keys only on the phone (Android Keystore, out of backups), every change the
+agent makes confirmed with a tap; text in photos by ML Kit bundled, 64-bit ARM only. Never put a real API key in code,
+tests, CI or chat.
 
 ## How to work
 Logic in android/core with tests first (it builds and tests here: ./gradlew :core:test); the app stays thin. Iterate the
@@ -216,6 +251,13 @@ links.
 - Room ordering uses `createdAt`; `Repository.now()` hands out strictly increasing stamps.
 - `SwipeToDismissBox` rows are keyed (`key(id)`), so a deleted row's swipe state doesn't move to the next one.
 - Bash heredocs with quotes and `\'` broke once: write helper scripts with the Write tool, run them with python.
+  Python through a heredoc also turns `\n` in Kotlin strings into real line breaks (broke three files in the AI work):
+  change code containing backslashes with the Edit/Write tools only.
+- AI on Android: ML Kit's `libmlkit_google_ocr_pipeline.so` for all ABIs made the APK 76 MB; `packaging` excludes all
+  but arm64-v8a and `useLegacyPackaging = true` compresses native libraries (40 MB). Kotlin `data object` makes its own
+  `readResolve`: don't write one. A test fake's `var goal` clashes with `override fun setGoal` (JVM signature).
+  Compose screenshots with two scrollables need `onAllNodes(hasScrollAction()).onFirst()`. The saved-key hint is in
+  the key field's label, which always shows (as a placeholder it didn't).
 - Auto mode once blocked plain reads right after a secret was written (`gh secret set`); ask before secret changes.
 
 ## Environment notes (Windows 11, no Mac)

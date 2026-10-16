@@ -6,7 +6,7 @@ A native iOS class-schedule app with an English vocabulary trainer for 考研: *
 [![iOS](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/ios.yml)
 [![Backend](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml/badge.svg)](https://github.com/Hilbert0619/CourseTable/actions/workflows/backend.yml)
 
-Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md) · [AI agent](docs/ai-agent-spec.md). An Android version (Kotlin + Jetpack Compose, same features) is planned: [docs/android-plan.md](docs/android-plan.md).
+Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0.1 (timetable)](docs/v1-development-record.md) · [v0.2 (Words)](docs/v2-development-record.md). Specs: [vocabulary](docs/vocabulary-spec.md) · [to-dos, focus timer and class alerts](docs/todos-focus-spec.md) · [AI help](docs/ai-spec.md) · [AI agent](docs/ai-agent-spec.md). An Android version (StudyHour / 学时: Kotlin + Jetpack Compose, the same features including AI help and the agent) is in testing: [docs/android-plan.md](docs/android-plan.md), [android/README.md](android/README.md).
 
 ## Features
 
@@ -63,6 +63,8 @@ With a model that can call tools ([spec](docs/ai-agent-spec.md)), the Assistant 
 - **Timetable from a photo**: Import Courses → From a Photo (AI), or a photo in the Assistant. A model that reads pictures gets the photo; otherwise this iPhone reads the text and where it sits, and only the text is sent. The courses always land in the import preview for you to check; period times seen in the photo are offered too.
 - **Analyse My Progress** in Words → Statistics opens the Assistant with that request.
 - Settings → AI Help: per connection, **Use the App's Tools**, **Model Reads Photos** and an optional **Photo Model** (e.g. `glm-4.6v-flash` for GLM, `qwen3-vl-plus` for Qwen); Test Connection checks tool calls and photos too.
+
+On Android (StudyHour 0.5) AI help and the agent work the same way, from the same logic (`android/core`, package `aikit`, tested against the same shared cases). Keys are encrypted with a key from the phone's Android Keystore and left out of backups; text in photos is read on the phone with ML Kit (on 64-bit ARM phones, nearly all in use).
 
 ## Import format
 
