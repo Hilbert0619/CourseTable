@@ -92,3 +92,40 @@ to-dos or focus history across devices, Apple's own Background Sounds (not avail
 
 macOS minutes are short this month (about 60 left), so the app code of stages 2–4 is reviewed carefully and built
 together; screenshot runs may wait for November.
+
+## 7. Additions in 0.6 (2026-10-16)
+
+Asked for by the owner after the 0.5.0 device test (user feedback, after the Chinese app 不背单词): a new app icon,
+a random high-resolution wallpaper behind the Focus countdown, and a way to clear records and other data (users
+couldn't delete Focus history).
+
+**Wallpapers**
+- Backend: `public.focus_wallpapers` (id, https `url`, size, average `color`, `focus_y` = how far down the subject
+  is, author, author and photo links, licence, `active`). Anyone may read the active rows (the Focus tab needs no
+  account); nobody writes through the API. Migrations `20261016100000_focus_wallpapers.sql` (table) and
+  `…100100_focus_wallpapers_unsplash.sql` (rows, generated).
+- Pictures: 30 photos from Unsplash, free under the Unsplash License (not Unsplash+; checked on each photo's
+  page), listed in `content/wallpapers/sources.json`. `tools/make_wallpapers.py` crops them to 1290×2796 JPEGs
+  (about 0.5 MB each, 15 MB in all) in `supabase/wallpapers/`, writes the rows and `content/wallpapers/SOURCES.md`.
+  They live in the public Storage bucket `wallpapers` (declared in `supabase/config.toml`), uploaded by
+  `supabase seed buckets` (locally in `backend.yml`, to the cloud in `backend-deploy.yml`, run by the owner).
+  More can be added later by a new migration, or in the dashboard (upload to the bucket, add a row).
+- App: each session start picks a random wallpaper that wasn't among the last ones shown (up to 10, at most half
+  the list); the list is fetched again after 12 hours. A picture is downloaded once into `Caches/Wallpapers`
+  (at most 40 pictures / 60 MB, least recently shown deleted first; ones no longer in the list too). Offline,
+  only kept pictures are used; with none, the countdown keeps its plain look. The countdown card shows the photo
+  scaled to fill, moved so `focus_y` stays in view, darkened towards the bottom, with white text, the credit
+  ("Photo by … on Unsplash", opens the photo's page) and a shuffle button. A relaunch during a session shows the
+  same picture. Focus setup → **Wallpaper** turns it off.
+- Logic in CourseKit (`FocusWallpapers.swift`): reading rows, candidates, the recent list, the crop, the cache's
+  limits; shared cases in `spec/fixtures/focus-wallpapers.json` for the Android port.
+
+**Focus history**: swipe a session on the Focus tab to delete it; **All Sessions** lists every session by day
+(Edit, swipe, **Clear History** with a confirmation).
+
+**Settings → Storage**: choose and clear **Focus History**, **Completed To-Dos**, **Assistant Chats**, **Saved AI
+Answers**, **AI Usage Counts** (records) and **Focus Wallpapers**, **Other Cached Files** (URL cache and temporary
+files), each with its count or size; one confirmation lists what will go. The timetable, unfinished to-dos, Words
+progress and AI connections are never cleared there.
+
+**Icon**: the owner's design (calendar, clock and word card around a Z), made full-bleed for iOS's own mask.

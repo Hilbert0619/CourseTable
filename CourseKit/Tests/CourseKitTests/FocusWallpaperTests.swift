@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
+import CoreGraphics  // CGSize and CGRect with their initialisers (Foundation alone has them only off Apple platforms)
+#endif
 import Testing
 @testable import CourseKit
 

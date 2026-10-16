@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
+import CoreGraphics  // CGSize and CGRect with their initialisers (Foundation alone has them only off Apple platforms)
+#endif
 
 /// A photo behind the Focus countdown (docs/todos-focus-spec.md §7): one row of the backend's `focus_wallpapers`.
 public struct FocusWallpaper: Hashable, Codable, Sendable, Identifiable {

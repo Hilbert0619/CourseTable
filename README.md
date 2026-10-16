@@ -30,7 +30,12 @@ Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0
 - **Pomodoro timer** on its own tab: a goal ("高数复习"), a length (15 min – 4 h, breaks included), and 25-minute focus blocks with 5-minute breaks and a 15-minute break after every fourth block (all adjustable), or one straight countdown with breaks off. The plan is shown before you start ("5 focus blocks · 2 hr of focus · ends at 21:30").
 - **While running**: the phase and time left, Pause/Resume, Skip Break, Stop; the same in the Dynamic Island and on the Lock Screen, with Pause and Stop buttons. A notification at every switch and at the end, also while the app is open.
 - **Background sounds**: rain, rain on a roof, campfire, airplane cabin, ocean, stream, night, train, café: recordings from Freesound in the public domain (CC0, [sources](content/sounds/SOURCES.md)), looped without a seam. They keep playing when you leave the app or lock the phone, mix with music, and can be changed while running.
-- **History**: today's focus time and the latest sessions.
+- **History**: today's focus time and the latest sessions; swipe one to delete it, or open **All Sessions** (by day, with Clear History).
+- **Wallpapers** (v0.6): each session shows a random high-resolution photo behind the countdown, one not shown recently, with the photographer's credit and a shuffle button. 30 photos from Unsplash (Unsplash License, [sources](content/wallpapers/SOURCES.md)) in the backend's public `wallpapers` bucket, listed in the `focus_wallpapers` table (no account needed); each is downloaded once and kept for offline sessions. Can be turned off.
+
+### Storage (v0.6)
+
+- **Settings → Storage** lists focus history, completed to-dos, Assistant chats, saved AI answers, AI usage counts, downloaded wallpapers and other cached files with their counts and sizes; pick any and clear them. The timetable, unfinished to-dos, Words progress and AI connections are never cleared there.
 
 ### Words (English vocabulary, v0.2)
 
@@ -109,12 +114,12 @@ CourseKit/            Swift package with all timetable and vocabulary logic; bui
                         AppTools (the app's tools over an AgentWorld snapshot), TimetablePhoto
   Tests/                Swift Testing unit tests (CourseKitTests, VocabKitTests, AIKitTests)
 content/              Word lists built from ECDICT (MIT, see content/ECDICT-LICENSE); content/.cache/ holds the
-                      downloaded source and is not committed
+                      downloaded source and is not committed; sounds/ and wallpapers/ list the recordings and photos
 CourseTable/          iOS app target (SwiftUI views, SwiftData records, assets)
   Reminders/            Alerts.sync: class Live Activities (ClassLiveActivities), class and to-do notifications
   Planner/              Planner.store (to-dos, focus history; PlannerSchemaV1) and PlannerModel
   Focus/                FocusEngine (the running session, its Live Activity and notifications), FocusView,
-                        SoundPlayer (gapless loops)
+                        SoundPlayer (gapless loops), WallpaperStore (the countdown's photo: list, pick, download, cache)
   Sounds/               sound-<id>.m4a, built by tools/make_sounds.py from content/sounds/sources.json
   AI/                   AIStore (connections, Keychain keys, usage, saved answers and chats), AITransport (URLSession;
                         DemoAITransport for -aiDemo, with scripted tool calls), AIRun, AISettingsView, WordAIHelp,
@@ -133,10 +138,12 @@ Shared/               Code and strings compiled into both the app and the widget
 CourseTableTests/     App-level tests, run in the iOS Simulator on CI (timetable + VocabTests)
 CourseTableUITests/   UI tests that drive the app and take screenshots (Screenshots workflow)
 CourseTable.xcodeproj Xcode project (synced folders: new files are picked up automatically)
-supabase/             The vocabulary backend: config.toml, migrations (schema + row-level security, generated word
-                      content), tests (pgTAP + api/smoke.sh), remote-auth.json (cloud sign-in options), checks/
+supabase/             The backend: config.toml (incl. the public Storage bucket `wallpapers`), migrations (schema +
+                      row-level security, generated word content, focus wallpapers), wallpapers/ (the bucket's
+                      pictures), tests (pgTAP + api/smoke.sh), remote-auth.json (cloud sign-in options), checks/
 tools/                check_strings.py, add_strings.py (zh-Hans strings); xcresult_crash.py, xcresult_screenshots.py
-                      (crash reports and named screenshots from a downloaded CI results bundle); make_sounds.py
+                      (crash reports and named screenshots from a downloaded CI results bundle); make_sounds.py;
+                      make_wallpapers.py (Unsplash photos → supabase/wallpapers + their rows; needs Pillow, httpx)
 .github/workflows/    CI: coursekit.yml (Linux), ios.yml (macOS + Simulator), backend.yml (Linux), and the manual
                       screenshots.yml, ipa.yml, backend-deploy.yml, sounds.yml (Linux)
 ```

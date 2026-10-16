@@ -96,7 +96,7 @@ final class WallpaperStore {
            FileManager.default.fileExists(atPath: file(for: wallpaper).path) {
             shown = Shown(wallpaper: wallpaper, image: nil)
             loading = Task {
-                if let image = await image(for: wallpaper, download: false) {
+                if let image = await loadImage(for: wallpaper, download: false) {
                     shown = Shown(wallpaper: wallpaper, image: image)
                 }
                 loading = nil
@@ -136,7 +136,7 @@ final class WallpaperStore {
             guard let wallpaper = FocusWallpaperPicker.pick(from: catalog, downloaded: downloadedIDs(), recent: recent,
                                                             canDownload: canDownload, using: &generator) else { continue }
             if shown == nil { shown = Shown(wallpaper: wallpaper, image: nil) }
-            guard let image = await image(for: wallpaper, download: canDownload), !Task.isCancelled else { continue }
+            guard let image = await loadImage(for: wallpaper, download: canDownload), !Task.isCancelled else { continue }
             shown = Shown(wallpaper: wallpaper, image: image)
             defaults.set(wallpaper.id, forKey: Self.sessionKey)
             let remembered = FocusWallpaperPicker.remember(wallpaper.id, in: defaults.stringArray(forKey: Self.recentKey) ?? [],
@@ -175,7 +175,7 @@ final class WallpaperStore {
     }
 
     /// The picture, from the cache or (if `download`) downloaded into it, ready to draw.
-    private func image(for wallpaper: FocusWallpaper, download: Bool) async -> UIImage? {
+    private func loadImage(for wallpaper: FocusWallpaper, download: Bool) async -> UIImage? {
         let file = file(for: wallpaper)
         let manager = FileManager.default
         if !manager.fileExists(atPath: file.path) {
