@@ -112,7 +112,7 @@ fun AISettingsScreen(store: AIStore, onBack: () -> Unit, modifier: Modifier = Mo
                 }
             }
 
-            if (state.savedAnswerCount > 0) {
+            if (state.savedAnswerCount > 0 || state.conversations.isNotEmpty()) {
                 Section(footer = stringResource(R.string.ai_saved_footer)) {
                     ActionRow(R.drawable.ic_delete, stringResource(R.string.ai_delete_saved), color = MaterialTheme.colorScheme.error) {
                         confirmingClear = true

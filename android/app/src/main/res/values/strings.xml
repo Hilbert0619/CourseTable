@@ -625,4 +625,84 @@
     <string name="ai_todo_unreadable">The AI\'s answer couldn\'t be read. Try describing it differently.</string>
     <string name="ai_todo_no_class">%1$s has no class on that day. Check the date.</string>
     <string name="ai_todo_unknown_course">No class called “%1$s” in your timetable, so the time was left open.</string>
+
+    <!-- The Assistant and its tools -->
+    <string name="agent_assistant">Assistant</string>
+    <string name="agent_new_chat">New Chat</string>
+    <string name="agent_options">Options</string>
+    <string name="agent_share_classes">Share This Week\'s Classes</string>
+    <string name="agent_share_hard_words">Share My Hard Words</string>
+    <string name="agent_earlier_chats">Earlier Chats</string>
+    <string name="agent_not_set_up">Ask about your studies, English or anything else, using an AI provider you choose with your own key.</string>
+    <string name="agent_welcome">Ask about your studies, English, planning or anything else.</string>
+    <string name="agent_tools_note">The Assistant can look at your to-dos, classes, focus sessions and vocabulary progress to answer, sending what it looks at to %1$s. It suggests changes as cards; nothing changes until you tap Confirm.</string>
+    <string name="agent_suggest_reminder">Remind me to hand in the paper after class tomorrow</string>
+    <string name="agent_suggest_progress">How are my words going?</string>
+    <string name="agent_suggest_focus">Start a 25-minute focus session</string>
+    <string name="agent_sees_both">This chat can see this week\'s classes and your hard words.</string>
+    <string name="agent_sees_classes">This chat can see this week\'s classes.</string>
+    <string name="agent_sees_hard_words">This chat can see your hard words.</string>
+    <string name="agent_tools_unavailable">This model can\'t use the app\'s tools, so this chat goes on without them. Pick another model in Settings → AI Help.</string>
+    <string name="agent_round_limit">The Assistant stopped after too many steps. Ask again to go on.</string>
+    <string name="agent_photo_text">Text from a photo</string>
+    <string name="agent_not_possible">%1$s: not possible</string>
+    <string name="agent_review">Review…</string>
+    <string name="agent_confirm">Confirm</string>
+    <string name="agent_undo">Undo</string>
+    <string name="agent_cancelled">Cancelled</string>
+    <string name="agent_undone">Undone</string>
+    <string name="agent_remove">Remove</string>
+    <string name="agent_add_photo">Add a Photo</string>
+    <string name="agent_message">Message</string>
+    <string name="agent_send">Send</string>
+    <string name="agent_looked_todos">Looked at your to-dos</string>
+    <string name="agent_looked_classes">Looked at your classes</string>
+    <string name="agent_looked_courses">Looked at your courses</string>
+    <string name="agent_looked_vocab">Looked at your vocabulary progress</string>
+    <string name="agent_looked_history">Looked at your study history</string>
+    <string name="agent_looked_hard_words">Looked at your hard words</string>
+    <string name="agent_looked_word">Looked up a word</string>
+    <string name="agent_looked_focus">Looked at your focus sessions</string>
+    <string name="agent_looked_up">Looked up “%1$s”</string>
+    <string name="agent_new_todo">New To-Do</string>
+    <string name="agent_change_todo">Change To-Do</string>
+    <string name="agent_delete_todo">Delete To-Do</string>
+    <string name="agent_add_courses">Add Courses</string>
+    <string name="agent_start_focus">Start Focus</string>
+    <string name="agent_was">Was: %1$s</string>
+    <string name="agent_mark_done">Mark as Done</string>
+    <string name="agent_mark_not_done">Mark as Not Done</string>
+    <plurals name="agent_courses_to_add">
+        <item quantity="one">%1$d course to add</item>
+        <item quantity="other">%1$d courses to add</item>
+    </plurals>
+    <plurals name="agent_already_there">
+        <item quantity="one">%1$d already in your timetable</item>
+        <item quantity="other">%1$d already in your timetable</item>
+    </plurals>
+    <plurals name="agent_lines_unreadable">
+        <item quantity="one">%1$d line can\'t be read</item>
+        <item quantity="other">%1$d lines can\'t be read</item>
+    </plurals>
+    <plurals name="agent_courses_added">
+        <item quantity="one">%1$d course added</item>
+        <item quantity="other">%1$d courses added</item>
+    </plurals>
+    <string name="agent_no_breaks">No breaks</string>
+    <string name="agent_blocks_with_breaks">%1$d-minute blocks with breaks</string>
+    <string name="agent_after">After %1$s</string>
+    <string name="agent_analyse_progress">Analyse My Progress</string>
+    <string name="agent_analyse_footer">The Assistant reads these numbers and your hard words, and explains how you\'re doing.</string>
+    <string name="agent_analyse_message">Analyse my vocabulary progress: how am I doing, which words do I keep forgetting, and will I finish the book before the exam?</string>
+    <string name="ai_reading_photo">Reading the text in the photo…</string>
+    <string name="ai_no_text_in_photo">No text found in the photo.</string>
+    <string name="ai_from_photo">From a Photo (AI)</string>
+    <string name="ai_photo_import_footer">A photo or screenshot of your timetable becomes courses for you to check.</string>
+    <string name="ai_photo_import_picture">The photo goes to %1$s, which writes the courses below for you to check.</string>
+    <string name="ai_photo_import_text">This phone reads the text in the photo; the text goes to %1$s, which writes the courses below for you to check.</string>
+    <string name="ai_no_timetable">The answer had no courses in it. Try a clearer photo.</string>
+    <string name="ai_photo_done">AI-generated · %1$s. Check every course before importing.</string>
+    <string name="ai_photo_periods">Period Times in the Photo</string>
+    <string name="ai_photo_periods_footer">Replaces the class times in Settings when you import.</string>
+    <string name="ai_use_photo_periods">Use These Period Times</string>
 </resources>

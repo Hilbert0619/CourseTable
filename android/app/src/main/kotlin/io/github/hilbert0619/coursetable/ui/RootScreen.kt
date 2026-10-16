@@ -32,8 +32,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.CompositionLocalProvider
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ai.AgentContext
 import io.github.hilbert0619.coursetable.alerts.ReminderSettings
+import io.github.hilbert0619.coursetable.ui.ai.LocalAgentContext
+import io.github.hilbert0619.coursetable.ui.words.LocalWordsController
 import io.github.hilbert0619.coursetable.focus.FocusActions
 import io.github.hilbert0619.coursetable.focus.FocusState
 import io.github.hilbert0619.coursetable.ui.focus.FocusScreen
@@ -99,12 +103,19 @@ fun RootScreen(
             Box(content.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             return@Scaffold
         }
-        when (tab) {
-            Tab.TODAY -> TodayScreen(data.timetable, data.todos, actions, content)
-            Tab.TIMETABLE -> TimetableScreen(data.timetable, data.templates, actions, content)
-            Tab.FOCUS -> FocusScreen(focus, data.focusSessions, focusActions, content)
-            Tab.WORDS -> if (words != null) WordsTab(words, content) else Placeholder(tab, R.string.placeholder_words, content)
-            Tab.SETTINGS -> SettingsScreen(data.timetable, reminders, actions, content)
+        // What the Assistant's tools read and change, from any tab.
+        val clock = LocalNowSource.current.clock
+        val agent = AgentContext(data, actions, focus, focusActions, words?.vocab, clock)
+        // The Words screens the Assistant links to need the Words controller outside the Words tab too.
+        val locals = listOfNotNull(LocalAgentContext provides agent, words?.let { LocalWordsController provides it })
+        CompositionLocalProvider(*locals.toTypedArray()) {
+            when (tab) {
+                Tab.TODAY -> TodayScreen(data.timetable, data.todos, actions, content)
+                Tab.TIMETABLE -> TimetableScreen(data.timetable, data.templates, actions, content)
+                Tab.FOCUS -> FocusScreen(focus, data.focusSessions, focusActions, content)
+                Tab.WORDS -> if (words != null) WordsTab(words, content) else Placeholder(tab, R.string.placeholder_words, content)
+                Tab.SETTINGS -> SettingsScreen(data.timetable, reminders, actions, content)
+            }
         }
     }
 }

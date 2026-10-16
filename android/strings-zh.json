@@ -32,6 +32,7 @@
   "send_test_reminder": "发送测试提醒",
   "test_footer": "点按 10 秒后会收到一条测试提醒。可以锁屏看看它是否按时到达。",
   "test_sent": "测试提醒已设定：锁屏并等待 10 秒。",
+  "ai_photo_import_text": "这台手机先识别照片中的文字，再把文字发送给 %1$s，由它把课程写在下方供你核对。",
   "ai_scan_unavailable": "这台手机不支持文字识别。",
   "ai_no_camera": "找不到相机应用。",
   "ai_default_footer": "AI 帮助使用带勾号的连接。要改用其他连接，打开它并点“用于 AI 帮助”。",

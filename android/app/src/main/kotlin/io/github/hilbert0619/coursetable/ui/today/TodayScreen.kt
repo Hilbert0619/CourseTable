@@ -58,6 +58,7 @@ import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursekit.TodoTiming
 import io.github.hilbert0619.coursekit.agenda
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ui.ai.AssistantButton
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.Names
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
@@ -90,6 +91,7 @@ fun TodayScreen(timetable: Timetable, todos: List<Todo>, actions: AppActions, mo
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_today)) },
                 actions = {
+                    AssistantButton()
                     IconButton(onClick = { editing = TodoEditorTarget.New(day) }) {
                         AppIcon(R.drawable.ic_add, stringResource(R.string.add_todo))
                     }

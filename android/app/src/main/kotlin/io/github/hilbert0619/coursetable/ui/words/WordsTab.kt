@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ui.ai.AssistantButton
 import io.github.hilbert0619.coursetable.ui.ai.EssayFeedbackScreen
 import io.github.hilbert0619.coursetable.ui.ai.LocalAI
 import io.github.hilbert0619.coursetable.ui.ai.SentenceAnalysisScreen
@@ -178,6 +179,7 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_words)) },
                 actions = {
+                    AssistantButton()
                     IconButton(onClick = { onOpen(WordsRoute.Settings) }) {
                         AppIcon(R.drawable.ic_tab_settings, stringResource(R.string.study_settings))
                     }

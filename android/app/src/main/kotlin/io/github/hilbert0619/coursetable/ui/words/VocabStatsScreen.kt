@@ -38,6 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.ui.ai.AssistantDialog
+import io.github.hilbert0619.coursetable.ui.ai.LocalAI
+import io.github.hilbert0619.coursetable.ui.ai.LocalAgentContext
+import io.github.hilbert0619.coursetable.ui.components.ActionRow
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import io.github.hilbert0619.coursetable.focus.FocusText
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
@@ -67,8 +74,15 @@ fun VocabStatsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val dayFormat = DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, "Md"), locale)
     fun label(day: Int): String = dayFormat.format(state.clock.date(day).javaDate)
 
+    var analysing by rememberSaveable { mutableStateOf(false) }
+
     WordsScaffold(stringResource(R.string.statistics), onBack, modifier) { content ->
         Column(content.verticalScroll(rememberScrollState())) {
+            if (LocalAI.current != null && LocalAgentContext.current != null) {
+                Section(footer = stringResource(R.string.agent_analyse_footer)) {
+                    ActionRow(R.drawable.ic_sparkles, stringResource(R.string.agent_analyse_progress)) { analysing = true }
+                }
+            }
             Section(title = stringResource(R.string.tab_today)) {
                 ValueRow(stringResource(R.string.new_words), "${todayStats.newWords}")
                 RowDivider()
@@ -124,6 +138,7 @@ fun VocabStatsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
         }
     }
+    if (analysing) AssistantDialog(stringResource(R.string.agent_analyse_message), onDismiss = { analysing = false })
 }
 
 @Composable

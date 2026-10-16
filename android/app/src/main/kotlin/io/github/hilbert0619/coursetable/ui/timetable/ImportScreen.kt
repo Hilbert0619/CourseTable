@@ -36,6 +36,9 @@ import io.github.hilbert0619.coursekit.Course
 import io.github.hilbert0619.coursekit.CourseCSV
 import io.github.hilbert0619.coursekit.CourseImporter
 import io.github.hilbert0619.coursekit.ImportedText
+import io.github.hilbert0619.coursekit.PeriodSchedule
+import io.github.hilbert0619.coursetable.ui.ai.ImportPhotoSection
+import io.github.hilbert0619.coursetable.ui.ai.LocalAI
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursekit.planningImport
 import io.github.hilbert0619.coursetable.R
@@ -52,22 +55,37 @@ import io.github.hilbert0619.coursetable.ui.components.WarningRow
 import io.github.hilbert0619.coursetable.ui.rememberNames
 import io.github.hilbert0619.coursetable.ui.theme.CoursePalette
 
-/** Paste CSV or spreadsheet rows (or open a file), preview the courses, then add them. */
+/**
+ * Paste CSV or spreadsheet rows (or open a file, or read a photo with AI), preview the courses, then add them. With
+ * [onImported] (the Assistant's courses), the preview reports what was added instead of offering a photo.
+ */
 @Composable
-fun ImportScreen(timetable: Timetable, actions: AppActions, onDismiss: () -> Unit) {
-    EditorDialog(onDismiss) { ImportContent(timetable, actions, onDismiss) }
+fun ImportScreen(
+    timetable: Timetable, actions: AppActions, onDismiss: () -> Unit, initialText: String = "",
+    onImported: ((added: List<Course>, skipped: Int) -> Unit)? = null,
+) {
+    EditorDialog(onDismiss) { ImportContent(timetable, actions, onDismiss, initialText, onImported) }
 }
 
 @Composable
-fun ImportContent(timetable: Timetable, actions: AppActions, onDismiss: () -> Unit, initialText: String = "") {
+fun ImportContent(
+    timetable: Timetable, actions: AppActions, onDismiss: () -> Unit, initialText: String = "",
+    onImported: ((added: List<Course>, skipped: Int) -> Unit)? = null,
+) {
     val names = rememberNames()
     val context = LocalContext.current
     var text by remember { mutableStateOf(initialText) }
     var replacesExisting by remember { mutableStateOf(false) }
     var confirmingReplace by remember { mutableStateOf(false) }
     var fileError by remember { mutableStateOf<String?>(null) }
-    val result = CourseImporter(timetable).parse(text)
-    val plan = timetable.planningImport(result.courses, replacesExisting)
+    // Period times read from a photo, and whether to use them.
+    var photoPeriods by remember { mutableStateOf<PeriodSchedule?>(null) }
+    var usesPhotoPeriods by remember { mutableStateOf(false) }
+    val periods = photoPeriods
+    // The timetable the import is checked against: with the photo's period times when they're used.
+    val target = if (usesPhotoPeriods && periods != null) timetable.copy(periods = periods) else timetable
+    val result = CourseImporter(target).parse(text)
+    val plan = target.planningImport(result.courses, replacesExisting)
     val tooLarge = stringResource(R.string.file_too_large)
     val unreadable = stringResource(R.string.file_unreadable)
     val chooseFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -84,7 +102,9 @@ fun ImportContent(timetable: Timetable, actions: AppActions, onDismiss: () -> Un
     }
 
     fun importNow() {
+        if (usesPhotoPeriods && periods != null) actions.savePeriods(periods)
         actions.addCourses(plan.added, plan.replacesExisting)
+        onImported?.invoke(plan.added, plan.duplicates.size)
         onDismiss()
     }
 
@@ -95,6 +115,29 @@ fun ImportContent(timetable: Timetable, actions: AppActions, onDismiss: () -> Un
         confirmEnabled = plan.added.isNotEmpty(),
         onConfirm = { if (plan.replacesExisting && timetable.courses.isNotEmpty()) confirmingReplace = true else importNow() },
     ) {
+        if (onImported == null) {
+            LocalAI.current?.let { store ->
+                ImportPhotoSection(store, timetable) { reading ->
+                    text = reading.csv
+                    photoPeriods = reading.periods
+                    usesPhotoPeriods = false
+                }
+            }
+        }
+        if (periods != null && periods != timetable.periods) {
+            Section(title = stringResource(R.string.ai_photo_periods), footer = stringResource(R.string.ai_photo_periods_footer)) {
+                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.ai_use_photo_periods), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    Switch(checked = usesPhotoPeriods, onCheckedChange = { usesPhotoPeriods = it })
+                }
+                Text(
+                    periods.periods.mapIndexed { index, period -> "${index + 1}  ${period.start}–${period.end}" }.joinToString("\n"),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                )
+            }
+        }
         Section(title = stringResource(R.string.paste_csv), footer = stringResource(R.string.import_footer)) {
             OutlinedTextField(
                 value = text,
@@ -115,7 +158,7 @@ fun ImportContent(timetable: Timetable, actions: AppActions, onDismiss: () -> Un
 
         fileError?.let { error -> Section { WarningRow(error) } }
 
-        Section(footer = stringResource(R.string.replace_existing_footer)) {
+        if (onImported == null) Section(footer = stringResource(R.string.replace_existing_footer)) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.replace_existing), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Switch(checked = replacesExisting, onCheckedChange = { replacesExisting = it })

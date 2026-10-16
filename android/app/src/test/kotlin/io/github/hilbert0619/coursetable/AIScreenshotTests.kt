@@ -3,6 +3,12 @@ package io.github.hilbert0619.coursetable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasScrollAction
+import androidx.test.core.app.ApplicationProvider
+import io.github.hilbert0619.coursetable.ai.AgentContext
+import io.github.hilbert0619.coursetable.focus.FocusActions
+import io.github.hilbert0619.coursetable.focus.FocusState
+import io.github.hilbert0619.coursetable.ui.AppData
+import io.github.hilbert0619.coursetable.ui.ai.AssistantScreen
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.performTextInput
 import io.github.hilbert0619.coursekit.Semester
@@ -243,6 +249,57 @@ class AIScreenshotTests {
         compose.onNodeWithText("Fill In with AI").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("交论文").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("After a class").assertExists()
+        capture()
+    }
+
+    // The Assistant
+
+    private fun agentContext(controller: WordsController?): AgentContext {
+        val today = LocalDate(2026, 9, 28)
+        val timetable = Timetable(Semester(today.adding(-28)), courses = DemoData.courses(today))
+        return AgentContext(AppData(timetable, emptyList(), emptyList()), AppActions.None, FocusState(), FocusActions.None, controller?.vocab, clock)
+    }
+
+    private fun assistant(controller: WordsController? = null): AIStore {
+        val store = store()
+        show(store, controller) { AssistantScreen(store, agentContext(controller), onClose = {}) }
+        return store
+    }
+
+    private fun text(id: Int): String = ApplicationProvider.getApplicationContext<android.app.Application>().getString(id)
+
+    @Test
+    fun assistantWelcome() {
+        assistant(words())
+        compose.onNodeWithText("How are my words going?").assertExists()
+        capture()
+    }
+
+    @Test
+    fun assistantReminderCard() {
+        assistant()
+        compose.onNodeWithText("Remind me to hand in the paper after class tomorrow").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Confirm").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Looked at your classes").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN")
+    fun assistantReminderConfirmedChinese() {
+        assistant()
+        compose.onNodeWithText(text(R.string.agent_suggest_reminder)).performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(text(R.string.agent_confirm)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(text(R.string.agent_confirm)).performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("好了，明天会提醒你交论文。").fetchSemanticsNodes().isNotEmpty() }
+        capture()
+    }
+
+    @Test
+    fun assistantProgress() {
+        assistant(words())
+        compose.onNodeWithText("How are my words going?").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Next step:", substring = true).fetchSemanticsNodes().isNotEmpty() }
         capture()
     }
 }

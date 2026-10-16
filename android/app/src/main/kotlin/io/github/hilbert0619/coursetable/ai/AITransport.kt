@@ -142,19 +142,25 @@ class DemoAITransport(private val pieceDelayMillis: Long = 8) : AITransport {
     override fun stream(request: AIHTTPRequest, format: AIWireFormat): Flow<AIStreamEvent> = flow {
         val body = request.body?.let { String(it, Charsets.UTF_8) }.orEmpty()
         emit(AIStreamEvent.Usage(180, null))
-        if (body.contains("\"tools\"") && body.contains("Call the ping tool")) {
-            emit(AIStreamEvent.ToolCall(0, "call_demo_ping", "ping"))
-            emit(AIStreamEvent.ToolArguments(0, "{}"))
-            emit(AIStreamEvent.Stop(AIStopReason.ToolUse))
-            emit(AIStreamEvent.Usage(null, 30))
-        } else {
-            val pieces = pieces(DemoAnswers.answer(body))
-            for (piece in pieces) {
-                if (pieceDelayMillis > 0) delay(pieceDelayMillis)
-                emit(AIStreamEvent.Text(piece))
+        when (val reply = DemoAgent.reply(body)) {
+            is DemoAgent.Reply.Calls -> {
+                reply.calls.forEachIndexed { index, (name, arguments) ->
+                    if (pieceDelayMillis > 0) delay(pieceDelayMillis * 10)
+                    emit(AIStreamEvent.ToolCall(index, "call_demo_${java.util.UUID.randomUUID().toString().take(8)}", name))
+                    emit(AIStreamEvent.ToolArguments(index, arguments))
+                }
+                emit(AIStreamEvent.Stop(AIStopReason.ToolUse))
+                emit(AIStreamEvent.Usage(null, 30))
             }
-            emit(AIStreamEvent.Stop(AIStopReason.Complete))
-            emit(AIStreamEvent.Usage(null, pieces.size))
+            is DemoAgent.Reply.Text -> {
+                val pieces = pieces(reply.text)
+                for (piece in pieces) {
+                    if (pieceDelayMillis > 0) delay(pieceDelayMillis)
+                    emit(AIStreamEvent.Text(piece))
+                }
+                emit(AIStreamEvent.Stop(AIStopReason.Complete))
+                emit(AIStreamEvent.Usage(null, pieces.size))
+            }
         }
         emit(AIStreamEvent.End)
     }
