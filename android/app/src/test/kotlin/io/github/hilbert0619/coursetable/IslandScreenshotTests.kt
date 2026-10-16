@@ -89,7 +89,7 @@ class IslandScreenshotTests {
         compose.setContent {
             StudyHourTheme {
                 BoxWithConstraints(
-                    Modifier.fillMaxWidth().height(260.dp)
+                    Modifier.fillMaxWidth().height(340.dp)
                         .background(Brush.verticalGradient(listOf(Color(0xFF41618F), Color(0xFFC99A7A)))),
                 ) {
                     val density = LocalDensity.current

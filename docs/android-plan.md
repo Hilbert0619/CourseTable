@@ -183,8 +183,17 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   Words. Import → From a Photo (AI) with the photo's period times (`TimetablePhotoReader`: a picture model, or ML Kit
   text with positions); Words → Statistics → Analyse My Progress. Screenshots of every AI screen, English and Chinese.
   **APK 0.5.0 (6)** (main run 38829317137, 40 MB); real keys, the Keystore and ML Kit can only be checked on the phone (checklist in `HANDOFF.md`).
-- **Waiting**: the owner's test of 0.5.0 with a real key, the island check of 0.4.1, then stage 7 (release) — see
-  `HANDOFF.md`.
+- **0.5.1 (7), 2026-10-16, branch `android-island-overlay`: the Countdown Island** (the owner's option D after the
+  Atom Island result). StudyHour draws its own island around the camera hole through an accessibility service
+  (`app/…/island`; `android/README.md` has the design): off by default, turned on from Reliable Reminders after a
+  dialog that says what the access is used for; it mirrors the live class, Focus and test countdowns from StudyHour's
+  own notifications, a tap opens a card with the time to the second and the notification's buttons, a swipe up hides
+  it until the countdowns change. Tests: `IslandPlannerTest` (order, texts, refresh times, hiding, placement),
+  `IslandSourceTest` (the notifications read back), `IslandScreenshotTests` (pill, card, settings, dialog). Merged into
+  `main` only after the owner has tried the branch APK on the iQOO Neo 9 (checklist in `HANDOFF.md`): the overlay,
+  the camera position, starting StudyHour from it and vivo's handling of accessibility services can only be seen on
+  the phone.
+- **Waiting**: the owner's test of 0.5.0 with a real key, then stage 7 (release) — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 
