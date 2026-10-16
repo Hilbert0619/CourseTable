@@ -1,21 +1,30 @@
-# Session Handoff — CourseTable (iOS 0.5.0 with the AI agent: waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, plus the 0.4.1 Atom Island check, then stage 7)
+# Session Handoff — CourseTable (iOS 0.6.0: new icon, Focus wallpapers, Settings → Storage: waiting for the owner's backend deploy and device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, plus the 0.4.1 Atom Island check, then stage 7)
 
-Date: 2026-10-15 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+Date: 2026-10-16 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Next: the owner's device test of iOS 0.5.0 (the AI agent)
+## Next: the owner deploys the wallpapers, then tests iOS 0.6.0
 
-The owner asked (2026-10-15) for agent abilities: reminders, vocabulary progress, courses from a timetable photo. The
-owner's answers to the spec's questions: confirm every change with a tap; on-device OCR for text-only models; to-dos,
-adding courses **and starting Focus**. All built on iOS ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md) §8 has
-the code map):
-- AIKit: tool calls in both wire formats, `AIAgentSession`, `AppTools`, `TimetablePhoto`; 51 AIKit test groups,
-  shared fixtures `spec/fixtures/ai-tool-*.json`, `ai-agent-tools.json`, `ai-timetable-photo.json` (commit 270a976).
-- App: `AgentRun` + cards (Confirm / Cancel / Undo), Assistant with suggestions and photos, Import → From a Photo
-  (AI) with the photo's period times, Settings switches (tools, photos, photo model) with tool and photo checks,
-  Words → Statistics → Analyse My Progress. `AgentRunTests` pass; `AgentUITests` + `AIUITests` pass with screenshots.
-- **IPA 0.5.0 (build 7)**: run 38774424881 (commit 6d7a112), saved as
-  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.5.0.ipa`. CI: iOS 38773529057, screenshots 38769074483 (branch)
-  and 38773575252 (main). The owner's 0.4.0 test with a real key passed ("all worked").
+The owner's iOS 0.5.0 device test (the AI agent) passed with no major bugs (2026-10-16). Then the owner passed on
+users' requests (after the Chinese app 不背单词), all built as **iOS 0.6.0 (build 8)**
+([`docs/todos-focus-spec.md`](docs/todos-focus-spec.md) §7):
+1. **A new app icon** (the owner's picture, made full-bleed: the tile's rim replaced by its surface colour).
+2. **Focus wallpapers**: each session shows a random high-resolution photo (not one shown recently) behind the
+   countdown, with the photographer's credit and a shuffle button; a Wallpaper switch on the Focus setup. 30
+   Unsplash photos (Unsplash License; `content/wallpapers/`) cropped to 1290×2796 in the public Storage bucket
+   `wallpapers`, listed in the new table `public.focus_wallpapers` (anyone reads it; no account needed).
+3. **Deleting records**: swipe a Focus history session to delete it, **All Sessions** (by day, Clear History), and
+   **Settings → Storage** to pick and clear focus history, completed to-dos, Assistant chats, saved AI answers, AI
+   usage counts, downloaded wallpapers and other cached files.
+- Code: CourseKit `FocusWallpapers.swift` + `FolderUsage.swift` (12 new tests, shared cases
+  `spec/fixtures/focus-wallpapers.json`); app `Focus/WallpaperStore.swift`, `FocusView`, `Views/StorageView.swift`,
+  `PlannerModel` and `AIStore` deletes; backend migrations `20261016100000/100100`, `config.toml`
+  `[storage.buckets.wallpapers]`, pgTAP `04_wallpapers.test.sql`, smoke and deploy checks; `tools/make_wallpapers.py`.
+- CI: backend 38939355402 (local stack: bucket seeded, 30 rows, picture served), iOS 38945143245, CourseKit
+  38939889921 (Linux), screenshots 38945148761 (PlannerUITests, en + zh). **IPA 0.6.0 (build 8)**: run 38945155263
+  (commit 5c3dda8), saved as
+  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.6.0.ipa`.
+- **Not yet in the cloud**: the table and the pictures arrive when the owner runs **Backend deploy** (auto mode
+  doesn't let Claude start it). Until then the app shows the plain countdown (it handles a missing list).
 
 Handoff prompt A below picks up the owner's results.
 
@@ -51,30 +60,31 @@ Handoff prompt A below picks up the owner's results.
   unwritten.
 - **AI help** ([`docs/ai-spec.md`](docs/ai-spec.md), bring your own key), built on iOS 2026-10-12 as 0.4.0 (build 6);
   **the owner's device test with a real key passed** (2026-10-15).
-- **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7): see "Next"
-  above; checklist below. Android has both since 0.5.0 (above).
+- **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7) (IPA run
+  38774424881); **the owner's device test passed with no major bugs** (2026-10-16). Android has both since 0.5.0.
 
-## iOS 0.5.0 AI agent test (owner, with a real key)
+## iOS 0.6.0 test (owner)
 
-Install `CourseTable-0.5.0.ipa` over 0.4.0 with iloader (timetable, to-dos, Words and AI connections stay). Use a model
-that calls tools: DeepSeek (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or Qwen.
-1. Settings → AI Help → your connection: **Use the App's Tools** is on → Test Connection: "Connected", then "Tools
-   work". For GLM, Photo Model `glm-4.6v-flash` (Qwen: `qwen3-vl-plus`) → "Photos work" (if not, the model name may be
-   different in the provider's list: Load Models). DeepSeek has no photo model: its photos are read on the iPhone.
-2. Today → ✨ → "提醒我明天高数课后交论文": a line "Looked at your classes", then a **New To-Do** card (title, date,
-   after 高等数学) → Confirm → "Done · Undo"; the to-do is on tomorrow's Today, and its notification comes when that
-   class ends. Try Undo once.
-3. "把明天交论文改到晚上 8 点" → a **Change To-Do** card → Confirm. "删掉这个待办" → a card → Cancel: nothing changes, and
-   the reply says so. "这周有哪些待办？" → only a lookup line, no card.
-4. "开始 50 分钟专注，复习高数" → a **Start Focus** card → Confirm → the Focus tab runs it (Live Activity too).
-5. Words → Statistics → Analyse My Progress: two lookup lines, then an analysis whose numbers match the statistics.
-6. Timetable → + → Import Courses… → From a Photo (AI): a photo or screenshot of your 教务系统 timetable → the courses
-   fill in → check every course, clashes and unreadable lines; if period times appear, try "Use These Period Times"
-   → Import. Try once with DeepSeek (read on the iPhone) and once with a photo model.
-7. Assistant → photo button → the timetable → "把这些课加进课程表" → an **Add Courses** card → Review… → the preview →
-   Import → the card says how many were added (Undo removes them).
-8. Earlier Chats: reopen the chat; cards keep their state. Airplane mode: a clear error and Try Again.
-9. Anything odd: note the provider and model, what you asked, and what the card or answer said.
+**First, put the wallpapers in the cloud (one click):** GitHub → Actions → **Backend deploy** → Run workflow (branch
+`main`, defaults) — or `gh workflow run backend-deploy.yml`. It applies the two wallpaper migrations, uploads the 30
+pictures to the bucket `wallpapers` ("Upload the wallpapers": 30 × `Uploading: …`) and checks them ("Check the
+database" shows `"wallpapers": 30`, `"wallpapers_bucket_public": true` and `Picture: 200 image/jpeg …`).
+
+Then install `CourseTable-0.6.0.ipa` over 0.5.0 with iloader (everything stays).
+1. The Home Screen shows the **new icon** (also in Settings and the app switcher).
+2. Focus → scroll down: **Wallpaper** is on. Start a session: within a few seconds a photo fills the countdown card
+   (its colour first, then the picture), the text is white and easy to read, and at the bottom "Photo by … on
+   Unsplash" and a shuffle button. Shuffle: another photo. Tap the credit: Safari opens the photo's page.
+3. During the session, close Course Table from the app switcher and open it again: the same photo.
+4. Stop, start again a few times: a different photo each time (no repeats among the last ten).
+5. Airplane mode, start a session: one of the photos already seen (they're kept); turn Wallpaper off: the plain
+   countdown as before.
+6. Focus → History: swipe left on a session → Delete. **All Sessions**: sessions by day with each day's total; Edit
+   deletes several; **Clear History** asks first.
+7. Settings → **Storage**: counts and sizes (Focus Wallpapers ≈ 0.5 MB per photo seen). Select a few (or Select All)
+   → Clear Selected → the confirmation names them → Clear: the counts drop. The timetable, open to-dos, Words and AI
+   connections stay. Cleared wallpapers download again in the next session.
+8. Anything odd: a screenshot, and what you did.
 
 ## Android 0.5.0 AI test (owner, with a real key)
 
@@ -118,36 +128,39 @@ get the phone model and the OriginOS version (设置 → 系统升级, or 关于
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.5.0 device test; **B** is the Android track (independent): the 0.5.0 AI test and the 0.4.1 island check, then stage 7.
+> 0.6.0 device test; **B** is the Android track (independent): the 0.5.0 AI test and the 0.4.1 island check, then stage 7.
 
-### A. The owner's results for iOS 0.5.0 (the AI agent)
+### A. The owner's results for iOS 0.6.0 (icon, Focus wallpapers, Storage)
 
 ```
-[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.5.0 (the AI agent): fix what I report
+[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.6.0 (icon, Focus wallpapers, Settings → Storage): fix what I report
 
 ## Read first
-HANDOFF.md (status, the 0.5.0 checklist, facts, gotchas), docs/ai-agent-spec.md (decisions, tools, protocol, §8 code
-map), docs/ai-spec.md, README "AI help" and "AI agent", spec/fixtures/README.md.
+HANDOFF.md (status, the 0.6.0 checklist, facts, gotchas), docs/todos-focus-spec.md §7 (wallpapers, history, storage),
+README "Focus" and "Storage", content/wallpapers/SOURCES.md, spec/fixtures/README.md.
 
 ## Goal
-1. I tell you how the 0.5.0 checklist went (provider, model, what happened). Fix what I report: logic in AIKit with
-   tests and shared fixtures first, then the app; screenshots for UI changes.
-2. Confirm the photo model names that worked for me in the presets (AIProvider.presets) and the spec §6.
-3. Bump to 0.5.1 (build 8) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give me a
+1. I tell you whether Backend deploy went through and how the 0.6.0 checklist went. Fix what I report: logic in
+   CourseKit with tests and shared fixtures first, then the app; screenshots for UI changes.
+2. If I ask for more or different wallpapers: edit content/wallpapers/sources.json (Unsplash License photos only,
+   checked on each photo's page; never Unsplash+), run tools/make_wallpapers.py, put the new rows in a new migration
+   (don't edit an applied one), and I run Backend deploy again.
+3. Bump to 0.6.1 (build 9) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give me a
    short checklist for what changed.
 
 ## Decided with me — don't reverse; ask if unsure
-Everything in docs/ai-spec.md §1 and docs/ai-agent-spec.md §2 (bring your own key, no server, keys in the Keychain;
-the agent changes nothing without my tap; on-device OCR for text-only models; tools for to-dos, adding courses and
-starting Focus — vocabulary settings later). Swift + SwiftUI only; logic in CourseKit (AIKit) with tests that run on
-Windows (`swift test` in CourseKit/); the app compiles on GitHub Actions only. Never put a real API key in code,
-tests, CI or chat.
+Wallpapers come from Supabase (table focus_wallpapers + public bucket wallpapers), readable without an account; the
+app picks one at random per session and keeps downloaded ones. Storage never clears the timetable, unfinished to-dos,
+Words progress or AI connections. Everything in docs/ai-spec.md §1 and docs/ai-agent-spec.md §2 still holds. Swift +
+SwiftUI only; logic in CourseKit with tests that run on Windows (`swift test` in CourseKit/); the app compiles on
+GitHub Actions only. Never put a real API key, token or password in code, tests, CI or chat.
 
 ## How to work
 Iterate on a branch: push, `gh workflow run ios.yml --ref <branch>`, then screenshots.yml with
-only=CourseTableUITests/AgentUITests (and AIUITests if touched); download the screenshots and look at them; when
-green, fast-forward main. Use the Write/Edit tools (or Python scripts written with Write) for code, never Python with
-backslashes through a bash heredoc. Short report at the end with run links.
+only=CourseTableUITests/PlannerUITests (and AIUITests/AgentUITests if touched); download the screenshots and look at
+them; when green, fast-forward main. Backend changes: backend.yml on the branch first; I start backend-deploy.yml.
+Use the Write/Edit tools (or Python scripts written with Write) for code, never Python with backslashes through a
+bash heredoc. Short report at the end with run links.
 ```
 
 ### B. Android: the 0.5.0 AI test and the Atom Island check, then stage 7
@@ -283,7 +296,16 @@ links.
 - Agent gotchas: Anthropic thinking blocks are bound to the conversation prefix (edited or trimmed history → 400 on
   new accounts), so they live only within a turn and are never saved; DeepSeek needs every earlier
   `reasoning_content` back once tools are on (400 otherwise); the iOS workflow now also runs on `CourseKit/Sources/AIKit/**`.
-- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.5.0 / 7 now),
+- Wallpapers and Storage (0.6): `CourseKit/Sources/CourseKit/FocusWallpapers.swift` (rows, candidates, the card's
+  crop around `focus_y`, cache limits) and `FolderUsage.swift`; `CourseTable/Focus/WallpaperStore.swift` (list in
+  `Caches/Wallpapers/catalog.json`, refreshed after 12 h; pictures `<id>.jpg` there; UI tests draw `DemoWallpaper` and
+  never use the network); `Views/StorageView.swift`. The wallpaper list is a plain URLSession GET with the publishable
+  key in `apikey` (no Supabase SDK, no account). UI test `PlannerUITests.testWallpaperHistoryAndStorage`.
+  CourseKit code using CGSize/CGRect needs `import CoreGraphics` on Apple platforms (Windows' Foundation has them).
+- Gotchas from the 0.6 work: `supabase start` already seeds `[storage.buckets]`; a second `seed buckets` asks before
+  overwriting the bucket's settings (`--yes`). Unsplash's site refuses scripts (403); its image CDN
+  (images.unsplash.com, reachable from China without the proxy) doesn't, so `make_wallpapers.py` only uses the CDN.
+- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.6.0 / 8 now),
   `gh workflow run ipa.yml`, download to `C:\Users\AI\Downloads\CourseTable\CourseTable-<version>.ipa`, installed
   with iloader.
 - Gotchas from the AI work: List rows off screen aren't in the XCUITest tree (scroll first; the first cell can be a
