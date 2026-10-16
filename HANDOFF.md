@@ -121,6 +121,15 @@ connection on the phone itself (the same key works on both). Use a model that ca
 Tested by the owner on 0.4.1 and 0.5.0: nothing in the China OriginOS island, because vivo grants it per app
 (see Status). The owner chose to stop; don't reopen it unless the owner asks or vivo's rules change.
 
+Options weighed with the owner (2026-10-16): **A** keep the standard Live Update and re-test after OriginOS updates
+(**chosen**); B apply to vivo (store listing first); C a floating countdown pill below the status bar (悬浮窗);
+D a fake island drawn over the camera through an accessibility service. B–D are not planned.
+
+**Re-test after each OriginOS update** (e.g. OriginOS 7 on the iQOO Neo 9), no new APK needed: Settings → Reminders →
+Reliable Reminders → **发送测试实时更新** → go to the Home Screen and look at the island; come back and screenshot the
+result line under the button. If the island shows "2 分钟", the class and Focus countdowns work there too: tell
+Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
+
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
