@@ -271,7 +271,8 @@ enum DemoWallpaper {
                 hill.fill()
             }
             UIColor(white: 1, alpha: 0.9).setFill()
-            UIBezierPath(ovalIn: CGRect(x: size.width * 0.68, y: size.height * 0.2, width: 34, height: 34)).fill()
+            // The moon, low enough to show in the countdown card's crop.
+            UIBezierPath(ovalIn: CGRect(x: size.width * 0.7, y: size.height * 0.36, width: 30, height: 30)).fill()
         }
     }()
 }

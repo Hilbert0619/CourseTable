@@ -95,7 +95,8 @@ final class PlannerUITests: XCTestCase {
             allSessions.tap()
             XCTAssertTrue(app.buttons["clearFocusHistory"].waitForExistence(timeout: 5))
             snapshot(app, "\(language)-wallpaper-3-all-sessions")
-            app.cells.firstMatch.swipeLeft()
+            // The first cell is the day's header: swipe the session itself (the demo goal).
+            app.staticTexts.matching(NSPredicate(format: "label IN %@", ["Calculus review", "高数复习"])).firstMatch.swipeLeft()
             let delete = app.buttons.matching(NSPredicate(format: "label IN %@", ["Delete", "删除"])).firstMatch
             XCTAssertTrue(delete.waitForExistence(timeout: 5))
             delete.tap()
