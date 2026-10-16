@@ -40,7 +40,9 @@ Handoff prompt A below picks up the owner's results.
     keys encrypted with an Android Keystore key, Settings → AI Help, word help, "Why?", Long Sentences / Writing
     Feedback, Quick Add, the Assistant with the tools (cards, Undo, photos, earlier chats), Import → From a Photo (AI),
     Analyse My Progress. Text in photos: ML Kit bundled Chinese+Latin (the owner's choice: 64-bit ARM phones only; APK
-    31 → 40 MB). CI on `android-ai`: A4 38828069559; screenshots of every AI screen checked (English and Chinese).
+    31 → 40 MB). CI: branch 38828978533 (`android-ai`), main 38829317137 (APK
+    `C:\Users\AI\Downloads\CourseTable\StudyHour-0.5.0-debug-39.apk`); screenshots of every AI screen checked
+    (English and Chinese).
     **Not yet tried with a real key, nor the Keystore or ML Kit on a phone**: checklist below. Code map:
     `android/README.md` "AI help and the Assistant".
 - **iOS**: 0.3.1 passed the owner's device test (2026-10-11); the owner published GitHub Releases themselves (IPAs
@@ -76,7 +78,7 @@ that calls tools: DeepSeek (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or
 
 ## Android 0.5.0 AI test (owner, with a real key)
 
-Install `APK_050` over 0.4.x (timetable, to-dos, Focus and Words stay). Keys don't come over from the iPhone: add the
+Install `C:\Users\AI\Downloads\CourseTable\StudyHour-0.5.0-debug-39.apk` over 0.4.x (timetable, to-dos, Focus and Words stay). Keys don't come over from the iPhone: add the
 connection on the phone itself (the same key works on both). Use a model that calls tools: DeepSeek
 (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or Qwen.
 1. 设置 → AI 帮助 → 添加连接: provider, key, model → **测试连接**: connected, tools work, and with a Photo Model (GLM

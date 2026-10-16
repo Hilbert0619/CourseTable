@@ -169,7 +169,7 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   chats in `files/ai/conversations.json`; `AgentContext` (in `RootScreen`) reads and changes to-dos, courses, focus and
   Words. Import → From a Photo (AI) with the photo's period times (`TimetablePhotoReader`: a picture model, or ML Kit
   text with positions); Words → Statistics → Analyse My Progress. Screenshots of every AI screen, English and Chinese.
-  **APK 0.5.0 (6)**; real keys, the Keystore and ML Kit can only be checked on the phone (checklist in `HANDOFF.md`).
+  **APK 0.5.0 (6)** (main run 38829317137, 40 MB); real keys, the Keystore and ML Kit can only be checked on the phone (checklist in `HANDOFF.md`).
 - **Waiting**: the owner's test of 0.5.0 with a real key, the island check of 0.4.1, then stage 7 (release) — see
   `HANDOFF.md`.
 
