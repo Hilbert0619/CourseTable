@@ -341,7 +341,10 @@ links.
   never use the network); `Views/StorageView.swift`. The wallpaper list is a plain URLSession GET with the publishable
   key in `apikey` (no Supabase SDK, no account). UI test `PlannerUITests.testWallpaperHistoryAndStorage`.
   CourseKit code using CGSize/CGRect needs `import CoreGraphics` on Apple platforms (Windows' Foundation has them).
-- Gotchas from the 0.6 work: `supabase start` already seeds `[storage.buckets]`; a second `seed buckets` asks before
+- Gotchas from the 0.6 work: a List `.listRowBackground` isn't redrawn when what it shows changes (the 0.6.0
+  wallpaper appeared only after reopening the app): draw changing backgrounds inside the row (zero row insets, clear
+  row background); UI tests should make async content arrive late, as on a phone. `gh workflow run
+  backend-deploy.yml` went through when the owner asked for it (2026-10-16). `supabase start` already seeds `[storage.buckets]`; a second `seed buckets` asks before
   overwriting the bucket's settings (`--yes`). Unsplash's site refuses scripts (403); its image CDN
   (images.unsplash.com, reachable from China without the proxy) doesn't, so `make_wallpapers.py` only uses the CDN.
 - iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.6.1 / 9 now),
