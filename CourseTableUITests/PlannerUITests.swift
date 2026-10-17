@@ -46,9 +46,10 @@ final class PlannerUITests: XCTestCase {
         for language in ["en", "zh-Hans"] {
             let app = launch(language: language, extra: ["-focusDemo", "YES"])
             XCTAssertTrue(app.buttons["pauseFocus"].waitForExistence(timeout: 10))
+            // Once the demo wallpaper is in.
+            Thread.sleep(forTimeInterval: 3)
             snapshot(app, "\(language)-focus-3-running")
 
-            Thread.sleep(forTimeInterval: 2)
             XCUIDevice.shared.press(.home)
             Thread.sleep(forTimeInterval: 2)
             attach(XCUIScreen.main.screenshot(), "\(language)-focus-4-island")
@@ -80,7 +81,13 @@ final class PlannerUITests: XCTestCase {
     func testWallpaperHistoryAndStorage() throws {
         for language in ["en", "zh-Hans"] {
             let app = launch(language: language, extra: ["-focusDemo", "YES"])
-            XCTAssertTrue(app.buttons["anotherWallpaper"].waitForExistence(timeout: 10), "No wallpaper on the countdown")
+            let another = app.buttons["anotherWallpaper"]
+            XCTAssertTrue(another.waitForExistence(timeout: 10), "No wallpaper on the countdown")
+            snapshot(app, "\(language)-wallpaper-0-loading")
+            // The demo photo arrives two seconds after its colour, as a download would, and must show without
+            // leaving the screen (the shuffle button is enabled again once it's there).
+            wait(for: [expectation(for: NSPredicate(format: "isEnabled == true"), evaluatedWith: another)], timeout: 10)
+            Thread.sleep(forTimeInterval: 1)
             snapshot(app, "\(language)-wallpaper-1-running")
 
             app.buttons["stopFocus"].tap()

@@ -1,5 +1,5 @@
 {
-  "about": "Focus wallpapers (docs/todos-focus-spec.md §7). `rows`: a REST answer from focus_wallpapers; `usable`: the ids the app keeps, in order (non-https, bad ids, no size and repeated ids are left out; missing optional fields get defaults, focus_y is brought into 0-1). `candidates`: which wallpapers the next session may show. `remember`: the recent list after one is shown. `layout`: where a picture of `image` size goes in a `container` ([x, y, width, height], within 0.01). `evictions`: which downloaded pictures to delete (lastUsed in seconds; catalog null = not known).",
+  "about": "Focus wallpapers (docs/todos-focus-spec.md §7). `rows`: a REST answer from focus_wallpapers; `usable`: the ids the app keeps, in order (non-https, bad ids, no size and repeated ids are left out; missing optional fields get defaults, focus_y is brought into 0-1). `candidates`: which wallpapers the next session may show. `ahead`: which downloaded ones a session can show at once (`ready`) and which to download ahead of the next session (`prefetch`: none while one is ready). `remember`: the recent list after one is shown. `layout`: where a picture of `image` size goes in a `container` ([x, y, width, height], within 0.01). `evictions`: which downloaded pictures to delete (lastUsed in seconds; catalog null = not known).",
   "rows": [
     {"id": "lake", "url": "https://example.supabase.co/storage/v1/object/public/wallpapers/lake.jpg", "width": 1290, "height": 2796, "color": "#999f9d", "focus_y": 0.5, "author": "Timo", "author_url": "https://unsplash.com/@timo", "source_url": "https://unsplash.com/photos/lake", "licence": "Unsplash License"},
     {"id": "moon", "url": "https://example.supabase.co/storage/v1/object/public/wallpapers/moon.jpg", "width": 1290, "height": 2796, "color": "#063650", "focus_y": 1.7, "author": "", "author_url": "", "source_url": "", "licence": ""},
@@ -25,6 +25,14 @@
     {"about": "offline with nothing downloaded: none", "catalog": ["a", "b"], "downloaded": [], "recent": [], "canDownload": false, "expected": []},
     {"about": "a downloaded picture no longer in the list isn't shown", "catalog": ["a"], "downloaded": ["gone", "a"], "recent": [], "canDownload": false, "expected": ["a"]},
     {"about": "no list: none", "catalog": [], "downloaded": ["a"], "recent": [], "canDownload": true, "expected": []}
+  ],
+  "ahead": [
+    {"about": "nothing downloaded: download any not shown recently", "catalog": ["a", "b", "c"], "downloaded": [], "recent": ["b"], "ready": [], "prefetch": ["a", "c"]},
+    {"about": "one waiting: show it at once, download nothing more", "catalog": ["a", "b", "c"], "downloaded": ["c"], "recent": ["b"], "ready": ["c"], "prefetch": []},
+    {"about": "downloaded ones all shown recently: fetch a new one", "catalog": ["a", "b", "c"], "downloaded": ["b", "c"], "recent": ["b", "c"], "ready": [], "prefetch": ["a"]},
+    {"about": "everything downloaded and shown recently: nothing to do", "catalog": ["a", "b"], "downloaded": ["a", "b"], "recent": ["a", "b"], "ready": [], "prefetch": []},
+    {"about": "a downloaded picture no longer in the list doesn't count", "catalog": ["a", "b"], "downloaded": ["gone"], "recent": [], "ready": [], "prefetch": ["a", "b"]},
+    {"about": "no list: nothing", "catalog": [], "downloaded": ["a"], "recent": [], "ready": [], "prefetch": []}
   ],
   "remember": [
     {"id": "a", "recent": [], "catalogCount": 30, "expected": ["a"]},

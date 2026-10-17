@@ -7,7 +7,8 @@ import CourseKit
 /// The photo behind the Focus countdown (docs/todos-focus-spec.md §7). Each session gets a random one from the
 /// backend's list (`focus_wallpapers`, readable without an account) that wasn't shown recently. A picture is
 /// downloaded once and kept in Caches/Wallpapers; without a connection a kept one is shown, and with none kept
-/// the countdown keeps its plain look.
+/// the countdown keeps its plain look. One picture is downloaded ahead (when the Focus tab opens and after each
+/// shown wallpaper), so a session usually starts with its photo at once.
 @MainActor
 @Observable
 final class WallpaperStore {
@@ -45,6 +46,7 @@ final class WallpaperStore {
     @ObservationIgnored private var catalog: [FocusWallpaper] = []
     @ObservationIgnored private var fetchedAt: Date?
     @ObservationIgnored private var loading: Task<Void, Never>?
+    @ObservationIgnored private var prefetching: Task<Void, Never>?
     private let defaults: UserDefaults
     private let session: URLSession
 
@@ -120,7 +122,20 @@ final class WallpaperStore {
         isLoading = true
         defer { isLoading = false }
         if UITestLaunch.isActive {
+            // Like a real download: the photo's colour first, the photo a moment later.
+            if shown == nil { shown = Shown(wallpaper: DemoWallpaper.wallpaper, image: nil) }
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
             shown = Shown(wallpaper: DemoWallpaper.wallpaper, image: DemoWallpaper.image)
+            return
+        }
+        var generator = SystemRandomNumberGenerator()
+        // A picture downloaded ahead shows at once; an old list is refreshed afterwards, by the prefetch.
+        if let ready = FocusWallpaperPicker.ready(from: catalog, downloaded: downloadedIDs(), recent: recentIDs())
+            .randomElement(using: &generator),
+           let image = await loadImage(for: ready, download: false) {
+            guard !Task.isCancelled else { return }
+            show(ready, image, catalogIsFresh: false)
             return
         }
         var online = true
@@ -128,25 +143,52 @@ final class WallpaperStore {
             online = await refreshCatalog()
         }
         guard !Task.isCancelled else { return }
-        var recent = defaults.stringArray(forKey: Self.recentKey) ?? []
-        if let current = shown?.wallpaper.id { recent.insert(current, at: 0) }
-        var generator = SystemRandomNumberGenerator()
+        let recent = recentIDs()
         // Without a connection (or if the download fails) only kept pictures can be shown.
         for canDownload in online ? [true, false] : [false] {
             guard let wallpaper = FocusWallpaperPicker.pick(from: catalog, downloaded: downloadedIDs(), recent: recent,
                                                             canDownload: canDownload, using: &generator) else { continue }
             if shown == nil { shown = Shown(wallpaper: wallpaper, image: nil) }
             guard let image = await loadImage(for: wallpaper, download: canDownload), !Task.isCancelled else { continue }
-            shown = Shown(wallpaper: wallpaper, image: image)
-            defaults.set(wallpaper.id, forKey: Self.sessionKey)
-            let remembered = FocusWallpaperPicker.remember(wallpaper.id, in: defaults.stringArray(forKey: Self.recentKey) ?? [],
-                                                           catalogCount: catalog.count)
-            defaults.set(remembered, forKey: Self.recentKey)
-            trimCache(keeping: wallpaper.id, catalogIsFresh: online)
+            show(wallpaper, image, catalogIsFresh: online)
             return
         }
         // Nothing to show: keep the one on screen, if any; drop a placeholder that never loaded.
         if shown?.image == nil { shown = nil }
+    }
+
+    private func show(_ wallpaper: FocusWallpaper, _ image: UIImage, catalogIsFresh: Bool) {
+        shown = Shown(wallpaper: wallpaper, image: image)
+        defaults.set(wallpaper.id, forKey: Self.sessionKey)
+        let remembered = FocusWallpaperPicker.remember(wallpaper.id, in: defaults.stringArray(forKey: Self.recentKey) ?? [],
+                                                       catalogCount: catalog.count)
+        defaults.set(remembered, forKey: Self.recentKey)
+        trimCache(keeping: [wallpaper.id], catalogIsFresh: catalogIsFresh)
+        prefetch()
+    }
+
+    /// The recently shown wallpapers, the one on screen first.
+    private func recentIDs() -> [String] {
+        var recent = defaults.stringArray(forKey: Self.recentKey) ?? []
+        if let current = shown?.wallpaper.id { recent.insert(current, at: 0) }
+        return recent
+    }
+
+    // MARK: - Ahead of the next session
+
+    /// Downloads one picture for the next session, unless one is already waiting (and refreshes an old list).
+    /// Skipped in Low Data Mode; the Focus tab calls it, and so does every shown wallpaper.
+    func prefetch() {
+        guard isEnabled, !UITestLaunch.isActive, prefetching == nil else { return }
+        prefetching = Task {
+            defer { prefetching = nil }
+            var fresh = !catalog.isEmpty && !FocusWallpaperCatalog.isStale(fetchedAt: fetchedAt, now: .now)
+            if !fresh { fresh = await refreshCatalog() }
+            guard fresh else { return }
+            let candidates = FocusWallpaperPicker.prefetchCandidates(from: catalog, downloaded: downloadedIDs(), recent: recentIDs())
+            guard let next = candidates.randomElement(), await download(next, allowsLowDataMode: false) else { return }
+            trimCache(keeping: Set([next.id] + (shown.map { [$0.wallpaper.id] } ?? [])), catalogIsFresh: true)
+        }
     }
 
     // MARK: - Network
@@ -174,22 +216,34 @@ final class WallpaperStore {
         }
     }
 
+    /// Downloads the picture into the cache (if it isn't there yet). False if it couldn't.
+    private func download(_ wallpaper: FocusWallpaper, allowsLowDataMode: Bool = true) async -> Bool {
+        let file = file(for: wallpaper)
+        let manager = FileManager.default
+        guard !manager.fileExists(atPath: file.path) else { return true }
+        var request = URLRequest(url: wallpaper.url)
+        request.allowsConstrainedNetworkAccess = allowsLowDataMode
+        do {
+            let (temporary, response) = try await session.download(for: request)
+            defer { try? manager.removeItem(at: temporary) }
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return false }
+            try manager.createDirectory(at: folder, withIntermediateDirectories: true)
+            if !manager.fileExists(atPath: file.path) {
+                try manager.moveItem(at: temporary, to: file)
+            }
+            return true
+        } catch {
+            Self.logger.notice("Wallpaper \(wallpaper.id) couldn't be downloaded: \(error.localizedDescription)")
+            return false
+        }
+    }
+
     /// The picture, from the cache or (if `download`) downloaded into it, ready to draw.
-    private func loadImage(for wallpaper: FocusWallpaper, download: Bool) async -> UIImage? {
+    private func loadImage(for wallpaper: FocusWallpaper, download downloading: Bool) async -> UIImage? {
         let file = file(for: wallpaper)
         let manager = FileManager.default
         if !manager.fileExists(atPath: file.path) {
-            guard download else { return nil }
-            do {
-                let (temporary, response) = try await session.download(from: wallpaper.url)
-                defer { try? manager.removeItem(at: temporary) }
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
-                try manager.createDirectory(at: folder, withIntermediateDirectories: true)
-                try manager.moveItem(at: temporary, to: file)
-            } catch {
-                Self.logger.notice("Wallpaper \(wallpaper.id) couldn't be downloaded: \(error.localizedDescription)")
-                return nil
-            }
+            guard downloading, await download(wallpaper) else { return nil }
         }
         try? manager.setAttributes([.modificationDate: Date.now], ofItemAtPath: file.path)
         guard let image = UIImage(contentsOfFile: file.path) else {
@@ -218,9 +272,9 @@ final class WallpaperStore {
         Set(pictures().map(\.id))
     }
 
-    private func trimCache(keeping id: String, catalogIsFresh: Bool) {
+    private func trimCache(keeping ids: Set<String>, catalogIsFresh: Bool) {
         let entries = pictures().map { FocusWallpaperCache.Entry(id: $0.id, bytes: $0.bytes, lastUsed: $0.lastUsed) }
-        let stale = FocusWallpaperCache.evictions(entries, catalog: catalogIsFresh ? Set(catalog.map(\.id)) : nil, keeping: [id])
+        let stale = FocusWallpaperCache.evictions(entries, catalog: catalogIsFresh ? Set(catalog.map(\.id)) : nil, keeping: ids)
         for name in stale {
             try? FileManager.default.removeItem(at: folder.appending(path: "\(name).jpg"))
         }

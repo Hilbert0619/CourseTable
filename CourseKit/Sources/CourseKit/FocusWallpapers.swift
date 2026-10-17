@@ -129,6 +129,18 @@ public enum FocusWallpaperPicker {
         candidates(from: catalog, downloaded: downloaded, recent: recent, canDownload: canDownload).randomElement(using: &generator)
     }
 
+    /// The wallpapers a session can show at once: downloaded and not shown recently.
+    public static func ready(from catalog: [FocusWallpaper], downloaded: Set<String>, recent: [String]) -> [FocusWallpaper] {
+        catalog.filter { downloaded.contains($0.id) && !recent.contains($0.id) }
+    }
+
+    /// The wallpapers worth downloading ahead of the next session: not downloaded and not shown recently — but none
+    /// while a downloaded one is already waiting, so at most one picture is fetched ahead.
+    public static func prefetchCandidates(from catalog: [FocusWallpaper], downloaded: Set<String>, recent: [String]) -> [FocusWallpaper] {
+        guard ready(from: catalog, downloaded: downloaded, recent: recent).isEmpty else { return [] }
+        return catalog.filter { !downloaded.contains($0.id) && !recent.contains($0.id) }
+    }
+
     /// The recent list after `id` is shown: newest first, no repeats, at most half the catalog (so there's always a
     /// choice left) and at most `maxRecent`.
     public static func remember(_ id: String, in recent: [String], catalogCount: Int) -> [String] {

@@ -24,6 +24,14 @@ import Testing
             var canDownload: Bool
             var expected: [String]
         }
+        struct AheadCase: Decodable {
+            var about: String
+            var catalog: [String]
+            var downloaded: [String]
+            var recent: [String]
+            var ready: [String]
+            var prefetch: [String]
+        }
         struct RememberCase: Decodable {
             var id: String
             var recent: [String]
@@ -50,6 +58,7 @@ import Testing
         var usable: [String]
         var usableDetails: [Detail]
         var candidates: [CandidateCase]
+        var ahead: [AheadCase]
         var remember: [RememberCase]
         var layout: [LayoutCase]
         var evictions: [EvictionCase]
@@ -100,6 +109,17 @@ import Testing
         }
         #expect(seen == ["b", "c", "d"])
         #expect(FocusWallpaperPicker.pick(from: catalog, downloaded: [], recent: [], canDownload: false, using: &generator) == nil)
+    }
+
+    @Test func readyAndAhead() {
+        for test in fixture.ahead {
+            let catalog = test.catalog.map(Self.wallpaper)
+            let downloaded = Set(test.downloaded)
+            #expect(FocusWallpaperPicker.ready(from: catalog, downloaded: downloaded, recent: test.recent).map(\.id) == test.ready,
+                    "\(test.about)")
+            #expect(FocusWallpaperPicker.prefetchCandidates(from: catalog, downloaded: downloaded, recent: test.recent).map(\.id)
+                    == test.prefetch, "\(test.about)")
+        }
     }
 
     @Test func remember() {

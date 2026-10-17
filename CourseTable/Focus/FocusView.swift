@@ -89,6 +89,8 @@ private struct FocusSetupView: View {
             .accessibilityIdentifier("startFocus")
         }
         .onDisappear { engine.stopPreview() }
+        // Downloads the next session's wallpaper while you set it up, so it can show at once.
+        .task { WallpaperStore.shared.prefetch() }
     }
 }
 
@@ -258,6 +260,14 @@ private struct RunningFocusView: View {
     @Environment(\.colorScheme) private var colorScheme
     private var wallpapers: WallpaperStore { WallpaperStore.shared }
 
+    /// About the system's grouped-row corners (larger since iOS 26), so the card matches the rows below it.
+    private static var cardRadius: CGFloat {
+        if #available(iOS 26, *) {
+            return 26
+        }
+        return 10
+    }
+
     var body: some View {
         Form {
             Section {
@@ -312,8 +322,15 @@ private struct RunningFocusView: View {
                     // Light text and controls on the photo, whatever the system appearance.
                     .environment(\.colorScheme, onPhoto ? .dark : colorScheme)
                 }
+                // The card draws its own background (with the row's usual insets): a List row background isn't
+                // redrawn when the photo arrives, so the photo only showed after the row was rebuilt.
+                .padding(.horizontal, 20)
+                .padding(.vertical, 11)
+                .background { CountdownCardBackground() }
+                .clipShape(RoundedRectangle(cornerRadius: Self.cardRadius, style: .continuous))
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
             }
-            .listRowBackground(wallpapers.shown.map { WallpaperBackground(shown: $0) })
 
             Section {
                 HStack(spacing: 12) {
@@ -379,6 +396,18 @@ private struct RunningFocusView: View {
         let total = Int(seconds.rounded(.up))
         let (hours, minutes, rest) = (total / 3600, total / 60 % 60, total % 60)
         return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, rest) : String(format: "%d:%02d", minutes, rest)
+    }
+}
+
+/// The countdown card's background: the session's photo, or the plain row colour. It reads the store itself, so it
+/// redraws as soon as the photo arrives.
+private struct CountdownCardBackground: View {
+    var body: some View {
+        if let shown = WallpaperStore.shared.shown {
+            WallpaperBackground(shown: shown)
+        } else {
+            Color(uiColor: .secondarySystemGroupedBackground)
+        }
     }
 }
 
