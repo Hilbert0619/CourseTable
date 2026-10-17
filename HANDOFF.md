@@ -1,8 +1,21 @@
-# Session Handoff — CourseTable (iOS 0.6.0: new icon, Focus wallpapers, Settings → Storage: waiting for the owner's backend deploy and device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
+# Session Handoff — CourseTable (iOS 0.6.1: Focus wallpapers show at once, downloaded ahead: waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
 
 Date: 2026-10-16 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Next: the owner deploys the wallpapers, then tests iOS 0.6.0
+## Next: the owner tests iOS 0.6.1
+
+**0.6.1 (build 9), 2026-10-16.** The wallpapers are live: Backend deploy run 39010206400 (started by Claude with
+`gh workflow run` at the owner's request; all steps green; all 30 photo links download as JPEGs without a proxy).
+The owner's 0.6.0 test: the photos show, but took ~15 s and often appeared only after reopening the app. Cause,
+confirmed in the Simulator (repro run 39011498293, unfixed code: the colour only, 3 s after the photo arrived; fixed: 39011531274): the photo was a List
+`listRowBackground`, which isn't redrawn when the photo arrives. The network was fine (from the owner's network
+without a proxy: the list 0.7–1.4 s, a photo 1.4–2.3 s, Cloudflare Singapore cache hits). Fixed on branch
+`ios-0.6.1`: the card draws its own background, and one photo is downloaded ahead (Focus tab opens, after each shown
+wallpaper; not in Low Data Mode) so a session starts with a photo at once (`FocusWallpaperPicker.ready` /
+`prefetchCandidates`, shared cases `ahead`). CI: iOS 39011527731, CourseKit 39011534450, screenshots 39011531274. **IPA 0.6.1
+(build 9)**: run 39012255211 (commit a2adf11), saved as `C:\Users\AI\Downloads\CourseTable\CourseTable-0.6.1.ipa`. Checklist below.
+
+### What 0.6.0 brought
 
 The owner's iOS 0.5.0 device test (the AI agent) passed with no major bugs (2026-10-16). Then the owner passed on
 users' requests (after the Chinese app 不背单词), all built as **iOS 0.6.0 (build 8)**
@@ -23,8 +36,8 @@ users' requests (after the Chinese app 不背单词), all built as **iOS 0.6.0 (
   38939889921 (Linux), screenshots 38945148761 (PlannerUITests, en + zh). **IPA 0.6.0 (build 8)**: run 38945155263
   (commit 5c3dda8), saved as
   `C:\Users\AI\Downloads\CourseTable\CourseTable-0.6.0.ipa`.
-- **Not yet in the cloud**: the table and the pictures arrive when the owner runs **Backend deploy** (auto mode
-  doesn't let Claude start it). Until then the app shows the plain countdown (it handles a missing list).
+- Deploying the wallpapers: **Backend deploy** (`backend-deploy.yml`, job "Deploy to Supabase Cloud"), not
+  **Backend** (`backend.yml`, the local-stack test). Without the table the app shows the plain countdown.
 
 Handoff prompt A below picks up the owner's results.
 
@@ -71,18 +84,15 @@ Handoff prompt A below picks up the owner's results.
 - **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7) (IPA run
   38774424881); **the owner's device test passed with no major bugs** (2026-10-16). Android has both since 0.5.0.
 
-## iOS 0.6.0 test (owner)
+## iOS 0.6.1 test (owner)
 
-**First, put the wallpapers in the cloud (one click):** GitHub → Actions → **Backend deploy** → Run workflow (branch
-`main`, defaults) — or `gh workflow run backend-deploy.yml`. It applies the two wallpaper migrations, uploads the 30
-pictures to the bucket `wallpapers` ("Upload the wallpapers": 30 × `Uploading: …`) and checks them ("Check the
-database" shows `"wallpapers": 30`, `"wallpapers_bucket_public": true` and `Picture: 200 image/jpeg …`).
-
-Then install `CourseTable-0.6.0.ipa` over 0.5.0 with iloader (everything stays).
-1. The Home Screen shows the **new icon** (also in Settings and the app switcher).
-2. Focus → scroll down: **Wallpaper** is on. Start a session: within a few seconds a photo fills the countdown card
-   (its colour first, then the picture), the text is white and easy to read, and at the bottom "Photo by … on
-   Unsplash" and a shuffle button. Shuffle: another photo. Tap the credit: Safari opens the photo's page.
+The wallpapers are already in the cloud (Backend deploy ran on 2026-10-16). Install `CourseTable-0.6.1.ipa` over
+0.6.0 with iloader (everything stays).
+1. Open the Focus tab, wait a few seconds on the setup screen (the next photo downloads meanwhile), start a session:
+   the photo is there at once. With nothing downloaded yet (first time, or right after clearing wallpapers in
+   Storage) its colour shows first and the photo follows within a few seconds, **without leaving the screen**.
+2. Shuffle: another photo, also without leaving the screen. Stop and start again a few times: a new photo each time,
+   at once (the next one is fetched while you focus). Tap the credit: Safari opens the photo's page.
 3. During the session, close Course Table from the app switcher and open it again: the same photo.
 4. Stop, start again a few times: a different photo each time (no repeats among the last ten).
 5. Airplane mode, start a session: one of the photos already seen (they're kept); turn Wallpaper off: the plain
@@ -156,24 +166,24 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.6.0 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
+> 0.6.1 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
 
-### A. The owner's results for iOS 0.6.0 (icon, Focus wallpapers, Storage)
+### A. The owner's results for iOS 0.6.1 (icon, Focus wallpapers, Storage)
 
 ```
-[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.6.0 (icon, Focus wallpapers, Settings → Storage): fix what I report
+[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.6.1 (icon, Focus wallpapers, Settings → Storage): fix what I report
 
 ## Read first
-HANDOFF.md (status, the 0.6.0 checklist, facts, gotchas), docs/todos-focus-spec.md §7 (wallpapers, history, storage),
+HANDOFF.md (status, the 0.6.1 checklist, facts, gotchas), docs/todos-focus-spec.md §7 (wallpapers, history, storage),
 README "Focus" and "Storage", content/wallpapers/SOURCES.md, spec/fixtures/README.md.
 
 ## Goal
-1. I tell you whether Backend deploy went through and how the 0.6.0 checklist went. Fix what I report: logic in
+1. I tell you how the 0.6.1 checklist went. Fix what I report: logic in
    CourseKit with tests and shared fixtures first, then the app; screenshots for UI changes.
 2. If I ask for more or different wallpapers: edit content/wallpapers/sources.json (Unsplash License photos only,
    checked on each photo's page; never Unsplash+), run tools/make_wallpapers.py, put the new rows in a new migration
    (don't edit an applied one), and I run Backend deploy again.
-3. Bump to 0.6.1 (build 9) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give me a
+3. Bump to 0.6.2 (build 10) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give me a
    short checklist for what changed.
 
 ## Decided with me — don't reverse; ask if unsure
@@ -334,7 +344,7 @@ links.
 - Gotchas from the 0.6 work: `supabase start` already seeds `[storage.buckets]`; a second `seed buckets` asks before
   overwriting the bucket's settings (`--yes`). Unsplash's site refuses scripts (403); its image CDN
   (images.unsplash.com, reachable from China without the proxy) doesn't, so `make_wallpapers.py` only uses the CDN.
-- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.6.0 / 8 now),
+- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.6.1 / 9 now),
   `gh workflow run ipa.yml`, download to `C:\Users\AI\Downloads\CourseTable\CourseTable-<version>.ipa`, installed
   with iloader.
 - Gotchas from the AI work: List rows off screen aren't in the XCUITest tree (scroll first; the first cell can be a

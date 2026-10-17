@@ -117,6 +117,11 @@ couldn't delete Focus history).
   scaled to fill, moved so `focus_y` stays in view, darkened towards the bottom, with white text, the credit
   ("Photo by … on Unsplash", opens the photo's page) and a shuffle button. A relaunch during a session shows the
   same picture. Focus setup → **Wallpaper** turns it off.
+- 0.6.1, after the owner's device test (the photo took ~15 s and often showed only after reopening the app): the
+  card draws its own background (a List row background wasn't redrawn when the photo arrived), and one picture
+  is downloaded ahead — when the Focus tab opens and after each shown wallpaper, not in Low Data Mode — so a
+  session starts with a downloaded photo at once. Measured from the owner's network without a proxy: the list
+  0.7–1.4 s, a photo 1.4–2.3 s (Cloudflare Singapore, cached), so the network wasn't the bottleneck.
 - Logic in CourseKit (`FocusWallpapers.swift`): reading rows, candidates, the recent list, the crop, the cache's
   limits; shared cases in `spec/fixtures/focus-wallpapers.json` for the Android port.
 
