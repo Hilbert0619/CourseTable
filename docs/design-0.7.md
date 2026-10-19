@@ -21,7 +21,8 @@ the row (zero row insets, clear row background, `clipShape` with `Theme.cardRadi
 
 ## 2. Course colours (`CourseKit/Sources/CourseKit/CourseColors.swift`)
 
-The ten hues keep their order (`colorIndex`), so courses keep their colour. Each has:
+The ten hues keep their order (`colorIndex`), so courses keep their colour. The values come from
+`tools/course_colors.py` (OKLCH; it also draws a sample sheet and prints the contrasts). Each has:
 - **solid**: the hue darkened in OKLCH until white text reaches 3.5:1. Orange (was 2.59:1), mustard (2.79), green
   (3.14), teal (3.47) and pink (3.50) got darker; the rest were already there. Also each course's stripe and dot
   colour, in the widget and the Live Activities too.

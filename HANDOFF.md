@@ -1,8 +1,28 @@
-# Session Handoff — CourseTable (iOS 0.6.1: Focus wallpapers show at once, downloaded ahead: waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
+# Session Handoff — CourseTable (iOS 0.7.0: the visual pass, waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
 
-Date: 2026-10-16 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+Date: 2026-10-19 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Next: the owner tests iOS 0.6.1
+## Next: the owner tests iOS 0.7.0
+
+**0.7.0 (build 10), 2026-10-19: the visual pass** ([`docs/design-0.7.md`](docs/design-0.7.md)). The owner asked what
+could still be improved in the app's look; the review and plan were approved with two choices: **soft pastel course
+colours by default, Solid as a setting**, and **both phases in one round**. Built on branch `ios-0.7` (worktree
+`D:\Projects\CourseTable-ios07`, since the main checkout is the Android session's):
+- CourseKit `CourseColors` (solid ≥ 3.5:1 with white, soft ≥ 7:1 light and dark, distinct tints; shared cases
+  `spec/fixtures/course-colors.json`), `PeriodSchedule.gridPosition` (the current-time line); tests on Windows.
+- Warm paper background from the icon on every list (`Theme`, `.paperBackground()`); soft timetable blocks with a
+  stripe, the class in progress outlined, a red now-line, word-fitting block text; Settings → Courses → Timetable
+  Appearance (style, background photo, fade, block opacity; the photo in Storage); Today's Now / Next card; Focus
+  plan card with presets, the rhythm folded away, full-screen mode, a haptic at phase switches; Words ring with
+  streak and exam chips; AI Help privacy in three lines; the Assistant bar on glass (iOS 26); Storage's Clear
+  Selected pinned.
+- UI test `LookUITests` (every tab in English light/dark, Chinese dark, large text; Focus running and full screen;
+  the timetable photo in both styles). Before: run BASELINE_RUN (commit aa57bfb); after: SHOTS_RUN. CI: iOS IOS_RUN,
+  CourseKit CK_RUN. **IPA 0.7.0 (build 10)**: run IPA_RUN, saved as
+  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.0.ipa`. Checklist below.
+- 0.6.1 (below): the owner went on to the design review without reporting its device test.
+
+### 0.6.1
 
 **0.6.1 (build 9), 2026-10-16.** The wallpapers are live: Backend deploy run 39010206400 (started by Claude with
 `gh workflow run` at the owner's request; all steps green; all 30 photo links download as JPEGs without a proxy).
@@ -84,25 +104,25 @@ Handoff prompt A below picks up the owner's results.
 - **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7) (IPA run
   38774424881); **the owner's device test passed with no major bugs** (2026-10-16). Android has both since 0.5.0.
 
-## iOS 0.6.1 test (owner)
+## iOS 0.7.0 test (owner)
 
-The wallpapers are already in the cloud (Backend deploy ran on 2026-10-16). Install `CourseTable-0.6.1.ipa` over
-0.6.0 with iloader (everything stays).
-1. Open the Focus tab, wait a few seconds on the setup screen (the next photo downloads meanwhile), start a session:
-   the photo is there at once. With nothing downloaded yet (first time, or right after clearing wallpapers in
-   Storage) its colour shows first and the photo follows within a few seconds, **without leaving the screen**.
-2. Shuffle: another photo, also without leaving the screen. Stop and start again a few times: a new photo each time,
-   at once (the next one is fetched while you focus). Tap the credit: Safari opens the photo's page.
-3. During the session, close Course Table from the app switcher and open it again: the same photo.
-4. Stop, start again a few times: a different photo each time (no repeats among the last ten).
-5. Airplane mode, start a session: one of the photos already seen (they're kept); turn Wallpaper off: the plain
-   countdown as before.
-6. Focus → History: swipe left on a session → Delete. **All Sessions**: sessions by day with each day's total; Edit
-   deletes several; **Clear History** asks first.
-7. Settings → **Storage**: counts and sizes (Focus Wallpapers ≈ 0.5 MB per photo seen). Select a few (or Select All)
-   → Clear Selected → the confirmation names them → Clear: the counts drop. The timetable, open to-dos, Words and AI
-   connections stay. Cleared wallpapers download again in the next session.
-8. Anything odd: a screenshot, and what you did.
+Install `CourseTable-0.7.0.ipa` over 0.6.x with iloader (everything stays). Try it in light and dark mode (Control
+Centre), and once with a larger text size (Settings → Display & Brightness → Text Size).
+1. **Everywhere**: the lists sit on a warm paper colour (black in dark mode), like the icon.
+2. **Today**: at the top a card in the colour of the class in progress (time left, progress bar, room) or the next
+   one ("in 25 min", "Tomorrow"), with the to-dos left today. Tick off a to-do: it bounces and taps.
+3. **Timetable**: soft blocks (a light tint, dark text, a colour stripe); the class in progress outlined; a red line
+   at the current time in today's column (during a break it sits between periods). Long English names shrink
+   rather than break mid-word.
+4. **Settings → Courses → Timetable Appearance**: switch Soft / Solid (the preview and the timetable follow).
+   Choose a photo (yours, or a Focus wallpaper you've seen): it sits behind the timetable; try Fade and Block
+   opacity. Settings → Storage lists it; clearing it there removes it.
+5. **Focus**: the plan card (a ring with the blocks and breaks to scale) and quick lengths 25 / 50 / 90 min / 2 hr;
+   Rhythm opens the Pomodoro steps. While running: the full-screen button (photo edge to edge, the screen stays on,
+   the arrows close it); a tap when focus and break switch while the app is open.
+6. **Words**: today's ring with the percentage, the streak and the days to the exam.
+7. **AI Help**: Privacy in three lines, "What's Sent" for the details. The Assistant's message bar is on glass.
+8. Anything that looks off (cut text, low contrast, wrong colours in dark mode): a screenshot of it.
 
 ## Android 0.5.0 AI test (owner, with a real key)
 
@@ -166,39 +186,40 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.6.1 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
+> 0.7.0 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
 
-### A. The owner's results for iOS 0.6.1 (icon, Focus wallpapers, Storage)
+### A. The owner's results for iOS 0.7.0 (the visual pass)
 
 ```
-[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.6.1 (icon, Focus wallpapers, Settings → Storage): fix what I report
+[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.7.0 (the visual pass): fix what I report
 
 ## Read first
-HANDOFF.md (status, the 0.6.1 checklist, facts, gotchas), docs/todos-focus-spec.md §7 (wallpapers, history, storage),
-README "Focus" and "Storage", content/wallpapers/SOURCES.md, spec/fixtures/README.md.
+HANDOFF.md (status, the 0.7.0 checklist, facts, gotchas), docs/design-0.7.md (tokens, colours, screens, testing),
+docs/todos-focus-spec.md §7, README, spec/fixtures/README.md.
 
 ## Goal
-1. I tell you how the 0.6.1 checklist went. Fix what I report: logic in
-   CourseKit with tests and shared fixtures first, then the app; screenshots for UI changes.
-2. If I ask for more or different wallpapers: edit content/wallpapers/sources.json (Unsplash License photos only,
-   checked on each photo's page; never Unsplash+), run tools/make_wallpapers.py, put the new rows in a new migration
-   (don't edit an applied one), and I run Backend deploy again.
-3. Bump to 0.6.2 (build 10) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give me a
-   short checklist for what changed.
+1. I tell you how the 0.7.0 checklist went (light, dark, large text) with screenshots. Fix what I report: colour or
+   layout logic in CourseKit with tests and shared fixtures first (CourseColors contrast stays tested), then the app;
+   compare LookUITests screenshots before and after every UI change.
+2. Bump to 0.7.1 (build 11) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give
+   me a short checklist for what changed.
 
 ## Decided with me — don't reverse; ask if unsure
-Wallpapers come from Supabase (table focus_wallpapers + public bucket wallpapers), readable without an account; the
-app picks one at random per session and keeps downloaded ones. Storage never clears the timetable, unfinished to-dos,
-Words progress or AI connections. Everything in docs/ai-spec.md §1 and docs/ai-agent-spec.md §2 still holds. Swift +
-SwiftUI only; logic in CourseKit with tests that run on Windows (`swift test` in CourseKit/); the app compiles on
-GitHub Actions only. Never put a real API key, token or password in code, tests, CI or chat.
+Soft pastel course blocks by default, Solid as a setting; the warm paper background from the icon; the accent
+colour unchanged. Wallpapers come from Supabase (table focus_wallpapers + public bucket wallpapers). Storage never
+clears the timetable, unfinished to-dos, Words progress or AI connections. Everything in docs/ai-spec.md §1 and
+docs/ai-agent-spec.md §2 still holds. Swift + SwiftUI only; logic in CourseKit with tests that run on Windows
+(`swift test` in CourseKit/); the app compiles on GitHub Actions only. Never put a real API key, token or password in
+code, tests, CI or chat.
 
 ## How to work
+The main checkout D:\Projects\CourseTable may be on the Android session's branch: work in a git worktree from main.
 Iterate on a branch: push, `gh workflow run ios.yml --ref <branch>`, then screenshots.yml with
-only=CourseTableUITests/PlannerUITests (and AIUITests/AgentUITests if touched); download the screenshots and look at
-them; when green, fast-forward main. Backend changes: backend.yml on the branch first; I start backend-deploy.yml.
-Use the Write/Edit tools (or Python scripts written with Write) for code, never Python with backslashes through a
-bash heredoc. Short report at the end with run links.
+only=CourseTableUITests/LookUITests (plus the test classes of what you touched; the whole suite no longer fits the
+job's 40 minutes); download the screenshots and look at them; when green, fast-forward main. Backend changes:
+backend.yml on the branch first, then backend-deploy.yml (gh workflow run, when I say so). Use the Write/Edit tools
+(or Python scripts written with Write) for code, never Python with backslashes through a bash heredoc. Short report
+at the end with run links.
 ```
 
 ### B. Android: the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7
@@ -347,7 +368,14 @@ links.
   backend-deploy.yml` went through when the owner asked for it (2026-10-16). `supabase start` already seeds `[storage.buckets]`; a second `seed buckets` asks before
   overwriting the bucket's settings (`--yes`). Unsplash's site refuses scripts (403); its image CDN
   (images.unsplash.com, reachable from China without the proxy) doesn't, so `make_wallpapers.py` only uses the CDN.
-- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.6.1 / 9 now),
+- Gotchas from the 0.7 work: the whole UI-test suite plus LookUITests no longer fits screenshots.yml's 40 minutes
+  (it gets cut off and saves nothing): pass `only=`. A second screenshots run on the same branch cancels the first
+  (concurrency group): run a "before" on another branch. `XCUIDevice.shared.appearance = .dark` didn't take on CI:
+  the app reads `-uiColorScheme dark` in UI tests. In a List, `Label` keeps a wide icon column: use an HStack for
+  inline chips. A colour `.background` reaches into the safe area unless `ignoresSafeAreaEdges: []`. Designing
+  colours: `CourseColors` values come from `tools/course_colors.py` (OKLCH); keep the contrast and distinctness
+  tests green.
+- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.7.0 / 10 now),
   `gh workflow run ipa.yml`, download to `C:\Users\AI\Downloads\CourseTable\CourseTable-<version>.ipa`, installed
   with iloader.
 - Gotchas from the AI work: List rows off screen aren't in the XCUITest tree (scroll first; the first cell can be a
