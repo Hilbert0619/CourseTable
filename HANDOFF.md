@@ -17,9 +17,9 @@ colours by default, Solid as a setting**, and **both phases in one round**. Buil
   streak and exam chips; AI Help privacy in three lines; the Assistant bar on glass (iOS 26); Storage's Clear
   Selected pinned.
 - UI test `LookUITests` (every tab in English light/dark, Chinese dark, large text; Focus running and full screen;
-  the timetable photo in both styles). Before: run BASELINE_RUN (commit aa57bfb); after: SHOTS_RUN. CI: iOS IOS_RUN,
-  CourseKit CK_RUN. **IPA 0.7.0 (build 10)**: run IPA_RUN, saved as
-  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.0.ipa`. Checklist below.
+  the timetable photo in both styles). Before: run 39308662887 (commit aa57bfb); after: 39309546075 (8e00f1c). CI:
+  iOS 39309539606, CourseKit 39302615616 (CourseKit unchanged since). **IPA 0.7.0 (build 10)**: run 39312168978
+  (commit 8f354f9), saved as `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.0.ipa`; on `main`. Checklist below.
 - 0.6.1 (below): the owner went on to the design review without reporting its device test.
 
 ### 0.6.1
