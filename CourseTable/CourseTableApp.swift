@@ -42,6 +42,8 @@ struct CourseTableApp: App {
                 .environment(vocab)
                 .environment(planner)
                 .environment(ai)
+                // UI tests only (`-uiColorScheme`); nil follows the system.
+                .preferredColorScheme(UITestLaunch.colorScheme == "dark" ? .dark : UITestLaunch.colorScheme == "light" ? .light : nil)
         }
         .modelContainer(container)
         // Ends class Live Activities whose class is over, whenever iOS grants a refresh after one ends.

@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 import CourseKit
 
 struct WeekView: View {
@@ -37,7 +38,8 @@ struct WeekView: View {
             GeometryReader { proxy in
                 let layout = GridLayout(width: proxy.size.width, days: visibleDays)
                 VStack(spacing: 0) {
-                    DayHeader(layout: layout, semester: timetable.semester, week: week, today: today)
+                    DayHeader(layout: layout, semester: timetable.semester, week: week, today: today,
+                              isOnPhoto: TimetableBackground.shared.image != nil)
                     Divider()
                     ScrollView {
                         // Each minute: the current-time line and the class in progress.
@@ -50,6 +52,7 @@ struct WeekView: View {
                                 now: Moment(context.date),
                                 blockStyle: blockStyle,
                                 blockOpacity: TimetableBackground.shared.image == nil ? 1 : blockOpacity,
+                                isOnPhoto: TimetableBackground.shared.image != nil,
                                 showsAllWeeks: placing,
                                 onSelectCourse: { editorTarget = .edit($0) },
                                 onSelectSlot: { day, period in selectSlot(day, period, templates: templates) }
@@ -257,6 +260,8 @@ private struct DayHeader: View {
     let semester: Semester
     let week: Int
     let today: LocalDate
+    /// A photo is behind the timetable: the row gets the paper behind it, so the days stay readable.
+    var isOnPhoto = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -275,9 +280,11 @@ private struct DayHeader: View {
                 }
                 .foregroundStyle(isToday ? Color.accentColor : Color.primary)
                 .frame(width: layout.columnWidth, height: 40)
-                .background(isToday ? Color.accentColor.opacity(0.12) : Color.clear)
+                // Not into the navigation bar above (a colour background goes into the safe area by default).
+                .background(isToday ? Color.accentColor.opacity(0.12) : Color.clear, ignoresSafeAreaEdges: [])
             }
         }
+        .background(isOnPhoto ? Theme.paper.opacity(0.82) : Color.clear, ignoresSafeAreaEdges: [])
     }
 }
 
@@ -289,6 +296,8 @@ private struct WeekGrid: View {
     let now: Moment
     let blockStyle: CourseBlockStyle
     let blockOpacity: Double
+    /// A photo is behind the timetable: the period times get the paper behind them.
+    let isOnPhoto: Bool
     /// Also show courses that don't meet in `week`, dimmed (used while placing courses).
     let showsAllWeeks: Bool
     let onSelectCourse: (Course) -> Void
@@ -298,6 +307,11 @@ private struct WeekGrid: View {
         let periodCount = timetable.periods.count
         let current = timetable.currentAndNext(at: now).current
         ZStack(alignment: .topLeading) {
+            if isOnPhoto {
+                Rectangle()
+                    .fill(Theme.paper.opacity(0.82))
+                    .frame(width: GridLayout.timeColumnWidth, height: CGFloat(periodCount) * GridLayout.rowHeight)
+            }
             ForEach(0..<periodCount, id: \.self) { index in
                 PeriodLabel(number: index + 1, period: timetable.periods.periods[index])
                     .frame(width: GridLayout.timeColumnWidth, height: GridLayout.rowHeight)
@@ -391,21 +405,27 @@ struct CourseBlock: View {
     var body: some View {
         let colors = CoursePalette.block(course.colorIndex, style: style)
         let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
-        VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: course.name)
-                .font(.system(size: min(nameSize, 14), weight: .semibold))
-                .lineLimit(5)
-            if !course.room.isEmpty {
-                Text(verbatim: "@\(course.room)")
-                    .font(.system(size: min(roomSize, 12)))
-                    .lineLimit(2)
+        let leading: CGFloat = style == .soft ? 6 : 3
+        GeometryReader { proxy in
+            let width = proxy.size.width - leading - 3
+            let room = "@\(course.room)"
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: course.name)
+                    .font(.system(size: Self.fitting(course.name, preferred: min(nameSize, 14), width: width, weight: .semibold),
+                                  weight: .semibold))
+                    .lineLimit(5)
+                if !course.room.isEmpty {
+                    Text(verbatim: room)
+                        .font(.system(size: Self.fitting(room, preferred: min(roomSize, 12), width: width, weight: .regular)))
+                        .lineLimit(2)
+                }
             }
+            .foregroundStyle(colors.text)
+            .padding(.vertical, 3)
+            .padding(.leading, leading)
+            .padding(.trailing, 3)
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
         }
-        .foregroundStyle(colors.text)
-        .padding(.vertical, 3)
-        .padding(.leading, style == .soft ? 6 : 3)
-        .padding(.trailing, 3)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background {
             shape.fill(colors.fill.opacity(fillOpacity))
                 .overlay(alignment: .leading) {
@@ -423,6 +443,20 @@ struct CourseBlock: View {
         .shadow(color: isCurrent ? course.color.opacity(0.45) : .clear, radius: 6)
         .accessibilityElement(children: .combine)
         .accessibilityValue(isCurrent ? Text("Now") : Text(verbatim: ""))
+    }
+}
+
+extension CourseBlock {
+    /// The largest size up to `preferred` (at least 8) at which every Latin word of `text` fits `width`, so a long
+    /// English word shrinks instead of breaking mid-word. Chinese wraps between characters anyway.
+    static func fitting(_ text: String, preferred: CGFloat, width: CGFloat, weight: UIFont.Weight) -> CGFloat {
+        let words = text.split(whereSeparator: \.isWhitespace).filter { $0.unicodeScalars.allSatisfy(\.isASCII) }
+        guard width > 0, !words.isEmpty else { return preferred }
+        let font = UIFont.systemFont(ofSize: preferred, weight: weight)
+        let widest = words.map { (String($0) as NSString).size(withAttributes: [.font: font]).width }.max() ?? 0
+        guard widest > width else { return preferred }
+        // Text width grows in proportion to the size; half-point steps, a little room to spare.
+        return max(8, ((preferred * width / widest) * 2).rounded(.down) / 2 - 0.5)
     }
 }
 

@@ -68,22 +68,39 @@ struct StorageView: View {
                 Text("Downloaded again when needed — except the timetable background, which is your choice.")
             }
 
-            Section {
+        }
+        .paperBackground()
+        // Always in reach above the tab bar, like Start Focusing; the list fades out under it.
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 8) {
+                if cleared {
+                    Label("Cleared.", systemImage: "checkmark.circle")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
                 Button(role: .destructive) {
                     confirming = true
                 } label: {
                     Text("Clear Selected")
+                        .font(.headline)
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
                 }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
                 .disabled(selection.isEmpty)
                 .accessibilityIdentifier("clearSelectedStorage")
-            } footer: {
-                if cleared {
-                    Label("Cleared.", systemImage: "checkmark.circle")
-                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 14)
+            .padding(.bottom, 8)
+            .background {
+                LinearGradient(stops: [.init(color: Theme.paper.opacity(0), location: 0), .init(color: Theme.paper, location: 0.4)],
+                               startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea(edges: .bottom)
+                    .allowsHitTesting(false)
             }
         }
-        .paperBackground()
         .navigationTitle("Storage")
         .toolbar {
             let clearable = Set(Item.allCases.filter { !isEmpty($0) })

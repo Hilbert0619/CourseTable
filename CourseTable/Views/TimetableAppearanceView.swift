@@ -14,7 +14,7 @@ final class TimetableBackground {
 
     nonisolated static let fadeKey = "timetable.backgroundFade"
     nonisolated static let blockOpacityKey = "timetable.blockOpacity"
-    nonisolated static let defaultFade = 0.35
+    nonisolated static let defaultFade = 0.45
     nonisolated static let defaultBlockOpacity = 0.9
     /// The longest side kept: enough for any iPhone screen at 3×.
     private static let maxPixels: CGFloat = 2400
@@ -220,6 +220,7 @@ private struct BlockPreview: View {
         }
         .padding(12)
         .background { TimetableBackdrop() }
+        .clipped()
         .accessibilityHidden(true)
     }
 }

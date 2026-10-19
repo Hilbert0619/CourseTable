@@ -102,6 +102,8 @@ final class LookUITests: XCTestCase {
             "-uiTesting", "YES",
             "-demoData", "YES",
             "-vocabDemo", "YES",
+            // The device appearance above didn't take on CI: the app applies this itself.
+            "-uiColorScheme", variant.dark ? "dark" : "light",
         ] + extra
         if variant.largeText {
             app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityM"]

@@ -137,6 +137,7 @@ private struct FocusPlanCard: View {
                         Text("\(plan.blockCount) focus blocks · \(focusDuration(plan.focusSeconds)) of focus · ends at \(end.formatted(date: .omitted, time: .shortened))")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
@@ -147,7 +148,10 @@ private struct FocusPlanCard: View {
                     Button {
                         totalMinutes = minutes
                     } label: {
-                        Text(verbatim: focusDuration(minutes * 60))
+                        // "90 min" rather than "1 hr, 30 min": short enough for a chip.
+                        Text(verbatim: minutes < 120
+                             ? Duration.seconds(minutes * 60).formatted(.units(allowed: [.minutes], width: .abbreviated))
+                             : focusDuration(minutes * 60))
                             .font(.subheadline.weight(.semibold))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)

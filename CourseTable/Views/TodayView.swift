@@ -324,10 +324,10 @@ private struct NowNextCard: View {
                     .font(.headline)
             }
             if openTodos > 0 {
-                Label {
-                    Text("\(openTodos) to-dos left today")
-                } icon: {
+                // Not a Label: in a list it keeps a wide column for the icon.
+                HStack(spacing: 6) {
                     Image(systemName: "checklist")
+                    Text("\(openTodos) to-dos left today")
                 }
                 .font(.footnote.weight(.medium))
                 .opacity(0.85)

@@ -20,8 +20,9 @@ Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0
 - **Class reminders**: a local notification 0–60 minutes before each class that has **no** Live Activity (beyond the next 4, with Live Activities off, or on iOS 17/18), so you never get both.
 - **Term**: set the first day of term and the number of weeks. The app works out the current week.
 - **Period times**: edit how many periods there are per day and each period's start and end time. The default is a 12-period day.
-- **Weekly grid**: Mon–Fri, plus Sat/Sun if you have weekend classes. Switch weeks with the arrows, the week menu or a swipe. Tap an empty slot to add a course there.
-- **Today**: the day's classes and to-dos in time order; the current and next class are highlighted. The arrows show other days.
+- **Weekly grid**: Mon–Fri, plus Sat/Sun if you have weekend classes. Switch weeks with the arrows, the week menu or a swipe. Tap an empty slot to add a course there. Since v0.7: soft course blocks (a tint with same-hue text and a colour stripe; Solid in Settings), the class in progress outlined, and a red current-time line in today's column.
+- **Timetable Appearance** (v0.7, Settings → Courses): Soft or Solid blocks, and a background photo (your own, or a Focus wallpaper you've seen) with fade and block-opacity sliders.
+- **Today**: a Now / Next card (since v0.7) with the class in progress (time left, progress) or the next one (when, where) and the to-dos still open, then the day's classes and to-dos in time order. The arrows show other days.
 - **To-dos** (v0.3): add them for any day with **+**: any time, at a time ("12:00 pick up the package"), or after one of that day's classes ("after Calculus: hand in the paper"). Timed ones send a notification (at the time, or when the class ends), and a class's to-dos also show in its Live Activity. Tick off, swipe to delete, tap to edit.
 - **Widgets**: on the Home Screen, the small size shows the current or next class and the medium size shows the rest of today. The small size also works in StandBy. On the Lock Screen, the rectangular widget shows the current or next class with room and teacher, the inline widget sits above the clock ("Calculus until 09:40", "10:00 Physics"), and the circular widget shows a progress ring during class or the next start time.
 
@@ -32,6 +33,7 @@ Tabs: **Today**, **Timetable**, **Focus**, **Words**, **Settings**. Records: [v0
 - **Background sounds**: rain, rain on a roof, campfire, airplane cabin, ocean, stream, night, train, café: recordings from Freesound in the public domain (CC0, [sources](content/sounds/SOURCES.md)), looped without a seam. They keep playing when you leave the app or lock the phone, mix with music, and can be changed while running.
 - **History**: today's focus time and the latest sessions; swipe one to delete it, or open **All Sessions** (by day, with Clear History).
 - **Wallpapers** (v0.6): each session shows a random high-resolution photo behind the countdown, one not shown recently, with the photographer's credit and a shuffle button. 30 photos from Unsplash (Unsplash License, [sources](content/wallpapers/SOURCES.md)) in the backend's public `wallpapers` bucket, listed in the `focus_wallpapers` table (no account needed); each is downloaded once and kept for offline sessions. Can be turned off.
+- **Look** (v0.7): a plan card with the session's blocks and breaks to scale and quick lengths (25 / 50 / 90 min / 2 hr); the Pomodoro rhythm folded away; full screen while focusing (the photo edge to edge, the screen stays on). Design notes: [docs/design-0.7.md](docs/design-0.7.md).
 
 ### Storage (v0.6)
 

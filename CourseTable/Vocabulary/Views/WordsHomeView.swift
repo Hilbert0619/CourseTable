@@ -185,10 +185,12 @@ struct WordsHomeView: View {
             ZStack {
                 Circle()
                     .stroke(Color.secondary.opacity(0.15), lineWidth: 10)
-                Circle()
-                    .trim(from: 0, to: max(progress, 0.001))
-                    .stroke(isComplete ? Color.green : Color.accentColor, style: StrokeStyle(lineWidth: 10, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
+                if progress > 0 {
+                    Circle()
+                        .trim(from: 0, to: progress)
+                        .stroke(isComplete ? Color.green : Color.accentColor, style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                }
                 if isComplete {
                     Image(systemName: "checkmark")
                         .font(.title2.weight(.bold))
@@ -227,11 +229,11 @@ struct WordsHomeView: View {
         @ViewBuilder let content: () -> Content
 
         var body: some View {
-            Label {
-                content()
-            } icon: {
+            // Not a Label: in a list it keeps a wide column for the icon.
+            HStack(spacing: 5) {
                 Image(systemName: systemImage)
                     .foregroundStyle(tint)
+                content()
             }
             .font(.footnote.weight(.medium))
             .padding(.horizontal, 10)

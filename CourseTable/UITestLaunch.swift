@@ -19,4 +19,7 @@ enum UITestLaunch {
     static let wantsAIDemoPhoto = isActive && ProcessInfo.processInfo.arguments.contains("-aiDemoPhoto")
     /// Start a demo class Live Activity (`-liveActivityDemo before|during|switch`).
     static let liveActivityDemo = isActive ? UserDefaults.standard.string(forKey: "liveActivityDemo") : nil
+    /// The app's appearance, `dark` or `light` (`-uiColorScheme dark`): setting the Simulator's from the test
+    /// didn't take.
+    static let colorScheme = isActive ? UserDefaults.standard.string(forKey: "uiColorScheme") : nil
 }
