@@ -117,6 +117,7 @@ struct VocabStatsView: View {
                 }
             }
         }
+        .paperBackground()
         .navigationTitle("Statistics")
         .sheet(isPresented: $analysing) {
             AssistantView(startMessage: String(localized: "Analyse my vocabulary progress: how am I doing, which words do I keep forgetting, and will I finish the book before the exam?"))

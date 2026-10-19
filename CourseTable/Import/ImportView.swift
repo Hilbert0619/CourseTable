@@ -80,6 +80,7 @@ struct ImportView: View {
                     ImportPreview(result: result, plan: plan)
                 }
             }
+            .paperBackground()
             .navigationTitle(onImport == nil ? Text("Import Courses") : Text("Check the Courses"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

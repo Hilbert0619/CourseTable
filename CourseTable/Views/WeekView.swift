@@ -20,6 +20,8 @@ struct WeekView: View {
     @State private var placedCount = 0
     /// While placing, also show Saturday and Sunday so weekend classes can be placed.
     @State private var placingOnWeekend = false
+    @AppStorage(TimetableAppearance.blockStyleKey) private var blockStyle = TimetableAppearance.defaultBlockStyle
+    @AppStorage(TimetableBackground.blockOpacityKey) private var blockOpacity = TimetableBackground.defaultBlockOpacity
 
     private var today: LocalDate { LocalDate(.now) }
     private var currentWeek: Int { timetable.semester.displayWeek(on: today) }
@@ -38,15 +40,21 @@ struct WeekView: View {
                     DayHeader(layout: layout, semester: timetable.semester, week: week, today: today)
                     Divider()
                     ScrollView {
-                        WeekGrid(
-                            layout: layout,
-                            timetable: timetable,
-                            week: week,
-                            today: today,
-                            showsAllWeeks: placing,
-                            onSelectCourse: { editorTarget = .edit($0) },
-                            onSelectSlot: { day, period in selectSlot(day, period, templates: templates) }
-                        )
+                        // Each minute: the current-time line and the class in progress.
+                        TimelineView(.everyMinute) { context in
+                            WeekGrid(
+                                layout: layout,
+                                timetable: timetable,
+                                week: week,
+                                today: today,
+                                now: Moment(context.date),
+                                blockStyle: blockStyle,
+                                blockOpacity: TimetableBackground.shared.image == nil ? 1 : blockOpacity,
+                                showsAllWeeks: placing,
+                                onSelectCourse: { editorTarget = .edit($0) },
+                                onSelectSlot: { day, period in selectSlot(day, period, templates: templates) }
+                            )
+                        }
                     }
                     .overlay(alignment: .bottom) {
                         if timetable.courses.isEmpty && !placing {
@@ -67,6 +75,7 @@ struct WeekView: View {
                     }
                 }
             }
+            .background { TimetableBackdrop() }
             // Swiping the grid changes the week. Attached before the tray is added below, so
             // scrolling the tray's course chips doesn't.
             .simultaneousGesture(
@@ -277,6 +286,9 @@ private struct WeekGrid: View {
     let timetable: Timetable
     let week: Int
     let today: LocalDate
+    let now: Moment
+    let blockStyle: CourseBlockStyle
+    let blockOpacity: Double
     /// Also show courses that don't meet in `week`, dimmed (used while placing courses).
     let showsAllWeeks: Bool
     let onSelectCourse: (Course) -> Void
@@ -284,6 +296,7 @@ private struct WeekGrid: View {
 
     var body: some View {
         let periodCount = timetable.periods.count
+        let current = timetable.currentAndNext(at: now).current
         ZStack(alignment: .topLeading) {
             ForEach(0..<periodCount, id: \.self) { index in
                 PeriodLabel(number: index + 1, period: timetable.periods.periods[index])
@@ -311,7 +324,9 @@ private struct WeekGrid: View {
             ForEach(timetable.gridPlacements(inWeek: week, includingOtherWeeks: showsAllWeeks)) { placement in
                 if let x = layout.x(for: placement.weekday) {
                     let laneWidth = layout.columnWidth / CGFloat(placement.laneCount)
-                    CourseBlock(course: placement.course)
+                    let isCurrent = placement.isInWeek && current?.course.id == placement.course.id
+                        && current?.day == timetable.semester.date(of: placement.weekday, inWeek: week)
+                    CourseBlock(course: placement.course, style: blockStyle, isCurrent: isCurrent, fillOpacity: blockOpacity)
                         .opacity(placement.isInWeek ? 1 : 0.35)
                         .onTapGesture { onSelectCourse(placement.course) }
                         .frame(
@@ -325,6 +340,16 @@ private struct WeekGrid: View {
                         .accessibilityAddTraits(.isButton)
                         .accessibilityIdentifier("courseBlock")
                 }
+            }
+
+            // The current time in today's column, like Calendar's red line.
+            if now.day == today, let x = layout.x(for: today.weekday),
+               timetable.semester.date(of: today.weekday, inWeek: week) == today,
+               let position = timetable.periods.gridPosition(of: now.time) {
+                NowLine(width: layout.columnWidth)
+                    .offset(x: x, y: CGFloat(position) * GridLayout.rowHeight - NowLine.dotSize / 2)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
             }
         }
         .frame(width: layout.totalWidth, height: CGFloat(periodCount) * GridLayout.rowHeight, alignment: .topLeading)
@@ -350,27 +375,70 @@ private struct PeriodLabel: View {
     }
 }
 
+/// A course on the grid: soft (a tint, same-hue text and a stripe in the course's colour) or solid (the colour with
+/// white text), and outlined while the class is on.
 struct CourseBlock: View {
     let course: Course
+    var style: CourseBlockStyle = TimetableAppearance.defaultBlockStyle
+    var isCurrent = false
+    /// Below 1 when a photo is behind the timetable (the text and stripe stay solid).
+    var fillOpacity: Double = 1
+    /// Small type: day columns are only ~70 points wide (~50 with the weekend shown), and English words wider than
+    /// that get broken mid-word. It grows with Dynamic Type, but only so far.
+    @ScaledMetric(relativeTo: .caption2) private var nameSize: CGFloat = 11
+    @ScaledMetric(relativeTo: .caption2) private var roomSize: CGFloat = 10
 
     var body: some View {
-        // Small type and padding: day columns are only ~70 points wide (~50 with the weekend shown),
-        // and English words wider than that get broken mid-word.
+        let colors = CoursePalette.block(course.colorIndex, style: style)
+        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: course.name)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: min(nameSize, 14), weight: .semibold))
                 .lineLimit(5)
             if !course.room.isEmpty {
                 Text(verbatim: "@\(course.room)")
-                    .font(.system(size: 10))
+                    .font(.system(size: min(roomSize, 12)))
                     .lineLimit(2)
             }
         }
-        .foregroundStyle(.white)
-        .padding(3)
+        .foregroundStyle(colors.text)
+        .padding(.vertical, 3)
+        .padding(.leading, style == .soft ? 6 : 3)
+        .padding(.trailing, 3)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(course.color, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .background {
+            shape.fill(colors.fill.opacity(fillOpacity))
+                .overlay(alignment: .leading) {
+                    if style == .soft {
+                        Rectangle().fill(course.color).frame(width: 3)
+                    }
+                }
+                .clipShape(shape)
+        }
+        .overlay {
+            if isCurrent {
+                shape.strokeBorder(style == .soft ? course.color : Color.primary.opacity(0.7), lineWidth: 2)
+            }
+        }
+        .shadow(color: isCurrent ? course.color.opacity(0.45) : .clear, radius: 6)
         .accessibilityElement(children: .combine)
+        .accessibilityValue(isCurrent ? Text("Now") : Text(verbatim: ""))
+    }
+}
+
+/// The current time across today's column: a dot at the left and a line.
+private struct NowLine: View {
+    static let dotSize: CGFloat = 8
+    let width: CGFloat
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Circle().frame(width: Self.dotSize, height: Self.dotSize)
+            Rectangle().frame(height: 2)
+        }
+        .foregroundStyle(.red)
+        .frame(width: width, height: Self.dotSize)
+        .offset(x: -Self.dotSize / 2)
     }
 }
 

@@ -55,6 +55,7 @@ struct CourseListView: View {
                     }
                 }
             }
+            .paperBackground()
             .navigationTitle("Course List")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

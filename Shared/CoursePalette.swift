@@ -1,23 +1,37 @@
 import SwiftUI
+import UIKit
 import CourseKit
 
-/// Course block colours. Mid-tone so white text stays readable in light and dark mode.
+/// Course colours in SwiftUI. The values, their styles and contrast checks are CourseKit's `CourseColors`
+/// (docs/design-0.7.md).
 enum CoursePalette {
-    static let colors: [Color] = [
-        Color(red: 0.89, green: 0.35, blue: 0.33),  // coral
-        Color(red: 0.93, green: 0.53, blue: 0.18),  // orange
-        Color(red: 0.76, green: 0.58, blue: 0.05),  // mustard
-        Color(red: 0.28, green: 0.64, blue: 0.36),  // green
-        Color(red: 0.13, green: 0.60, blue: 0.58),  // teal
-        Color(red: 0.22, green: 0.52, blue: 0.86),  // blue
-        Color(red: 0.38, green: 0.40, blue: 0.84),  // indigo
-        Color(red: 0.60, green: 0.38, blue: 0.83),  // purple
-        Color(red: 0.86, green: 0.36, blue: 0.60),  // pink
-        Color(red: 0.47, green: 0.52, blue: 0.58),  // slate
-    ]
+    /// Each course's own colour, for stripes, dots and solid blocks (white text reads on it).
+    static let colors: [Color] = CourseColors.all.map { Color(rgb: $0.solid) }
 
     static func color(_ index: Int) -> Color {
-        colors[((index % colors.count) + colors.count) % colors.count]
+        Color(rgb: CourseColors.color(index).solid)
+    }
+
+    /// A timetable block's fill and text in `style`; they follow light and dark appearance.
+    static func block(_ index: Int, style: CourseBlockStyle) -> (fill: Color, text: Color) {
+        let color = CourseColors.color(index)
+        let light = color.block(style, dark: false)
+        let dark = color.block(style, dark: true)
+        return (Color(light: light.fill, dark: dark.fill), Color(light: light.text, dark: dark.text))
+    }
+}
+
+extension Color {
+    init(rgb: RGB) {
+        self.init(red: rgb.red, green: rgb.green, blue: rgb.blue)
+    }
+
+    /// A colour that changes with the appearance.
+    init(light: RGB, dark: RGB) {
+        self.init(uiColor: UIColor { traits in
+            let rgb = traits.userInterfaceStyle == .dark ? dark : light
+            return UIColor(red: rgb.red, green: rgb.green, blue: rgb.blue, alpha: 1)
+        })
     }
 }
 

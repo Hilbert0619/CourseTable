@@ -543,5 +543,6 @@ private struct SessionSummaryView: View {
                 .accessibilityIdentifier("finishSession")
             }
         }
+        .paperBackground()
     }
 }

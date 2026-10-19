@@ -73,6 +73,12 @@ private struct SettingsForm: View {
                     Label("Export as CSV", systemImage: "square.and.arrow.up")
                 }
                 .disabled(timetable.courses.isEmpty)
+                NavigationLink {
+                    TimetableAppearanceView()
+                } label: {
+                    Label("Timetable Appearance", systemImage: "paintpalette")
+                }
+                .accessibilityIdentifier("timetableAppearanceLink")
             }
 
             ReminderSection()
@@ -105,6 +111,7 @@ private struct SettingsForm: View {
                 }
             }
         }
+        .paperBackground()
         .sheet(isPresented: $importing) {
             ImportView(timetable: timetable)
         }
@@ -238,6 +245,7 @@ struct PeriodScheduleEditor: View {
                 Button("Reset to Default", role: .destructive) { confirmingReset = true }
             }
         }
+        .paperBackground()
         .navigationTitle("Period Times")
         .onChange(of: schedule) { _, newValue in
             settings.periods = newValue

@@ -62,6 +62,7 @@ struct AssistantView: View {
                             Text("Ask about your studies, English or anything else, using an AI provider you choose with your own key.")
                         }
                     }
+                    .paperBackground()
                 }
             }
             .navigationTitle("Assistant")
@@ -304,9 +305,25 @@ struct AssistantView: View {
                 }
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(.bar)
+        .modifier(InputBarBackground())
+    }
+
+    /// The message bar: on glass on iOS 26 (like the system's own), on the bar material before.
+    private struct InputBarBackground: ViewModifier {
+        func body(content: Content) -> some View {
+            if #available(iOS 26.0, *) {
+                content
+                    .padding(8)
+                    .glassEffect(.regular, in: .rect(cornerRadius: 26))
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 6)
+            } else {
+                content
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .background(.bar)
+            }
+        }
     }
 
     private var attachmentRow: some View {
@@ -625,6 +642,7 @@ private struct ChatHistoryView: View {
                     for id in offsets.map({ ai.conversations[$0].id }) { ai.deleteConversation(id) }
                 }
             }
+            .paperBackground()
             .navigationTitle("Earlier Chats")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

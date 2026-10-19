@@ -56,6 +56,7 @@ struct WordDetailView: View {
                 }
                 ProgressSection(card: model.cards[entry.headword], model: model)
             }
+            .paperBackground()
             .navigationTitle(Text(verbatim: entry.display))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -138,6 +139,7 @@ struct WordSearchView: View {
                 }
             }
         }
+        .paperBackground()
         .overlay {
             if query.isEmpty {
                 ContentUnavailableView("Search Words", systemImage: "magnifyingglass",
@@ -215,6 +217,7 @@ struct WordListView: View {
                 }
             }
         }
+        .paperBackground()
         .overlay {
             if words.isEmpty {
                 switch kind {

@@ -287,6 +287,34 @@
         }
       }
     },
+    "%lld days to the exam" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld day to the exam"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld days to the exam"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距考试 %lld 天"
+          }
+        }
+      }
+    },
     "%lld focus blocks · %@ of focus · ends at %@" : {
       "localizations" : {
         "en" : {
@@ -513,6 +541,34 @@
         }
       }
     },
+    "%lld to-dos left today" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld to-do left today"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld to-dos left today"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天还有 %lld 条待办"
+          }
+        }
+      }
+    },
     "%lld tokens" : {
       "localizations" : {
         "en" : {
@@ -575,6 +631,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$lld 个单词将从 %2$@ 起再次出现，届时再打开「单词」完成它们。"
+          }
+        }
+      }
+    },
+    "%lld-day streak" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld-day streak"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld-day streak"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连续学习 %lld 天"
           }
         }
       }
@@ -1219,6 +1303,16 @@
         }
       }
     },
+    "Background" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景"
+          }
+        }
+      }
+    },
     "Background Sound" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1245,6 +1339,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "第 %lld/%lld 段"
+          }
+        }
+      }
+    },
+    "Block opacity" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程块不透明度"
           }
         }
       }
@@ -1409,6 +1513,16 @@
         }
       }
     },
+    "Choose Another Photo…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "换一张照片…"
+          }
+        }
+      }
+    },
     "Choose File…" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1435,6 +1549,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置新密码"
+          }
+        }
+      }
+    },
+    "Choose a Photo…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择照片…"
           }
         }
       }
@@ -1789,12 +1913,32 @@
         }
       }
     },
+    "Course Blocks" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程块"
+          }
+        }
+      }
+    },
     "Course List" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "课程列表"
+          }
+        }
+      }
+    },
+    "Course blocks" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课程块"
           }
         }
       }
@@ -2067,6 +2211,16 @@
         }
       }
     },
+    "Downloaded again when needed — except the timetable background, which is your choice." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要时会重新下载——课表背景除外，它由你自己选择。"
+          }
+        }
+      }
+    },
     "Downloaded again when needed." : {
       "localizations" : {
         "zh-Hans" : {
@@ -2297,6 +2451,16 @@
         }
       }
     },
+    "Exit Full Screen" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出全屏"
+          }
+        }
+      }
+    },
     "Explain" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2323,6 +2487,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导出为 CSV"
+          }
+        }
+      }
+    },
+    "Fade" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "淡化"
           }
         }
       }
@@ -2423,6 +2597,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "专注一段"
+          }
+        }
+      }
+    },
+    "Focus block · short break · long break, in minutes." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专注时长 · 短休息 · 长休息（分钟）。"
           }
         }
       }
@@ -2571,6 +2755,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从第 %lld 周"
+          }
+        }
+      }
+    },
+    "Full Screen" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全屏"
           }
         }
       }
@@ -3443,6 +3637,36 @@
         }
       }
     },
+    "Next · %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一节 · %@"
+          }
+        }
+      }
+    },
+    "Next · Tomorrow" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一节 · 明天"
+          }
+        }
+      }
+    },
+    "Next · in %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一节 · %@后"
+          }
+        }
+      }
+    },
     "Night" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3683,6 +3907,16 @@
         }
       }
     },
+    "Nothing changes until you tap Confirm" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点“确认”之前不会做任何更改"
+          }
+        }
+      }
+    },
     "Notifications for Course Table are turned off." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3699,6 +3933,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上课中"
+          }
+        }
+      }
+    },
+    "Now · %@ left" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在上课 · 还剩 %@"
           }
         }
       }
@@ -4303,6 +4547,16 @@
         }
       }
     },
+    "Remove Photo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除照片"
+          }
+        }
+      }
+    },
     "Remove from Favourites" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4503,6 +4757,16 @@
         }
       }
     },
+    "Rhythm" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "节奏"
+          }
+        }
+      }
+    },
     "Room" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4629,6 +4893,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "发送"
+          }
+        }
+      }
+    },
+    "Sent straight to your provider, never to our server" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接发给你选择的服务商，不经过我们的服务器"
           }
         }
       }
@@ -4789,6 +5063,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跳过休息"
+          }
+        }
+      }
+    },
+    "Soft" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "柔和"
+          }
+        }
+      }
+    },
+    "Soft: a light tint with dark text, easy to read. Solid: full colour with white text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "柔和：浅色底配深色字，更易阅读。纯色：饱和色底配白色字。"
+          }
+        }
+      }
+    },
+    "Solid" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "纯色"
           }
         }
       }
@@ -5817,6 +6121,26 @@
         }
       }
     },
+    "Timetable Appearance" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课表外观"
+          }
+        }
+      }
+    },
+    "Timetable Background" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "课表背景"
+          }
+        }
+      }
+    },
     "To week %lld" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5843,6 +6167,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日专注时长将从零开始。此操作无法撤销。"
+          }
+        }
+      }
+    },
+    "Today's progress" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日进度"
           }
         }
       }
@@ -6027,6 +6361,16 @@
         }
       }
     },
+    "Use one of your own photos. The Focus wallpapers you've seen also show here." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以用自己的照片；看过的专注壁纸也会出现在这里。"
+          }
+        }
+      }
+    },
     "Use the App's Tools" : {
       "localizations" : {
         "zh-Hans" : {
@@ -6183,6 +6527,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "要做什么"
+          }
+        }
+      }
+    },
+    "What's Sent" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会发送什么"
           }
         }
       }
@@ -6447,12 +6801,32 @@
         }
       }
     },
+    "Your key stays in this iPhone's Keychain" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "密钥只保存在这台 iPhone 的钥匙串中"
+          }
+        }
+      }
+    },
     "Your own meaning" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用你的释义"
+          }
+        }
+      }
+    },
+    "Your own photo, or one of the Focus wallpapers you've seen." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用自己的照片，或选一张看过的专注壁纸。"
           }
         }
       }

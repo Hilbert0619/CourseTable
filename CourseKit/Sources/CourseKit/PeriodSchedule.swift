@@ -42,6 +42,21 @@ public struct PeriodSchedule: Hashable, Codable, Sendable {
         return (first.start, last.end)
     }
 
+    /// Where `time` falls on a timetable grid with one row per period, for the current-time line: 0 is the top of
+    /// period 1 and `count` the bottom of the last. Inside a period it moves through the row in proportion; during a
+    /// break it rests on the line between the two periods. Nil before the first period starts or after the last ends.
+    public func gridPosition(of time: TimeOfDay) -> Double? {
+        guard let first = periods.first, let last = periods.last, time >= first.start, time <= last.end else { return nil }
+        for (index, period) in periods.enumerated() {
+            if time < period.start { return Double(index) }
+            if time <= period.end {
+                let length = Double(max(period.durationMinutes, 1))
+                return Double(index) + Double(time.minutes - period.start.minutes) / length
+            }
+        }
+        return Double(periods.count)
+    }
+
     /// A new period after the last one, keeping its length and a 10-minute break.
     public func appendingPeriod() -> PeriodSchedule {
         guard periods.count < Self.maxPeriods else { return self }

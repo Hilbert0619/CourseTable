@@ -109,6 +109,7 @@ struct VocabSettingsView: View {
                 Text("About")
             }
         }
+        .paperBackground()
         .navigationTitle("Study Settings")
         .disabled(working)
         // Upload changed settings when leaving the screen (not on every tap of the stepper).

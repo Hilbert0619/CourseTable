@@ -93,6 +93,7 @@ struct WordsHomeView: View {
                 SyncStatusRow()
             }
         }
+        .paperBackground()
         .navigationTitle("Words")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -122,35 +123,29 @@ struct WordsHomeView: View {
     }
 
     private func todaySection(_ plan: DailyPlan) -> some View {
-        Section {
+        let streak = VocabStats.streak(model.events, today: model.today)
+        let countdown = model.examCountdown()
+        return Section {
             VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .firstTextBaseline) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("New words")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: "\(plan.newDone)/\(plan.newDone + plan.newRemaining)")
-                            .font(.title2.monospacedDigit().bold())
-                    }
-                    Spacer()
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Reviews left")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: "\(plan.reviewsRemaining)")
-                            .font(.title2.monospacedDigit().bold())
-                    }
-                    Spacer()
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Reviewed")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: "\(plan.reviewsDone)")
-                            .font(.title2.monospacedDigit().bold())
+                HStack(spacing: 18) {
+                    TodayRing(progress: plan.progress, isComplete: plan.isComplete)
+                        .frame(width: 84, height: 84)
+                    VStack(spacing: 6) {
+                        StatLine(label: "New words", value: "\(plan.newDone)/\(plan.newDone + plan.newRemaining)")
+                        StatLine(label: "Reviews left", value: "\(plan.reviewsRemaining)")
+                        StatLine(label: "Reviewed", value: "\(plan.reviewsDone)")
                     }
                 }
-                ProgressView(value: plan.progress)
-                    .tint(plan.isComplete ? .green : .accentColor)
+                if streak.days > 0 || countdown != nil {
+                    HStack(spacing: 8) {
+                        if streak.days > 0 {
+                            Chip(systemImage: "flame.fill", tint: .orange) { Text("\(streak.days)-day streak") }
+                        }
+                        if let countdown {
+                            Chip(systemImage: "calendar", tint: .accentColor) { Text("\(countdown.daysLeft) days to the exam") }
+                        }
+                    }
+                }
                 if let minutes = plan.estimatedMinutes, !plan.isComplete {
                     Text("About \(minutes) min left, going by your pace so far.")
                         .font(.footnote)
@@ -178,6 +173,70 @@ struct WordsHomeView: View {
             .padding(.vertical, 6)
         } header: {
             Text("Today")
+        }
+    }
+
+    /// Today's progress as a ring, with the percentage (a check mark once done).
+    private struct TodayRing: View {
+        let progress: Double
+        let isComplete: Bool
+
+        var body: some View {
+            ZStack {
+                Circle()
+                    .stroke(Color.secondary.opacity(0.15), lineWidth: 10)
+                Circle()
+                    .trim(from: 0, to: max(progress, 0.001))
+                    .stroke(isComplete ? Color.green : Color.accentColor, style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                if isComplete {
+                    Image(systemName: "checkmark")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.green)
+                } else {
+                    Text(verbatim: "\(Int((progress * 100).rounded()))%")
+                        .font(.headline.monospacedDigit())
+                }
+            }
+            .animation(.easeInOut(duration: 0.4), value: progress)
+            .accessibilityElement()
+            .accessibilityLabel(Text("Today's progress"))
+            .accessibilityValue(Text(verbatim: "\(Int((progress * 100).rounded()))%"))
+        }
+    }
+
+    private struct StatLine: View {
+        let label: LocalizedStringKey
+        let value: String
+
+        var body: some View {
+            HStack(alignment: .firstTextBaseline) {
+                Text(label)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Spacer(minLength: 8)
+                Text(verbatim: value)
+                    .font(.headline.monospacedDigit())
+            }
+        }
+    }
+
+    private struct Chip<Content: View>: View {
+        let systemImage: String
+        let tint: Color
+        @ViewBuilder let content: () -> Content
+
+        var body: some View {
+            Label {
+                content()
+            } icon: {
+                Image(systemName: systemImage)
+                    .foregroundStyle(tint)
+            }
+            .font(.footnote.weight(.medium))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(tint.opacity(0.12), in: Capsule())
         }
     }
 

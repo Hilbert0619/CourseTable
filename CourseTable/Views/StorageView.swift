@@ -11,16 +11,17 @@ struct StorageView: View {
     @State private var wallpaperCount = 0
     @State private var wallpaperBytes = 0
     @State private var otherBytes = 0
+    @State private var backgroundBytes = 0
     @State private var confirming = false
     @State private var cleared = false
 
     enum Item: String, CaseIterable, Identifiable {
-        case focusHistory, completedTodos, assistantChats, savedAnswers, aiUsage, wallpapers, otherFiles
+        case focusHistory, completedTodos, assistantChats, savedAnswers, aiUsage, wallpapers, timetableBackground, otherFiles
 
         var id: String { rawValue }
 
         static let records: [Item] = [.focusHistory, .completedTodos, .assistantChats, .savedAnswers, .aiUsage]
-        static let files: [Item] = [.wallpapers, .otherFiles]
+        static let files: [Item] = [.wallpapers, .timetableBackground, .otherFiles]
 
         var title: String {
             switch self {
@@ -30,6 +31,7 @@ struct StorageView: View {
             case .savedAnswers: String(localized: "Saved AI Answers")
             case .aiUsage: String(localized: "AI Usage Counts")
             case .wallpapers: String(localized: "Focus Wallpapers")
+            case .timetableBackground: String(localized: "Timetable Background")
             case .otherFiles: String(localized: "Other Cached Files")
             }
         }
@@ -42,6 +44,7 @@ struct StorageView: View {
             case .savedAnswers: "sparkles"
             case .aiUsage: "chart.bar"
             case .wallpapers: "photo.on.rectangle"
+            case .timetableBackground: "photo"
             case .otherFiles: "doc"
             }
         }
@@ -62,7 +65,7 @@ struct StorageView: View {
             } header: {
                 Text("Downloaded Files")
             } footer: {
-                Text("Downloaded again when needed.")
+                Text("Downloaded again when needed — except the timetable background, which is your choice.")
             }
 
             Section {
@@ -80,6 +83,7 @@ struct StorageView: View {
                 }
             }
         }
+        .paperBackground()
         .navigationTitle("Storage")
         .toolbar {
             let clearable = Set(Item.allCases.filter { !isEmpty($0) })
@@ -136,6 +140,7 @@ struct StorageView: View {
         case .savedAnswers: ai.savedAnswerCount
         case .aiUsage: ai.countedRequests
         case .wallpapers: wallpaperBytes
+        case .timetableBackground: backgroundBytes
         case .otherFiles: otherBytes
         }
     }
@@ -151,6 +156,7 @@ struct StorageView: View {
         case .savedAnswers: String(localized: "\(n) answers")
         case .aiUsage: String(localized: "\(n) requests counted")
         case .wallpapers: String(localized: "\(wallpaperCount) photos · \(Self.size(wallpaperBytes))")
+        case .timetableBackground: Self.size(backgroundBytes)
         case .otherFiles: Self.size(otherBytes)
         }
     }
@@ -164,6 +170,7 @@ struct StorageView: View {
         wallpaperCount = usage.count
         wallpaperBytes = usage.bytes
         otherBytes = URLCache.shared.currentDiskUsage + FolderUsage.bytes(in: .temporaryDirectory)
+        backgroundBytes = TimetableBackground.shared.bytes
     }
 
     private func clear() {
@@ -175,6 +182,7 @@ struct StorageView: View {
             case .savedAnswers: ai.clearAnswers()
             case .aiUsage: ai.clearUsage()
             case .wallpapers: WallpaperStore.shared.clearCache()
+            case .timetableBackground: TimetableBackground.shared.clear()
             case .otherFiles:
                 URLCache.shared.removeAllCachedResponses()
                 FolderUsage.removeContents(of: .temporaryDirectory)

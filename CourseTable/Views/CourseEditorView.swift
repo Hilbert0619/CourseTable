@@ -108,6 +108,7 @@ struct CourseEditorView: View {
                     }
                 }
             }
+            .paperBackground()
             .navigationTitle(isNew ? Text("New Course") : Text("Edit Course"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -134,6 +134,7 @@ struct SignInView: View {
                 }
             }
         }
+        .paperBackground()
         .navigationTitle("Words")
         .onChange(of: mode) {
             error = nil
@@ -199,6 +200,7 @@ struct NewPasswordView: View {
                     }
                 }
             }
+            .paperBackground()
             .navigationTitle("Choose a New Password")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

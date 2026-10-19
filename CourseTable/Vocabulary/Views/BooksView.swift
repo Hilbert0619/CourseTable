@@ -50,6 +50,7 @@ struct BooksView: View {
                 Text("Paste or open a list with one word per line, or a CSV file with a word column. Meanings are filled in from the dictionary.")
             }
         }
+        .paperBackground()
         .navigationTitle("Books")
         .sheet(isPresented: $importing) {
             WordListImportView()
@@ -144,6 +145,7 @@ struct WordListImportView: View {
                     previewSection(preview)
                 }
             }
+            .paperBackground()
             .navigationTitle("Import a Word List")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

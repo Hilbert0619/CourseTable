@@ -1,0 +1,22 @@
+{
+  "about": "The ten course colours (docs/design-0.7.md) in colorIndex order, sRGB 0-1: solid (with white text; also the stripe colour), soft fill and text (light appearance), dark fill and text. Both platforms use these values (within 0.0005) and must meet the minimum WCAG 2 contrast ratios. `contrastCases`: known pairs and their ratio (within 0.01).",
+  "minimumContrast": {"solidWithWhite": 3.5, "soft": 7.0, "dark": 7.0},
+  "colors": [
+    {"name": "coral", "solid": [0.890, 0.350, 0.330], "softFill": [1.000, 0.867, 0.853], "softText": [0.499, 0.126, 0.126], "darkFill": [0.317, 0.136, 0.125], "darkText": [0.997, 0.786, 0.764]},
+    {"name": "orange", "solid": [0.819, 0.434, 0.005], "softFill": [0.996, 0.877, 0.794], "softText": [0.431, 0.215, 0.000], "darkFill": [0.302, 0.157, 0.030], "darkText": [0.989, 0.802, 0.671]},
+    {"name": "mustard", "solid": [0.675, 0.511, 0.002], "softFill": [0.973, 0.895, 0.726], "softText": [0.357, 0.266, 0.005], "darkFill": [0.257, 0.187, 0.000], "darkText": [0.926, 0.835, 0.640]},
+    {"name": "green", "solid": [0.240, 0.603, 0.325], "softFill": [0.799, 0.949, 0.818], "softText": [0.005, 0.343, 0.129], "darkFill": [0.084, 0.236, 0.118], "darkText": [0.727, 0.897, 0.749]},
+    {"name": "teal", "solid": [0.108, 0.588, 0.568], "softFill": [0.773, 0.943, 0.929], "softText": [0.015, 0.326, 0.314], "darkFill": [0.039, 0.231, 0.222], "darkText": [0.700, 0.889, 0.874]},
+    {"name": "blue", "solid": [0.220, 0.520, 0.860], "softFill": [0.808, 0.922, 0.996], "softText": [0.000, 0.277, 0.541], "darkFill": [0.089, 0.203, 0.335], "darkText": [0.744, 0.856, 0.995]},
+    {"name": "indigo", "solid": [0.380, 0.400, 0.840], "softFill": [0.868, 0.901, 0.995], "softText": [0.225, 0.234, 0.547], "darkFill": [0.167, 0.182, 0.337], "darkText": [0.806, 0.834, 0.997]},
+    {"name": "purple", "solid": [0.600, 0.380, 0.830], "softFill": [0.927, 0.877, 0.999], "softText": [0.344, 0.189, 0.498], "darkFill": [0.231, 0.160, 0.312], "darkText": [0.884, 0.803, 0.995]},
+    {"name": "pink", "solid": [0.846, 0.348, 0.588], "softFill": [0.996, 0.860, 0.912], "softText": [0.472, 0.126, 0.305], "darkFill": [0.303, 0.134, 0.211], "darkText": [0.994, 0.773, 0.861]},
+    {"name": "slate", "solid": [0.470, 0.520, 0.580], "softFill": [0.881, 0.905, 0.935], "softText": [0.245, 0.285, 0.334], "darkFill": [0.180, 0.201, 0.227], "darkText": [0.821, 0.848, 0.881]}
+  ],
+  "contrastCases": [
+    {"a": [1, 1, 1], "b": [0, 0, 0], "ratio": 21.0},
+    {"a": [1, 1, 1], "b": [1, 1, 1], "ratio": 1.0},
+    {"a": [1, 1, 1], "b": [0.345, 0.420, 0.918], "ratio": 4.46},
+    {"a": [1, 1, 1], "b": [0.760, 0.580, 0.050], "ratio": 2.79}
+  ]
+}

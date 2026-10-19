@@ -131,6 +131,7 @@ struct TodoEditorView: View {
                     }
                 }
             }
+            .paperBackground()
             .navigationTitle(isNew ? Text("New To-Do") : Text("Edit To-Do"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

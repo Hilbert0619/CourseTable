@@ -2,6 +2,23 @@ import SwiftUI
 import UIKit
 import AIKit
 
+/// AI Help → Privacy → What's Sent: the full account of what goes where.
+private struct AIPrivacyDetails: View {
+    var body: some View {
+        List {
+            Text("Your questions go straight from this iPhone to the provider you chose, under their terms, and are paid from your account with them. CourseTable's server never sees them. Keys stay in this iPhone's Keychain.")
+            Text("Each feature sends only what it needs: a word and its dictionary entry, a sentence you paste, or a to-do note with your course names.")
+            Text("With tools, the Assistant also looks at your to-dos, classes, focus sessions and vocabulary numbers while you chat, and sends what it looks at. It changes nothing until you tap Confirm.")
+            Text("A timetable photo goes to the provider only when you choose one. For a model that can't read photos, this iPhone reads the text and sends only the text.")
+            Text("AI answers can be wrong. The dictionary still decides what counts as a correct answer.")
+        }
+        .font(.subheadline)
+        .paperBackground()
+        .navigationTitle("Privacy")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
 /// Settings → AI: the user's connections (provider, key, model), which one AI help uses, this month's usage,
 /// and what is sent where.
 struct AISettingsView: View {
@@ -62,16 +79,19 @@ struct AISettingsView: View {
             }
 
             Section {
-                Text("Your questions go straight from this iPhone to the provider you chose, under their terms, and are paid from your account with them. CourseTable's server never sees them. Keys stay in this iPhone's Keychain.")
-                Text("Each feature sends only what it needs: a word and its dictionary entry, a sentence you paste, or a to-do note with your course names.")
-                Text("With tools, the Assistant also looks at your to-dos, classes, focus sessions and vocabulary numbers while you chat, and sends what it looks at. It changes nothing until you tap Confirm.")
-                Text("A timetable photo goes to the provider only when you choose one. For a model that can't read photos, this iPhone reads the text and sends only the text.")
-                Text("AI answers can be wrong. The dictionary still decides what counts as a correct answer.")
+                Label("Sent straight to your provider, never to our server", systemImage: "arrow.up.forward.app")
+                Label("Your key stays in this iPhone's Keychain", systemImage: "key")
+                Label("Nothing changes until you tap Confirm", systemImage: "hand.tap")
+                NavigationLink {
+                    AIPrivacyDetails()
+                } label: {
+                    Text("What's Sent")
+                }
+                .accessibilityIdentifier("aiPrivacyDetails")
             } header: {
                 Text("Privacy")
             }
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+            .font(.subheadline)
 
             if ai.savedAnswerCount > 0 || !ai.conversations.isEmpty {
                 Section {
@@ -81,6 +101,7 @@ struct AISettingsView: View {
                 }
             }
         }
+        .paperBackground()
         .navigationTitle("AI Help")
         .sheet(item: $editing) { target in
             switch target {
@@ -350,6 +371,7 @@ struct AIConnectionEditor: View {
                     }
                 }
             }
+            .paperBackground()
             .navigationTitle(connection == nil ? Text("New Connection") : Text(verbatim: connection?.name ?? ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

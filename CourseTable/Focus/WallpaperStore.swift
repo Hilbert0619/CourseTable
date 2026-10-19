@@ -280,6 +280,23 @@ final class WallpaperStore {
         }
     }
 
+    /// The downloaded wallpapers that are in the list (the drawn demo one in UI tests), for Timetable Appearance.
+    func downloadedWallpapers() -> [FocusWallpaper] {
+        if UITestLaunch.isActive { return [DemoWallpaper.wallpaper] }
+        let ids = downloadedIDs()
+        return catalog.filter { ids.contains($0.id) }
+    }
+
+    /// A downloaded wallpaper's picture, at full size or as a thumbnail no bigger than `fitting`.
+    func picture(of wallpaper: FocusWallpaper, fitting size: CGSize? = nil) async -> UIImage? {
+        let image = UITestLaunch.isActive ? DemoWallpaper.image : UIImage(contentsOfFile: file(for: wallpaper).path)
+        guard let image else { return nil }
+        if let size {
+            return await image.byPreparingThumbnail(ofSize: size)
+        }
+        return image
+    }
+
     /// The kept pictures, for Settings → Storage.
     func cacheUsage() -> (count: Int, bytes: Int) {
         let kept = pictures()

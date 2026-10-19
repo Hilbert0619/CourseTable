@@ -19,6 +19,12 @@ struct CourseTableApp: App {
         } catch {
             fatalError("Could not open the course database: \(error)")
         }
+        if UITestLaunch.isActive {
+            // @AppStorage values survive between UI-test launches: every test starts from the defaults.
+            for key in [TimetableAppearance.blockStyleKey, TimetableBackground.fadeKey, TimetableBackground.blockOpacityKey] {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+        }
         let planner = PlannerModel.makeForLaunch()
         if UITestLaunch.isActive && UITestLaunch.wantsDemoData {
             Persistence.insertDemoData(into: container.mainContext)

@@ -53,6 +53,39 @@ final class LookUITests: XCTestCase {
             // Once the demo wallpaper is in.
             Thread.sleep(forTimeInterval: 3)
             snapshot(app, variant, "6-focus-running")
+            if app.buttons["fullScreenFocus"].exists {
+                app.buttons["fullScreenFocus"].tap()
+                XCTAssertTrue(app.buttons["exitFullScreenFocus"].waitForExistence(timeout: 5))
+                snapshot(app, variant, "7-focus-full-screen")
+                app.buttons["exitFullScreenFocus"].tap()
+                XCTAssertTrue(app.buttons["pauseFocus"].waitForExistence(timeout: 5))
+            }
+            app.terminate()
+        }
+    }
+
+    /// Settings → Timetable Appearance with a photo behind the timetable (the drawn demo picture), in both block
+    /// styles, light and dark.
+    @MainActor
+    func testTimetableAppearance() throws {
+        for variant in [Self.variants[0], Self.variants[1]] {
+            let app = launch(variant, extra: ["-timetableBackgroundDemo", "YES"])
+            app.tabBars.buttons.element(boundBy: 1).tap()
+            XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "courseBlock").firstMatch.waitForExistence(timeout: 10))
+            snapshot(app, variant, "8-timetable-photo")
+
+            app.tabBars.buttons.element(boundBy: 4).tap()
+            let link = app.buttons["timetableAppearanceLink"]
+            for _ in 0..<4 where !(link.exists && link.isHittable) { app.swipeUp() }
+            link.tap()
+            let picker = app.segmentedControls["blockStylePicker"]
+            XCTAssertTrue(picker.waitForExistence(timeout: 5))
+            snapshot(app, variant, "9-appearance-soft")
+            picker.buttons.element(boundBy: 1).tap()
+            snapshot(app, variant, "9-appearance-solid")
+
+            app.tabBars.buttons.element(boundBy: 1).tap()
+            snapshot(app, variant, "8-timetable-photo-solid")
             app.terminate()
         }
     }

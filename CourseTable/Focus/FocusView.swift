@@ -30,10 +30,16 @@ private struct FocusSetupView: View {
     let planner: PlannerModel
 
     private static let lengths = Array(stride(from: FocusSettings.totalRange.lowerBound, through: FocusSettings.totalRange.upperBound, by: 5))
+    /// The quick lengths on the plan card, in minutes.
+    private static let presets = [25, 50, 90, 120]
 
     var body: some View {
         let plan = engine.plan
         Form {
+            Section {
+                FocusPlanCard(plan: plan, totalMinutes: $engine.settings.totalMinutes, presets: Self.presets)
+            }
+
             Section {
                 TextField("Goal, e.g. Calculus review", text: $engine.goal)
                     .accessibilityIdentifier("focusGoal")
@@ -47,23 +53,31 @@ private struct FocusSetupView: View {
             Section {
                 Toggle("Breaks (Pomodoro)", isOn: $engine.settings.usesBreaks)
                 if engine.settings.usesBreaks {
-                    Stepper(value: $engine.settings.focusMinutes, in: FocusSettings.focusRange, step: 5) {
-                        LabeledContent("Focus block", value: focusDuration(engine.settings.focusMinutes * 60))
+                    // The rhythm rarely changes: folded away, its values in the row.
+                    DisclosureGroup {
+                        Stepper(value: $engine.settings.focusMinutes, in: FocusSettings.focusRange, step: 5) {
+                            LabeledContent("Focus block", value: focusDuration(engine.settings.focusMinutes * 60))
+                        }
+                        Stepper(value: $engine.settings.shortBreakMinutes, in: FocusSettings.shortBreakRange) {
+                            LabeledContent("Short break", value: focusDuration(engine.settings.shortBreakMinutes * 60))
+                        }
+                        Stepper(value: $engine.settings.longBreakMinutes, in: FocusSettings.longBreakRange, step: 5) {
+                            LabeledContent("Long break", value: focusDuration(engine.settings.longBreakMinutes * 60))
+                        }
+                        Stepper(value: $engine.settings.blocksBeforeLongBreak, in: 2...8) {
+                            Text("Long break after every \(engine.settings.blocksBeforeLongBreak) blocks")
+                        }
+                    } label: {
+                        LabeledContent("Rhythm") {
+                            Text(verbatim: "\(engine.settings.focusMinutes) · \(engine.settings.shortBreakMinutes) · \(engine.settings.longBreakMinutes)")
+                                .monospacedDigit()
+                        }
                     }
-                    Stepper(value: $engine.settings.shortBreakMinutes, in: FocusSettings.shortBreakRange) {
-                        LabeledContent("Short break", value: focusDuration(engine.settings.shortBreakMinutes * 60))
-                    }
-                    Stepper(value: $engine.settings.longBreakMinutes, in: FocusSettings.longBreakRange, step: 5) {
-                        LabeledContent("Long break", value: focusDuration(engine.settings.longBreakMinutes * 60))
-                    }
-                    Stepper(value: $engine.settings.blocksBeforeLongBreak, in: 2...8) {
-                        Text("Long break after every \(engine.settings.blocksBeforeLongBreak) blocks")
-                    }
+                    .accessibilityIdentifier("focusRhythm")
                 }
             } footer: {
-                TimelineView(.everyMinute) { context in
-                    let end = context.date.addingTimeInterval(TimeInterval(plan.totalSeconds))
-                    Text("\(plan.blockCount) focus blocks · \(focusDuration(plan.focusSeconds)) of focus · ends at \(end.formatted(date: .omitted, time: .shortened))")
+                if engine.settings.usesBreaks {
+                    Text("Focus block · short break · long break, in minutes.")
                 }
             }
 
@@ -73,7 +87,8 @@ private struct FocusSetupView: View {
 
             FocusHistorySection(engine: engine, planner: planner)
         }
-        // Always in reach, above the tab bar.
+        .paperBackground()
+        // Always in reach, above the tab bar; the list fades out under it.
         .safeAreaInset(edge: .bottom) {
             Button {
                 engine.start()
@@ -85,12 +100,98 @@ private struct FocusSetupView: View {
             }
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 20)
+            .padding(.top, 14)
             .padding(.bottom, 8)
+            .background {
+                LinearGradient(stops: [.init(color: Theme.paper.opacity(0), location: 0), .init(color: Theme.paper, location: 0.4)],
+                               startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea(edges: .bottom)
+                    .allowsHitTesting(false)
+            }
             .accessibilityIdentifier("startFocus")
         }
         .onDisappear { engine.stopPreview() }
         // Downloads the next session's wallpaper while you set it up, so it can show at once.
         .task { WallpaperStore.shared.prefetch() }
+    }
+}
+
+/// The session at a glance: a ring with each focus block and break to scale, the length, when it ends, and quick
+/// lengths to pick.
+private struct FocusPlanCard: View {
+    let plan: FocusPlan
+    @Binding var totalMinutes: Int
+    let presets: [Int]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 18) {
+                PlanRing(plan: plan)
+                    .frame(width: 84, height: 84)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(verbatim: focusDuration(plan.totalSeconds))
+                        .font(.title.weight(.bold))
+                        .monospacedDigit()
+                    TimelineView(.everyMinute) { context in
+                        let end = context.date.addingTimeInterval(TimeInterval(plan.totalSeconds))
+                        Text("\(plan.blockCount) focus blocks · \(focusDuration(plan.focusSeconds)) of focus · ends at \(end.formatted(date: .omitted, time: .shortened))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .accessibilityElement(children: .combine)
+            HStack(spacing: 8) {
+                ForEach(presets, id: \.self) { minutes in
+                    let selected = totalMinutes == minutes
+                    Button {
+                        totalMinutes = minutes
+                    } label: {
+                        Text(verbatim: focusDuration(minutes * 60))
+                            .font(.subheadline.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .foregroundStyle(selected ? Color.white : Color.primary)
+                            .background(selected ? Color.accentColor : Color.secondary.opacity(0.12), in: Capsule())
+                    }
+                    .buttonStyle(.borderless)
+                    .accessibilityAddTraits(selected ? .isSelected : [])
+                    .accessibilityIdentifier("focusPreset-\(minutes)")
+                }
+            }
+        }
+        .padding(.vertical, 6)
+        .sensoryFeedback(.selection, trigger: totalMinutes)
+    }
+}
+
+/// The plan as a ring: focus blocks in the accent colour, breaks in green, each to scale.
+private struct PlanRing: View {
+    let plan: FocusPlan
+
+    var body: some View {
+        let total = Double(max(plan.totalSeconds, 1))
+        let gap = plan.phases.count > 1 ? 0.012 : 0
+        ZStack {
+            Circle()
+                .stroke(Color.secondary.opacity(0.15), lineWidth: 10)
+            ForEach(Array(zip(plan.phases.indices, plan.offsets)), id: \.0) { index, offset in
+                let phase = plan.phases[index]
+                let start = Double(offset) / total
+                let end = Double(offset + phase.seconds) / total
+                Circle()
+                    .trim(from: start, to: max(end - gap, start + 0.002))
+                    .stroke(phase.isBreak ? Color.green : Color.accentColor, style: StrokeStyle(lineWidth: 10, lineCap: .butt))
+                    .rotationEffect(.degrees(-90))
+            }
+            Image(systemName: "timer")
+                .font(.title2)
+                .foregroundStyle(.secondary)
+        }
+        .animation(.easeInOut(duration: 0.35), value: plan)
+        .accessibilityHidden(true)
     }
 }
 
@@ -234,6 +335,7 @@ private struct FocusHistoryView: View {
                 }
             }
         }
+        .paperBackground()
         .overlay {
             if sessions.isEmpty {
                 ContentUnavailableView("No Focus Sessions", systemImage: "timer",
@@ -257,16 +359,9 @@ private struct RunningFocusView: View {
     @Bindable var engine: FocusEngine
     let run: FocusRun
     @State private var confirmingStop = false
+    @State private var fullScreen = false
     @Environment(\.colorScheme) private var colorScheme
     private var wallpapers: WallpaperStore { WallpaperStore.shared }
-
-    /// About the system's grouped-row corners (larger since iOS 26), so the card matches the rows below it.
-    private static var cardRadius: CGFloat {
-        if #available(iOS 26, *) {
-            return 26
-        }
-        return 10
-    }
 
     var body: some View {
         Form {
@@ -321,13 +416,15 @@ private struct RunningFocusView: View {
                     .shadow(color: .black.opacity(onPhoto ? 0.35 : 0), radius: 5, y: 1)
                     // Light text and controls on the photo, whatever the system appearance.
                     .environment(\.colorScheme, onPhoto ? .dark : colorScheme)
+                    // A tap at each switch between focus and break, while the app is open.
+                    .sensoryFeedback(.impact(weight: .medium), trigger: status.phase)
                 }
                 // The card draws its own background (with the row's usual insets): a List row background isn't
                 // redrawn when the photo arrives, so the photo only showed after the row was rebuilt.
                 .padding(.horizontal, 20)
                 .padding(.vertical, 11)
                 .background { CountdownCardBackground() }
-                .clipShape(RoundedRectangle(cornerRadius: Self.cardRadius, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
             }
@@ -359,12 +456,25 @@ private struct RunningFocusView: View {
                     .buttonStyle(.bordered)
                     .tint(.red)
                     .accessibilityIdentifier("stopFocus")
+                    Button {
+                        fullScreen = true
+                    } label: {
+                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                            .padding(.vertical, 4)
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityLabel(Text("Full Screen"))
+                    .accessibilityIdentifier("fullScreenFocus")
                 }
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
             }
 
             SoundSection(engine: engine)
+        }
+        .paperBackground()
+        .fullScreenCover(isPresented: $fullScreen) {
+            FullScreenFocusView(engine: engine)
         }
         .confirmationDialog("Stop this focus session?", isPresented: $confirmingStop, titleVisibility: .visible) {
             Button("Stop Session", role: .destructive) { engine.stop() }
@@ -375,27 +485,125 @@ private struct RunningFocusView: View {
         .onAppear { wallpapers.restore() }
     }
 
-    private func phaseTitle(_ phase: FocusPhase) -> String {
+    private func phaseTitle(_ phase: FocusPhase) -> String { run.phaseTitle(phase) }
+    private func summary(_ status: FocusStatus, now: Date) -> String { run.summary(status, now: now) }
+    private func clock(_ seconds: TimeInterval) -> String { focusClock(seconds) }
+}
+
+private extension FocusRun {
+    func phaseTitle(_ phase: FocusPhase) -> String {
         switch phase.kind {
         case .focus:
-            run.plan.blockCount > 1 ? String(localized: "Focus · Block \(phase.block) of \(run.plan.blockCount)") : String(localized: "Focus")
+            plan.blockCount > 1 ? String(localized: "Focus · Block \(phase.block) of \(plan.blockCount)") : String(localized: "Focus")
         case .shortBreak: String(localized: "Short break")
         case .longBreak: String(localized: "Long break")
         }
     }
 
     /// "1 hr, 50 min focused · ends at 21:30"
-    private func summary(_ status: FocusStatus, now: Date) -> String {
+    func summary(_ status: FocusStatus, now: Date) -> String {
         let focused = String(localized: "\(focusDuration(Int(status.focused))) focused")
-        guard let end = run.endDate(at: now) else { return focused }
+        guard let end = endDate(at: now) else { return focused }
         return "\(focused) · \(String(localized: "ends at \(end.formatted(date: .omitted, time: .shortened))"))"
     }
+}
 
-    /// "24:59" or "1:05:00"
-    private func clock(_ seconds: TimeInterval) -> String {
-        let total = Int(seconds.rounded(.up))
-        let (hours, minutes, rest) = (total / 3600, total / 60 % 60, total % 60)
-        return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, rest) : String(format: "%d:%02d", minutes, rest)
+/// "24:59" or "1:05:00"
+private func focusClock(_ seconds: TimeInterval) -> String {
+    let total = Int(seconds.rounded(.up))
+    let (hours, minutes, rest) = (total / 3600, total / 60 % 60, total % 60)
+    return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, rest) : String(format: "%d:%02d", minutes, rest)
+}
+
+/// Full screen while focusing: the photo edge to edge (or a deep ink gradient), the countdown large, Pause and a way
+/// back. The screen stays on; it closes by itself when the session ends.
+private struct FullScreenFocusView: View {
+    @Bindable var engine: FocusEngine
+    @Environment(\.dismiss) private var dismiss
+    private var wallpapers: WallpaperStore { WallpaperStore.shared }
+
+    var body: some View {
+        ZStack {
+            Group {
+                if let shown = wallpapers.shown {
+                    WallpaperBackground(shown: shown)
+                } else {
+                    LinearGradient(colors: [Color(red: 0.13, green: 0.15, blue: 0.20), Color(red: 0.05, green: 0.06, blue: 0.08)],
+                                   startPoint: .top, endPoint: .bottom)
+                }
+            }
+            .ignoresSafeArea()
+
+            if let run = engine.run {
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    let status = run.status(at: context.date)
+                    VStack(spacing: 12) {
+                        HStack {
+                            Spacer()
+                            Button {
+                                dismiss()
+                            } label: {
+                                Image(systemName: "arrow.down.right.and.arrow.up.left")
+                                    .font(.title3)
+                                    .padding(10)
+                            }
+                            .accessibilityLabel(Text("Exit Full Screen"))
+                            .accessibilityIdentifier("exitFullScreenFocus")
+                        }
+                        Spacer()
+                        Text(verbatim: run.phaseTitle(status.phase))
+                            .font(.title3.weight(.semibold))
+                        Text(verbatim: focusClock(status.phaseRemaining))
+                            .font(.system(size: 92, weight: .semibold, design: .rounded).monospacedDigit())
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                        if status.isPaused {
+                            Text("Paused")
+                                .font(.headline)
+                                .opacity(0.85)
+                        }
+                        if !run.goal.isEmpty {
+                            Text(verbatim: run.goal)
+                                .font(.title3)
+                        }
+                        Text(verbatim: run.summary(status, now: context.date))
+                            .font(.subheadline)
+                            .opacity(0.85)
+                            .multilineTextAlignment(.center)
+                        Spacer()
+                        Button {
+                            engine.togglePause()
+                        } label: {
+                            Label {
+                                run.isPaused ? Text("Resume") : Text("Pause")
+                            } icon: {
+                                Image(systemName: run.isPaused ? "play.fill" : "pause.fill")
+                            }
+                            .font(.headline)
+                                .padding(.horizontal, 28)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.white)
+                        if let shown = wallpapers.shown {
+                            WallpaperCredit(shown: shown, isLoading: wallpapers.isLoading) { wallpapers.showAnother() }
+                        }
+                    }
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 12)
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.4), radius: 6, y: 1)
+                }
+            }
+        }
+        .environment(\.colorScheme, .dark)
+        .statusBarHidden()
+        .persistentSystemOverlays(.hidden)
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+        .onChange(of: engine.run == nil) { _, ended in
+            if ended { dismiss() }
+        }
     }
 }
 

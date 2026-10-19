@@ -71,6 +71,7 @@ struct SentenceAnalysisView: View {
                 }
             }
         }
+        .paperBackground()
         .navigationTitle("Long Sentences")
         .onDisappear { run.cancel() }
     }
@@ -143,6 +144,7 @@ struct EssayFeedbackView: View {
                 }
             }
         }
+        .paperBackground()
         .navigationTitle("Writing Feedback")
         .onDisappear { run.cancel() }
     }

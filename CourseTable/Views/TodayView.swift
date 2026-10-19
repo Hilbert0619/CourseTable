@@ -64,6 +64,15 @@ private struct TodayContent: View {
         List {
             Section {
                 DayHeader(day: day, isToday: isToday, status: timetable.semester.status(on: day).summary, pickDay: pickDay, today: now.day)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+            }
+
+            if isToday && !timetable.courses.isEmpty {
+                Section {
+                    NowNextCard(now: now, current: nowAndNext.current, next: nowAndNext.next,
+                                openTodos: todos.filter { $0.day == now.day && !$0.isDone }.count)
+                }
             }
 
             if !agenda.anytime.isEmpty {
@@ -110,12 +119,8 @@ private struct TodayContent: View {
                 }
             }
 
-            if isToday, let next = nowAndNext.next, next.day != now.day {
-                Section("Next class") {
-                    SessionRow(session: next, status: .upcoming, isNext: false, showsDay: true)
-                }
-            }
         }
+        .paperBackground()
     }
 
     /// Classes of another day are all past or all ahead.
@@ -181,8 +186,10 @@ private struct TodoRow: View {
                 Image(systemName: todo.todo.isDone ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
                     .foregroundStyle(todo.todo.isDone ? Color.accentColor : Color.secondary)
+                    .symbolEffect(.bounce, value: todo.todo.isDone)
             }
             .buttonStyle(.borderless)
+            .sensoryFeedback(trigger: todo.todo.isDone) { _, isDone in isDone ? .success : nil }
             .accessibilityLabel(todo.todo.isDone ? Text("Mark as Not Done") : Text("Mark as Done"))
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: todo.todo.title)
@@ -275,6 +282,89 @@ struct SessionRow: View {
         }
         .padding(.vertical, 2)
         .opacity(status == .finished ? 0.45 : 1)
+    }
+}
+
+/// Today's first card: the class in progress (time left, progress) or the next one (when, where), tinted in that
+/// course's soft colour, and the to-dos still open today. It draws its own background, since a List row background
+/// isn't redrawn when the class changes.
+private struct NowNextCard: View {
+    let now: Moment
+    let current: ClassSession?
+    let next: ClassSession?
+    let openTodos: Int
+
+    var body: some View {
+        let session = current ?? next
+        let tint = session.map { CoursePalette.block($0.course.colorIndex, style: .soft) }
+        let ink = tint?.text ?? Color.primary
+        VStack(alignment: .leading, spacing: 6) {
+            if let session {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(session.course.color)
+                        .frame(width: 8, height: 8)
+                    Text(verbatim: headline(for: session))
+                        .font(.caption.weight(.bold))
+                        .textCase(.uppercase)
+                }
+                Text(verbatim: session.course.name)
+                    .font(.title2.weight(.bold))
+                    .lineLimit(2)
+                Text(verbatim: ([session.timeRange] + (session.details.isEmpty ? [] : [session.details])).joined(separator: " · "))
+                    .font(.subheadline)
+                    .opacity(0.85)
+                if current != nil {
+                    ProgressView(value: progress(of: session))
+                        .tint(session.course.color)
+                        .padding(.top, 4)
+                }
+            } else {
+                Label("No more classes today", systemImage: "moon.stars")
+                    .font(.headline)
+            }
+            if openTodos > 0 {
+                Label {
+                    Text("\(openTodos) to-dos left today")
+                } icon: {
+                    Image(systemName: "checklist")
+                }
+                .font(.footnote.weight(.medium))
+                .opacity(0.85)
+                .padding(.top, 2)
+            }
+        }
+        .foregroundStyle(ink)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(tint?.fill ?? Theme.card)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("nowNextCard")
+    }
+
+    /// "Now · 25 min left", "Next · in 1 hr, 5 min", "Next · Tomorrow", "Next · Monday".
+    private func headline(for session: ClassSession) -> String {
+        if session == current {
+            let left = max(session.end.minutes - now.time.minutes, 0)
+            return String(localized: "Now · \(focusDuration(left * 60)) left")
+        }
+        if session.day == now.day {
+            let until = max(session.start.minutes - now.time.minutes, 0)
+            return String(localized: "Next · in \(focusDuration(until * 60))")
+        }
+        if session.day == now.day.adding(days: 1) {
+            return String(localized: "Next · Tomorrow")
+        }
+        return String(localized: "Next · \(session.course.weekday.fullName)")
+    }
+
+    private func progress(of session: ClassSession) -> Double {
+        let length = Double(max(session.end.minutes - session.start.minutes, 1))
+        return min(max(Double(now.time.minutes - session.start.minutes) / length, 0), 1)
     }
 }
 
