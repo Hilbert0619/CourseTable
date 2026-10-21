@@ -35,6 +35,31 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 - **Settings → Reliable Reminders** checks notifications, exact alarms, battery optimisation and Live Updates, links to
   vivo/iQOO's auto-start page, and sends a test reminder. Notifications themselves are checked on the phone.
 
+## The look, Focus wallpapers and Storage (0.6, `app/…/appearance`, `app/…/focus/WallpaperStore.kt`)
+
+The iOS 0.6–0.7.0 updates (`docs/design-0.7.md` §1–4, `docs/todos-focus-spec.md` §7).
+
+- **Colours**: `ui/theme/Theme.kt` puts the icon's warm paper (#F4F2EE; black in dark mode) behind every screen and the
+  cards (`surfaceContainerLow`) in white / #1C1C1E. Course colours come from the core's `CourseColors`
+  (`CoursePalette`): soft blocks (tint, same-hue text, a stripe) by default, solid as a setting; the solid colour is
+  also each course's stripe, dot, notification and widget colour.
+- **Settings → Timetable Appearance** (`AppearancePreferences`, the iOS keys): block style, and a photo behind the
+  timetable (`TimetableBackground`: from the system photo picker, no permission, or a Focus wallpaper you've seen;
+  downscaled to 2400 px, upright on Android 9+, kept in `files/TimetableBackground.jpg`) with Fade and Block opacity.
+  The screens read it through `LocalAppearance`; screenshots pass a drawn picture.
+- **Focus wallpapers** (`WallpaperStore`): the list is a plain GET of `focus_wallpapers` with the publishable key
+  (no account), kept for 12 h in `cache/Wallpapers/catalog.json`; pictures `<id>.jpg` next to it (40 files / 60 MB,
+  `FocusWallpaperCache`). The store follows the focus sessions (a new one gets a new photo; a relaunch shows the same
+  one) and downloads one picture ahead when the Focus tab opens and after each shown one, unless Data Saver is on and
+  the network is metered (the iOS Low Data Mode). The choice logic is the core's `FocusWallpaperPicker`.
+- **Settings → Storage** (`StorageScreen`): focus history, completed to-dos, Assistant chats, saved AI answers and AI
+  usage counts (records), Focus wallpapers, the timetable background and other cached files (sizes with
+  `FolderUsage`); pick and Clear Selected, with a confirmation. The timetable, unfinished to-dos, Words progress and AI
+  connections are never cleared there.
+- **Launcher icon**: the iOS 0.6 picture (`drawable-*dpi/ic_launcher_foreground.png`) at 66 of the adaptive layer's
+  108 units, so the artwork stays inside the circle mask, with the picture's edge pixels repeated to the layer's edges;
+  `ic_launcher_monochrome.xml` is a drawn glyph (calendar, clock, Z) for themed icons.
+
 ## AI help and the Assistant (`core/…/aikit`, `app/…/ai`, `app/…/ui/ai`)
 
 The same features as iOS 0.4/0.5 (`docs/ai-spec.md`, `docs/ai-agent-spec.md`), bring your own key, nothing through
@@ -109,4 +134,5 @@ Android-only texts are translated in `strings-zh.json`. CI fails if a translatio
 ## Credits
 
 Tab icons: [Material Symbols](https://github.com/google/material-design-icons) (Apache License 2.0). The launcher icon
-is the iOS app's icon redrawn as vectors.
+is the iOS app's icon (the owner's picture). Focus wallpapers: photos from Unsplash under the Unsplash License, each
+credited on the countdown (`content/wallpapers/SOURCES.md`).

@@ -186,6 +186,19 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   Words. Import → From a Photo (AI) with the photo's period times (`TimetablePhotoReader`: a picture model, or ML Kit
   text with positions); Words → Statistics → Analyse My Progress. Screenshots of every AI screen, English and Chinese.
   **APK 0.5.0 (6)** (main run 38829317137, 40 MB); real keys, the Keystore and ML Kit can only be checked on the phone (checklist in `HANDOFF.md`).
+- **0.6.0 (8), 2026-10-22: catching up with iOS 0.6.0–0.7.0** ([`android-port-0.6-0.7.md`](android-port-0.6-0.7.md);
+  the owner chose two APKs: this one, then 0.7.0 with the glass look). `:core`: `CourseColors`,
+  `PeriodSchedule.gridPosition`, `FocusWallpapers`, `FolderUsage`, `SoftWallpaper` + `BackgroundChoice` (the last for
+  0.7.0), tested against `course-colors.json`, `focus-wallpapers.json` and the new shared `backgrounds.json` (434 core
+  tests). The app: warm paper and white cards (`Theme.kt`), soft course blocks with a stripe (Solid as a setting), the
+  class in progress outlined, the red now-line, block text that shrinks long words; Today's Now / Next card; the Focus
+  plan card (ring, 25 / 50 / 90 / 2 hr), the folded Rhythm row, full screen (screen kept on, bars hidden), a haptic at
+  each switch; Focus wallpapers (`WallpaperStore`: the list from `focus_wallpapers` with the publishable key, pictures
+  in the cache folder `Wallpapers`, one downloaded ahead, not with Data Saver on a metered network); swipe to delete a
+  session, All Sessions with Clear History; Settings → Timetable Appearance (Soft / Solid, a background photo from the
+  photo picker or a seen wallpaper, Fade, Block opacity) and Settings → Storage; the Words ring and chips; AI Help's
+  privacy in three lines with What's Sent; a bounce and a haptic when a to-do is ticked off; the iOS 0.6 icon as the
+  adaptive icon (the picture at 66 of 108 units, its edges repeated outward, a drawn themed glyph).
 - **Waiting**: the owner's test of 0.5.0 with a real key, the island check of 0.4.1, then stage 7 (release) — see
   `HANDOFF.md`.
 
