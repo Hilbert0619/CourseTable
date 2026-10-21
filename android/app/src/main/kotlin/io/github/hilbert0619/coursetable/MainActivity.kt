@@ -21,6 +21,11 @@ import io.github.hilbert0619.coursetable.ui.AppViewModel
 import io.github.hilbert0619.coursetable.ui.RootScreen
 import io.github.hilbert0619.coursetable.ui.Tab
 import io.github.hilbert0619.coursetable.ui.ai.LocalAI
+import io.github.hilbert0619.coursetable.ui.components.AppearanceState
+import io.github.hilbert0619.coursetable.ui.components.LocalAppearance
+import io.github.hilbert0619.coursetable.ui.components.LocalAppearanceActions
+import io.github.hilbert0619.coursetable.ui.focus.LocalWallpaperActions
+import io.github.hilbert0619.coursetable.ui.focus.LocalWallpapers
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
 import io.github.hilbert0619.coursetable.ui.words.WordsController
 import io.github.hilbert0619.vocabkit.AuthLink
@@ -53,7 +58,16 @@ class MainActivity : ComponentActivity() {
                 val data by viewModel.data.collectAsStateWithLifecycle()
                 val focus by app.focus.state.collectAsStateWithLifecycle()
                 val reminders by app.alertPreferences.settings.collectAsStateWithLifecycle()
-                CompositionLocalProvider(LocalAI provides app.ai) {
+                val appearance by app.appearance.preferences.settings.collectAsStateWithLifecycle()
+                val photo by app.appearance.background.image.collectAsStateWithLifecycle()
+                val wallpapers by app.wallpapers.state.collectAsStateWithLifecycle()
+                CompositionLocalProvider(
+                    LocalAI provides app.ai,
+                    LocalAppearance provides AppearanceState(appearance, photo),
+                    LocalAppearanceActions provides app.appearance,
+                    LocalWallpapers provides wallpapers,
+                    LocalWallpaperActions provides app.wallpapers,
+                ) {
                     RootScreen(
                         data, viewModel,
                         focus = focus, focusActions = app.focus, reminders = reminders, words = words,

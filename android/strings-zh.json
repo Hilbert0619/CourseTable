@@ -64,5 +64,8 @@
   "more": "更多",
   "account_footer": "退出登录会从这台手机上移除单词数据，但它们仍保存在你的账户中。删除账户会永久删除你的全部答题记录、词表和设置。",
   "delete_account_message": "你的所有答题记录、词表和设置都将从服务器和这台手机上删除，且无法恢复。",
-  "words_credits": "考研词汇来自 skywind3000 的 ECDICT（MIT 许可）。发音使用手机自带的语音。"
+  "words_credits": "考研词汇来自 skywind3000 的 ECDICT（MIT 许可）。发音使用手机自带的语音。",
+  "wallpaper_footer": "每次专注都在倒计时后面换一张新照片。照片来自 Unsplash，每张只下载一次（约 0.5 MB），保存在这台手机上，可在“设置 → 存储空间”中清除。",
+  "clear_selected_message": "将从这台手机上删除：%1$s。此操作无法撤销。",
+  "ai_privacy_short_key": "密钥加密后只保存在这台手机上"
 }

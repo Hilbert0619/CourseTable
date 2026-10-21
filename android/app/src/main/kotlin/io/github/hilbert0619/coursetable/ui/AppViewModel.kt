@@ -31,7 +31,7 @@ data class AppData(
     val timetable: Timetable,
     val templates: List<CourseTemplate>,
     val todos: List<Todo>,
-    /** Ended focus sessions, newest first. */
+    /** Every ended focus session, newest first. */
     val focusSessions: List<FocusSessionRecord> = emptyList(),
 )
 
@@ -47,6 +47,13 @@ interface AppActions {
     fun saveTodo(todo: Todo)
     fun setTodoDone(id: UUID, isDone: Boolean)
     fun deleteTodo(id: UUID)
+
+    /** Settings → Storage. */
+    fun deleteCompletedTodos()
+    fun deleteFocusSessions(ids: Set<UUID>)
+
+    /** Focus → All Sessions → Clear History, and Settings → Storage. */
+    fun deleteAllFocusSessions()
     fun setRemindersEnabled(enabled: Boolean)
     fun setLiveNotificationsEnabled(enabled: Boolean)
     fun setLeadMinutes(minutes: Int)
@@ -69,6 +76,9 @@ interface AppActions {
         override fun saveTodo(todo: Todo) = Unit
         override fun setTodoDone(id: UUID, isDone: Boolean) = Unit
         override fun deleteTodo(id: UUID) = Unit
+        override fun deleteCompletedTodos() = Unit
+        override fun deleteFocusSessions(ids: Set<UUID>) = Unit
+        override fun deleteAllFocusSessions() = Unit
         override fun setRemindersEnabled(enabled: Boolean) = Unit
         override fun setLiveNotificationsEnabled(enabled: Boolean) = Unit
         override fun setLeadMinutes(minutes: Int) = Unit
@@ -102,6 +112,9 @@ class AppViewModel(private val app: StudyHourApp) : ViewModel(), AppActions {
     override fun saveTodo(todo: Todo) = save { saveTodo(todo) }
     override fun setTodoDone(id: UUID, isDone: Boolean) = save { setTodoDone(id, isDone) }
     override fun deleteTodo(id: UUID) = save { deleteTodo(id) }
+    override fun deleteCompletedTodos() = save { deleteCompletedTodos() }
+    override fun deleteFocusSessions(ids: Set<UUID>) = save { deleteFocusSessions(ids) }
+    override fun deleteAllFocusSessions() = save { deleteAllFocusSessions() }
 
     override fun setRemindersEnabled(enabled: Boolean) = changeReminders { it.copy(remindersEnabled = enabled) }
     override fun setLiveNotificationsEnabled(enabled: Boolean) = changeReminders { it.copy(liveEnabled = enabled) }

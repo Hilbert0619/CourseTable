@@ -6,9 +6,12 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
 // Material 3 "fidelity" schemes from the iOS accent colour #586BEA (Assets.xcassets/AccentColor), so the app looks
-// the same on any phone (no dynamic colour).
+// the same on any phone (no dynamic colour). Since 0.6 (iOS 0.7, docs/design-0.7.md §1) the background and surfaces
+// are the icon's warm paper #F4F2EE in light mode and black in dark mode, with cards (`surfaceContainerLow`, the
+// sections) in the system's row colours: white, and #1C1C1E in dark mode. The containers above them are warm greys.
 internal val LightColors = lightColorScheme(
     primary = Color(0xFF3A4DCD),
     onPrimary = Color(0xFFFFFFFF),
@@ -23,9 +26,9 @@ internal val LightColors = lightColorScheme(
     onTertiary = Color(0xFFFFFFFF),
     tertiaryContainer = Color(0xFFB55D00),
     onTertiaryContainer = Color(0xFFFFFBFF),
-    background = Color(0xFFFBF8FF),
+    background = Color(0xFFF4F2EE),
     onBackground = Color(0xFF1A1B23),
-    surface = Color(0xFFFBF8FF),
+    surface = Color(0xFFF4F2EE),
     onSurface = Color(0xFF1A1B23),
     surfaceVariant = Color(0xFFE1E1F3),
     onSurfaceVariant = Color(0xFF454654),
@@ -39,12 +42,12 @@ internal val LightColors = lightColorScheme(
     outline = Color(0xFF757685),
     outlineVariant = Color(0xFFC5C5D6),
     scrim = Color(0xFF000000),
-    surfaceBright = Color(0xFFFBF8FF),
-    surfaceDim = Color(0xFFDAD9E4),
-    surfaceContainer = Color(0xFFEEECF8),
-    surfaceContainerHigh = Color(0xFFE9E7F2),
-    surfaceContainerHighest = Color(0xFFE3E1EC),
-    surfaceContainerLow = Color(0xFFF4F2FD),
+    surfaceBright = Color(0xFFF4F2EE),
+    surfaceDim = Color(0xFFDBD8D3),
+    surfaceContainer = Color(0xFFEDEAE5),
+    surfaceContainerHigh = Color(0xFFE7E4DF),
+    surfaceContainerHighest = Color(0xFFE1DED9),
+    surfaceContainerLow = Color(0xFFFFFFFF),
     surfaceContainerLowest = Color(0xFFFFFFFF),
 )
 
@@ -62,9 +65,9 @@ internal val DarkColors = darkColorScheme(
     onTertiary = Color(0xFF4F2500),
     tertiaryContainer = Color(0xFFD97721),
     onTertiaryContainer = Color(0xFF0F0400),
-    background = Color(0xFF12131A),
+    background = Color(0xFF000000),
     onBackground = Color(0xFFE3E1EC),
-    surface = Color(0xFF12131A),
+    surface = Color(0xFF000000),
     onSurface = Color(0xFFE3E1EC),
     surfaceVariant = Color(0xFF454654),
     onSurfaceVariant = Color(0xFFC5C5D6),
@@ -78,14 +81,22 @@ internal val DarkColors = darkColorScheme(
     outline = Color(0xFF8F8FA0),
     outlineVariant = Color(0xFF454654),
     scrim = Color(0xFF000000),
-    surfaceBright = Color(0xFF383841),
-    surfaceDim = Color(0xFF12131A),
-    surfaceContainer = Color(0xFF1E1F27),
-    surfaceContainerHigh = Color(0xFF292931),
-    surfaceContainerHighest = Color(0xFF34343C),
-    surfaceContainerLow = Color(0xFF1A1B23),
-    surfaceContainerLowest = Color(0xFF0D0E15),
+    surfaceBright = Color(0xFF2C2C2E),
+    surfaceDim = Color(0xFF000000),
+    surfaceContainer = Color(0xFF161618),
+    surfaceContainerHigh = Color(0xFF2C2C2E),
+    surfaceContainerHighest = Color(0xFF3A3A3C),
+    surfaceContainerLow = Color(0xFF1C1C1E),
+    surfaceContainerLowest = Color(0xFF000000),
 )
+
+/** The graphite ink of the icon's Z (`Theme.ink` on iOS), for hero titles. */
+val InkLight = Color(0xFF2B2E33)
+val InkDark = Color(0xFFECECEF)
+
+/** Whether the theme in effect is the dark one (also inside a part drawn dark on a photo). */
+@Composable
+fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
 @Composable
 fun StudyHourTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {

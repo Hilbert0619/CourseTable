@@ -54,12 +54,29 @@ import io.github.hilbert0619.coursetable.ui.timetable.ImportScreen
 import java.io.File
 
 @Composable
-fun SettingsScreen(timetable: Timetable, reminders: ReminderSettings, actions: AppActions, modifier: Modifier = Modifier) {
+fun SettingsScreen(
+    timetable: Timetable,
+    reminders: ReminderSettings,
+    actions: AppActions,
+    modifier: Modifier = Modifier,
+    focusSessionCount: Int = 0,
+    completedTodoCount: Int = 0,
+) {
     var editingPeriods by rememberSaveable { mutableStateOf(false) }
     var showingReliable by rememberSaveable { mutableStateOf(false) }
     var showingAI by rememberSaveable { mutableStateOf(false) }
+    var showingAppearance by rememberSaveable { mutableStateOf(false) }
+    var showingStorage by rememberSaveable { mutableStateOf(false) }
     val ai = LocalAI.current
     when {
+        showingAppearance -> {
+            BackHandler { showingAppearance = false }
+            TimetableAppearanceScreen(onBack = { showingAppearance = false }, modifier = modifier)
+        }
+        showingStorage -> {
+            BackHandler { showingStorage = false }
+            StorageScreen(focusSessionCount, completedTodoCount, actions, onBack = { showingStorage = false }, modifier = modifier)
+        }
         editingPeriods -> {
             BackHandler { editingPeriods = false }
             PeriodScheduleEditor(timetable.periods, actions, onBack = { editingPeriods = false }, modifier = modifier)
@@ -74,7 +91,8 @@ fun SettingsScreen(timetable: Timetable, reminders: ReminderSettings, actions: A
         }
         else -> SettingsList(
             timetable, reminders, actions, onEditPeriods = { editingPeriods = true }, onShowReliable = { showingReliable = true },
-            onShowAI = { showingAI = true }, modifier = modifier,
+            onShowAI = { showingAI = true }, onShowAppearance = { showingAppearance = true }, onShowStorage = { showingStorage = true },
+            modifier = modifier,
         )
     }
 }
@@ -87,6 +105,8 @@ private fun SettingsList(
     onEditPeriods: () -> Unit,
     onShowReliable: () -> Unit,
     onShowAI: () -> Unit,
+    onShowAppearance: () -> Unit,
+    onShowStorage: () -> Unit,
     modifier: Modifier,
 ) {
     val names = rememberNames()
@@ -118,6 +138,8 @@ private fun SettingsList(
                 ActionRow(R.drawable.ic_export, stringResource(R.string.export_csv), enabled = timetable.courses.isNotEmpty()) {
                     shareCsv(context, timetable.courses)
                 }
+                RowDivider()
+                ActionRow(R.drawable.ic_palette, stringResource(R.string.timetable_appearance), onClick = onShowAppearance)
             }
 
             ReminderSection(reminders, actions, onShowReliable)
@@ -127,6 +149,10 @@ private fun SettingsList(
                 Section(footer = stringResource(R.string.ai_settings_footer)) {
                     ValueRow(stringResource(R.string.ai_help), aiState.defaultConnection?.name ?: stringResource(R.string.status_off), onClick = onShowAI)
                 }
+            }
+
+            Section(footer = stringResource(R.string.storage_footer)) {
+                ActionRow(R.drawable.ic_storage, stringResource(R.string.storage), onClick = onShowStorage)
             }
 
             Section(title = stringResource(R.string.about)) {

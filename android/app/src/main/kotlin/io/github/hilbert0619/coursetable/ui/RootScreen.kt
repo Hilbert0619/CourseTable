@@ -112,9 +112,15 @@ fun RootScreen(
             when (tab) {
                 Tab.TODAY -> TodayScreen(data.timetable, data.todos, actions, content)
                 Tab.TIMETABLE -> TimetableScreen(data.timetable, data.templates, actions, content)
-                Tab.FOCUS -> FocusScreen(focus, data.focusSessions, focusActions, content)
+                Tab.FOCUS -> FocusScreen(
+                    focus, data.focusSessions, focusActions, content,
+                    onDeleteSessions = actions::deleteFocusSessions, onClearHistory = actions::deleteAllFocusSessions,
+                )
                 Tab.WORDS -> if (words != null) WordsTab(words, content) else Placeholder(tab, R.string.placeholder_words, content)
-                Tab.SETTINGS -> SettingsScreen(data.timetable, reminders, actions, content)
+                Tab.SETTINGS -> SettingsScreen(
+                    data.timetable, reminders, actions, content,
+                    focusSessionCount = data.focusSessions.size, completedTodoCount = data.todos.count { it.isDone },
+                )
             }
         }
     }

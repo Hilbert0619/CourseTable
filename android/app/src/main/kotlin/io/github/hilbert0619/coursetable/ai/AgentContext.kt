@@ -9,6 +9,7 @@ import io.github.hilbert0619.coursekit.TimeOfDay
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursekit.plusSeconds
+import io.github.hilbert0619.coursetable.data.Repository
 import io.github.hilbert0619.coursetable.focus.FocusActions
 import io.github.hilbert0619.coursetable.focus.FocusState
 import io.github.hilbert0619.coursetable.ui.AppActions
@@ -50,7 +51,7 @@ class AgentContext(
                 isPaused = run.isPaused,
             )
         }
-        val sessions = data.focusSessions.map { FocusSnapshot.Session(it.goal, it.startedAt, it.focusedSeconds, it.finished) }
+        val sessions = data.focusSessions.take(Repository.RECENT_FOCUS_SESSIONS).map { FocusSnapshot.Session(it.goal, it.startedAt, it.focusedSeconds, it.finished) }
         return AgentWorld(
             today = LocalDate.from(now, zone),
             now = TimeOfDay.from(now, zone),

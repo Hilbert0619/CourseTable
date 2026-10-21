@@ -47,9 +47,8 @@ class Repository(
     /** Every to-do, oldest first. */
     val todos: Flow<List<Todo>> = dao.todos().map { list -> list.map { it.toTodo() } }
 
-    /** Ended focus sessions, newest first (the latest [RECENT_FOCUS_SESSIONS]). */
-    val focusSessions: Flow<List<FocusSessionRecord>> =
-        dao.focusSessions(RECENT_FOCUS_SESSIONS).map { list -> list.map { it.toRecord() } }
+    /** Every ended focus session, newest first (Focus → All Sessions lists them all). */
+    val focusSessions: Flow<List<FocusSessionRecord>> = dao.allFocusSessions().map { list -> list.map { it.toRecord() } }
 
     suspend fun currentTimetable(): Timetable = timetable.first()
 
@@ -136,11 +135,26 @@ class Repository(
         onChange()
     }
 
+    /** Settings → Storage: deletes every ticked-off to-do. */
+    suspend fun deleteCompletedTodos() {
+        dao.deleteCompletedTodos()
+        onChange()
+    }
+
     // Focus history
 
     /** Saves a session that ended; a second record of the same session is ignored. */
     suspend fun recordFocus(session: FocusSessionRecord) {
         dao.insertFocusSession(FocusSessionEntity.from(session))
+    }
+
+    suspend fun deleteFocusSessions(ids: Collection<UUID>) {
+        if (ids.isNotEmpty()) dao.deleteFocusSessions(ids.map { it.toString() })
+    }
+
+    /** Focus → All Sessions → Clear History, and Settings → Storage. */
+    suspend fun deleteAllFocusSessions() {
+        dao.deleteAllFocusSessions()
     }
 
     /** Demo data for screenshots: a term in its fifth week, a few courses on today and tomorrow, and to-dos. */
@@ -157,7 +171,7 @@ class Repository(
     }
 
     companion object {
-        /** Enough for today's focus time and the recent list. */
+        /** The sessions the Assistant looks at (iOS `PlannerModel.recentSessionLimit`). */
         const val RECENT_FOCUS_SESSIONS = 50
     }
 }

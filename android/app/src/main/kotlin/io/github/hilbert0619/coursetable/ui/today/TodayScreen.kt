@@ -2,6 +2,10 @@
 
 package io.github.hilbert0619.coursetable.ui.today
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,17 +42,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.hilbert0619.coursekit.ClassSession
+import io.github.hilbert0619.coursekit.CourseBlockStyle
 import io.github.hilbert0619.coursekit.DayAgenda
 import io.github.hilbert0619.coursekit.LocalDate
 import io.github.hilbert0619.coursekit.Moment
@@ -58,6 +71,7 @@ import io.github.hilbert0619.coursekit.Todo
 import io.github.hilbert0619.coursekit.TodoTiming
 import io.github.hilbert0619.coursekit.agenda
 import io.github.hilbert0619.coursetable.R
+import io.github.hilbert0619.coursetable.focus.FocusText
 import io.github.hilbert0619.coursetable.ui.ai.AssistantButton
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.Names
@@ -69,6 +83,7 @@ import io.github.hilbert0619.coursetable.ui.details
 import io.github.hilbert0619.coursetable.ui.rememberNames
 import io.github.hilbert0619.coursetable.ui.theme.CoursePalette
 import io.github.hilbert0619.coursetable.ui.timeRange
+import kotlinx.coroutines.launch
 
 /** What the to-do editor is showing. */
 sealed interface TodoEditorTarget {
@@ -137,8 +152,12 @@ private fun TodayContent(
 
     LazyColumn(modifier.fillMaxSize()) {
         item("header") {
-            Section {
-                DayHeader(day, isToday, names.status(timetable.semester.status(day)), names, onPick = pickDay, today = now.day)
+            DayHeader(day, isToday, names.status(timetable.semester.status(day)), names, onPick = pickDay, today = now.day)
+        }
+
+        if (isToday && timetable.courses.isNotEmpty()) {
+            item("nowNext") {
+                NowNextCard(now, nowAndNext.current, nowAndNext.next, openTodos = todos.count { it.day == now.day && !it.isDone })
             }
         }
 
@@ -191,22 +210,13 @@ private fun TodayContent(
                 }
             }
         }
-
-        val next = nowAndNext.next
-        if (isToday && next != null && next.day != now.day) {
-            item("next") {
-                Section(title = stringResource(R.string.next_class)) {
-                    SessionRow(next, SessionStatus.UPCOMING, names, isNext = false, showsDay = true)
-                }
-            }
-        }
     }
 }
 
 /** The date, the term week, and the buttons to move between days. */
 @Composable
 private fun DayHeader(day: LocalDate, isToday: Boolean, status: String, names: Names, onPick: (LocalDate) -> Unit, today: LocalDate) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { onPick(day.adding(-1)) }) { AppIcon(R.drawable.ic_chevron_left, stringResource(R.string.previous_day)) }
         Column(Modifier.weight(1f)) {
             Text(names.fullDate(day), style = MaterialTheme.typography.titleMedium)
@@ -216,6 +226,78 @@ private fun DayHeader(day: LocalDate, isToday: Boolean, status: String, names: N
             TextButton(onClick = { onPick(today) }) { Text(stringResource(R.string.tab_today)) }
         }
         IconButton(onClick = { onPick(day.adding(1)) }) { AppIcon(R.drawable.ic_chevron_right, stringResource(R.string.next_day)) }
+    }
+}
+
+/**
+ * Today's first card: the class in progress (time left, progress) or the next one (when, where), tinted in that
+ * course's soft colour, and the to-dos still open today (iOS `NowNextCard`).
+ */
+@Composable
+private fun NowNextCard(now: Moment, current: ClassSession?, next: ClassSession?, openTodos: Int) {
+    val session = current ?: next
+    val tint = session?.let { CoursePalette.block(it.course.colorIndex, CourseBlockStyle.SOFT) }
+    val ink = tint?.text ?: MaterialTheme.colorScheme.onSurface
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = tint?.fill ?: MaterialTheme.colorScheme.surfaceContainerLow,
+        contentColor = ink,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).semantics(mergeDescendants = true) {},
+    ) {
+        Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (session != null) {
+                val color = CoursePalette.color(session.course.colorIndex)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Box(Modifier.size(8.dp).background(color, CircleShape))
+                    Text(nowNextHeadline(session, current, now).uppercase(), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                }
+                Text(session.course.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, maxLines = 2)
+                Text(
+                    (listOf(session.timeRange) + listOf(session.details).filter { it.isNotEmpty() }).joinToString(" · "),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.alpha(0.85f),
+                )
+                if (current != null) {
+                    val length = maxOf(session.end.minutes - session.start.minutes, 1)
+                    val progress = ((now.time.minutes - session.start.minutes).toFloat() / length).coerceIn(0f, 1f)
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        color = color,
+                        trackColor = ink.copy(alpha = 0.15f),
+                        drawStopIndicator = {},
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    )
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AppIcon(R.drawable.ic_moon, null, Modifier.size(22.dp), tint = ink)
+                    Text(stringResource(R.string.no_more_classes_today), style = MaterialTheme.typography.titleMedium)
+                }
+            }
+            if (openTodos > 0) {
+                Row(
+                    Modifier.padding(top = 2.dp).alpha(0.85f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    AppIcon(R.drawable.ic_checklist, null, Modifier.size(16.dp), tint = ink)
+                    Text(pluralStringResource(R.plurals.todos_left_today, openTodos, openTodos), style = MaterialTheme.typography.labelLarge)
+                }
+            }
+        }
+    }
+}
+
+/** "Now · 25 min left", "Next · in 1 hr, 5 min", "Next · Tomorrow", "Next · Monday". */
+@Composable
+private fun nowNextHeadline(session: ClassSession, current: ClassSession?, now: Moment): String {
+    val text = FocusText(LocalContext.current.resources)
+    val names = rememberNames()
+    return when {
+        session == current -> stringResource(R.string.now_time_left, text.duration(maxOf(session.end.minutes - now.time.minutes, 0) * 60))
+        session.day == now.day -> stringResource(R.string.next_in, text.duration(maxOf(session.start.minutes - now.time.minutes, 0) * 60))
+        session.day == now.day.adding(1) -> stringResource(R.string.next_tomorrow)
+        else -> stringResource(R.string.next_on_day, names.full(session.course.weekday))
     }
 }
 
@@ -294,16 +376,29 @@ private fun TodoRow(
         },
     ) {
         val done = todo.todo.isDone
+        val haptics = LocalHapticFeedback.current
+        val scope = rememberCoroutineScope()
+        val bounce = remember { Animatable(1f) }
         Row(
             Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .clickable { edit(TodoEditorTarget.Edit(todo.todo)) }
                 .padding(start = if (isUnderItsClass) 22.dp else 4.dp, end = 16.dp, top = 2.dp, bottom = 2.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = { actions.setTodoDone(todo.id, !done) }) {
+            IconButton(onClick = {
+                actions.setTodoDone(todo.id, !done)
+                if (!done) {
+                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                    scope.launch {
+                        bounce.animateTo(1.3f, tween(110))
+                        bounce.animateTo(1f, spring(dampingRatio = 0.35f, stiffness = Spring.StiffnessMedium))
+                    }
+                }
+            }) {
                 AppIcon(
                     if (done) R.drawable.ic_todo_done else R.drawable.ic_todo_open,
                     stringResource(if (done) R.string.mark_not_done else R.string.mark_done),
+                    Modifier.scale(bounce.value),
                     tint = if (done) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

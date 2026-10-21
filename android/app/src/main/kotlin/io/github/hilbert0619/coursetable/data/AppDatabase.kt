@@ -76,10 +76,19 @@ interface StudyHourDao {
     @Query("DELETE FROM todos WHERE id = :id")
     suspend fun deleteTodo(id: String)
 
+    @Query("DELETE FROM todos WHERE isDone = 1")
+    suspend fun deleteCompletedTodos()
+
     // Focus history
 
-    @Query("SELECT * FROM focus_sessions ORDER BY startedAt DESC LIMIT :limit")
-    fun focusSessions(limit: Int): Flow<List<FocusSessionEntity>>
+    @Query("SELECT * FROM focus_sessions ORDER BY startedAt DESC")
+    fun allFocusSessions(): Flow<List<FocusSessionEntity>>
+
+    @Query("DELETE FROM focus_sessions WHERE id IN (:ids)")
+    suspend fun deleteFocusSessions(ids: List<String>)
+
+    @Query("DELETE FROM focus_sessions")
+    suspend fun deleteAllFocusSessions()
 
     /** Keeps the first record of a session (iOS `recordFocus`). */
     @Insert(onConflict = OnConflictStrategy.IGNORE)

@@ -17,6 +17,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.hilbert0619.coursekit.CourseBlockStyle
 import io.github.hilbert0619.coursekit.CourseCSV
 import io.github.hilbert0619.coursekit.CourseTemplate
 import io.github.hilbert0619.coursekit.FocusPlan
@@ -28,17 +29,28 @@ import io.github.hilbert0619.coursekit.Semester
 import io.github.hilbert0619.coursekit.TimeOfDay
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursetable.alerts.ReminderSettings
+import io.github.hilbert0619.coursetable.appearance.AppearanceSettings
 import io.github.hilbert0619.coursetable.data.DemoData
 import io.github.hilbert0619.coursetable.data.FocusSessionRecord
+import io.github.hilbert0619.coursetable.focus.FocusActions
 import io.github.hilbert0619.coursetable.focus.FocusState
+import io.github.hilbert0619.coursetable.focus.WallpaperState
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.AppData
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.NowSource
 import io.github.hilbert0619.coursetable.ui.RootScreen
 import io.github.hilbert0619.coursetable.ui.Tab
+import io.github.hilbert0619.coursetable.ui.components.AppearanceState
+import io.github.hilbert0619.coursetable.ui.components.LocalAppearance
+import io.github.hilbert0619.coursetable.ui.focus.FocusHistoryScreen
+import io.github.hilbert0619.coursetable.ui.focus.FullScreenFocusContent
+import io.github.hilbert0619.coursetable.ui.focus.LocalWallpapers
 import io.github.hilbert0619.coursetable.ui.settings.PeriodScheduleEditor
 import io.github.hilbert0619.coursetable.ui.settings.ReliableRemindersScreen
+import io.github.hilbert0619.coursetable.ui.settings.StorageItem
+import io.github.hilbert0619.coursetable.ui.settings.StorageScreen
+import io.github.hilbert0619.coursetable.ui.settings.TimetableAppearanceScreen
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
 import io.github.hilbert0619.coursetable.ui.timetable.CourseEditorContent
 import io.github.hilbert0619.coursetable.ui.timetable.CourseEditorTarget
@@ -79,14 +91,26 @@ class ScreenshotTests {
         return AppData(Timetable(Semester(today.adding(-28)), courses = courses), templates, DemoData.todos(today, courses, chinese))
     }
 
-    private fun show(time: String = "09:00", content: @Composable () -> Unit) {
+    private fun show(
+        time: String = "09:00",
+        appearance: AppearanceState = AppearanceState(),
+        wallpapers: WallpaperState = WallpaperState(enabled = false),
+        content: @Composable () -> Unit,
+    ) {
         val now = Moment(today, TimeOfDay.parse(time)!!).toInstant(zone)
         compose.setContent {
-            CompositionLocalProvider(LocalNowSource provides NowSource(Clock.fixed(now, zone), ticks = false)) {
+            CompositionLocalProvider(
+                LocalNowSource provides NowSource(Clock.fixed(now, zone), ticks = false),
+                LocalAppearance provides appearance,
+                LocalWallpapers provides wallpapers,
+            ) {
                 StudyHourTheme { content() }
             }
         }
     }
+
+    private val onPhoto = AppearanceState(photo = DemoWallpaper.image)
+    private val onWallpaper = WallpaperState(enabled = true, shown = DemoWallpaper.shown)
 
     private fun capture() = compose.onRoot().captureRoboImage()
 
@@ -114,6 +138,13 @@ class ScreenshotTests {
     @Config(qualifiers = "+night")
     fun todayDark() {
         show("10:30") { RootScreen(data(chinese = false), AppActions.None) }
+        capture()
+    }
+
+    @Test
+    fun todayEvening() {
+        show("20:30") { RootScreen(data(chinese = false), AppActions.None) }
+        compose.onNodeWithText("Next · Tomorrow", substring = true, ignoreCase = true).assertExists()
         capture()
     }
 
@@ -147,6 +178,29 @@ class ScreenshotTests {
     fun timetableChineseDark() {
         show { RootScreen(data(chinese = true), AppActions.None, initialTab = Tab.TIMETABLE) }
         compose.onNodeWithText("第 5 周").assertExists()
+        capture()
+    }
+
+    @Test
+    fun timetableOnAPhoto() {
+        show(appearance = onPhoto) { RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.TIMETABLE) }
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+night")
+    fun timetableSolidOnAPhotoDark() {
+        show(appearance = onPhoto.copy(settings = AppearanceSettings(blockStyle = CourseBlockStyle.SOLID))) {
+            RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.TIMETABLE)
+        }
+        capture()
+    }
+
+    @Test
+    fun timetableSolid() {
+        show(appearance = AppearanceState(AppearanceSettings(blockStyle = CourseBlockStyle.SOLID))) {
+            RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.TIMETABLE)
+        }
         capture()
     }
 
@@ -245,6 +299,35 @@ class ScreenshotTests {
     }
 
     @Test
+    fun focusOnAWallpaper() {
+        show(wallpapers = onWallpaper) { RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.FOCUS, focus = FocusState(run = focusRun(7))) }
+        compose.onNodeWithText("Photo by Demo Photographer on Unsplash").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+night")
+    fun focusFullScreen() {
+        show(wallpapers = onWallpaper) { FullScreenFocusContent(focusRun(7), FocusActions.None, onClose = {}) }
+        compose.onNodeWithText("18:00").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN")
+    fun focusFullScreenWithoutAPhotoChinese() {
+        show { FullScreenFocusContent(focusRun(27), FocusActions.None, onClose = {}) }
+        capture()
+    }
+
+    @Test
+    fun focusHistory() {
+        show { FocusHistoryScreen(focusHistory, onDelete = {}, onClear = {}, onBack = {}) }
+        compose.onNodeWithText("Clear History").assertExists()
+        capture()
+    }
+
+    @Test
     @Config(qualifiers = "+zh-rCN-night")
     fun focusBreakChineseDark() {
         show { RootScreen(data(chinese = true), AppActions.None, initialTab = Tab.FOCUS, focus = FocusState(run = focusRun(27), goal = "高数复习")) }
@@ -285,6 +368,32 @@ class ScreenshotTests {
         ShadowBuild.setManufacturer("vivo")
         show { ReliableRemindersScreen(AppActions.None, onBack = {}) }
         compose.onNodeWithText("发送测试提醒").assertExists()
+        capture()
+    }
+
+    @Test
+    fun storage() {
+        show {
+            StorageScreen(
+                focusSessionCount = 2, completedTodoCount = 1, actions = AppActions.None, onBack = {},
+                initialSelection = setOf(StorageItem.FOCUS_HISTORY, StorageItem.COMPLETED_TODOS),
+            )
+        }
+        compose.onNodeWithText("Clear Selected").assertExists()
+        capture()
+    }
+
+    @Test
+    fun timetableAppearanceWithAPhoto() {
+        show(appearance = onPhoto) { TimetableAppearanceScreen(onBack = {}) }
+        compose.onNodeWithText("Remove Photo").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN-night")
+    fun timetableAppearanceChineseDark() {
+        show { TimetableAppearanceScreen(onBack = {}) }
         capture()
     }
 

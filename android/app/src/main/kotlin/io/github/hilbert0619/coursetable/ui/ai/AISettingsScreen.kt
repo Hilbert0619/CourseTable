@@ -6,6 +6,8 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.activity.compose.BackHandler
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -68,6 +70,45 @@ import kotlinx.coroutines.launch
 private val OK_GREEN = Color(0xFF2E9E4F)
 private val WARNING = Color(0xFFE08A00)
 
+/** One line of the privacy summary, with its icon. */
+@Composable
+private fun PrivacyLine(@DrawableRes icon: Int, text: String) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        AppIcon(icon, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+        Text(text, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+/** AI Help → Privacy → What's Sent: the full account of what goes where. */
+@Composable
+private fun AIPrivacyDetails(onBack: () -> Unit, modifier: Modifier = Modifier) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.ai_privacy)) },
+                navigationIcon = { IconButton(onClick = onBack) { AppIcon(R.drawable.ic_arrow_back, stringResource(R.string.back)) } },
+            )
+        },
+    ) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
+            Section {
+                listOf(
+                    R.string.ai_privacy_direct, R.string.ai_privacy_minimal, R.string.ai_privacy_tools,
+                    R.string.ai_privacy_photos, R.string.ai_privacy_wrong,
+                ).forEachIndexed { index, text ->
+                    if (index > 0) RowDivider()
+                    Text(stringResource(text), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
+                }
+            }
+        }
+    }
+}
+
 /**
  * Settings → AI Help (iOS `AISettingsView`): the user's connections (provider, key, model), which one AI help uses,
  * this month's usage, and what is sent where.
@@ -78,7 +119,13 @@ fun AISettingsScreen(store: AIStore, onBack: () -> Unit, modifier: Modifier = Mo
     var editing by remember { mutableStateOf<AIConnection?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
     var confirmingClear by remember { mutableStateOf(false) }
+    var showingPrivacy by rememberSaveable { mutableStateOf(false) }
     val defaultId = state.defaultConnection?.id
+    if (showingPrivacy) {
+        BackHandler { showingPrivacy = false }
+        AIPrivacyDetails(onBack = { showingPrivacy = false }, modifier = modifier)
+        return
+    }
 
     Scaffold(
         modifier = modifier,
@@ -102,14 +149,13 @@ fun AISettingsScreen(store: AIStore, onBack: () -> Unit, modifier: Modifier = Mo
             }
 
             Section(title = stringResource(R.string.ai_privacy)) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    for (text in listOf(
-                        R.string.ai_privacy_direct, R.string.ai_privacy_minimal, R.string.ai_privacy_tools,
-                        R.string.ai_privacy_photos, R.string.ai_privacy_wrong,
-                    )) {
-                        Text(stringResource(text), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
+                PrivacyLine(R.drawable.ic_arrow_outward, stringResource(R.string.ai_privacy_short_direct))
+                RowDivider()
+                PrivacyLine(R.drawable.ic_key, stringResource(R.string.ai_privacy_short_key))
+                RowDivider()
+                PrivacyLine(R.drawable.ic_touch, stringResource(R.string.ai_privacy_short_confirm))
+                RowDivider()
+                ActionRow(null, stringResource(R.string.ai_whats_sent)) { showingPrivacy = true }
             }
 
             if (state.savedAnswerCount > 0 || state.conversations.isNotEmpty()) {

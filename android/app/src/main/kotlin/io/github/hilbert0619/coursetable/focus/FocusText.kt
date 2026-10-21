@@ -26,6 +26,12 @@ class FocusText(private val res: Resources) {
         return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT).formatMeasures(*measures.toTypedArray())
     }
 
+    /** A preset length for a chip: "90 min" rather than "1 hr, 30 min", short enough; "2 hr" from two hours. */
+    fun presetLength(minutes: Int): String {
+        if (minutes >= 120) return duration(minutes * 60)
+        return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT).formatMeasures(Measure(minutes, MeasureUnit.MINUTE))
+    }
+
     /** "Focus · Block 2 of 5", "Focus", "Short break", "Long break" */
     fun phaseTitle(run: FocusRun, phase: FocusPhase): String = when (phase.kind) {
         FocusPhase.Kind.FOCUS ->

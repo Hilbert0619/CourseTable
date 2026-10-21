@@ -54,7 +54,6 @@
     <string name="add_todo">添加待办</string>
     <string name="any_time">随时</string>
     <string name="schedule">日程</string>
-    <string name="next_class">下一节课</string>
     <string name="no_classes_today">今天没有课</string>
     <string name="no_classes_on_this_day">这天没有课</string>
     <string name="previous_day">前一天</string>
@@ -67,6 +66,13 @@
     <string name="its_class_removed">对应的课程已删除</string>
     <string name="after_class">下课后</string>
     <string name="after_course">%1$s下课后</string>
+    <string name="now_time_left">正在上课 · 还剩 %1$s</string>
+    <string name="next_in">下一节 · %1$s后</string>
+    <string name="next_tomorrow">下一节 · 明天</string>
+    <string name="next_on_day">下一节 · %1$s</string>
+    <plurals name="todos_left_today">
+        <item quantity="other">今天还有 %1$d 条待办</item>
+    </plurals>
     <string name="new_todo">新待办</string>
     <string name="edit_todo">编辑待办</string>
     <string name="what_to_do">要做什么</string>
@@ -171,6 +177,57 @@
     <string name="period_issue_empty">请至少添加一节课。</string>
     <string name="period_issue_ends_before_start">第 %1$d 节的结束时间早于开始时间。</string>
     <string name="period_issue_overlaps_previous">第 %1$d 节在上一节结束前就开始了。</string>
+    <string name="timetable_appearance">课表外观</string>
+    <string name="course_blocks_header">课程块</string>
+    <string name="course_blocks_footer">柔和：浅色底配深色字，更易阅读。纯色：饱和色底配白色字。</string>
+    <string name="block_style_soft">柔和</string>
+    <string name="block_style_solid">纯色</string>
+    <string name="background">背景</string>
+    <string name="background_footer_own">可以用自己的照片；看过的专注壁纸也会出现在这里。</string>
+    <string name="background_footer_wallpapers">用自己的照片，或选一张看过的专注壁纸。</string>
+    <string name="fade">淡化</string>
+    <string name="block_opacity">课程块不透明度</string>
+    <string name="remove_photo">移除照片</string>
+    <string name="choose_a_photo">选择照片…</string>
+    <string name="choose_another_photo">换一张照片…</string>
+    <string name="storage">存储空间</string>
+    <string name="storage_footer">清除专注记录、已完成的待办、AI 对话和下载的文件。</string>
+    <string name="records">记录</string>
+    <string name="records_footer">课程表、未完成的待办、单词学习进度和 AI 连接不会在这里被清除。</string>
+    <string name="downloaded_files">下载的文件</string>
+    <string name="downloaded_files_footer">需要时会重新下载——课表背景除外，它由你自己选择。</string>
+    <string name="completed_todos">已完成的待办</string>
+    <string name="assistant_chats">助手对话</string>
+    <string name="saved_ai_answers">已保存的 AI 回答</string>
+    <string name="ai_usage_counts">AI 用量统计</string>
+    <string name="focus_wallpapers">专注壁纸</string>
+    <string name="timetable_background">课表背景</string>
+    <string name="other_cached_files">其他缓存文件</string>
+    <string name="select_all">全选</string>
+    <string name="deselect_all">取消全选</string>
+    <string name="clear_selected">清除所选项</string>
+    <string name="clear_selected_question">清除所选数据？</string>
+    <string name="clear_selected_message">将从这台手机上删除：%1$s。此操作无法撤销。</string>
+    <string name="clear">清除</string>
+    <string name="cleared">已清除。</string>
+    <plurals name="storage_sessions">
+        <item quantity="other">%1$d 条记录</item>
+    </plurals>
+    <plurals name="storage_todos">
+        <item quantity="other">%1$d 条待办</item>
+    </plurals>
+    <plurals name="storage_chats">
+        <item quantity="other">%1$d 个对话</item>
+    </plurals>
+    <plurals name="storage_answers">
+        <item quantity="other">%1$d 条回答</item>
+    </plurals>
+    <plurals name="storage_requests">
+        <item quantity="other">已统计 %1$d 次请求</item>
+    </plurals>
+    <plurals name="storage_photos">
+        <item quantity="other">%1$d 张照片 · %2$s</item>
+    </plurals>
     <string name="reminders">提醒</string>
     <string name="class_reminders">上课提醒</string>
     <string name="live_notification">上课实时通知</string>
@@ -224,7 +281,9 @@
     <string name="short_break">短休息</string>
     <string name="long_break">长休息</string>
     <string name="long_break_after">每 %1$d 段后长休息</string>
-    <string name="focus_plan_summary">%1$d 段专注 · 共专注 %2$s · %3$s 结束</string>
+    <plurals name="focus_plan_summary">
+        <item quantity="other">%1$d 段专注 · 共专注 %2$s · %3$s 结束</item>
+    </plurals>
     <string name="background_sound">背景声音</string>
     <string name="volume">音量</string>
     <string name="preview_sound">试听</string>
@@ -261,6 +320,25 @@
     <string name="sound_night">夏夜</string>
     <string name="sound_train">火车</string>
     <string name="sound_cafe">咖啡馆</string>
+    <string name="rhythm">节奏</string>
+    <string name="rhythm_footer">专注时长 · 短休息 · 长休息（分钟）。</string>
+    <string name="wallpaper">壁纸</string>
+    <string name="wallpaper_footer">每次专注都在倒计时后面换一张新照片。照片来自 Unsplash，每张只下载一次（约 0.5 MB），保存在这台手机上，可在“设置 → 存储空间”中清除。</string>
+    <string name="photo_by">摄影：%1$s</string>
+    <string name="photo_by_on_unsplash">摄影：%1$s · Unsplash</string>
+    <string name="another_wallpaper">换一张壁纸</string>
+    <string name="full_screen">全屏</string>
+    <string name="exit_full_screen">退出全屏</string>
+    <string name="swipe_session_to_delete">在记录上向左轻扫可删除。</string>
+    <string name="all_sessions">全部记录</string>
+    <string name="focus_history">专注记录</string>
+    <string name="no_focus_sessions">还没有专注记录</string>
+    <string name="no_focus_sessions_detail">完成或停止的专注会显示在这里。</string>
+    <string name="clear_history">清除记录</string>
+    <plurals name="delete_all_focus_sessions">
+        <item quantity="other">删除全部 %1$d 条专注记录？</item>
+    </plurals>
+    <string name="clear_history_message">今日专注时长将从零开始。此操作无法撤销。</string>
     <string name="learn_kaoyan_words">背考研单词</string>
     <string name="learn_kaoyan_words_detail">每天为你安排新词和复习，多台设备同步，离线也能学习。</string>
     <string name="sign_in">登录</string>
@@ -313,6 +391,13 @@
     <string name="synced_just_now">已同步 · 刚刚</string>
     <string name="sync_offline">离线中。你的答题记录已保存在这台手机上，稍后会自动上传。</string>
     <string name="answers_waiting">%1$d 条答题记录等待上传</string>
+    <string name="todays_progress">今日进度</string>
+    <plurals name="day_streak">
+        <item quantity="other">连续学习 %1$d 天</item>
+    </plurals>
+    <plurals name="days_to_the_exam">
+        <item quantity="other">距考试 %1$d 天</item>
+    </plurals>
     <string name="new_word">新词</string>
     <string name="learn_it">学习</string>
     <string name="i_know_this">我认识</string>
@@ -571,6 +656,10 @@
     <string name="ai_todo_unreadable">无法读取 AI 的回答，请换一种说法试试。</string>
     <string name="ai_todo_no_class">%1$s 在那天没有课，请检查日期。</string>
     <string name="ai_todo_unknown_course">课表中没有名为“%1$s”的课程，所以未设置时间。</string>
+    <string name="ai_privacy_short_direct">直接发给你选择的服务商，不经过我们的服务器</string>
+    <string name="ai_privacy_short_key">密钥加密后只保存在这台手机上</string>
+    <string name="ai_privacy_short_confirm">点“确认”之前不会做任何更改</string>
+    <string name="ai_whats_sent">会发送什么</string>
     <string name="agent_assistant">助手</string>
     <string name="agent_new_chat">新对话</string>
     <string name="agent_options">选项</string>

@@ -5,6 +5,10 @@ package io.github.hilbert0619.coursetable.ui.words
 import android.text.format.DateUtils
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -40,8 +45,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +74,8 @@ import io.github.hilbert0619.vocabkit.VocabStats
 import io.github.hilbert0619.vocabkit.store.SyncEngine
 import io.github.hilbert0619.vocabkit.store.VocabApp
 import io.github.hilbert0619.vocabkit.store.VocabState
+import java.time.Instant
+import kotlin.math.roundToInt
 
 /** Places reachable from the Words home screen, saved as text so they survive a rotation. */
 sealed interface WordsRoute {
@@ -196,7 +210,7 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
                 vocab.storeProblem?.let { problem ->
                     Section { WarningRow(stringResource(R.string.store_problem, problem), blocking = true) }
                 }
-                TodaySection(state, plan, onStart = { studying = true })
+                TodaySection(state, plan, now, onStart = { studying = true })
                 state.examCountdown(now)?.let { ExamSection(it) }
                 BookSection(state, onOpen)
                 Section {
@@ -232,19 +246,32 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TodaySection(state: VocabState, plan: DailyPlan, onStart: () -> Unit) {
+private fun TodaySection(state: VocabState, plan: DailyPlan, now: Instant, onStart: () -> Unit) {
+    val streak = VocabStats.streak(state.events, state.today(now))
+    val countdown = state.examCountdown(now)
     Section(title = stringResource(R.string.tab_today)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                TodayNumber(stringResource(R.string.new_words), "${plan.newDone}/${plan.newDone + plan.newRemaining}")
-                TodayNumber(stringResource(R.string.reviews_left), "${plan.reviewsRemaining}")
-                TodayNumber(stringResource(R.string.reviewed), "${plan.reviewsDone}")
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                TodayRing(plan.progress.toFloat(), plan.isComplete, Modifier.size(84.dp))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    StatLine(stringResource(R.string.new_words), "${plan.newDone}/${plan.newDone + plan.newRemaining}")
+                    StatLine(stringResource(R.string.reviews_left), "${plan.reviewsRemaining}")
+                    StatLine(stringResource(R.string.reviewed), "${plan.reviewsDone}")
+                }
             }
-            LinearProgressIndicator(
-                progress = { plan.progress.toFloat() },
-                color = if (plan.isComplete) GOOD_GREEN else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (streak.days > 0 || countdown != null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (streak.days > 0) {
+                        Chip(R.drawable.ic_flame, STREAK_ORANGE, pluralStringResource(R.plurals.day_streak, streak.days, streak.days))
+                    }
+                    if (countdown != null) {
+                        Chip(
+                            R.drawable.ic_calendar, MaterialTheme.colorScheme.primary,
+                            pluralStringResource(R.plurals.days_to_the_exam, countdown.daysLeft, countdown.daysLeft),
+                        )
+                    }
+                }
+            }
             val minutes = plan.estimatedMinutes
             if (minutes != null && !plan.isComplete) {
                 Text(stringResource(R.string.minutes_left_estimate, minutes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -267,11 +294,49 @@ private fun TodaySection(state: VocabState, plan: DailyPlan, onStart: () -> Unit
     }
 }
 
+private val STREAK_ORANGE = Color(0xFFF2830D)
+
+/** Today's progress as a ring, with the percentage (a check mark once done). */
 @Composable
-private fun TodayNumber(label: String, value: String) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+private fun TodayRing(progress: Float, isComplete: Boolean, modifier: Modifier = Modifier) {
+    val percent = "${(progress * 100).roundToInt()}%"
+    val label = stringResource(R.string.todays_progress)
+    val shown by animateFloatAsState(progress.coerceIn(0f, 1f), tween(400), label = "progress")
+    val color = if (isComplete) GOOD_GREEN else MaterialTheme.colorScheme.primary
+    val track = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    Box(modifier.semantics(mergeDescendants = true) { contentDescription = label; stateDescription = percent }, contentAlignment = Alignment.Center) {
+        Canvas(Modifier.fillMaxSize().padding(5.dp)) {
+            val stroke = 10.dp.toPx()
+            drawArc(track, startAngle = 0f, sweepAngle = 360f, useCenter = false, style = Stroke(stroke))
+            if (shown > 0f) drawArc(color, startAngle = -90f, sweepAngle = 360f * shown, useCenter = false, style = Stroke(stroke, cap = StrokeCap.Round))
+        }
+        if (isComplete) {
+            AppIcon(R.drawable.ic_check, null, Modifier.size(28.dp), tint = GOOD_GREEN)
+        } else {
+            Text(percent, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+private fun StatLine(label: String, value: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+        Spacer(Modifier.width(8.dp))
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+/** A small capsule: an icon in [tint] and a text, on a light wash of the tint. */
+@Composable
+private fun Chip(@DrawableRes icon: Int, tint: Color, text: String) {
+    Row(
+        Modifier.background(tint.copy(alpha = 0.12f), CircleShape).padding(horizontal = 10.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        AppIcon(icon, null, Modifier.size(15.dp), tint = tint)
+        Text(text, style = MaterialTheme.typography.labelLarge)
     }
 }
 

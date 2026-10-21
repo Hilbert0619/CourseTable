@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -52,6 +54,9 @@ import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
+import io.github.hilbert0619.coursetable.ui.components.LocalAppearance
+import io.github.hilbert0619.coursetable.ui.components.TimetableBackdrop
+import io.github.hilbert0619.coursetable.ui.currentMoment
 import io.github.hilbert0619.coursetable.ui.rememberNames
 import java.util.UUID
 import kotlin.math.abs
@@ -83,6 +88,9 @@ fun TimetableScreen(
     var placementParity by rememberSaveable { mutableStateOf(WeekParity.EVERY) }
     var placingOnWeekend by rememberSaveable { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
+    val appearance = LocalAppearance.current
+    val isOnPhoto = appearance.photo != null
+    val now = currentMoment()
 
     val templates = timetable.placementTemplates(savedTemplates)
     val days = if (timetable.hasWeekendCourses || (placing && placingOnWeekend)) Weekday.entries else Weekday.entries.take(5)
@@ -97,116 +105,127 @@ fun TimetableScreen(
         if (templates.isEmpty()) editingCourseList = true
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { WeekSwitcher(week, isThisWeek = week == semester.status(today).week, total = semester.totalWeeks, onPick = { selectedWeek = it }, onStep = ::step) },
-                navigationIcon = {
-                    if (week != currentWeek) TextButton(onClick = { selectedWeek = null }) { Text(stringResource(R.string.this_week_button)) }
-                },
-                actions = {
-                    if (placing) {
-                        TextButton(onClick = { placing = false }) { Text(stringResource(R.string.done), fontWeight = FontWeight.SemiBold) }
-                    } else {
-                        Box {
-                            IconButton(onClick = { addMenu = true }) { AppIcon(R.drawable.ic_add, stringResource(R.string.add_course)) }
-                            DropdownMenu(expanded = addMenu, onDismissRequest = { addMenu = false }) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.new_course)) },
-                                    leadingIcon = { AppIcon(R.drawable.ic_new_course, null) },
-                                    onClick = {
-                                        addMenu = false
-                                        editor = CourseEditorTarget.New(today.weekday, 1)
-                                    },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.place_courses)) },
-                                    leadingIcon = { AppIcon(R.drawable.ic_place, null) },
-                                    onClick = {
-                                        addMenu = false
-                                        beginPlacing()
-                                    },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.import_courses_ellipsis)) },
-                                    leadingIcon = { AppIcon(R.drawable.ic_import, null) },
-                                    onClick = {
-                                        addMenu = false
-                                        importing = true
-                                    },
-                                )
+    // The paper, or the chosen photo faded towards it, behind everything (also the bar at the top).
+    Box(modifier) {
+        TimetableBackdrop()
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = if (isOnPhoto) Color.Transparent else MaterialTheme.colorScheme.surface,
+                    ),
+                    title = { WeekSwitcher(week, isThisWeek = week == semester.status(today).week, total = semester.totalWeeks, onPick = { selectedWeek = it }, onStep = ::step) },
+                    navigationIcon = {
+                        if (week != currentWeek) TextButton(onClick = { selectedWeek = null }) { Text(stringResource(R.string.this_week_button)) }
+                    },
+                    actions = {
+                        if (placing) {
+                            TextButton(onClick = { placing = false }) { Text(stringResource(R.string.done), fontWeight = FontWeight.SemiBold) }
+                        } else {
+                            Box {
+                                IconButton(onClick = { addMenu = true }) { AppIcon(R.drawable.ic_add, stringResource(R.string.add_course)) }
+                                DropdownMenu(expanded = addMenu, onDismissRequest = { addMenu = false }) {
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.new_course)) },
+                                        leadingIcon = { AppIcon(R.drawable.ic_new_course, null) },
+                                        onClick = {
+                                            addMenu = false
+                                            editor = CourseEditorTarget.New(today.weekday, 1)
+                                        },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.place_courses)) },
+                                        leadingIcon = { AppIcon(R.drawable.ic_place, null) },
+                                        onClick = {
+                                            addMenu = false
+                                            beginPlacing()
+                                        },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.import_courses_ellipsis)) },
+                                        leadingIcon = { AppIcon(R.drawable.ic_import, null) },
+                                        onClick = {
+                                            addMenu = false
+                                            importing = true
+                                        },
+                                    )
+                                }
                             }
                         }
-                    }
-                },
-            )
-        },
-        bottomBar = {
-            if (placing) {
-                PlacementTray(
-                    templates = templates,
-                    savedIds = savedTemplates.map { it.id }.toSet(),
-                    selection = placementId,
-                    onSelect = { placementId = it },
-                    length = placementLength,
-                    onLength = { placementLength = it },
-                    parity = placementParity,
-                    onParity = { placementParity = it },
-                    showsWeekend = if (timetable.hasWeekendCourses) null else placingOnWeekend,
-                    onShowsWeekend = { placingOnWeekend = it },
-                    periodsPerDay = timetable.periods.count,
-                    onAddCourses = { editingCourseList = true },
-                    onRemove = { id ->
-                        actions.removeTemplates(setOf(id))
-                        if (placementId == id) placementId = null
                     },
                 )
-            }
-        },
-    ) { padding ->
-        val density = LocalDensity.current
-        BoxWithConstraints(
-            Modifier.padding(padding).fillMaxSize()
-                // Swiping sideways changes the week.
-                .pointerInput(week) {
-                    var total = 0f
-                    detectHorizontalDragGestures(
-                        onDragStart = { total = 0f },
-                        onDragEnd = { if (abs(total) > with(density) { 60.dp.toPx() }) step(if (total < 0) 1 else -1) },
-                    ) { _, delta -> total += delta }
-                },
-        ) {
-            val layout = GridLayout(maxWidth, days)
-            Column(Modifier.fillMaxSize()) {
-                DayHeaderRow(layout, timetable, week, today, names)
-                HorizontalDivider()
-                Column(Modifier.verticalScroll(rememberScrollState())) {
-                    WeekGridView(
-                        layout = layout,
-                        timetable = timetable,
-                        week = week,
-                        today = today,
-                        showsAllWeeks = placing,
-                        onSelectCourse = { editor = CourseEditorTarget.Edit(it) },
-                        onSelectSlot = { day, period ->
-                            val template = templates.firstOrNull { it.id == placementId }
-                            if (placing && template != null) {
-                                actions.saveCourse(timetable.placing(template, day, period, placementLength, placementParity))
-                                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                            } else {
-                                editor = CourseEditorTarget.New(day, period)
-                            }
+            },
+            bottomBar = {
+                if (placing) {
+                    PlacementTray(
+                        templates = templates,
+                        savedIds = savedTemplates.map { it.id }.toSet(),
+                        selection = placementId,
+                        onSelect = { placementId = it },
+                        length = placementLength,
+                        onLength = { placementLength = it },
+                        parity = placementParity,
+                        onParity = { placementParity = it },
+                        showsWeekend = if (timetable.hasWeekendCourses) null else placingOnWeekend,
+                        onShowsWeekend = { placingOnWeekend = it },
+                        periodsPerDay = timetable.periods.count,
+                        onAddCourses = { editingCourseList = true },
+                        onRemove = { id ->
+                            actions.removeTemplates(setOf(id))
+                            if (placementId == id) placementId = null
                         },
                     )
                 }
-            }
-            if (timetable.courses.isEmpty() && !placing) {
-                EmptyHint(
-                    onTypeList = ::beginPlacing,
-                    onImport = { importing = true },
-                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp, start = 16.dp, end = 16.dp),
-                )
+            },
+        ) { padding ->
+            val density = LocalDensity.current
+            BoxWithConstraints(
+                Modifier.padding(padding).fillMaxSize()
+                    // Swiping sideways changes the week.
+                    .pointerInput(week) {
+                        var total = 0f
+                        detectHorizontalDragGestures(
+                            onDragStart = { total = 0f },
+                            onDragEnd = { if (abs(total) > with(density) { 60.dp.toPx() }) step(if (total < 0) 1 else -1) },
+                        ) { _, delta -> total += delta }
+                    },
+            ) {
+                val layout = GridLayout(maxWidth, days)
+                Column(Modifier.fillMaxSize()) {
+                    DayHeaderRow(layout, timetable, week, today, names, isOnPhoto)
+                    HorizontalDivider()
+                    Column(Modifier.verticalScroll(rememberScrollState())) {
+                        WeekGridView(
+                            layout = layout,
+                            timetable = timetable,
+                            week = week,
+                            today = today,
+                            now = now,
+                            blockStyle = appearance.settings.blockStyle,
+                            blockOpacity = if (isOnPhoto) appearance.settings.blockOpacity else 1f,
+                            isOnPhoto = isOnPhoto,
+                            showsAllWeeks = placing,
+                            onSelectCourse = { editor = CourseEditorTarget.Edit(it) },
+                            onSelectSlot = { day, period ->
+                                val template = templates.firstOrNull { it.id == placementId }
+                                if (placing && template != null) {
+                                    actions.saveCourse(timetable.placing(template, day, period, placementLength, placementParity))
+                                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                } else {
+                                    editor = CourseEditorTarget.New(day, period)
+                                }
+                            },
+                        )
+                    }
+                }
+                if (timetable.courses.isEmpty() && !placing) {
+                    EmptyHint(
+                        onTypeList = ::beginPlacing,
+                        onImport = { importing = true },
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp, start = 16.dp, end = 16.dp),
+                    )
+                }
             }
         }
     }

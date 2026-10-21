@@ -4,6 +4,11 @@ import android.app.Application
 import android.util.Log
 import io.github.hilbert0619.coursetable.ai.AIStore
 import io.github.hilbert0619.coursetable.alerts.AlertPreferences
+import io.github.hilbert0619.coursetable.appearance.AppearanceController
+import io.github.hilbert0619.coursetable.appearance.AppearancePreferences
+import io.github.hilbert0619.coursetable.appearance.TimetableBackground
+import io.github.hilbert0619.coursetable.focus.WallpaperStore
+import kotlinx.coroutines.flow.map
 import io.github.hilbert0619.coursetable.alerts.Alerts
 import io.github.hilbert0619.coursetable.alerts.Channels
 import io.github.hilbert0619.coursetable.data.AppDatabase
@@ -54,6 +59,16 @@ class StudyHourApp : Application() {
 
     /** AI help: the user's connections (keys in the Android Keystore) and saved answers. */
     val ai: AIStore by lazy { AIStore.create(this) }
+
+    /** The photos behind the Focus countdown. Created on the main thread; it follows the focus sessions. */
+    val wallpapers: WallpaperStore by lazy {
+        WallpaperStore(this, scope).also { store -> store.follow(focus.state.map { it.run?.id }) }
+    }
+
+    /** Settings → Timetable Appearance and the photo behind the timetable. */
+    val appearance: AppearanceController by lazy {
+        AppearanceController(this, AppearancePreferences(this), TimetableBackground.create(this, scope), wallpapers, scope)
+    }
 
     override fun onCreate() {
         super.onCreate()

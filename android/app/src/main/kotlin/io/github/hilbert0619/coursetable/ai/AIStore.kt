@@ -90,6 +90,9 @@ data class AIStoreState(
     /** The connection AI help uses: the chosen default, or else the first. */
     val defaultConnection: AIConnection? get() = connections.firstOrNull { it.id == defaultId } ?: connections.firstOrNull()
 
+    /** Requests counted for Settings → AI Help's monthly usage, over all connections and months. */
+    val countedRequests: Int get() = usage.values.sumOf { it.requests }
+
     val isSetUp: Boolean get() = defaultConnection != null
 }
 
@@ -194,10 +197,27 @@ class AIStore(
 
     /** Deletes the saved answers and the Assistant chats. */
     fun clearSavedAnswers() {
+        clearAnswers()
+        clearConversations()
+    }
+
+    /** Settings → Storage: the saved answers only (word help, "Why?", sentences, writing). */
+    fun clearAnswers() {
         cache.clear()
         cacheFile?.delete()
+        _state.update { it.copy(savedAnswerCount = 0) }
+    }
+
+    /** Settings → Storage: the Assistant's earlier chats. */
+    fun clearConversations() {
         conversationsFile?.delete()
-        _state.update { it.copy(savedAnswerCount = 0, conversations = emptyList()) }
+        _state.update { it.copy(conversations = emptyList()) }
+    }
+
+    /** Settings → Storage: forgets the usage counts (requests and tokens per connection and month). */
+    fun clearUsage() {
+        _state.update { it.copy(usage = emptyMap()) }
+        prefs?.edit()?.remove(USAGE)?.apply()
     }
 
     // Assistant chats

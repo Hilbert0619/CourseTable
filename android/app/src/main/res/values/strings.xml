@@ -65,7 +65,6 @@
     <string name="add_todo">Add To-Do</string>
     <string name="any_time">Any time</string>
     <string name="schedule">Schedule</string>
-    <string name="next_class">Next class</string>
     <string name="no_classes_today">No classes today</string>
     <string name="no_classes_on_this_day">No classes on this day</string>
     <string name="previous_day">Previous Day</string>
@@ -78,6 +77,16 @@
     <string name="its_class_removed">Its class was removed</string>
     <string name="after_class">After class</string>
     <string name="after_course">After %1$s</string>
+
+    <!-- Today: the Now / Next card -->
+    <string name="now_time_left">Now · %1$s left</string>
+    <string name="next_in">Next · in %1$s</string>
+    <string name="next_tomorrow">Next · Tomorrow</string>
+    <string name="next_on_day">Next · %1$s</string>
+    <plurals name="todos_left_today">
+        <item quantity="one">%1$d to-do left today</item>
+        <item quantity="other">%1$d to-dos left today</item>
+    </plurals>
 
     <!-- To-do editor -->
     <string name="new_todo">New To-Do</string>
@@ -198,6 +207,65 @@
     <string name="period_issue_ends_before_start">Period %1$d ends before it starts.</string>
     <string name="period_issue_overlaps_previous">Period %1$d starts before the previous one ends.</string>
 
+    <!-- Settings: Timetable Appearance, Storage (0.6) -->
+    <string name="timetable_appearance">Timetable Appearance</string>
+    <string name="course_blocks_header">Course Blocks</string>
+    <string name="course_blocks_footer">Soft: a light tint with dark text, easy to read. Solid: full colour with white text.</string>
+    <string name="block_style_soft">Soft</string>
+    <string name="block_style_solid">Solid</string>
+    <string name="background">Background</string>
+    <string name="background_footer_own">Use one of your own photos. The Focus wallpapers you\'ve seen also show here.</string>
+    <string name="background_footer_wallpapers">Your own photo, or one of the Focus wallpapers you\'ve seen.</string>
+    <string name="fade">Fade</string>
+    <string name="block_opacity">Block opacity</string>
+    <string name="remove_photo">Remove Photo</string>
+    <string name="choose_a_photo">Choose a Photo…</string>
+    <string name="choose_another_photo">Choose Another Photo…</string>
+    <string name="storage">Storage</string>
+    <string name="storage_footer">Clear focus history, completed to-dos, AI chats and downloaded files.</string>
+    <string name="records">Records</string>
+    <string name="records_footer">Your timetable, unfinished to-dos, Words progress and AI connections are never cleared here.</string>
+    <string name="downloaded_files">Downloaded Files</string>
+    <string name="downloaded_files_footer">Downloaded again when needed — except the timetable background, which is your choice.</string>
+    <string name="completed_todos">Completed To-Dos</string>
+    <string name="assistant_chats">Assistant Chats</string>
+    <string name="saved_ai_answers">Saved AI Answers</string>
+    <string name="ai_usage_counts">AI Usage Counts</string>
+    <string name="focus_wallpapers">Focus Wallpapers</string>
+    <string name="timetable_background">Timetable Background</string>
+    <string name="other_cached_files">Other Cached Files</string>
+    <string name="select_all">Select All</string>
+    <string name="deselect_all">Deselect All</string>
+    <string name="clear_selected">Clear Selected</string>
+    <string name="clear_selected_question">Clear the selected data?</string>
+    <string name="clear_selected_message">%1$s will be deleted from this phone. This can\'t be undone.</string>
+    <string name="clear">Clear</string>
+    <string name="cleared">Cleared.</string>
+    <plurals name="storage_sessions">
+        <item quantity="one">%1$d session</item>
+        <item quantity="other">%1$d sessions</item>
+    </plurals>
+    <plurals name="storage_todos">
+        <item quantity="one">%1$d to-do</item>
+        <item quantity="other">%1$d to-dos</item>
+    </plurals>
+    <plurals name="storage_chats">
+        <item quantity="one">%1$d chat</item>
+        <item quantity="other">%1$d chats</item>
+    </plurals>
+    <plurals name="storage_answers">
+        <item quantity="one">%1$d answer</item>
+        <item quantity="other">%1$d answers</item>
+    </plurals>
+    <plurals name="storage_requests">
+        <item quantity="one">%1$d request counted</item>
+        <item quantity="other">%1$d requests counted</item>
+    </plurals>
+    <plurals name="storage_photos">
+        <item quantity="one">%1$d photo · %2$s</item>
+        <item quantity="other">%1$d photos · %2$s</item>
+    </plurals>
+
     <!-- Reminders (Settings) -->
     <string name="reminders">Reminders</string>
     <string name="class_reminders">Class reminders</string>
@@ -258,7 +326,10 @@
     <string name="short_break">Short break</string>
     <string name="long_break">Long break</string>
     <string name="long_break_after">Long break after every %1$d blocks</string>
-    <string name="focus_plan_summary">%1$d focus blocks · %2$s of focus · ends at %3$s</string>
+    <plurals name="focus_plan_summary">
+        <item quantity="one">%1$d focus block · %2$s of focus · ends at %3$s</item>
+        <item quantity="other">%1$d focus blocks · %2$s of focus · ends at %3$s</item>
+    </plurals>
     <string name="background_sound">Background Sound</string>
     <string name="volume">Volume</string>
     <string name="preview_sound">Preview Sound</string>
@@ -295,6 +366,28 @@
     <string name="sound_night">Night</string>
     <string name="sound_train">Train</string>
     <string name="sound_cafe">Café</string>
+
+    <!-- Focus: plan, wallpapers, full screen, history (0.6) -->
+    <string name="rhythm">Rhythm</string>
+    <string name="rhythm_footer">Focus block · short break · long break, in minutes.</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="wallpaper_footer">A new photo behind the countdown each session. Photos from Unsplash; each is downloaded once (about 0.5 MB) and kept on this phone until you clear it in Settings → Storage.</string>
+    <string name="photo_by">Photo by %1$s</string>
+    <string name="photo_by_on_unsplash">Photo by %1$s on Unsplash</string>
+    <string name="another_wallpaper">Another Wallpaper</string>
+    <string name="full_screen">Full Screen</string>
+    <string name="exit_full_screen">Exit Full Screen</string>
+    <string name="swipe_session_to_delete">Swipe left on a session to delete it.</string>
+    <string name="all_sessions">All Sessions</string>
+    <string name="focus_history">Focus History</string>
+    <string name="no_focus_sessions">No Focus Sessions</string>
+    <string name="no_focus_sessions_detail">Finished and stopped sessions appear here.</string>
+    <string name="clear_history">Clear History</string>
+    <plurals name="delete_all_focus_sessions">
+        <item quantity="one">Delete the focus session?</item>
+        <item quantity="other">Delete all %1$d focus sessions?</item>
+    </plurals>
+    <string name="clear_history_message">Today\'s focus time starts again from zero. This can\'t be undone.</string>
 
     <!-- Words: sign-in -->
     <string name="learn_kaoyan_words">Learn the 考研 words</string>
@@ -351,6 +444,16 @@
     <string name="synced_just_now">Synced just now</string>
     <string name="sync_offline">Offline. Your answers are saved on this phone and will upload later.</string>
     <string name="answers_waiting">%1$d answers waiting to upload</string>
+
+    <string name="todays_progress">Today\'s progress</string>
+    <plurals name="day_streak">
+        <item quantity="one">%1$d-day streak</item>
+        <item quantity="other">%1$d-day streak</item>
+    </plurals>
+    <plurals name="days_to_the_exam">
+        <item quantity="one">%1$d day to the exam</item>
+        <item quantity="other">%1$d days to the exam</item>
+    </plurals>
 
     <!-- Words: study session -->
     <string name="new_word">New word</string>
@@ -625,6 +728,11 @@
     <string name="ai_todo_unreadable">The AI\'s answer couldn\'t be read. Try describing it differently.</string>
     <string name="ai_todo_no_class">%1$s has no class on that day. Check the date.</string>
     <string name="ai_todo_unknown_course">No class called “%1$s” in your timetable, so the time was left open.</string>
+
+    <string name="ai_privacy_short_direct">Sent straight to your provider, never to our server</string>
+    <string name="ai_privacy_short_key">Your key stays on this phone, encrypted</string>
+    <string name="ai_privacy_short_confirm">Nothing changes until you tap Confirm</string>
+    <string name="ai_whats_sent">What\'s Sent</string>
 
     <!-- The Assistant and its tools -->
     <string name="agent_assistant">Assistant</string>
