@@ -31,7 +31,7 @@ struct StorageView: View {
             case .savedAnswers: String(localized: "Saved AI Answers")
             case .aiUsage: String(localized: "AI Usage Counts")
             case .wallpapers: String(localized: "Focus Wallpapers")
-            case .timetableBackground: String(localized: "Timetable Background")
+            case .timetableBackground: String(localized: "Background Photo")
             case .otherFiles: String(localized: "Other Cached Files")
             }
         }
@@ -65,7 +65,7 @@ struct StorageView: View {
             } header: {
                 Text("Downloaded Files")
             } footer: {
-                Text("Downloaded again when needed — except the timetable background, which is your choice.")
+                Text("Downloaded again when needed — except the background photo, which is your choice.")
             }
 
         }
@@ -187,7 +187,7 @@ struct StorageView: View {
         wallpaperCount = usage.count
         wallpaperBytes = usage.bytes
         otherBytes = URLCache.shared.currentDiskUsage + FolderUsage.bytes(in: .temporaryDirectory)
-        backgroundBytes = TimetableBackground.shared.bytes
+        backgroundBytes = BackgroundPhoto.shared.bytes
     }
 
     private func clear() {
@@ -199,7 +199,7 @@ struct StorageView: View {
             case .savedAnswers: ai.clearAnswers()
             case .aiUsage: ai.clearUsage()
             case .wallpapers: WallpaperStore.shared.clearCache()
-            case .timetableBackground: TimetableBackground.shared.clear()
+            case .timetableBackground: BackgroundPhoto.shared.clear()
             case .otherFiles:
                 URLCache.shared.removeAllCachedResponses()
                 FolderUsage.removeContents(of: .temporaryDirectory)

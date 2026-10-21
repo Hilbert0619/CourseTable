@@ -73,13 +73,9 @@ private struct SettingsForm: View {
                     Label("Export as CSV", systemImage: "square.and.arrow.up")
                 }
                 .disabled(timetable.courses.isEmpty)
-                NavigationLink {
-                    TimetableAppearanceView()
-                } label: {
-                    Label("Timetable Appearance", systemImage: "paintpalette")
-                }
-                .accessibilityIdentifier("timetableAppearanceLink")
             }
+
+            AppearanceSection()
 
             ReminderSection()
 
@@ -118,6 +114,28 @@ private struct SettingsForm: View {
     }
 }
 
+/// Settings → Appearance, with the look in use.
+private struct AppearanceSection: View {
+    @AppStorage(AppAppearance.styleKey) private var style = AppAppearance.defaultStyle
+
+    var body: some View {
+        Section {
+            NavigationLink {
+                AppearanceView()
+            } label: {
+                LabeledContent {
+                    style == .glass ? Text("Glass") : Text("Classic")
+                } label: {
+                    Label("Appearance", systemImage: "paintpalette")
+                }
+            }
+            .accessibilityIdentifier("appearanceLink")
+        } footer: {
+            Text("Glass or classic, the wallpaper, and how course blocks look.")
+        }
+    }
+}
+
 /// Settings → AI, with the connection in use.
 private struct AISettingsSection: View {
     @Environment(AIStore.self) private var ai
@@ -152,6 +170,7 @@ private struct ReminderSection: View {
     @Environment(\.openURL) private var openURL
     @State private var notificationsDenied = false
     @State private var activitiesDisabled = false
+    @State private var testResult: String?
 
     var body: some View {
         Section {
@@ -178,13 +197,29 @@ private struct ReminderSection: View {
                 Label("Live Activities for Course Table are turned off in Settings.", systemImage: "rectangle.slash")
                     .foregroundStyle(.orange)
             }
+            if liveActivities && ClassLiveActivities.canSchedule && !activitiesDisabled {
+                Button {
+                    Task { await runTest() }
+                } label: {
+                    Label("Test in 1 Minute", systemImage: "clock.badge.checkmark")
+                }
+                .accessibilityIdentifier("testLiveActivity")
+                if let testResult {
+                    Text(verbatim: testResult)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("testLiveActivityResult")
+                }
+            }
         } header: {
             Text("Reminders")
         } footer: {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Class reminders notify you of classes that have no Live Activity, up to your next \(Timetable.maxScheduledReminders) classes, and are renewed whenever you open the app.")
+                Text("Class reminders notify you before each class, up to your next \(Timetable.maxScheduledReminders) classes, and are renewed whenever you open the app.")
                 Text("Live Activity shows each class in the Dynamic Island and on the Lock Screen from the reminder time until it ends. Close it there if you don't need it.")
-                if !ClassLiveActivities.canSchedule {
+                if ClassLiveActivities.canSchedule {
+                    Text("iOS starts the Live Activity by itself, but not always, so keep class reminders on too: the reminder makes the sound, and the Live Activity appears silently next to it.")
+                } else {
                     Text("On this version of iOS, a Live Activity can only start while Course Table is open, for example when you tap the class reminder.")
                 }
             }
@@ -204,6 +239,23 @@ private struct ReminderSection: View {
         .task(id: scenePhase) {
             notificationsDenied = await ClassReminders.isDenied()
             activitiesDisabled = !ActivityAuthorizationInfo().areActivitiesEnabled
+        }
+    }
+
+    /// A pretend class whose Live Activity (and reminder, when on) iOS should start in a minute with the app closed.
+    private func runTest() async {
+        guard #available(iOS 26.0, *) else { return }
+        var withReminder = false
+        if enabled {
+            withReminder = await ClassReminders.isAllowed()
+        }
+        do {
+            let time = try await ClassLiveActivities.scheduleTest(withReminder: withReminder).formatted(date: .omitted, time: .shortened)
+            testResult = withReminder
+                ? String(localized: "Lock your iPhone now. At \(time) the test class's reminder should sound and its Live Activity appear, without opening Course Table.")
+                : String(localized: "Lock your iPhone now. At \(time) the test class's Live Activity should appear with a sound, without opening Course Table.")
+        } catch {
+            testResult = String(localized: "The test couldn't be scheduled: \(error.localizedDescription)")
         }
     }
 }

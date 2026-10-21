@@ -21,8 +21,12 @@ struct CourseTableApp: App {
         }
         if UITestLaunch.isActive {
             // @AppStorage values survive between UI-test launches: every test starts from the defaults.
-            for key in [TimetableAppearance.blockStyleKey, TimetableBackground.fadeKey, TimetableBackground.blockOpacityKey] {
+            for key in [TimetableAppearance.blockStyleKey, BackgroundPhoto.fadeKey, BackgroundPhoto.blockOpacityKey, AppAppearance.styleKey,
+                        AppBackground.key, AppBackground.glassFadeKey] {
                 UserDefaults.standard.removeObject(forKey: key)
+            }
+            if let style = UITestLaunch.appStyle {
+                UserDefaults.standard.set(style.rawValue, forKey: AppAppearance.styleKey)
             }
         }
         let planner = PlannerModel.makeForLaunch()

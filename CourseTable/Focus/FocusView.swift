@@ -28,6 +28,7 @@ func focusDuration(_ seconds: Int) -> String {
 private struct FocusSetupView: View {
     @Bindable var engine: FocusEngine
     let planner: PlannerModel
+    @AppStorage(AppAppearance.styleKey) private var style = AppAppearance.defaultStyle
 
     private static let lengths = Array(stride(from: FocusSettings.totalRange.lowerBound, through: FocusSettings.totalRange.upperBound, by: 5))
     /// The quick lengths on the plan card, in minutes.
@@ -37,7 +38,7 @@ private struct FocusSetupView: View {
         let plan = engine.plan
         Form {
             Section {
-                FocusPlanCard(plan: plan, totalMinutes: $engine.settings.totalMinutes, presets: Self.presets)
+                FocusPlanCard(plan: plan, totalMinutes: $engine.settings.totalMinutes, presets: Self.presets, style: style)
             }
 
             Section {
@@ -49,6 +50,7 @@ private struct FocusSetupView: View {
                     }
                 }
             }
+            .glassRows(style)
 
             Section {
                 Toggle("Breaks (Pomodoro)", isOn: $engine.settings.usesBreaks)
@@ -80,15 +82,19 @@ private struct FocusSetupView: View {
                     Text("Focus block · short break · long break, in minutes.")
                 }
             }
+            .glassRows(style)
 
             SoundSection(engine: engine)
+                .glassRows(style)
 
             WallpaperSection(wallpapers: WallpaperStore.shared)
+                .glassRows(style)
 
             FocusHistorySection(engine: engine, planner: planner)
+                .glassRows(style)
         }
-        .paperBackground()
-        // Always in reach, above the tab bar; the list fades out under it.
+        .tabBackground(style)
+        // Always in reach, above the tab bar; on the paper the list fades out under it, on glass it floats.
         .safeAreaInset(edge: .bottom) {
             Button {
                 engine.start()
@@ -98,15 +104,17 @@ private struct FocusSetupView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
             }
-            .buttonStyle(.borderedProminent)
+            .glassButtonStyle(style, prominent: true)
             .padding(.horizontal, 20)
             .padding(.top, 14)
             .padding(.bottom, 8)
             .background {
-                LinearGradient(stops: [.init(color: Theme.paper.opacity(0), location: 0), .init(color: Theme.paper, location: 0.4)],
-                               startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea(edges: .bottom)
-                    .allowsHitTesting(false)
+                if style == .classic {
+                    LinearGradient(stops: [.init(color: Theme.paper.opacity(0), location: 0), .init(color: Theme.paper, location: 0.4)],
+                                   startPoint: .top, endPoint: .bottom)
+                        .ignoresSafeArea(edges: .bottom)
+                        .allowsHitTesting(false)
+                }
             }
             .accessibilityIdentifier("startFocus")
         }
@@ -122,6 +130,7 @@ private struct FocusPlanCard: View {
     let plan: FocusPlan
     @Binding var totalMinutes: Int
     let presets: [Int]
+    let style: AppStyle
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -158,7 +167,7 @@ private struct FocusPlanCard: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
                             .foregroundStyle(selected ? Color.white : Color.primary)
-                            .background(selected ? Color.accentColor : Color.secondary.opacity(0.12), in: Capsule())
+                            .modifier(PresetChipSurface(selected: selected, glass: style == .glass))
                     }
                     .buttonStyle(.borderless)
                     .accessibilityAddTraits(selected ? .isSelected : [])
@@ -166,8 +175,42 @@ private struct FocusPlanCard: View {
                 }
             }
         }
-        .padding(.vertical, 6)
+        .modifier(PlanCardSurface(glass: style == .glass))
         .sensoryFeedback(.selection, trigger: totalMinutes)
+    }
+}
+
+/// The plan card: a row of the form, or its own glass card on the wallpaper.
+private struct PlanCardSurface: ViewModifier {
+    let glass: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if glass {
+            content
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .glassCard()
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+        } else {
+            content.padding(.vertical, 6)
+        }
+    }
+}
+
+/// A quick length: a capsule, the chosen one in the accent colour; of glass on the wallpaper.
+private struct PresetChipSurface: ViewModifier {
+    let selected: Bool
+    let glass: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if glass {
+            content.glassCapsule(tint: selected ? Color.accentColor : nil, interactive: true)
+        } else {
+            content.background(selected ? Color.accentColor : Color.secondary.opacity(0.12), in: Capsule())
+        }
     }
 }
 
@@ -365,6 +408,7 @@ private struct RunningFocusView: View {
     @State private var confirmingStop = false
     @State private var fullScreen = false
     @Environment(\.colorScheme) private var colorScheme
+    @AppStorage(AppAppearance.styleKey) private var style = AppAppearance.defaultStyle
     private var wallpapers: WallpaperStore { WallpaperStore.shared }
 
     var body: some View {
@@ -427,8 +471,7 @@ private struct RunningFocusView: View {
                 // redrawn when the photo arrives, so the photo only showed after the row was rebuilt.
                 .padding(.horizontal, 20)
                 .padding(.vertical, 11)
-                .background { CountdownCardBackground() }
-                .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
+                .modifier(CountdownCardSurface(glass: style == .glass))
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
             }
@@ -445,7 +488,7 @@ private struct RunningFocusView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 4)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .glassButtonStyle(style, prominent: true)
                     .accessibilityIdentifier("pauseFocus")
                     Button {
                         confirmingStop = true
@@ -457,7 +500,7 @@ private struct RunningFocusView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 4)
                     }
-                    .buttonStyle(.bordered)
+                    .glassButtonStyle(style)
                     .tint(.red)
                     .accessibilityIdentifier("stopFocus")
                     Button {
@@ -466,7 +509,7 @@ private struct RunningFocusView: View {
                         Image(systemName: "arrow.up.left.and.arrow.down.right")
                             .padding(.vertical, 4)
                     }
-                    .buttonStyle(.bordered)
+                    .glassButtonStyle(style)
                     .accessibilityLabel(Text("Full Screen"))
                     .accessibilityIdentifier("fullScreenFocus")
                 }
@@ -475,8 +518,9 @@ private struct RunningFocusView: View {
             }
 
             SoundSection(engine: engine)
+                .glassRows(style)
         }
-        .paperBackground()
+        .tabBackground(style)
         .fullScreenCover(isPresented: $fullScreen) {
             FullScreenFocusView(engine: engine)
         }
@@ -611,14 +655,23 @@ private struct FullScreenFocusView: View {
     }
 }
 
-/// The countdown card's background: the session's photo, or the plain row colour. It reads the store itself, so it
-/// redraws as soon as the photo arrives.
-private struct CountdownCardBackground: View {
-    var body: some View {
+/// The countdown card's background: the session's photo, else glass (the glass look) or the plain row colour. It
+/// reads the store itself, so it redraws as soon as the photo arrives.
+private struct CountdownCardSurface: ViewModifier {
+    let glass: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
         if let shown = WallpaperStore.shared.shown {
-            WallpaperBackground(shown: shown)
+            content
+                .background { WallpaperBackground(shown: shown) }
+                .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
+        } else if glass {
+            content.glassCard()
         } else {
-            Color(uiColor: .secondarySystemGroupedBackground)
+            content
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
         }
     }
 }

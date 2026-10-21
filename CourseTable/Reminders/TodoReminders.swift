@@ -52,7 +52,7 @@ enum TodoReminders {
 }
 
 /// Keeps every alert in step with the timetable, the to-dos and the settings: class Live Activities first,
-/// then notifications for the classes they don't cover, then the to-dos. `RootView` runs it whenever any of
+/// then a notification for every class, then the to-dos. `RootView` runs it whenever any of
 /// them change and each time the app comes to the foreground.
 enum Alerts {
     /// What `RootView` asks for; a new value cancels the previous sync.
@@ -71,14 +71,18 @@ enum Alerts {
         // Let a burst of edits settle; a newer request cancels this one.
         try? await Task.sleep(for: .seconds(1))
         guard !Task.isCancelled else { return }
-        let covered = await ClassLiveActivities.sync(
+        // With a reminder sounding, a scheduled activity starts silently next to it.
+        var remindersSound = false
+        if request.remindersEnabled {
+            remindersSound = await ClassReminders.isAllowed()
+        }
+        await ClassLiveActivities.sync(
             timetable: request.timetable, enabled: request.liveActivitiesEnabled, leadMinutes: request.leadMinutes,
-            todos: request.todos, now: now
+            todos: request.todos, quietAlert: remindersSound, now: now
         )
         guard !Task.isCancelled else { return }
         await ClassReminders.sync(
-            timetable: request.timetable, enabled: request.remindersEnabled, leadMinutes: request.leadMinutes,
-            excluding: covered, now: now
+            timetable: request.timetable, enabled: request.remindersEnabled, leadMinutes: request.leadMinutes, now: now
         )
         guard !Task.isCancelled else { return }
         await TodoReminders.sync(timetable: request.timetable, todos: request.todos, now: now)

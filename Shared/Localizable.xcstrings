@@ -733,6 +733,26 @@
         }
       }
     },
+    "A wallpaper of soft shapes keeps text easy to read. Or use one of your own photos; the Focus wallpapers you've seen also show here." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "柔和色块的壁纸让文字清晰易读。也可以用你自己的照片；看过的专注壁纸也会显示在这里。"
+          }
+        }
+      }
+    },
+    "A wallpaper of soft shapes keeps text easy to read. Or use your own photo, or one of the Focus wallpapers you've seen." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "柔和色块的壁纸让文字清晰易读。也可以用你自己的照片，或看过的专注壁纸。"
+          }
+        }
+      }
+    },
     "AI Help" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1183,6 +1203,16 @@
         }
       }
     },
+    "Appearance" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外观"
+          }
+        }
+      }
+    },
     "Ask Again" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1309,6 +1339,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "背景"
+          }
+        }
+      }
+    },
+    "Background Photo" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景照片"
           }
         }
       }
@@ -1643,6 +1683,16 @@
         }
       }
     },
+    "Class reminders notify you before each class, up to your next %lld classes, and are renewed whenever you open the app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上课提醒会在每节课前通知你，最多覆盖接下来的 %lld 节课，每次打开 App 时自动续上。"
+          }
+        }
+      }
+    },
     "Class reminders notify you of classes that have no Live Activity, up to your next %lld classes, and are renewed whenever you open the app." : {
       "localizations" : {
         "zh-Hans" : {
@@ -1669,6 +1719,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "课程"
+          }
+        }
+      }
+    },
+    "Classic" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "经典"
           }
         }
       }
@@ -1993,6 +2053,16 @@
         }
       }
     },
+    "Dawn" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "晨曦"
+          }
+        }
+      }
+    },
     "Day" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2211,6 +2281,16 @@
         }
       }
     },
+    "Downloaded again when needed — except the background photo, which is your choice." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要时会重新下载——背景照片除外，它由你自己选择。"
+          }
+        }
+      }
+    },
     "Downloaded again when needed — except the timetable background, which is your choice." : {
       "localizations" : {
         "zh-Hans" : {
@@ -2307,6 +2387,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "邮箱"
+          }
+        }
+      }
+    },
+    "Ember" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暖阳"
           }
         }
       }
@@ -2779,6 +2869,26 @@
         }
       }
     },
+    "Glass" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玻璃"
+          }
+        }
+      }
+    },
+    "Glass or classic, the wallpaper, and how course blocks look." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玻璃或经典风格、壁纸，以及课程块的样式。"
+          }
+        }
+      }
+    },
     "Goal, e.g. Calculus review" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2965,6 +3075,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "类型"
+          }
+        }
+      }
+    },
+    "Lagoon" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "湖光"
+          }
+        }
+      }
+    },
+    "Lavender" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "薰衣草"
           }
         }
       }
@@ -3157,6 +3287,26 @@
         }
       }
     },
+    "Lock your iPhone now. At %@ the test class's Live Activity should appear with a sound, without opening Course Table." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现在锁定 iPhone。到 %@，测试课的实时活动应会带着提示音出现，无需打开课程表。"
+          }
+        }
+      }
+    },
+    "Lock your iPhone now. At %@ the test class's reminder should sound and its Live Activity appear, without opening Course Table." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现在锁定 iPhone。到 %@，测试课的提醒应会响起，实时活动也应出现，无需打开课程表。"
+          }
+        }
+      }
+    },
     "Long Sentences" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3313,6 +3463,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已掌握"
+          }
+        }
+      }
+    },
+    "Meadow" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "草甸"
           }
         }
       }
@@ -4133,6 +4293,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "牛津 3000 词"
+          }
+        }
+      }
+    },
+    "Paper" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "纸张"
           }
         }
       }
@@ -5067,6 +5237,16 @@
         }
       }
     },
+    "Sky" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "晴空"
+          }
+        }
+      }
+    },
     "Soft" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5347,6 +5527,16 @@
         }
       }
     },
+    "Style" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "风格"
+          }
+        }
+      }
+    },
     "Suggested: %@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5565,12 +5755,32 @@
         }
       }
     },
+    "Test Class" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "测试课"
+          }
+        }
+      }
+    },
     "Test Connection" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "测试连接"
+          }
+        }
+      }
+    },
+    "Test in 1 Minute" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 分钟后测试"
           }
         }
       }
@@ -5875,12 +6085,32 @@
         }
       }
     },
+    "The test couldn't be scheduled: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法安排测试：%@"
+          }
+        }
+      }
+    },
     "The time you've focused so far is kept in the history." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "已专注的时间会保存在记录中。"
+          }
+        }
+      }
+    },
+    "The warm paper of the icon. The background below shows behind the timetable only." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图标的暖白纸色。下面选的背景只显示在课表后面。"
           }
         }
       }
@@ -6177,6 +6407,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日进度"
+          }
+        }
+      }
+    },
+    "Today, Timetable, Focus and Words on the background below, with cards and buttons of glass." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天、课表、专注和单词显示在下面选的背景上，卡片和按钮是玻璃质感。"
           }
         }
       }
@@ -6897,6 +7137,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 结束"
+          }
+        }
+      }
+    },
+    "iOS starts the Live Activity by itself, but not always, so keep class reminders on too: the reminder makes the sound, and the Live Activity appears silently next to it." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实时活动由 iOS 自行启动，但并不总能启动，所以请同时打开上课提醒：提醒负责响铃，实时活动在旁边静默出现。"
           }
         }
       }

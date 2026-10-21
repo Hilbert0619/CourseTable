@@ -94,17 +94,23 @@ data class ClassActivityUpdate(
  * What to change so the live class notifications match the wanted windows.
  *
  * Each class gets one at most: the app remembers the signature of every one it created ([of]'s `created`) until the
- * class is over, so one the person closed doesn't come back. Only one that never showed (still scheduled) and is ended
- * here is forgotten ([forget]), so its class can be scheduled again, e.g. at a new reminder time.
+ * class is over, so one the person closed doesn't come back. Only one that never showed is forgotten ([forget]), so its
+ * class gets one again: a scheduled one ended here (e.g. for a new reminder time), and a scheduled one that is gone
+ * although nobody saw it (`scheduled`): the system didn't start it, or dropped it before it started.
  */
 data class ClassActivityPlan(
     /** Activities to end now ([ExistingClassActivity.id]): finished, no longer wanted, outdated, or duplicates. */
     val end: List<String>,
-    /** Signatures to remove from the created ones: scheduled activities ended before they started. */
+    /** Signatures to remove from the created ones: scheduled activities ended before they started, or gone unseen. */
     val forget: Set<String>,
+    /**
+     * Scheduled signatures whose activity is showing now: from now on they count as seen, so the app doesn't start
+     * them again once they're gone.
+     */
+    val seen: Set<String>,
     /** Showing activities whose to-dos changed. */
     val update: List<ClassActivityUpdate>,
-    /** Classes ([ClassActivityWindow.id]) that keep an activity, or had one: no notification for them. */
+    /** Classes ([ClassActivityWindow.id]) that keep an activity, or had one that showed: no notification for them. */
     val covered: Set<String>,
     /** Windows open now that need an activity started. */
     val startNow: List<ClassActivityWindow>,
@@ -117,6 +123,8 @@ data class ClassActivityPlan(
          * @param wanted usually [Timetable.upcomingActivityWindows]; empty when the feature is off.
          * @param created signatures ([ClassActivityWindow.signature]) of the activities created before.
          * @param canSchedule whether activities can be scheduled to start later.
+         * @param scheduled those of [created] that were scheduled to start on their own and haven't been seen showing;
+         *   if one of them is gone, nobody saw it.
          */
         fun of(
             existing: List<ExistingClassActivity>,
@@ -124,6 +132,7 @@ data class ClassActivityPlan(
             created: Set<String>,
             now: Moment,
             canSchedule: Boolean,
+            scheduled: Set<String> = emptySet(),
         ): ClassActivityPlan {
             val end = mutableListOf<String>()
             val update = mutableListOf<ClassActivityUpdate>()
@@ -141,10 +150,17 @@ data class ClassActivityPlan(
                     if (activity.isPending) endedPending += activity.signature
                 }
             }
-            val forget = endedPending - kept
+            val forget = (endedPending - kept).toMutableSet()
             val remembered = created - forget
+            val seen = scheduled intersect existing.filter { !it.isPending }.map { it.signature }.toSet()
             for (window in wanted) {
-                if (window.id !in covered && window.signature in remembered) covered += window.id
+                if (window.id in covered || window.signature !in remembered) continue
+                if (window.signature in scheduled && window.signature !in seen) {
+                    // Scheduled, and gone without anyone seeing it: create it again.
+                    forget += window.signature
+                } else {
+                    covered += window.id
+                }
             }
             val startNow = mutableListOf<ClassActivityWindow>()
             val schedule = mutableListOf<ClassActivityWindow>()
@@ -156,7 +172,7 @@ data class ClassActivityPlan(
                     schedule += window
                 }
             }
-            return ClassActivityPlan(end, forget, update, covered, startNow, schedule)
+            return ClassActivityPlan(end, forget, seen, update, covered, startNow, schedule)
         }
     }
 }

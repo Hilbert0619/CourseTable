@@ -22,9 +22,16 @@ struct WeekView: View {
     /// While placing, also show Saturday and Sunday so weekend classes can be placed.
     @State private var placingOnWeekend = false
     @AppStorage(TimetableAppearance.blockStyleKey) private var blockStyle = TimetableAppearance.defaultBlockStyle
-    @AppStorage(TimetableBackground.blockOpacityKey) private var blockOpacity = TimetableBackground.defaultBlockOpacity
+    @AppStorage(BackgroundPhoto.blockOpacityKey) private var blockOpacity = BackgroundPhoto.defaultBlockOpacity
+    @AppStorage(AppAppearance.styleKey) private var appStyle = AppAppearance.defaultStyle
+    @AppStorage(AppBackground.key) private var background = ""
 
     private var today: LocalDate { LocalDate(.now) }
+    /// What the day row and the period times sit on: frosted glass, the paper over a picture, or nothing.
+    private var labelSurface: LabelSurface {
+        if appStyle == .glass { return .frosted }
+        return AppBackground.resolve(background, style: appStyle) == .paper ? .none : .paper
+    }
     private var currentWeek: Int { timetable.semester.displayWeek(on: today) }
     private var week: Int { min(selectedWeek ?? currentWeek, timetable.semester.totalWeeks) }
 
@@ -38,8 +45,7 @@ struct WeekView: View {
             GeometryReader { proxy in
                 let layout = GridLayout(width: proxy.size.width, days: visibleDays)
                 VStack(spacing: 0) {
-                    DayHeader(layout: layout, semester: timetable.semester, week: week, today: today,
-                              isOnPhoto: TimetableBackground.shared.image != nil)
+                    DayHeader(layout: layout, semester: timetable.semester, week: week, today: today, surface: labelSurface)
                     Divider()
                     ScrollView {
                         // Each minute: the current-time line and the class in progress.
@@ -51,8 +57,9 @@ struct WeekView: View {
                                 today: today,
                                 now: Moment(context.date),
                                 blockStyle: blockStyle,
-                                blockOpacity: TimetableBackground.shared.image == nil ? 1 : blockOpacity,
-                                isOnPhoto: TimetableBackground.shared.image != nil,
+                                blockOpacity: labelSurface == .none ? 1 : blockOpacity,
+                                glass: appStyle == .glass,
+                                labelSurface: labelSurface,
                                 showsAllWeeks: placing,
                                 onSelectCourse: { editorTarget = .edit($0) },
                                 onSelectSlot: { day, period in selectSlot(day, period, templates: templates) }
@@ -72,13 +79,13 @@ struct WeekView: View {
                             .font(.callout)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .modifier(HintSurface(glass: appStyle == .glass))
                             .padding(.bottom, 24)
                         }
                     }
                 }
             }
-            .background { TimetableBackdrop() }
+            .background { AppBackdrop(style: appStyle) }
             // Swiping the grid changes the week. Attached before the tray is added below, so
             // scrolling the tray's course chips doesn't.
             .simultaneousGesture(
@@ -255,13 +262,44 @@ private struct GridLayout {
     }
 }
 
+/// Behind the day row and the period times, so they stay readable on a picture.
+private enum LabelSurface {
+    case none
+    /// The paper, mostly opaque (the classic look on a picture).
+    case paper
+    /// Frosted glass (the glass look).
+    case frosted
+
+    @ViewBuilder
+    var fill: some View {
+        switch self {
+        case .none: Color.clear
+        case .paper: Theme.paper.opacity(0.82)
+        case .frosted: FrostedFill()
+        }
+    }
+}
+
+/// The empty timetable's hint: glass, or the regular material.
+private struct HintSurface: ViewModifier {
+    let glass: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if glass {
+            content.glassCard(cornerRadius: 16)
+        } else {
+            content.background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        }
+    }
+}
+
 private struct DayHeader: View {
     let layout: GridLayout
     let semester: Semester
     let week: Int
     let today: LocalDate
-    /// A photo is behind the timetable: the row gets the paper behind it, so the days stay readable.
-    var isOnPhoto = false
+    var surface = LabelSurface.none
 
     var body: some View {
         HStack(spacing: 0) {
@@ -284,7 +322,9 @@ private struct DayHeader: View {
                 .background(isToday ? Color.accentColor.opacity(0.12) : Color.clear, ignoresSafeAreaEdges: [])
             }
         }
-        .background(isOnPhoto ? Theme.paper.opacity(0.82) : Color.clear, ignoresSafeAreaEdges: [])
+        // Not into the navigation bar above.
+        .background { surface.fill }
+        .clipped()
     }
 }
 
@@ -296,8 +336,10 @@ private struct WeekGrid: View {
     let now: Moment
     let blockStyle: CourseBlockStyle
     let blockOpacity: Double
-    /// A photo is behind the timetable: the period times get the paper behind them.
-    let isOnPhoto: Bool
+    /// Course blocks of glass.
+    let glass: Bool
+    /// Behind the period times.
+    let labelSurface: LabelSurface
     /// Also show courses that don't meet in `week`, dimmed (used while placing courses).
     let showsAllWeeks: Bool
     let onSelectCourse: (Course) -> Void
@@ -307,9 +349,8 @@ private struct WeekGrid: View {
         let periodCount = timetable.periods.count
         let current = timetable.currentAndNext(at: now).current
         ZStack(alignment: .topLeading) {
-            if isOnPhoto {
-                Rectangle()
-                    .fill(Theme.paper.opacity(0.82))
+            if labelSurface != .none {
+                labelSurface.fill
                     .frame(width: GridLayout.timeColumnWidth, height: CGFloat(periodCount) * GridLayout.rowHeight)
             }
             ForEach(0..<periodCount, id: \.self) { index in
@@ -340,7 +381,7 @@ private struct WeekGrid: View {
                     let laneWidth = layout.columnWidth / CGFloat(placement.laneCount)
                     let isCurrent = placement.isInWeek && current?.course.id == placement.course.id
                         && current?.day == timetable.semester.date(of: placement.weekday, inWeek: week)
-                    CourseBlock(course: placement.course, style: blockStyle, isCurrent: isCurrent, fillOpacity: blockOpacity)
+                    CourseBlock(course: placement.course, style: blockStyle, isCurrent: isCurrent, fillOpacity: blockOpacity, glass: glass)
                         .opacity(placement.isInWeek ? 1 : 0.35)
                         .onTapGesture { onSelectCourse(placement.course) }
                         .frame(
@@ -390,13 +431,15 @@ private struct PeriodLabel: View {
 }
 
 /// A course on the grid: soft (a tint, same-hue text and a stripe in the course's colour) or solid (the colour with
-/// white text), and outlined while the class is on.
+/// white text), of glass in the glass look, and outlined while the class is on.
 struct CourseBlock: View {
     let course: Course
     var style: CourseBlockStyle = TimetableAppearance.defaultBlockStyle
     var isCurrent = false
-    /// Below 1 when a photo is behind the timetable (the text and stripe stay solid).
+    /// Below 1 when a picture is behind the timetable (the text and stripe stay solid).
     var fillOpacity: Double = 1
+    /// Glass tinted with the block's colour.
+    var glass = false
     /// Small type: day columns are only ~70 points wide (~50 with the weekend shown), and English words wider than
     /// that get broken mid-word. It grows with Dynamic Type, but only so far.
     @ScaledMetric(relativeTo: .caption2) private var nameSize: CGFloat = 11
@@ -426,15 +469,9 @@ struct CourseBlock: View {
             .padding(.trailing, 3)
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
         }
-        .background {
-            shape.fill(colors.fill.opacity(fillOpacity))
-                .overlay(alignment: .leading) {
-                    if style == .soft {
-                        Rectangle().fill(course.color).frame(width: 3)
-                    }
-                }
-                .clipShape(shape)
-        }
+        .modifier(BlockSurface(fill: colors.fill, stripe: style == .soft ? course.color : nil,
+                               // Solid blocks carry white text: they keep more of their colour.
+                               opacity: glass ? fillOpacity * (style == .soft ? 0.75 : 0.95) : fillOpacity, glass: glass))
         .overlay {
             if isCurrent {
                 shape.strokeBorder(style == .soft ? course.color : Color.primary.opacity(0.7), lineWidth: 2)
@@ -443,6 +480,38 @@ struct CourseBlock: View {
         .shadow(color: isCurrent ? course.color.opacity(0.45) : .clear, radius: 6)
         .accessibilityElement(children: .combine)
         .accessibilityValue(isCurrent ? Text("Now") : Text(verbatim: ""))
+    }
+}
+
+/// A course block's fill and stripe: on the grid, or as tinted glass.
+private struct BlockSurface: ViewModifier {
+    let fill: Color
+    let stripe: Color?
+    let opacity: Double
+    let glass: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
+        if glass {
+            content
+                .overlay(alignment: .leading) { stripeView }
+                .clipShape(shape)
+                .glassCard(tint: fill.opacity(opacity), cornerRadius: 6)
+        } else {
+            content.background {
+                shape.fill(fill.opacity(opacity))
+                    .overlay(alignment: .leading) { stripeView }
+                    .clipShape(shape)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var stripeView: some View {
+        if let stripe {
+            Rectangle().fill(stripe).frame(width: 3)
+        }
     }
 }
 

@@ -34,6 +34,7 @@ struct WordsHomeView: View {
     @Environment(VocabApp.self) private var vocab
     @State private var studying = false
     @State private var showingAssistant = false
+    @AppStorage(AppAppearance.styleKey) private var style = AppAppearance.defaultStyle
 
     private var model: VocabModel { vocab.model }
 
@@ -45,12 +46,15 @@ struct WordsHomeView: View {
                     Label("Words can't be saved on this iPhone right now: \(problem)", systemImage: "exclamationmark.triangle")
                         .foregroundStyle(.red)
                 }
+                .glassRows(style)
             }
             todaySection(plan)
             if let countdown = model.examCountdown() {
                 examSection(countdown)
+                    .glassRows(style)
             }
             bookSection
+                .glassRows(style)
             Section {
                 NavigationLink(value: WordsRoute.search) {
                     Label("Search", systemImage: "magnifyingglass")
@@ -77,6 +81,7 @@ struct WordsHomeView: View {
                 }
                 .accessibilityIdentifier("statisticsLink")
             }
+            .glassRows(style)
             Section {
                 NavigationLink(value: WordsRoute.sentences) {
                     Label("Long Sentences", systemImage: "text.alignleft")
@@ -89,11 +94,13 @@ struct WordsHomeView: View {
             } header: {
                 Text("AI Tools")
             }
+            .glassRows(style)
             Section {
                 SyncStatusRow()
             }
+            .glassRows(style)
         }
-        .paperBackground()
+        .tabBackground(style)
         .navigationTitle("Words")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -139,10 +146,12 @@ struct WordsHomeView: View {
                 if streak.days > 0 || countdown != nil {
                     HStack(spacing: 8) {
                         if streak.days > 0 {
-                            Chip(systemImage: "flame.fill", tint: .orange) { Text("\(streak.days)-day streak") }
+                            Chip(systemImage: "flame.fill", tint: .orange, glass: style == .glass) { Text("\(streak.days)-day streak") }
                         }
                         if let countdown {
-                            Chip(systemImage: "calendar", tint: .accentColor) { Text("\(countdown.daysLeft) days to the exam") }
+                            Chip(systemImage: "calendar", tint: .accentColor, glass: style == .glass) {
+                                Text("\(countdown.daysLeft) days to the exam")
+                            }
                         }
                     }
                 }
@@ -165,14 +174,33 @@ struct WordsHomeView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .glassButtonStyle(style, prominent: true)
                     .disabled(model.bookWords.isEmpty && plan.reviewsRemaining == 0)
                     .accessibilityIdentifier("startStudy")
                 }
             }
-            .padding(.vertical, 6)
+            .modifier(TodayCardSurface(glass: style == .glass))
         } header: {
             Text("Today")
+        }
+    }
+
+    /// Today's card: a row of the list, or its own glass card on the wallpaper.
+    private struct TodayCardSurface: ViewModifier {
+        let glass: Bool
+
+        @ViewBuilder
+        func body(content: Content) -> some View {
+            if glass {
+                content
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                    .glassCard()
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+            } else {
+                content.padding(.vertical, 6)
+            }
         }
     }
 
@@ -226,11 +254,12 @@ struct WordsHomeView: View {
     private struct Chip<Content: View>: View {
         let systemImage: String
         let tint: Color
+        var glass = false
         @ViewBuilder let content: () -> Content
 
         var body: some View {
             // Not a Label: in a list it keeps a wide column for the icon.
-            HStack(spacing: 5) {
+            let chip = HStack(spacing: 5) {
                 Image(systemName: systemImage)
                     .foregroundStyle(tint)
                 content()
@@ -238,7 +267,11 @@ struct WordsHomeView: View {
             .font(.footnote.weight(.medium))
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(tint.opacity(0.12), in: Capsule())
+            if glass {
+                chip.glassCapsule(tint: tint.opacity(0.15))
+            } else {
+                chip.background(tint.opacity(0.12), in: Capsule())
+            }
         }
     }
 

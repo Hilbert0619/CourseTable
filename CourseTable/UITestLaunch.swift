@@ -22,4 +22,7 @@ enum UITestLaunch {
     /// The app's appearance, `dark` or `light` (`-uiColorScheme dark`): setting the Simulator's from the test
     /// didn't take.
     static let colorScheme = isActive ? UserDefaults.standard.string(forKey: "uiColorScheme") : nil
+    /// The look, `glass` or `classic` (`-appStyle classic`); the default otherwise. Copied into the setting at launch
+    /// (a launch argument with the setting's own key would hide changes made in the app).
+    static let appStyle = isActive ? UserDefaults.standard.string(forKey: "appStyle").flatMap(AppStyle.init(rawValue:)) : nil
 }

@@ -15,7 +15,8 @@ enum ReminderSettings {
     }
 }
 
-/// Local notifications shortly before each class that has no Live Activity.
+/// Local notifications shortly before each class, Live Activity or not: iOS doesn't always start a scheduled
+/// activity, and a reminder always comes (with one, the activity starts silently next to it).
 ///
 /// iOS keeps at most 64 pending notifications per app, so only the next
 /// `Timetable.maxScheduledReminders` classes are scheduled (`Alerts.sync` does it whenever the app comes
@@ -77,13 +78,13 @@ enum ClassReminders {
         center.removePendingNotificationRequests(withIdentifiers: ids)
     }
 
-    /// Replaces the scheduled class reminders with ones for the upcoming classes not in `excluding` (those
-    /// with a Live Activity), or removes them when reminders are off or not allowed.
-    static func sync(timetable: Timetable, enabled: Bool, leadMinutes: Int, excluding: Set<String>, now: Date = .now) async {
+    /// Replaces the scheduled class reminders with ones for the upcoming classes, or removes them when reminders
+    /// are off or not allowed.
+    static func sync(timetable: Timetable, enabled: Bool, leadMinutes: Int, now: Date = .now) async {
         let center = UNUserNotificationCenter.current()
         await removePending(withPrefix: idPrefix)
         guard enabled, await isAllowed() else { return }
-        let reminders = timetable.upcomingReminders(after: Moment(now), leadMinutes: leadMinutes, excluding: excluding)
+        let reminders = timetable.upcomingReminders(after: Moment(now), leadMinutes: leadMinutes)
         for payload in reminders.map(payload(for:)) {
             guard !Task.isCancelled else { return }
             let content = UNMutableNotificationContent()

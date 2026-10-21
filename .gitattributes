@@ -13,6 +13,7 @@
 *.pdf binary
 *.heic binary
 *.m4a binary
+*.wav binary
 
 # Shared test files in exact encodings (GB18030, UTF-16): keep their bytes
 spec/fixtures/*.csv binary

@@ -2,6 +2,7 @@ import ActivityKit
 import BackgroundTasks
 import Foundation
 import OSLog
+import UserNotifications
 import CourseKit
 
 /// Live Activity preferences, per device like the reminder settings.
@@ -13,17 +14,25 @@ enum LiveActivitySettings {
 /// Each class as a Live Activity in the Dynamic Island and on the Lock Screen, from the reminder time
 /// (`ReminderSettings.leadMinutesKey`) until it ends (`ClassActivityWidget` draws it).
 ///
-/// On iOS 26 the next few classes are scheduled ahead, and the system starts each one on time even when
-/// the app isn't running. Earlier versions can only start one while the app is open, so there a class's
-/// activity appears when the app comes to the foreground during its window, e.g. by tapping the class
-/// reminder. Without a server push an activity can't end itself: it has a Close button, the app ends
-/// finished ones whenever it comes to the foreground or iOS gives it a background refresh, and iOS ends
-/// any after eight hours.
+/// On iOS 26 the next few classes are scheduled ahead, and the system starts each one at its time even when
+/// the app isn't running, but not always (users saw none, 2026-10). So every class also gets its reminder
+/// notification (`Alerts.sync`), and while that is on, a scheduled activity starts silently next to it. One
+/// that is gone although nobody saw it is created again the next time the app is open. Earlier versions can
+/// only start one while the app is open, so there a class's activity appears when the app comes to the
+/// foreground during its window, e.g. by tapping the class reminder. Without a server push an activity can't
+/// end itself: it has a Close button, the app ends finished ones whenever it comes to the foreground or iOS
+/// gives it a background refresh, and iOS ends any after eight hours.
 enum ClassLiveActivities {
     private static let logger = Logger(subsystem: "io.github.hilbert0619.CourseTable", category: "LiveActivities")
 
     /// The background app refresh that ends activities after their class (listed in Info.plist).
     static let cleanupTaskID = "io.github.hilbert0619.CourseTable.classActivities"
+    /// A silent sound in the app bundle, for the alert of an activity that starts with a class reminder.
+    static let silentSound = "Silence.wav"
+    /// Signatures of the test activities from Settings → Reminders, which the sync leaves alone.
+    private static let testPrefix = "test|"
+    /// Not starting with `ClassReminders.idPrefix`: a sync replaces those.
+    private static let testReminderID = "test-class-reminder"
 
     /// Whether the system can start an activity at a later date on its own.
     static var canSchedule: Bool {
@@ -34,26 +43,41 @@ enum ClassLiveActivities {
     }
 
     /// Ends, starts, schedules and updates activities so they match the upcoming classes and their to-dos.
-    /// Returns the classes (`ClassSession.id`) that have an activity, or had one: `Alerts.sync` sends no
-    /// notification for them.
-    static func sync(timetable: Timetable, enabled: Bool, leadMinutes: Int, todos: [Todo], now: Date = .now) async -> Set<String> {
+    /// `quietAlert`: a class reminder sounds at the same moment, so scheduled activities start silently.
+    static func sync(timetable: Timetable, enabled: Bool, leadMinutes: Int, todos: [Todo], quietAlert: Bool, now: Date = .now) async {
         var created = CreatedActivities.load()
         created.removeFinished(before: now)
         if !enabled {
             // Turning the switch on again shows the class in its window once more.
             created.removeAll()
         }
+        var ended: Set<String> = []
+        if created.quietAlert != quietAlert {
+            if created.quietAlert == nil {
+                // From 0.7.0, which didn't keep track of what showed: whatever isn't there now may never have.
+                let live = Set(classActivities().map(\.attributes.signature))
+                created.scheduled.formUnion(created.signatures.subtracting(live))
+            }
+            // Scheduled activities keep the alert they were made with: replace them.
+            for activity in classActivities() where isPending(activity) {
+                await activity.end(nil, dismissalPolicy: .immediate)
+                ended.insert(activity.id)
+                created.forget([activity.attributes.signature])
+            }
+            created.quietAlert = quietAlert
+        }
         let moment = Moment(now)
         let wanted = enabled && ActivityAuthorizationInfo().areActivitiesEnabled
             ? timetable.upcomingActivityWindows(after: moment, leadMinutes: leadMinutes, todos: todos)
             : []
-        let activities = Activity<ClassActivityAttributes>.activities.filter(isLive)
+        let activities = classActivities().filter { !ended.contains($0.id) }
         let existing = activities.map { activity in
             ExistingClassActivity(id: activity.id, signature: activity.attributes.signature, showMoment: Moment(activity.attributes.showDate),
                                   isPending: isPending(activity), todos: activity.content.state.todos)
         }
-        let plan = ClassActivityPlan(existing: existing, wanted: wanted, created: created.signatures, now: moment, canSchedule: canSchedule)
-        var covered = plan.covered
+        let plan = ClassActivityPlan(existing: existing, wanted: wanted, created: created.signatures, scheduled: created.scheduled,
+                                     now: moment, canSchedule: canSchedule)
+        created.markSeen(plan.seen)
 
         for activity in activities where plan.end.contains(activity.id) {
             await activity.end(nil, dismissalPolicy: .immediate)
@@ -69,8 +93,7 @@ enum ClassLiveActivities {
                 _ = try Activity<ClassActivityAttributes>.request(
                     attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content(now: now)
                 )
-                created.insert(window)
-                covered.insert(window.id)
+                created.insert(window, scheduled: false)
             } catch {
                 logger.error("Starting the activity for \(window.id) failed: \(error.localizedDescription)")
                 break
@@ -81,13 +104,16 @@ enum ClassLiveActivities {
                 do {
                     _ = try Activity<ClassActivityAttributes>.request(
                         attributes: ClassActivityAttributes(window), content: ClassActivityAttributes.ContentState(window).content(now: now),
-                        pushType: nil, style: .standard, alertConfiguration: alert(for: window), start: window.showMoment.date()
+                        pushType: nil, style: .standard,
+                        alertConfiguration: alert(title: window.session.course.name,
+                                                  body: ClassReminders.body(for: window.session, leadMinutes: window.leadMinutes),
+                                                  quiet: quietAlert),
+                        start: window.showMoment.date()
                     )
-                    created.insert(window)
-                    covered.insert(window.id)
+                    created.insert(window, scheduled: true)
                 } catch {
-                    // Most likely the system's limit on activities: the rest get notifications, and are
-                    // scheduled next time.
+                    // Most likely the system's limit on activities: the rest are scheduled next time (their
+                    // reminders come anyway).
                     logger.error("Scheduling the activity for \(window.id) failed: \(error.localizedDescription)")
                     break
                 }
@@ -95,7 +121,6 @@ enum ClassLiveActivities {
         }
         created.save()
         scheduleCleanup(now: now)
-        return covered
     }
 
     /// Ends the activities whose class is over. Runs as a background app refresh (`cleanupTaskID`)
@@ -105,6 +130,42 @@ enum ClassLiveActivities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
         scheduleCleanup(now: now)
+    }
+
+    /// Settings → Reminders → Test: a pretend class whose Live Activity iOS starts on its own in a minute, with its
+    /// reminder when class reminders are on, just as a real class would get them. Returns when it appears.
+    @available(iOS 26.0, *)
+    static func scheduleTest(withReminder: Bool, now: Date = .now) async throws -> Date {
+        for activity in Activity<ClassActivityAttributes>.activities where activity.attributes.signature.hasPrefix(testPrefix) {
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
+        let show = now.addingTimeInterval(60)
+        let start = show.addingTimeInterval(2 * 60)
+        let end = start.addingTimeInterval(10 * 60)
+        let name = String(localized: "Test Class")
+        let startTime = TimeOfDay(start).description
+        let endTime = TimeOfDay(end).description
+        let body = [String(localized: "Starts in \(2) min"), "\(startTime)–\(endTime)", "A101"].joined(separator: " · ")
+        let attributes = ClassActivityAttributes(
+            signature: testPrefix + UUID().uuidString, courseName: name, room: "A101", teacher: "", colorIndex: 2,
+            startTime: startTime, endTime: endTime, showDate: show
+        )
+        let state = ClassActivityAttributes.ContentState(start: start, end: end)
+        _ = try Activity<ClassActivityAttributes>.request(
+            attributes: attributes, content: state.content(now: now), pushType: nil, style: .standard,
+            alertConfiguration: alert(title: name, body: body, quiet: withReminder), start: show
+        )
+        if withReminder {
+            let content = UNMutableNotificationContent()
+            content.title = name
+            content.body = body
+            content.sound = .default
+            content.threadIdentifier = "class-reminders"
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: show.timeIntervalSince(now), repeats: false)
+            try await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: testReminderID, content: content, trigger: trigger))
+        }
+        scheduleCleanup(now: now)
+        return show
     }
 
     /// Asks for a background refresh once the next class with an activity has ended. iOS decides when
@@ -124,6 +185,11 @@ enum ClassLiveActivities {
         }
     }
 
+    /// The live activities for classes: not the tests from Settings, which end by themselves after their class.
+    private static func classActivities() -> [Activity<ClassActivityAttributes>] {
+        Activity<ClassActivityAttributes>.activities.filter { isLive($0) && !$0.attributes.signature.hasPrefix(testPrefix) }
+    }
+
     /// Showing (counting down or in class) or, on iOS 26, scheduled.
     private static func isLive(_ activity: Activity<ClassActivityAttributes>) -> Bool {
         activity.activityState == .active || activity.activityState == .stale || isPending(activity)
@@ -137,13 +203,14 @@ enum ClassLiveActivities {
     }
 
     /// What a scheduled activity says when it starts: the same text as the class reminder. iPhone shows
-    /// the activity itself (expanded in the Dynamic Island) with the sound; Apple Watch shows this text.
+    /// the activity itself (expanded in the Dynamic Island); Apple Watch shows this text. `quiet` when the class
+    /// reminder sounds at the same moment, so there's one sound.
     @available(iOS 26.0, *)
-    private static func alert(for window: ClassActivityWindow) -> AlertConfiguration {
+    private static func alert(title: String, body: String, quiet: Bool) -> AlertConfiguration {
         AlertConfiguration(
-            title: LocalizedStringResource(stringLiteral: window.session.course.name),
-            body: LocalizedStringResource(stringLiteral: ClassReminders.body(for: window.session, leadMinutes: window.leadMinutes)),
-            sound: .default
+            title: LocalizedStringResource(stringLiteral: title),
+            body: LocalizedStringResource(stringLiteral: body),
+            sound: quiet ? .named(silentSound) : .default
         )
     }
 
@@ -178,46 +245,76 @@ enum ClassLiveActivities {
 }
 
 /// Ends a class activity when its Close button is tapped (`EndClassActivityIntent`, run in the app).
-/// Its signature stays in `CreatedActivities`, so the class doesn't get another activity.
+/// Its signature stays in `CreatedActivities`, now as seen, so the class doesn't get another activity.
 enum ClassActivityCloser {
     static func close(signature: String) async {
         for activity in Activity<ClassActivityAttributes>.activities where activity.attributes.signature == signature {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
+        var created = CreatedActivities.load()
+        created.markSeen([signature])
+        created.save()
     }
 }
 
 /// Signatures of the activities the app has created (`ClassActivityWindow.signature`) with the end of
 /// their class, so each class gets one activity at most; kept in `UserDefaults` until the class is over.
+/// Those scheduled to start on their own stay in `scheduled` until the app sees them showing: if one of
+/// them is gone before that, iOS never showed it, and the class gets it again.
 private struct CreatedActivities {
     private static let defaultsKey = "liveActivities.created"
+    private static let scheduledKey = "liveActivities.scheduled"
+    private static let quietAlertKey = "liveActivities.quietAlert"
     private var ends: [String: Double]
+    var scheduled: Set<String>
+    /// Whether the scheduled activities start silently (a class reminder comes with them); `nil` before 0.7.1.
+    var quietAlert: Bool?
 
     static func load() -> CreatedActivities {
-        CreatedActivities(ends: UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: Double] ?? [:])
+        let defaults = UserDefaults.standard
+        return CreatedActivities(
+            ends: defaults.dictionary(forKey: defaultsKey) as? [String: Double] ?? [:],
+            scheduled: Set(defaults.stringArray(forKey: scheduledKey) ?? []),
+            quietAlert: defaults.object(forKey: quietAlertKey) as? Bool
+        )
     }
 
     func save() {
-        UserDefaults.standard.set(ends, forKey: Self.defaultsKey)
+        let defaults = UserDefaults.standard
+        defaults.set(ends, forKey: Self.defaultsKey)
+        defaults.set(Array(scheduled.intersection(ends.keys)), forKey: Self.scheduledKey)
+        defaults.set(quietAlert, forKey: Self.quietAlertKey)
     }
 
     var signatures: Set<String> { Set(ends.keys) }
 
-    mutating func insert(_ window: ClassActivityWindow) {
+    mutating func insert(_ window: ClassActivityWindow, scheduled isScheduled: Bool) {
         ends[window.signature] = window.session.endMoment.date().timeIntervalSinceReferenceDate
+        if isScheduled {
+            scheduled.insert(window.signature)
+        } else {
+            scheduled.remove(window.signature)
+        }
+    }
+
+    mutating func markSeen(_ signatures: Set<String>) {
+        scheduled.subtract(signatures)
     }
 
     mutating func forget(_ signatures: Set<String>) {
         for signature in signatures {
             ends[signature] = nil
         }
+        scheduled.subtract(signatures)
     }
 
     mutating func removeFinished(before date: Date) {
         ends = ends.filter { $0.value > date.timeIntervalSinceReferenceDate }
+        scheduled.formIntersection(ends.keys)
     }
 
     mutating func removeAll() {
         ends = [:]
+        scheduled = []
     }
 }

@@ -56,6 +56,7 @@ private struct TodayContent: View {
     let todos: [Todo]
     let pickDay: (LocalDate) -> Void
     let edit: (TodoEditorTarget) -> Void
+    @AppStorage(AppAppearance.styleKey) private var style = AppAppearance.defaultStyle
 
     var body: some View {
         let isToday = day == now.day
@@ -63,7 +64,8 @@ private struct TodayContent: View {
         let nowAndNext = timetable.currentAndNext(at: now)
         List {
             Section {
-                DayHeader(day: day, isToday: isToday, status: timetable.semester.status(on: day).summary, pickDay: pickDay, today: now.day)
+                DayHeader(day: day, isToday: isToday, status: timetable.semester.status(on: day).summary, pickDay: pickDay, today: now.day,
+                          glass: style == .glass)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
             }
@@ -71,7 +73,7 @@ private struct TodayContent: View {
             if isToday && !timetable.courses.isEmpty {
                 Section {
                     NowNextCard(now: now, current: nowAndNext.current, next: nowAndNext.next,
-                                openTodos: todos.filter { $0.day == now.day && !$0.isDone }.count)
+                                openTodos: todos.filter { $0.day == now.day && !$0.isDone }.count, style: style)
                 }
             }
 
@@ -80,6 +82,7 @@ private struct TodayContent: View {
                     ForEach(agenda.anytime) { todo in
                         TodoRow(todo: todo, timetable: timetable, edit: edit)
                     }
+                    .glassRows(style)
                 }
             }
 
@@ -93,10 +96,11 @@ private struct TodayContent: View {
                             (isToday ? Text("No classes today") : Text("No classes on this day"))
                                 .font(.headline)
                             Button("Add To-Do") { edit(.new(day: day)) }
-                                .buttonStyle(.bordered)
+                                .glassButtonStyle(style)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
+                        .glassRows(style)
                     }
                 }
             } else {
@@ -116,11 +120,12 @@ private struct TodayContent: View {
                             TodoRow(todo: todo, timetable: timetable, edit: edit)
                         }
                     }
+                    .glassRows(style)
                 }
             }
 
         }
-        .paperBackground()
+        .tabBackground(style)
     }
 
     /// Classes of another day are all past or all ahead.
@@ -137,13 +142,16 @@ private struct DayHeader: View {
     let status: String
     let pickDay: (LocalDate) -> Void
     let today: LocalDate
+    /// The arrows and Today on glass. (Borderless buttons: a list row with several buttons of another style would
+    /// tap them all.)
+    var glass = false
 
     var body: some View {
         HStack(spacing: 12) {
             Button {
                 pickDay(day.adding(days: -1))
             } label: {
-                Image(systemName: "chevron.left")
+                arrow("chevron.left")
             }
             .accessibilityLabel(Text("Previous Day"))
             VStack(alignment: .leading, spacing: 4) {
@@ -154,18 +162,52 @@ private struct DayHeader: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if !isToday {
-                Button("Today") { pickDay(today) }
-                    .font(.subheadline)
+                Button {
+                    pickDay(today)
+                } label: {
+                    Text("Today")
+                        .font(.subheadline)
+                        .padding(.horizontal, glass ? 12 : 0)
+                        .frame(minHeight: glass ? 36 : nil)
+                        .modifier(GlassCapsuleIf(glass))
+                }
             }
             Button {
                 pickDay(day.adding(days: 1))
             } label: {
-                Image(systemName: "chevron.right")
+                arrow("chevron.right")
             }
             .accessibilityLabel(Text("Next Day"))
         }
         .buttonStyle(.borderless)
         .padding(.vertical, 4)
+    }
+
+    private func arrow(_ symbol: String) -> some View {
+        Image(systemName: symbol)
+            .fontWeight(glass ? .semibold : .regular)
+            .frame(width: glass ? 36 : nil, height: glass ? 36 : nil)
+            .modifier(GlassCapsuleIf(glass))
+    }
+}
+
+/// `glassCapsule(interactive:)` only when `isOn`.
+struct GlassCapsuleIf: ViewModifier {
+    let isOn: Bool
+    var tint: Color?
+
+    init(_ isOn: Bool, tint: Color? = nil) {
+        self.isOn = isOn
+        self.tint = tint
+    }
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isOn {
+            content.glassCapsule(tint: tint, interactive: true)
+        } else {
+            content
+        }
     }
 }
 
@@ -293,6 +335,7 @@ private struct NowNextCard: View {
     let current: ClassSession?
     let next: ClassSession?
     let openTodos: Int
+    let style: AppStyle
 
     var body: some View {
         let session = current ?? next
@@ -338,8 +381,7 @@ private struct NowNextCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
         .padding(.vertical, 16)
-        .background(tint?.fill ?? Theme.card)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
+        .surface(style, tint: tint?.fill)
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
         .accessibilityElement(children: .combine)

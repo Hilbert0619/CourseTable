@@ -247,6 +247,40 @@ class ClassActivityTests {
         assertEquals(listOf(wanted[0], wanted[3]), plan.schedule)
     }
 
+    /** A scheduled one gone although nobody saw it is created again: scheduled if its window is ahead, started if open. */
+    @Test
+    fun aScheduledActivityGoneUnseenIsCreatedAgain() {
+        val evening = Fixture.at("2026-09-27", "21:00")
+        val wanted = timetable.upcomingActivityWindows(evening, leadMinutes = 10, limit = 2)
+        val signatures = wanted.map { it.signature }.toSet()
+        val later = ClassActivityPlan.of(emptyList(), wanted, signatures, evening, canSchedule = true, scheduled = signatures)
+        assertEquals(signatures, later.forget)
+        assertTrue(later.covered.isEmpty())
+        assertEquals(wanted, later.schedule)
+
+        val inClass = Fixture.at("2026-09-28", "07:55")
+        val open = ClassActivityPlan.of(emptyList(), wanted, signatures, inClass, canSchedule = true, scheduled = signatures)
+        assertEquals(listOf("Calculus 2026-09-28 07:50–09:40"), summary(open.startNow))
+        assertEquals(listOf(wanted[1]), open.schedule)
+    }
+
+    /** Still scheduled: kept. Showing: seen, and once it's gone it isn't created again. */
+    @Test
+    fun aScheduledActivitySeenShowingStaysClosedWhenGone() {
+        val now = Fixture.at("2026-09-28", "08:00")
+        val wanted = timetable.upcomingActivityWindows(now, leadMinutes = 10, limit = 2)
+        val signatures = wanted.map { it.signature }.toSet()
+        val current = listOf(existing(wanted[0], id = "showing"), existing(wanted[1], id = "scheduled", pending = true))
+        val plan = ClassActivityPlan.of(current, wanted, signatures, now, canSchedule = true, scheduled = signatures)
+        assertEquals(setOf(wanted[0].signature), plan.seen)
+        assertTrue(plan.forget.isEmpty() && plan.end.isEmpty() && plan.startNow.isEmpty() && plan.schedule.isEmpty())
+        assertEquals(wanted.map { it.id }.toSet(), plan.covered)
+
+        val closed = ClassActivityPlan.of(listOf(current[1]), wanted, signatures, now, canSchedule = true, scheduled = setOf(wanted[1].signature))
+        assertTrue(closed.startNow.isEmpty() && closed.schedule.isEmpty() && closed.forget.isEmpty())
+        assertEquals(wanted.map { it.id }.toSet(), closed.covered)
+    }
+
     @Test
     fun duplicatesAreEnded() {
         val now = Fixture.at("2026-09-28", "08:00")

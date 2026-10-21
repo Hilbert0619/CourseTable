@@ -1,14 +1,16 @@
 import XCTest
 
-/// Each tab in the looks the app must hold up in: English light and dark, Chinese dark, and English with large text,
-/// plus a running Focus session in dark. Run it before and after visual changes and compare screen by screen
-/// (screenshots `look-<variant>-<n>-<screen>`).
+/// Each tab in the looks the app must hold up in: English light and dark, Chinese dark, and English with large text
+/// (all in glass, the default look), and the classic look in light and dark; plus a running Focus session in dark.
+/// Run it before and after visual changes and compare screen by screen (screenshots `look-<variant>-<n>-<screen>`).
 final class LookUITests: XCTestCase {
     struct Variant {
         var name: String
         var language: String
         var dark: Bool
         var largeText: Bool = false
+        /// `-appStyle`: nil for the default (glass).
+        var style: String?
     }
 
     static let variants = [
@@ -16,6 +18,8 @@ final class LookUITests: XCTestCase {
         Variant(name: "en-dark", language: "en", dark: true),
         Variant(name: "zh-dark", language: "zh-Hans", dark: true),
         Variant(name: "en-large", language: "en", dark: false, largeText: true),
+        Variant(name: "en-classic-light", language: "en", dark: false, style: "classic"),
+        Variant(name: "en-classic-dark", language: "en", dark: true, style: "classic"),
     ]
 
     override func setUpWithError() throws {
@@ -47,7 +51,7 @@ final class LookUITests: XCTestCase {
 
     @MainActor
     func testRunningFocusInDark() throws {
-        for variant in Self.variants where variant.dark {
+        for variant in Self.variants where variant.dark && variant.style == nil {
             let app = launch(variant, extra: ["-focusDemo", "YES"])
             XCTAssertTrue(app.buttons["pauseFocus"].waitForExistence(timeout: 10))
             // Once the demo wallpaper is in.
@@ -64,10 +68,10 @@ final class LookUITests: XCTestCase {
         }
     }
 
-    /// Settings → Timetable Appearance with a photo behind the timetable (the drawn demo picture), in both block
-    /// styles, light and dark.
+    /// Settings → Appearance, light and dark: a photo behind the glass (the drawn demo picture), then a built-in
+    /// wallpaper with solid blocks, then the classic look on that wallpaper.
     @MainActor
-    func testTimetableAppearance() throws {
+    func testAppearance() throws {
         for variant in [Self.variants[0], Self.variants[1]] {
             let app = launch(variant, extra: ["-timetableBackgroundDemo", "YES"])
             app.tabBars.buttons.element(boundBy: 1).tap()
@@ -75,17 +79,31 @@ final class LookUITests: XCTestCase {
             snapshot(app, variant, "8-timetable-photo")
 
             app.tabBars.buttons.element(boundBy: 4).tap()
-            let link = app.buttons["timetableAppearanceLink"]
+            let link = app.buttons["appearanceLink"]
             for _ in 0..<4 where !(link.exists && link.isHittable) { app.swipeUp() }
             link.tap()
-            let picker = app.segmentedControls["blockStylePicker"]
-            XCTAssertTrue(picker.waitForExistence(timeout: 5))
-            snapshot(app, variant, "9-appearance-soft")
-            picker.buttons.element(boundBy: 1).tap()
-            snapshot(app, variant, "9-appearance-solid")
+            let style = app.segmentedControls["appStylePicker"]
+            XCTAssertTrue(style.waitForExistence(timeout: 5))
+            snapshot(app, variant, "9-appearance-photo")
 
+            let lagoon = app.buttons["background-lagoon"]
+            XCTAssertTrue(lagoon.waitForExistence(timeout: 5))
+            lagoon.tap()
+            let blocks = app.segmentedControls["blockStylePicker"]
+            for _ in 0..<3 where !(blocks.exists && blocks.isHittable) { app.swipeUp() }
+            blocks.buttons.element(boundBy: 1).tap()
+            snapshot(app, variant, "9-appearance-lagoon-solid")
             app.tabBars.buttons.element(boundBy: 1).tap()
-            snapshot(app, variant, "8-timetable-photo-solid")
+            snapshot(app, variant, "8-timetable-lagoon-solid")
+            app.tabBars.buttons.element(boundBy: 0).tap()
+            snapshot(app, variant, "8-today-lagoon")
+
+            app.tabBars.buttons.element(boundBy: 4).tap()
+            for _ in 0..<3 where !(style.exists && style.isHittable) { app.swipeDown() }
+            style.buttons.element(boundBy: 1).tap()
+            snapshot(app, variant, "9-appearance-classic")
+            app.tabBars.buttons.element(boundBy: 1).tap()
+            snapshot(app, variant, "8-timetable-classic-lagoon")
             app.terminate()
         }
     }
@@ -104,7 +122,7 @@ final class LookUITests: XCTestCase {
             "-vocabDemo", "YES",
             // The device appearance above didn't take on CI: the app applies this itself.
             "-uiColorScheme", variant.dark ? "dark" : "light",
-        ] + extra
+        ] + (variant.style.map { ["-appStyle", $0] } ?? []) + extra
         if variant.largeText {
             app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityM"]
         }

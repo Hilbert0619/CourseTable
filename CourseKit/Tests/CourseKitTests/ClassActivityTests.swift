@@ -207,7 +207,8 @@ import Testing
         #expect(quiet.update.isEmpty && quiet.end.isEmpty && quiet.schedule.isEmpty)
     }
 
-    /// The classes that need no notification: those with an activity, and those whose activity was closed.
+    /// The classes with an activity, and those whose activity was closed (Android sends no notification for them;
+    /// iOS notifies every class since 0.7.1, as iOS doesn't always start a scheduled activity).
     @Test func coveredClassesHaveOrHadAnActivity() {
         let now = Fixture.at("2026-09-28", "07:00")
         let wanted = timetable.upcomingActivityWindows(after: now, leadMinutes: 10)
@@ -216,6 +217,41 @@ import Testing
         // Physics is scheduled, Lab was closed; Calculus and Seminar are to be scheduled (the app adds them).
         #expect(plan.covered == [wanted[1].id, wanted[2].id])
         #expect(plan.schedule == [wanted[0], wanted[3]])
+    }
+
+    /// iOS 26 starts scheduled activities on its own, but not always (users saw none, 2026-10): one that is gone
+    /// although nobody saw it is created again, scheduled if its window is ahead, started if it's open.
+    @Test func aScheduledActivityGoneUnseenIsCreatedAgain() {
+        let evening = Fixture.at("2026-09-27", "21:00")
+        let wanted = timetable.upcomingActivityWindows(after: evening, leadMinutes: 10, limit: 2)
+        let signatures = Set(wanted.map(\.signature))
+        let later = ClassActivityPlan(existing: [], wanted: wanted, created: signatures, scheduled: signatures, now: evening, canSchedule: true)
+        #expect(later.forget == signatures)
+        #expect(later.covered.isEmpty)
+        #expect(later.schedule == wanted)
+
+        let inClass = Fixture.at("2026-09-28", "07:55")
+        let open = ClassActivityPlan(existing: [], wanted: wanted, created: signatures, scheduled: signatures, now: inClass, canSchedule: true)
+        #expect(summary(open.startNow) == ["Calculus 2026-09-28 07:50–09:40"])
+        #expect(open.schedule == [wanted[1]])
+    }
+
+    /// Still scheduled: kept. Showing: seen, and once it's gone (closed, or ended by iOS) it isn't created again.
+    @Test func aScheduledActivitySeenShowingStaysClosedWhenGone() {
+        let now = Fixture.at("2026-09-28", "08:00")
+        let wanted = timetable.upcomingActivityWindows(after: now, leadMinutes: 10, limit: 2)
+        let signatures = Set(wanted.map(\.signature))
+        let current = [existing(wanted[0], id: "showing"), existing(wanted[1], id: "scheduled", pending: true)]
+        let plan = ClassActivityPlan(existing: current, wanted: wanted, created: signatures, scheduled: signatures, now: now, canSchedule: true)
+        #expect(plan.seen == [wanted[0].signature])
+        #expect(plan.forget.isEmpty && plan.end.isEmpty && plan.startNow.isEmpty && plan.schedule.isEmpty)
+        #expect(plan.covered == Set(wanted.map(\.id)))
+
+        // The app moved Calculus out of `scheduled`; then it was closed.
+        let closed = ClassActivityPlan(existing: [current[1]], wanted: wanted, created: signatures, scheduled: [wanted[1].signature],
+                                       now: now, canSchedule: true)
+        #expect(closed.startNow.isEmpty && closed.schedule.isEmpty && closed.forget.isEmpty)
+        #expect(closed.covered == Set(wanted.map(\.id)))
     }
 
     @Test func duplicatesAreEnded() {

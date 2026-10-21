@@ -61,23 +61,60 @@ final class LiveActivityUITests: XCTestCase {
         app.terminate()
     }
 
+    /// Settings → Reminders → Test in 1 Minute: iOS 26 should start the scheduled activity by itself while the app
+    /// is in the background (users saw scheduled class activities not start, 2026-10). The result text and the
+    /// screenshots show whether it did here.
     @MainActor
-    private func launch(language: String, mode: String) -> XCUIApplication {
+    func testScheduledTestActivityStartsByItself() throws {
+        let app = launch(language: "en", mode: nil)
+        showLiveActivitySetting(in: app)
+        let button = app.buttons["testLiveActivity"]
+        for _ in 0..<4 where !(button.exists && button.isHittable) { app.swipeUp(velocity: .slow) }
+        XCTAssertTrue(button.exists, "No test button: Live Activities off, or iOS before 26")
+        button.tap()
+        let result = app.staticTexts["testLiveActivityResult"]
+        XCTAssertTrue(result.waitForExistence(timeout: 5))
+        let text = XCTAttachment(string: result.label)
+        text.name = "en-live-8-test-result"
+        text.lifetime = .keepAlways
+        add(text)
+        snapshot(app.screenshot(), "en-live-8-test-scheduled")
+        goHome()
+        // Answer iOS's first-time question about Live Activities, so it doesn't hold anything back.
+        openNotificationCenter()
+        if springboard.buttons["Allow"].exists {
+            springboard.buttons["Allow"].tap()
+        }
+        goHome()
+        // It starts a minute after the tap.
+        Thread.sleep(forTimeInterval: 70)
+        snapshot(XCUIScreen.main.screenshot(), "en-live-9-test-island")
+        expandIsland()
+        snapshot(XCUIScreen.main.screenshot(), "en-live-9-test-expanded")
+        collapseIsland()
+        openNotificationCenter()
+        snapshot(XCUIScreen.main.screenshot(), "en-live-9-test-lock-screen")
+        goHome()
+        app.terminate()
+    }
+
+    /// The app with a demo class activity (`mode`), or none.
+    @MainActor
+    private func launch(language: String, mode: String?) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-AppleLanguages", "(\(language))",
             "-AppleLocale", language == "en" ? "en_US" : "zh_CN",
             "-uiTesting", "YES",
             "-demoData", "YES",
-            "-liveActivityDemo", mode,
-        ]
+        ] + (mode.map { ["-liveActivityDemo", $0] } ?? [])
         app.launch()
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 30), "The app didn't show its tab bar")
         // If the demo activity couldn't start, the app shows why: keep it with the results.
         let error = app.staticTexts["liveActivityDemoError"]
         if error.waitForExistence(timeout: 2) {
             let attachment = XCTAttachment(string: error.label)
-            attachment.name = "\(language)-live-\(mode)-start-error"
+            attachment.name = "\(language)-live-\(mode ?? "none")-start-error"
             attachment.lifetime = .keepAlways
             add(attachment)
         }

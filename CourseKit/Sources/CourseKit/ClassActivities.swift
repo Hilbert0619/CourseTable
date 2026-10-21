@@ -104,17 +104,22 @@ public struct ClassActivityUpdate: Hashable, Sendable {
 ///
 /// Each class gets one activity at most: the app remembers the signature of every activity it
 /// created (`created`) until the class is over, so one the person closed doesn't come back. Only an
-/// activity that never showed (still scheduled) and is ended here is forgotten (`forget`), so its
-/// class can be scheduled again, e.g. at a new reminder time.
+/// activity that never showed is forgotten (`forget`), so its class gets one again: a scheduled one
+/// ended here (e.g. for a new reminder time), and a scheduled one that is gone although nobody saw it
+/// (`scheduled`): iOS didn't start it, or dropped it before it started.
 public struct ClassActivityPlan: Hashable, Sendable {
     /// Activities to end now (`ExistingClassActivity.id`): finished, no longer wanted, outdated, or duplicates.
     public var end: [String]
-    /// Signatures to remove from the created ones: scheduled activities ended before they started.
+    /// Signatures to remove from the created ones: scheduled activities ended before they started, or gone
+    /// without being seen.
     public var forget: Set<String>
+    /// Scheduled signatures whose activity is showing now: from now on they count as seen, so the app doesn't
+    /// start them again once they're gone (closed, or ended by iOS).
+    public var seen: Set<String>
     /// Showing activities whose to-dos changed.
     public var update: [ClassActivityUpdate]
-    /// Classes (`ClassActivityWindow.id`) that keep an activity, or had one: no notification for them. The
-    /// app adds the ones it starts or schedules.
+    /// Classes (`ClassActivityWindow.id`) that keep an activity, or had one that showed. The app adds the
+    /// ones it starts or schedules.
     public var covered: Set<String>
     /// Windows open now that need an activity started.
     public var startNow: [ClassActivityWindow]
@@ -125,8 +130,11 @@ public struct ClassActivityPlan: Hashable, Sendable {
     ///   - existing: the app's class activities, showing or scheduled.
     ///   - wanted: usually `Timetable.upcomingActivityWindows`; empty when the feature is off.
     ///   - created: signatures (`ClassActivityWindow.signature`) of the activities created before.
+    ///   - scheduled: those of `created` that were scheduled to start on their own and haven't been seen
+    ///     showing; if one of them is gone, nobody saw it.
     ///   - canSchedule: whether activities can be scheduled to start later.
-    public init(existing: [ExistingClassActivity], wanted: [ClassActivityWindow], created: Set<String>, now: Moment, canSchedule: Bool) {
+    public init(existing: [ExistingClassActivity], wanted: [ClassActivityWindow], created: Set<String>, scheduled: Set<String> = [],
+                now: Moment, canSchedule: Bool) {
         var end: [String] = []
         var update: [ClassActivityUpdate] = []
         var endedPending: Set<String> = []
@@ -146,12 +154,18 @@ public struct ClassActivityPlan: Hashable, Sendable {
                 }
             }
         }
-        let forget = endedPending.subtracting(kept)
+        var forget = endedPending.subtracting(kept)
         let remembered = created.subtracting(forget)
+        let seen = scheduled.intersection(existing.filter { !$0.isPending }.map(\.signature))
         var startNow: [ClassActivityWindow] = []
         var schedule: [ClassActivityWindow] = []
         for window in wanted where !covered.contains(window.id) && remembered.contains(window.signature) {
-            covered.insert(window.id)
+            if scheduled.contains(window.signature) && !seen.contains(window.signature) {
+                // Scheduled, and gone without anyone seeing it: create it again.
+                forget.insert(window.signature)
+            } else {
+                covered.insert(window.id)
+            }
         }
         for window in wanted where !covered.contains(window.id) && now < window.session.endMoment {
             if window.isOpen(at: now) {
@@ -162,6 +176,7 @@ public struct ClassActivityPlan: Hashable, Sendable {
         }
         self.end = end
         self.forget = forget
+        self.seen = seen
         self.update = update
         self.covered = covered
         self.startNow = startNow
