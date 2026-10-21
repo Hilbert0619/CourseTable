@@ -25,8 +25,10 @@ The owner's 0.7.0 device test: **no issues** (2026-10-21). Then two requests, bu
    hours ahead on the owner's iPhone is what the device test shows. `docs/todos-focus-spec.md` §1 records the change.
 - CI: iOS 39634905603, CourseKit 39634913626 (CourseKit 87 + 173 + 51 tests, Android core 18 activity tests
   locally). Screenshots (LookUITests in glass light/dark, Chinese dark, large text, classic light/dark, Focus
-  running, Appearance): 39638343064 (attempt 2; the first stopped without running a step), then the final look 39644533138 (thicker frosting on the timetable). Before: 0.7.0's 39309546075. **IPA 0.7.1 (build 11)**: run 39644539965 (commit ad09f09), saved as
-  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.1.ipa`. Checklist below.
+  running, Appearance, PlannerUITests): 39638343064 (attempt 2; the first stopped without running a step), then
+  testAppearance 39644533138 (thicker frosting on the timetable). Before: 0.7.0's 39309546075. **IPA 0.7.1
+  (build 11)**: run 39644539965 (commit ad09f09), saved as `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.1.ipa`;
+  on `main`. Checklist below.
 
 ### 0.7.0
 
