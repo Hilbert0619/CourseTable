@@ -125,3 +125,14 @@ with screenshots (Roborazzi, English + Chinese, light + dark):
    wallpapers and Settings → Appearance.
 3. **The Countdown Island stays apart** on its branch until the owner has tried it.
 4. **The same picture as iOS** for the icon (adaptive, with a monochrome layer).
+
+## 4. Progress
+
+- **StudyHour 0.6.0 (8), built 2026-10-22** (branch `android-0.6`, CI 39661839070 and 39674220972, then `main`):
+  steps 1–3 and the icon of §2 — everything of iOS 0.6.0–0.7.0. `SoftWallpaper`/`BackgroundChoice` are already in
+  `:core` (with `backgrounds.json` and its Swift test) for 0.7.0. Details: [`android-plan.md`](android-plan.md) §8.
+- **Next: StudyHour 0.7.0 (9)**, the glass look (§1 "0.7.1"), with Haze: Settings → Appearance replaces Timetable
+  Appearance (Glass / Classic, the six built-in wallpapers, your photo or a seen Focus wallpaper, Fade, Soft / Solid,
+  Block opacity); glass cards, chips and buttons on Today, Timetable, Focus and Words; frosted rows; the day row and
+  period times on thicker frosting; glass course blocks. The existing photo (`files/TimetableBackground.jpg`) and
+  settings (`appearance` preferences, the iOS keys) carry over: `BackgroundChoice.resolve` keeps a 0.6.0 photo.

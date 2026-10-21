@@ -114,8 +114,9 @@ android/
 6. **Words app**: supabase-kt (auth by email link, book download, sync), Room store, all Words screens, speech,
    statistics; tested against the same cloud project with the owner's account.
    - Added later at the owner's choice: AI help and the agent (0.5.0, done); the Countdown Island (0.5.1, branch);
-     **catching up with iOS 0.6.0–0.7.1** (icon, Focus wallpapers, Storage, the visual pass, the glass look) as
-     StudyHour 0.6.0, planned in [`android-port-0.6-0.7.md`](android-port-0.6-0.7.md) (next, 2026-10-22).
+     **catching up with iOS 0.6.0–0.7.1**, planned in [`android-port-0.6-0.7.md`](android-port-0.6-0.7.md), in two
+     APKs: StudyHour 0.6.0 (icon, Focus wallpapers, Storage, the visual pass; built 2026-10-22) and 0.7.0 (the glass
+     look; next).
 7. **Release**: signed APK 0.3.x for Android, device test, docs (README, an Android development record, HANDOFF).
 
 Each stage ends with a short report, run links, and screenshots; the owner tests on the phone at the end of stages
