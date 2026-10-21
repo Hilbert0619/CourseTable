@@ -75,7 +75,8 @@ fun WallpaperCredit(shown: ShownWallpaper, isLoading: Boolean, onAnother: () -> 
     val context = LocalContext.current
     val wallpaper = shown.wallpaper
     val tint = Color.White.copy(alpha = 0.85f)
-    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // The credit takes the room it needs; the shuffle button stays at the end.
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         if (wallpaper.author.isNotEmpty()) {
             val page = wallpaper.sourceUrl
             val onUnsplash = page?.let { runCatching { URI(it).host }.getOrNull() }?.endsWith("unsplash.com") == true
@@ -92,8 +93,9 @@ fun WallpaperCredit(shown: ShownWallpaper, isLoading: Boolean, onAnother: () -> 
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+        } else {
+            Box(Modifier.weight(1f))
         }
-        Box(Modifier.weight(1f))
         IconButton(onClick = onAnother, enabled = !isLoading) {
             if (isLoading) {
                 CircularProgressIndicator(Modifier.size(18.dp), color = tint, strokeWidth = 2.dp)

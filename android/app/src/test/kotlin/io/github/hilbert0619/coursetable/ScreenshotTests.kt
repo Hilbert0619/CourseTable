@@ -3,8 +3,21 @@ package io.github.hilbert0619.coursetable
 import android.Manifest
 import android.app.Application
 import android.os.PowerManager
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -13,6 +26,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
@@ -409,6 +424,24 @@ class ScreenshotTests {
     fun periodTimesChineseDark() {
         val broken = PeriodTimesFixture.withOverlap()
         show { PeriodScheduleEditor(broken, AppActions.None, onBack = {}) }
+        capture()
+    }
+
+    @Test
+    fun launcherIcon() {
+        val context = ApplicationProvider.getApplicationContext<Application>()
+        val icon = context.getDrawable(R.mipmap.ic_launcher)!!.toBitmap(432, 432).asImageBitmap()
+        val layer = context.getDrawable(R.drawable.ic_launcher_foreground)!!.toBitmap(432, 432).asImageBitmap()
+        val glyph = context.getDrawable(R.drawable.ic_launcher_monochrome)!!.toBitmap(432, 432).asImageBitmap()
+        show {
+            Column(Modifier.fillMaxSize().background(Color(0xFF282C34)).padding(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                Image(icon, contentDescription = null, modifier = Modifier.size(160.dp))
+                Image(layer, contentDescription = null, modifier = Modifier.size(160.dp))
+                Box(Modifier.size(160.dp).background(Color(0xFF3B4A6B), CircleShape)) {
+                    Image(glyph, contentDescription = null, modifier = Modifier.fillMaxSize(), colorFilter = ColorFilter.tint(Color(0xFFD7E2FF)))
+                }
+            }
+        }
         capture()
     }
 
