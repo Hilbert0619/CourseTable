@@ -1,0 +1,59 @@
+{
+  "about": "The glass look's backgrounds (docs/design-0.7.md §5). `wallpapers`: the six built-in wallpapers in order, each a base colour and four large shapes (centre x, y as fractions of the screen's width and height; width and height as fractions of the width), pale for light mode and deep for dark mode. `readability`: what must stay readable on every one of their colours (WCAG 2 contrast): black text in light mode and white in dark mode at `text`, the system's secondary text (its colour at `secondaryAlpha` over the wallpaper colour) at `secondary`, the accent at `accent`. `stored`: the settings strings of every choice (each reads back as itself), `invalid`: strings that mean nothing chosen. `resolve`: the background in effect for a stored string, the look (glass or classic) and whether a photo file exists.",
+  "defaultWallpaper": "dawn",
+  "wallpapers": [
+    {
+      "id": "dawn",
+      "light": {"base": "#F7F1EA", "shapes": [{"color": "#FFD2B8", "x": 0.1, "y": 0.1, "width": 1.15, "height": 0.95}, {"color": "#F9CFDD", "x": 0.95, "y": 0.38, "width": 1.05, "height": 0.95}, {"color": "#E0D8F8", "x": 0.15, "y": 0.68, "width": 1.15, "height": 1.0}, {"color": "#FFE6B3", "x": 0.9, "y": 0.95, "width": 1.15, "height": 0.9}]},
+      "dark": {"base": "#15111A", "shapes": [{"color": "#4A1F2C", "x": 0.1, "y": 0.1, "width": 1.15, "height": 0.95}, {"color": "#3B1D3D", "x": 0.95, "y": 0.38, "width": 1.05, "height": 0.95}, {"color": "#232456", "x": 0.15, "y": 0.68, "width": 1.15, "height": 1.0}, {"color": "#47321A", "x": 0.9, "y": 0.95, "width": 1.15, "height": 0.9}]}
+    },
+    {
+      "id": "lagoon",
+      "light": {"base": "#EDF6F6", "shapes": [{"color": "#AEE8E2", "x": 0.85, "y": 0.08, "width": 1.2, "height": 0.9}, {"color": "#C9E0F9", "x": 0.05, "y": 0.36, "width": 1.1, "height": 1.0}, {"color": "#CFF1DC", "x": 0.9, "y": 0.66, "width": 1.1, "height": 0.95}, {"color": "#E8F5CB", "x": 0.2, "y": 0.97, "width": 1.2, "height": 0.9}]},
+      "dark": {"base": "#071518", "shapes": [{"color": "#0B4049", "x": 0.85, "y": 0.08, "width": 1.2, "height": 0.9}, {"color": "#0E2F57", "x": 0.05, "y": 0.36, "width": 1.1, "height": 1.0}, {"color": "#0B4436", "x": 0.9, "y": 0.66, "width": 1.1, "height": 0.95}, {"color": "#16351F", "x": 0.2, "y": 0.97, "width": 1.2, "height": 0.9}]}
+    },
+    {
+      "id": "meadow",
+      "light": {"base": "#F3F7EC", "shapes": [{"color": "#D0EDBC", "x": 0.5, "y": 0.04, "width": 1.4, "height": 0.8}, {"color": "#F5E8AE", "x": 0.0, "y": 0.5, "width": 1.0, "height": 1.1}, {"color": "#BDE6D3", "x": 1.0, "y": 0.55, "width": 1.0, "height": 1.1}, {"color": "#EAF2C2", "x": 0.5, "y": 1.0, "width": 1.4, "height": 0.8}]},
+      "dark": {"base": "#0C130B", "shapes": [{"color": "#21431F", "x": 0.5, "y": 0.04, "width": 1.4, "height": 0.8}, {"color": "#3E3A12", "x": 0.0, "y": 0.5, "width": 1.0, "height": 1.1}, {"color": "#123E36", "x": 1.0, "y": 0.55, "width": 1.0, "height": 1.1}, {"color": "#2A3A15", "x": 0.5, "y": 1.0, "width": 1.4, "height": 0.8}]}
+    },
+    {
+      "id": "lavender",
+      "light": {"base": "#F5F1FA", "shapes": [{"color": "#E3D7F8", "x": 0.1, "y": 0.1, "width": 1.15, "height": 0.95}, {"color": "#F7D0E7", "x": 0.95, "y": 0.38, "width": 1.05, "height": 0.95}, {"color": "#D0DAF8", "x": 0.15, "y": 0.68, "width": 1.15, "height": 1.0}, {"color": "#EEE0F8", "x": 0.9, "y": 0.95, "width": 1.15, "height": 0.9}]},
+      "dark": {"base": "#110D19", "shapes": [{"color": "#35215A", "x": 0.1, "y": 0.1, "width": 1.15, "height": 0.95}, {"color": "#4A1D44", "x": 0.95, "y": 0.38, "width": 1.05, "height": 0.95}, {"color": "#1C2A59", "x": 0.15, "y": 0.68, "width": 1.15, "height": 1.0}, {"color": "#2E1D48", "x": 0.9, "y": 0.95, "width": 1.15, "height": 0.9}]}
+    },
+    {
+      "id": "sky",
+      "light": {"base": "#EFF5FB", "shapes": [{"color": "#C6DCF9", "x": 0.85, "y": 0.08, "width": 1.2, "height": 0.9}, {"color": "#DAD8F8", "x": 0.05, "y": 0.36, "width": 1.1, "height": 1.0}, {"color": "#C4ECF5", "x": 0.9, "y": 0.66, "width": 1.1, "height": 0.95}, {"color": "#E1EBFB", "x": 0.2, "y": 0.97, "width": 1.2, "height": 0.9}]},
+      "dark": {"base": "#0A0F1C", "shapes": [{"color": "#172E5C", "x": 0.85, "y": 0.08, "width": 1.2, "height": 0.9}, {"color": "#2B245C", "x": 0.05, "y": 0.36, "width": 1.1, "height": 1.0}, {"color": "#0C3B4E", "x": 0.9, "y": 0.66, "width": 1.1, "height": 0.95}, {"color": "#182448", "x": 0.2, "y": 0.97, "width": 1.2, "height": 0.9}]}
+    },
+    {
+      "id": "ember",
+      "light": {"base": "#FBF3EC", "shapes": [{"color": "#FFD0B2", "x": 0.5, "y": 0.04, "width": 1.4, "height": 0.8}, {"color": "#FFE3AC", "x": 0.0, "y": 0.5, "width": 1.0, "height": 1.1}, {"color": "#FBD2CD", "x": 1.0, "y": 0.55, "width": 1.0, "height": 1.1}, {"color": "#FFEAD3", "x": 0.5, "y": 1.0, "width": 1.4, "height": 0.8}]},
+      "dark": {"base": "#150B08", "shapes": [{"color": "#56250F", "x": 0.5, "y": 0.04, "width": 1.4, "height": 0.8}, {"color": "#4E340C", "x": 0.0, "y": 0.5, "width": 1.0, "height": 1.1}, {"color": "#4C1822", "x": 1.0, "y": 0.55, "width": 1.0, "height": 1.1}, {"color": "#3A210E", "x": 0.5, "y": 1.0, "width": 1.4, "height": 0.8}]}
+    }
+  ],
+  "readability": {
+    "text": 10,
+    "secondary": 3,
+    "accent": 3,
+    "secondaryAlpha": 0.6,
+    "light": {"text": [0, 0, 0], "secondary": "#3C3C43", "accent": [0.345, 0.42, 0.918]},
+    "dark": {"text": [1, 1, 1], "secondary": "#EBEBF5", "accent": [0.51, 0.58, 1.0]}
+  },
+  "stored": ["paper", "photo", "wallpaper.dawn", "wallpaper.lagoon", "wallpaper.meadow", "wallpaper.lavender", "wallpaper.sky", "wallpaper.ember"],
+  "invalid": ["", "Paper", "wallpaper", "wallpaper.", "wallpaper.unknown", "wallpaper.Dawn", "photo ", "dawn"],
+  "resolve": [
+    {"about": "nothing chosen, glass: the default wallpaper", "stored": "", "glass": true, "hasPhoto": false, "expected": "wallpaper.dawn"},
+    {"about": "nothing chosen, classic: the paper", "stored": "", "glass": false, "hasPhoto": false, "expected": "paper"},
+    {"about": "nothing chosen, a 0.7.0 timetable photo: the photo (glass)", "stored": "", "glass": true, "hasPhoto": true, "expected": "photo"},
+    {"about": "nothing chosen, a 0.7.0 timetable photo: the photo (classic)", "stored": "", "glass": false, "hasPhoto": true, "expected": "photo"},
+    {"about": "a wallpaper holds in the classic look", "stored": "wallpaper.ember", "glass": false, "hasPhoto": true, "expected": "wallpaper.ember"},
+    {"about": "the paper holds in the glass look", "stored": "paper", "glass": true, "hasPhoto": true, "expected": "paper"},
+    {"about": "the photo", "stored": "photo", "glass": true, "hasPhoto": true, "expected": "photo"},
+    {"about": "the photo was cleared in Storage (glass)", "stored": "photo", "glass": true, "hasPhoto": false, "expected": "wallpaper.dawn"},
+    {"about": "the photo was cleared in Storage (classic)", "stored": "photo", "glass": false, "hasPhoto": false, "expected": "paper"},
+    {"about": "an unknown string counts as nothing chosen", "stored": "wallpaper.unknown", "glass": true, "hasPhoto": false, "expected": "wallpaper.dawn"},
+    {"about": "an unknown string with a photo", "stored": "nonsense", "glass": false, "hasPhoto": true, "expected": "photo"}
+  ]
+}

@@ -116,3 +116,12 @@ with screenshots (Roborazzi, English + Chinese, light + dark):
 3. The Countdown Island (0.5.1, branch `android-island-overlay`, not merged, not yet reported): merge it into `main`
    first, or keep it apart?
 4. The new icon on Android: the same full-bleed picture as iOS 0.6?
+
+**Answered by the owner, 2026-10-22:**
+1. **Haze** (real blur of what's behind on Android 12+, a frosted tint before) + our white layer, 1 px edge and inner
+   glow; **glass is the default**, Classic one switch away, as on iOS.
+2. **Two APKs**: **StudyHour 0.6.0 (versionCode 8)** = the 0.7.0 visual pass, Focus wallpapers, deleting records,
+   Settings → Storage and the icon; then **StudyHour 0.7.0 (versionCode 9)** = the glass look, the built-in
+   wallpapers and Settings → Appearance.
+3. **The Countdown Island stays apart** on its branch until the owner has tried it.
+4. **The same picture as iOS** for the icon (adaptive, with a monochrome layer).

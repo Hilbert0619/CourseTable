@@ -2,10 +2,12 @@
 
 Both implementations of the app's logic read these files in their tests and must give the same answers:
 
-- iOS: `CourseKit/Tests/CourseKitTests/SharedFixtureTests.swift`, `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift`,
+- iOS: `CourseKit/Tests/CourseKitTests/SharedFixtureTests.swift` (and `CourseColorTests`, `FocusWallpaperTests`,
+  `BackgroundTests`), `CourseKit/Tests/VocabKitTests/VocabSharedFixtureTests.swift`,
   `CourseKit/Tests/AIKitTests/AISharedFixtureTests.swift` and `AIAgentFixtureTests.swift` (`swift test` in `CourseKit/`,
   CI `coursekit.yml`)
-- Android: `android/core/src/test/kotlin/io/github/hilbert0619/coursekit/SharedFixtureTests.kt`,
+- Android: `android/core/src/test/kotlin/io/github/hilbert0619/coursekit/SharedFixtureTests.kt` (and the tests of the
+  same names as the Swift ones above),
   `.../vocabkit/VocabSharedFixtureTests.kt`, `.../aikit/AISharedFixtureTests.kt` and `.../aikit/AIAgentFixtureTests.kt`
   (`./gradlew :core:test` in `android/`, CI `android.yml`)
 
@@ -15,6 +17,9 @@ Both implementations of the app's logic read these files in their tests and must
 | `import-samples.json` | Whole imports: delimiters, headers in English/Chinese, comments, problems per line; two samples are files |
 | `import-chinese-gb18030.csv`, `import-chinese-utf16le.csv` | The Chinese sample as Excel on Chinese Windows saves it (GB18030), and as UTF-16 with a byte-order mark. GB18030 is decoded on Apple platforms and Android, not by the Swift tests on Linux/Windows |
 | `focus-plans.json` | Pomodoro layouts for various settings |
+| `focus-wallpapers.json` | Focus wallpapers: reading the backend's rows, which wallpapers a session may show, which are ready and which to download ahead, the recent list, the picture's crop around its subject, which downloaded pictures to delete |
+| `course-colors.json` | The ten course colours (solid, soft light and dark) and the contrast every block style must reach |
+| `backgrounds.json` | The glass look's six built-in wallpapers (colours and shapes, light and dark), what must stay readable on them, the background choice's stored strings and which background is in effect |
 | `timetable-alerts.json` | One timetable and its to-dos: class reminders, live class windows (with "after class" to-dos), the day agenda, to-do alerts |
 | `vocab-scheduling.json` | FSRS-6: the published reference values, answer logs replayed into cards (custom parameters, relearning, late-night study days, simultaneous answers), daily plans |
 | `vocab-random.json` | The seeded generator (SplitMix64, FNV-1a seeds, Swift's bounded draws and shuffle), so a seed gives the same multiple-choice question and session order on both platforms |

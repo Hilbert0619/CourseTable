@@ -29,6 +29,25 @@ data class PeriodSchedule(
         return TimeSpan(first.start, last.end)
     }
 
+    /**
+     * Where [time] falls on a timetable grid with one row per period, for the current-time line: 0 is the top of
+     * period 1 and [count] the bottom of the last. Inside a period it moves through the row in proportion; during a
+     * break it rests on the line between the two periods. Null before the first period starts or after the last ends.
+     */
+    fun gridPosition(time: TimeOfDay): Double? {
+        val first = periods.firstOrNull() ?: return null
+        val last = periods.last()
+        if (time < first.start || time > last.end) return null
+        periods.forEachIndexed { index, period ->
+            if (time < period.start) return index.toDouble()
+            if (time <= period.end) {
+                val length = maxOf(period.durationMinutes, 1).toDouble()
+                return index + (time.minutes - period.start.minutes) / length
+            }
+        }
+        return periods.size.toDouble()
+    }
+
     /** A new period after the last one, keeping its length and a 10-minute break. */
     fun appendingPeriod(): PeriodSchedule {
         if (periods.size >= MAX_PERIODS) return this

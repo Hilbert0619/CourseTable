@@ -50,6 +50,75 @@ import Testing
         #expect(BackgroundChoice.wallpaper(.sky).stored == "wallpaper.sky")
     }
 
+    /// The shared cases in `spec/fixtures/backgrounds.json`, which the Android port reads too.
+    struct Fixture: Decodable {
+        struct Shape: Decodable { var color: String; var x: Double; var y: Double; var width: Double; var height: Double }
+        struct Palette: Decodable { var base: String; var shapes: [Shape] }
+        struct Wallpaper: Decodable { var id: String; var light: Palette; var dark: Palette }
+        struct Floors: Decodable {
+            struct Colors: Decodable { var text: [Double]; var secondary: String; var accent: [Double] }
+            var text: Double
+            var secondary: Double
+            var accent: Double
+            var secondaryAlpha: Double
+            var light: Colors
+            var dark: Colors
+        }
+        struct ResolveCase: Decodable { var about: String; var stored: String; var glass: Bool; var hasPhoto: Bool; var expected: String }
+        var defaultWallpaper: String
+        var wallpapers: [Wallpaper]
+        var readability: Floors
+        var stored: [String]
+        var invalid: [String]
+        var resolve: [ResolveCase]
+    }
+
+    static func hex(_ text: String) -> RGB { RGB(hex: UInt32(text.dropFirst(), radix: 16)!) }
+
+    static func rgb(_ values: [Double]) -> RGB { RGB(values[0], values[1], values[2]) }
+
+    @Test func sharedCases() throws {
+        let fixture = try SharedFixtures.decode(Fixture.self, from: "backgrounds.json")
+        #expect(fixture.wallpapers.map(\.id) == SoftWallpaper.allCases.map(\.rawValue))
+        #expect(fixture.defaultWallpaper == BackgroundChoice.defaultWallpaper.rawValue)
+        for entry in fixture.wallpapers {
+            let wallpaper = try #require(SoftWallpaper(rawValue: entry.id))
+            for (dark, expected) in [(false, entry.light), (true, entry.dark)] {
+                let palette = wallpaper.palette(dark: dark)
+                #expect(palette.base == Self.hex(expected.base), "\(entry.id) base, dark \(dark)")
+                #expect(palette.shapes.count == expected.shapes.count)
+                for (shape, want) in zip(palette.shapes, expected.shapes) {
+                    #expect(shape == SoftWallpaper.Shape(color: Self.hex(want.color), x: want.x, y: want.y, width: want.width,
+                                                         height: want.height), "\(entry.id) shape, dark \(dark)")
+                }
+            }
+        }
+        let floors = fixture.readability
+        #expect(floors.light.secondary == "#3C3C43" && Self.hex(floors.light.secondary) == Self.secondaryLight)
+        #expect(Self.hex(floors.dark.secondary) == Self.secondaryDark)
+        #expect(Self.rgb(floors.light.accent) == Self.accentLight && Self.rgb(floors.dark.accent) == Self.accentDark)
+        for wallpaper in SoftWallpaper.allCases {
+            for (dark, colors) in [(false, floors.light), (true, floors.dark)] {
+                for color in wallpaper.palette(dark: dark).colors {
+                    #expect(Self.rgb(colors.text).contrast(with: color) >= floors.text)
+                    #expect(Self.hex(colors.secondary).over(color, alpha: floors.secondaryAlpha).contrast(with: color) >= floors.secondary)
+                    #expect(Self.rgb(colors.accent).contrast(with: color) >= floors.accent)
+                }
+            }
+        }
+        for text in fixture.stored {
+            #expect(BackgroundChoice(stored: text)?.stored == text, "\(text)")
+        }
+        #expect(fixture.stored.count == SoftWallpaper.allCases.count + 2)
+        for text in fixture.invalid {
+            #expect(BackgroundChoice(stored: text) == nil, "\(text)")
+        }
+        for test in fixture.resolve {
+            #expect(BackgroundChoice.resolve(stored: test.stored, glass: test.glass, hasPhoto: test.hasPhoto).stored == test.expected,
+                    "\(test.about)")
+        }
+    }
+
     @Test func resolvedChoice() {
         // Nothing chosen: 0.7.0's timetable photo, else the default wallpaper (glass) or the paper (classic).
         #expect(BackgroundChoice.resolve(stored: "", glass: true, hasPhoto: false) == .wallpaper(.dawn))
