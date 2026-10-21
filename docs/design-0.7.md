@@ -66,3 +66,28 @@ the running Focus card and full screen in dark, and the timetable with a photo i
 2026-10-19 baseline run (before the changes) is screenshots run 39299710426. UI tests reset the appearance
 settings at launch (`@AppStorage` survives between launches) and use the drawn demo picture
 (`-timetableBackgroundDemo`), never the network.
+
+## 5. The glass look (0.7.1)
+
+Asked for by the owner on 2026-10-21 after the 0.7.0 device test: Today, Timetable, Focus and Words in transparent
+glass over a wallpaper, every option button of glass, wallpapers to import or pick, the original look kept as a
+choice. Their recipe: (1) blur what's behind and raise its saturation so the glass isn't grey, (2) a 10 % white
+layer, (3) a 1-pixel bright edge for the glass's thickness, (4) refraction at the edges, (5) large soft shapes as
+the background so text stays readable. The owner chose **glass as the default**; Classic is 0.7.0's paper.
+
+| Piece | Where | What |
+|---|---|---|
+| Look | `Views/Glass.swift` `AppStyle`, `appearance.style` | Glass (default) or Classic; Settings → Appearance |
+| Glass card | `glassCard(tint:)`, `glassCapsule`, `surface(_:tint:)` | iOS 26: Liquid Glass (`glassEffect`: blur, colour, rim, refraction) + the 10 % white layer + a 1/`displayScale` gradient edge (bright top left). Before 26: `.ultraThinMaterial`, the tint, the white layer, the edge and a soft glow inside the rim for the refraction |
+| Rows | `glassRows`, `FrostedFill` | List sections can't be one glass shape, so their rows are frosted: the material and the white layer |
+| Buttons | `glassButtonStyle` | `.glass` / `.glassProminent` on iOS 26, bordered before. Buttons in list rows with several of them stay borderless with glass on the label (other styles make the row tap them all) |
+| Wallpapers | CourseKit `SoftWallpaper`, `Views/Backdrop.swift` | Six built-in wallpapers (Dawn, Lagoon, Meadow, Lavender, Sky, Ember): four large ellipses on a base, each drawn as an elliptical gradient that fades like a blur of 16 % of the width (a real opaque blur in a drawing group came out black and sharp on iOS 26), pale in light mode and deep in dark mode. `BackgroundTests.readability`: black/white text 10:1, the system's secondary text and the accent 3:1 on every colour |
+| Background | CourseKit `BackgroundChoice`, `appearance.background` | Paper, a wallpaper, or the photo (your own or a Focus wallpaper, in the 0.7.0 file `TimetableBackground.jpg`). Before any choice: the 0.7.0 photo if there is one, else Dawn (glass) or the paper (classic). Classic shows it behind the timetable only |
+
+Screens in glass: Today's Now/Next card is glass tinted with the course's soft colour, the day arrows and Today are
+glass circles/capsules; the timetable's day row and period times are frosted and the course blocks are glass
+tinted with their colour (soft 75 %, solid 95 % of Block opacity); Focus's plan card, preset chips (the chosen one
+accent-tinted), Start, Pause, Stop and Full Screen are glass, and the countdown card is glass without a photo;
+Words' Today card, its chips and Start are glass. Pushed screens, sheets and Settings keep the paper.
+`LookUITests` also runs the classic look in light and dark, and `testAppearance` goes through a photo, Lagoon with
+solid blocks, and Classic on Lagoon.

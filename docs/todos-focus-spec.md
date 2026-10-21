@@ -9,7 +9,7 @@ in `docs/v3-development-record.md`.
 
 | Topic | Decision |
 |---|---|
-| Class alerts | **No duplicates.** A class gets a Live Activity *or* a notification, never both. Classes with a Live Activity (shown, scheduled, or closed by you) get no notification; the others (beyond the next 4, Live Activities off, iOS 17/18) keep the notification. |
+| Class alerts | ~~**No duplicates.** A class gets a Live Activity *or* a notification, never both.~~ **Changed with the owner on 2026-10-21 (iOS 0.7.1):** users saw neither, because iOS 26 doesn't always start a scheduled Live Activity and its class got no notification. Now **every class gets its notification** (when class reminders are on), and a scheduled Live Activity starts **silently** next to it (one sound). A scheduled activity that is gone although nobody saw it is created again when the app is next open; tapping the reminder does that during the class. Android is unchanged (its app posts its own live notification on time). |
 | To-dos | Added and deleted by hand, **for any date** (today by default). Each has a text and, optionally, **a time** ("12:00") or **"after a class"** of that day ("after Calculus"); then a notification comes at that time, or when the class ends. Unfinished to-dos stay on their day (no carry-over). |
 | To-dos in the Live Activity | The class's Live Activity lists the unfinished to-dos tied to "after" that class ("After class: pick up package"). |
 | Focus timer | A new **Focus** tab. A goal note ("高数复习") and a session length (e.g. 2 h 30 min, breaks included). **Pomodoro**: focus blocks (default 25 min) with short breaks (5 min) and a long break (15 min) after every 4th block, all adjustable; with breaks turned off it is one straight countdown. |

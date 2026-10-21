@@ -115,10 +115,19 @@ struct AppBackdrop: View {
     }
 }
 
-/// A built-in wallpaper: large shapes of colour on the base, blurred into each other (`SoftWallpaper`).
+/// A built-in wallpaper: large shapes of colour on the base, melting into each other (`SoftWallpaper`). Each shape is
+/// an elliptical gradient that fades out the way the shape blurred by 16 % of the width would: no blur pass (an
+/// opaque blur in a drawing group came out black and unblurred on iOS 26), so it's cheap and the same everywhere.
 struct SoftWallpaperView: View {
     let wallpaper: SoftWallpaper
     @Environment(\.colorScheme) private var colorScheme
+
+    /// How far the colour reaches beyond the shape's own size.
+    private static let spread: CGFloat = 1.56
+    /// Its opacity from the centre (0) to the gradient's edge (1): close to a Gaussian blur's falloff.
+    private static let falloff: [(location: CGFloat, opacity: Double)] = [
+        (0, 1), (0.28, 1), (0.46, 0.84), (0.64, 0.5), (0.82, 0.16), (1, 0),
+    ]
 
     var body: some View {
         let palette = wallpaper.palette(dark: colorScheme == .dark)
@@ -127,15 +136,15 @@ struct SoftWallpaperView: View {
             ZStack {
                 Color(rgb: palette.base)
                 ForEach(Array(palette.shapes.enumerated()), id: \.offset) { _, shape in
-                    Ellipse()
-                        .fill(Color(rgb: shape.color))
-                        .frame(width: size.width * shape.width, height: size.width * shape.height)
+                    let color = Color(rgb: shape.color)
+                    EllipticalGradient(stops: Self.falloff.map { Gradient.Stop(color: color.opacity($0.opacity), location: $0.location) },
+                                       center: .center, startRadiusFraction: 0, endRadiusFraction: 0.5)
+                        .frame(width: size.width * shape.width * Self.spread, height: size.width * shape.height * Self.spread)
                         .position(x: size.width * shape.x, y: size.height * shape.y)
                 }
             }
             .frame(width: size.width, height: size.height)
-            .blur(radius: size.width * 0.16, opaque: true)
-            .drawingGroup()
+            .clipped()
         }
         .accessibilityHidden(true)
     }

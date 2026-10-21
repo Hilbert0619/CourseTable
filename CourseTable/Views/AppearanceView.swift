@@ -46,14 +46,7 @@ struct AppearanceView: View {
                             Theme.paper
                         }
                         .accessibilityIdentifier("background-paper")
-                        ForEach(SoftWallpaper.allCases) { wallpaper in
-                            BackgroundTile(title: Text(wallpaper.name), isSelected: choice == .wallpaper(wallpaper)) {
-                                stored = BackgroundChoice.wallpaper(wallpaper).stored
-                            } picture: {
-                                SoftWallpaperView(wallpaper: wallpaper)
-                            }
-                            .accessibilityIdentifier("background-\(wallpaper.rawValue)")
-                        }
+                        // Your photo first: it's the one most likely chosen, and stays in view.
                         if let image = photo.image {
                             BackgroundTile(title: Text("Photo"), isSelected: choice == .photo) {
                                 stored = BackgroundChoice.photo.stored
@@ -61,6 +54,14 @@ struct AppearanceView: View {
                                 Image(uiImage: image).resizable().scaledToFill()
                             }
                             .accessibilityIdentifier("background-photo")
+                        }
+                        ForEach(SoftWallpaper.allCases) { wallpaper in
+                            BackgroundTile(title: Text(wallpaper.name), isSelected: choice == .wallpaper(wallpaper)) {
+                                stored = BackgroundChoice.wallpaper(wallpaper).stored
+                            } picture: {
+                                SoftWallpaperView(wallpaper: wallpaper)
+                            }
+                            .accessibilityIdentifier("background-\(wallpaper.rawValue)")
                         }
                     }
                     .padding(.vertical, 4)
