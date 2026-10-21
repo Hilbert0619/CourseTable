@@ -1,8 +1,19 @@
-# Session Handoff — CourseTable (iOS 0.7.1: the glass look and class reminders that always come, waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
+# Session Handoff — CourseTable (Android next: port iOS 0.6–0.7.1 as StudyHour 0.6.0 · iOS 0.7.1: the glass look and class reminders that always come, waiting for the owner's device test)
 
-Date: 2026-10-21 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+Date: 2026-10-22 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Next: the owner tests iOS 0.7.1
+## Next: Android catches up with iOS 0.6.0–0.7.1 (handoff prompt B)
+
+The owner's plan (2026-10-22): the next session ports to Android what iOS gained since Android 0.5.0 (= iOS 0.5.0):
+the new icon, Focus wallpapers, deleting records and Settings → Storage (iOS 0.6.0/0.6.1), the visual pass (0.7.0)
+and the glass look with wallpapers and Settings → Appearance (0.7.1). Everything to port, where it is on iOS, what
+`:core` needs (CourseColors, gridPosition, FocusWallpapers, FolderUsage, SoftWallpaper/BackgroundChoice; fixtures
+`course-colors.json`, `focus-wallpapers.json`, a new `backgrounds.json`), what not to port (0.7.1's class-alert change
+is iOS-only), the suggested steps (StudyHour 0.6.0, versionCode 8) and the owner's questions:
+[`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md). The iOS 0.7.1 device test (below) runs in
+parallel; its results go to prompt A.
+
+## iOS 0.7.1 (waiting for the owner's device test)
 
 The owner's 0.7.0 device test: **no issues** (2026-10-21). Then two requests, built as **0.7.1 (build 11)** on branch
 `ios-0.7.1` (worktree `D:\Projects\CourseTable-ios07`):
@@ -92,6 +103,8 @@ Handoff prompt A below picks up the owner's results.
 ## Status
 
 - **Android (StudyHour / 学时)**: stages 1–6 of [`docs/android-plan.md`](docs/android-plan.md) §7 are on `main`.
+  **Next: the catch-up with iOS 0.6.0–0.7.1** ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md),
+  prompt B). `android/core` already has 0.7.1's `ClassActivityPlan` change (unused on Android).
   - Stage 4 (alerts, Focus, Reliable Reminders): APK 0.3.0, **tested on the phone by the owner: no issues**.
   - Stage 5: VocabKit ported to `android/core` with shared cases `spec/fixtures/vocab-*.json`.
   - Stage 6 (the Words tab): APK 0.4.0, **tested on the phone by the owner (2026-10-15): no major issues**.
@@ -215,8 +228,8 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 
 ## Handoff prompts
 
-> Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.7.1 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
+> Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **B** is next: Android
+> ports iOS 0.6–0.7.1. **A** follows the owner's iOS 0.7.1 device test (independent; in its own worktree).
 
 ### A. The owner's results for iOS 0.7.1 (glass, class reminders)
 
@@ -239,8 +252,9 @@ docs/todos-focus-spec.md §1 (class alerts, changed 2026-10-21) and §7, README,
 The glass look by default (Liquid Glass on iOS 26 + a 10 % white layer + a 1-pixel bright edge, frosted list
 rows), Classic (0.7.0's warm paper) one switch away; built-in soft-shape wallpapers, your photo or a Focus
 wallpaper. Every class gets its reminder notification; a scheduled Live Activity starts silently next to it.
-Soft pastel course blocks by default, Solid as a setting; the accent colour unchanged. Wallpapers come from Supabase (table focus_wallpapers + public bucket wallpapers). Storage never
-clears the timetable, unfinished to-dos, Words progress or AI connections. Everything in docs/ai-spec.md §1 and
+Soft pastel course blocks by default, Solid as a setting; the accent colour unchanged. Wallpapers come from Supabase
+(table focus_wallpapers + public bucket wallpapers). Storage never clears the timetable, unfinished to-dos, Words
+progress or AI connections. Everything in docs/ai-spec.md §1 and
 docs/ai-agent-spec.md §2 still holds. Swift + SwiftUI only; logic in CourseKit with tests that run on Windows
 (`swift test` in CourseKit/); the app compiles on GitHub Actions only. Never put a real API key, token or password in
 code, tests, CI or chat.
@@ -255,42 +269,50 @@ backend.yml on the branch first, then backend-deploy.yml (gh workflow run, when 
 at the end with run links.
 ```
 
-### B. Android: the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7
+### B. Android: port iOS 0.6–0.7.1 (StudyHour 0.6.0)
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7 (release)
+[PROJECT HANDOFF] CourseTable — Android: port what iOS gained in 0.6.0–0.7.1 (icon, Focus wallpapers, Storage, the visual pass, the glass look) as StudyHour 0.6.0
 
 ## Read first
-HANDOFF.md (status, the Countdown Island and Android 0.5.0 AI checklists, facts, gotchas), docs/android-plan.md (§1
-decisions, §7 stages, §8 progress incl. the 0.4.1 and AI entries), android/README.md ("Live Updates and the brands'
-islands", "AI help and the Assistant"), docs/ai-spec.md and docs/ai-agent-spec.md (the iOS behaviour Android matches).
+docs/android-port-0.6-0.7.md (what to port, where it is on iOS, :core work and fixtures, what not to port, steps,
+my questions), HANDOFF.md (status, facts, gotchas), docs/android-plan.md (§1 decisions, §7 stages, §8 progress),
+android/README.md, docs/design-0.7.md (§1–4 the visual pass, §5 the glass look), docs/todos-focus-spec.md §7
+(wallpapers, Storage), spec/fixtures/README.md.
 
 ## Goal
-0. The Countdown Island (0.5.1, branch android-island-overlay, HANDOFF "Countdown Island test"): I tell you how it
-   went on my phone. Fix what I report on that branch; when I'm happy, merge main into it, CI, fast-forward main,
-   new APK. vivo's own Atom Island stays closed (vivo grants it per app; I chose not to apply).
-1. I tell you how the 0.5.0 AI checklist went (provider, model, what happened). Fix what's reported on a branch (CI green, then fast-forward main, new APK,
-   versionCode +1): AI logic in android/core (package aikit) with tests first, matching iOS; if a fix belongs in the
-   shared logic, change iOS AIKit too only after asking me.
-2. Stage 7 (release): a signed release APK. Ask me first how the release keystore is made and kept (it will be a repo
-   secret I set myself; switching from the debug key means one uninstall, data moves by CSV export and the Words
-   account), the version number and the release notes. Then docs: an Android development record
-   (docs/android-development-record.md, like docs/v2-development-record.md), README (Android section), HANDOFF.
+1. Ask me the questions in docs/android-port-0.6-0.7.md §3 first (the glass approach on Android and whether glass is
+   the default; one APK or steps; the Countdown Island branch; the icon).
+2. Port to android/core with tests first: CourseColors (course-colors.json), PeriodSchedule.gridPosition,
+   FocusWallpapers (focus-wallpapers.json), FolderUsage, SoftWallpaper + BackgroundChoice (a new shared fixture
+   backgrounds.json, with a Swift test reading it too).
+3. The app, in the steps of that file: the 0.7.0 visual pass; Focus wallpapers, deleting records, Settings → Storage;
+   Settings → Appearance with the glass look and the built-in wallpapers; the icon. Screenshots (English + Chinese,
+   light + dark) checked at each step.
+4. StudyHour 0.6.0 (versionCode 8): APK to C:\Users\AI\Downloads\CourseTable\, a short checklist for my phone, docs
+   (docs/android-plan.md §8, android/README.md, HANDOFF).
 
 ## Decided with me — don't reverse; ask if unsure
 Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and schema
-unchanged, supabase-kt, APK, StudyHour/学时 on Android only, iOS unchanged). Keep the repo secret ANDROID_DEBUG_KEYSTORE.
-Don't create or change secrets without asking. No Android Studio/SDK on this PC: the app builds on CI only. AI: bring
-your own key, nothing through our server, keys only on the phone (Android Keystore, out of backups), every change the
-agent makes confirmed with a tap; text in photos by ML Kit bundled, 64-bit ARM only. Never put a real API key in code,
-tests, CI or chat.
+unchanged, supabase-kt, APK, StudyHour/学时 on Android only). iOS is the reference and stays unchanged (except a Swift
+test for a new shared fixture). The Supabase wallpapers are live: no backend change. iOS 0.7.1's class-alert change
+is not ported (Android posts its own live notification on time). Storage never clears the timetable, unfinished
+to-dos, Words progress or AI connections. Keep the repo secret ANDROID_DEBUG_KEYSTORE; don't create or change secrets
+without asking. No Android Studio/SDK on this PC: the app builds on CI only. AI: everything in docs/ai-spec.md §1
+and docs/ai-agent-spec.md §2. Never put a real API key, token or password in code, tests, CI or chat.
+Still open on the Android track, when I report results: the Countdown Island (0.5.1, branch android-island-overlay,
+HANDOFF "Countdown Island test"; vivo's own Atom Island stays closed), the 0.5.0 AI test, then stage 7 (a signed
+release APK: ask me first about the release keystore, version and notes).
 
 ## How to work
-Logic in android/core with tests first (it builds and tests here: ./gradlew :core:test); the app stays thin. Iterate the
-app on a branch: push, `gh workflow run android.yml --ref <branch>`, read the run, fix, repeat; when green, fast-forward
-main and push (main builds the APK). Download artifacts with gh run download (APK to C:\Users\AI\Downloads\CourseTable\,
-screenshots to check). Never put secret keys, passwords or tokens in chat or code. Short report at the end with run
-links.
+Work on a branch from main (e.g. android-0.6); main is checked out in D:\Projects\CourseTable (the iOS worktree
+D:\Projects\CourseTable-ios07 is the iOS session's). Logic in android/core with tests first (it builds and tests
+here: ./gradlew :core:test, with the proxy flags in HANDOFF's gotchas); the app stays thin. Iterate the app on the
+branch: push, `gh workflow run android.yml --ref <branch>`, read the run, download the screenshots and look at them,
+fix, repeat; when green, fast-forward main and push (main builds the APK). Strings: same English as iOS,
+`python tools/xcstrings_to_android.py` for Chinese. Use the Write/Edit tools for code, never Python with
+backslashes through a bash heredoc. Never put secret keys, passwords or tokens in chat or code. Short report at the
+end of each step with run links.
 ```
 
 ## Facts and constraints
