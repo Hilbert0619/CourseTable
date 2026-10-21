@@ -1,8 +1,34 @@
-# Session Handoff — CourseTable (iOS 0.7.0: the visual pass, waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
+# Session Handoff — CourseTable (iOS 0.7.1: the glass look and class reminders that always come, waiting for the owner's device test · Android 0.5.0 with AI help and the agent: waiting for the owner's test, then stage 7)
 
-Date: 2026-10-19 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+Date: 2026-10-21 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Next: the owner tests iOS 0.7.0
+## Next: the owner tests iOS 0.7.1
+
+The owner's 0.7.0 device test: **no issues** (2026-10-21). Then two requests, built as **0.7.1 (build 11)** on branch
+`ios-0.7.1` (worktree `D:\Projects\CourseTable-ios07`):
+1. **The glass look** ([`docs/design-0.7.md`](docs/design-0.7.md) §5): Today, Timetable, Focus and Words in glass
+   over a wallpaper, every option button of glass, wallpapers to import or pick, the original look kept. The owner's
+   recipe (blur + saturation, a 10 % white layer, a 1-pixel bright edge, refraction at the edges, large soft shapes
+   behind) is Liquid Glass on iOS 26 plus our white layer and edge (`Views/Glass.swift`). The owner chose **glass as
+   the default**; Settings → Appearance switches to Classic (0.7.0's paper). Six built-in wallpapers of soft shapes
+   (CourseKit `SoftWallpaper`, readability tested), your photo, or a Focus wallpaper you've seen
+   (`BackgroundChoice`, `Views/Backdrop.swift`, `Views/AppearanceView.swift`, which replaced Timetable Appearance).
+2. **Users' report: the class Live Activity doesn't start in the background, and class reminders don't appear.**
+   Cause: on iOS 26 the next 4 classes get a Live Activity scheduled ahead and, by the 0.3 rule "never both", no
+   notification; when iOS doesn't start a scheduled activity, nothing comes, and the app remembered the class as
+   handled, so it never tried again. The owner chose **a notification for every class again** (when Class reminders
+   is on); the scheduled activity starts **silently** next to it (`Silence.wav`, one sound). A scheduled activity
+   that is gone although nobody saw it is created again next time the app is open (CourseKit `ClassActivityPlan`
+   `scheduled`/`seen`, the same in `android/core`; Android's behaviour is unchanged). Settings → Reminders →
+   **Test in 1 Minute** schedules a pretend class: in the Simulator iOS started it by itself 60 s later with the app
+   in the background (screenshots run 39634923580), so the scheduling call works; whether iOS starts real ones
+   hours ahead on the owner's iPhone is what the device test shows. `docs/todos-focus-spec.md` §1 records the change.
+- CI: iOS 39634905603, CourseKit 39634913626 (CourseKit 87 + 173 + 51 tests, Android core 18 activity tests
+  locally). Screenshots (LookUITests in glass light/dark, Chinese dark, large text, classic light/dark, Focus
+  running, Appearance): 39638343064 (attempt 2; the first stopped without running a step), then the final look SHOTS_RUN. Before: 0.7.0's 39309546075. **IPA 0.7.1 (build 11)**: run IPA_RUN, saved as
+  `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.1.ipa`. Checklist below.
+
+### 0.7.0
 
 **0.7.0 (build 10), 2026-10-19: the visual pass** ([`docs/design-0.7.md`](docs/design-0.7.md)). The owner asked what
 could still be improved in the app's look; the review and plan were approved with two choices: **soft pastel course
@@ -104,25 +130,27 @@ Handoff prompt A below picks up the owner's results.
 - **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7) (IPA run
   38774424881); **the owner's device test passed with no major bugs** (2026-10-16). Android has both since 0.5.0.
 
-## iOS 0.7.0 test (owner)
+## iOS 0.7.1 test (owner)
 
-Install `CourseTable-0.7.0.ipa` over 0.6.x with iloader (everything stays). Try it in light and dark mode (Control
-Centre), and once with a larger text size (Settings → Display & Brightness → Text Size).
-1. **Everywhere**: the lists sit on a warm paper colour (black in dark mode), like the icon.
-2. **Today**: at the top a card in the colour of the class in progress (time left, progress bar, room) or the next
-   one ("in 25 min", "Tomorrow"), with the to-dos left today. Tick off a to-do: it bounces and taps.
-3. **Timetable**: soft blocks (a light tint, dark text, a colour stripe); the class in progress outlined; a red line
-   at the current time in today's column (during a break it sits between periods). Long English names shrink
-   rather than break mid-word.
-4. **Settings → Courses → Timetable Appearance**: switch Soft / Solid (the preview and the timetable follow).
-   Choose a photo (yours, or a Focus wallpaper you've seen): it sits behind the timetable; try Fade and Block
-   opacity. Settings → Storage lists it; clearing it there removes it.
-5. **Focus**: the plan card (a ring with the blocks and breaks to scale) and quick lengths 25 / 50 / 90 min / 2 hr;
-   Rhythm opens the Pomodoro steps. While running: the full-screen button (photo edge to edge, the screen stays on,
-   the arrows close it); a tap when focus and break switch while the app is open.
-6. **Words**: today's ring with the percentage, the streak and the days to the exam.
-7. **AI Help**: Privacy in three lines, "What's Sent" for the details. The Assistant's message bar is on glass.
-8. Anything that looks off (cut text, low contrast, wrong colours in dark mode): a screenshot of it.
+Install `CourseTable-0.7.1.ipa` over 0.7.0 with iloader (everything stays). Light and dark mode, and once with a
+larger text size.
+1. **Glass**: Today, Timetable, Focus and Words open on the Dawn wallpaper (or on your 0.7.0 timetable photo, if
+   you chose one): cards and buttons of glass (they bend the wallpaper at their edges), list rows frosted. Titles,
+   section headers and the date stay easy to read.
+2. **Settings → Appearance**: Glass / Classic (Classic is 0.7.0 exactly; the background then shows behind the
+   timetable only). Pick each built-in wallpaper; Choose a Photo… (yours) and a Focus wallpaper you've seen; Fade
+   for a photo; Soft / Solid blocks and Block opacity. Storage lists the photo as Background Photo.
+3. **Today**: the Now / Next card is glass tinted in the class's colour; the day arrows and Today are glass.
+4. **Timetable**: glass blocks in each course's colour, the day row and period times frosted, the now-line.
+5. **Focus**: the plan card and the 25 / 50 / 90 / 2 hr chips of glass, Start Focusing; while running, Pause, Stop,
+   Full Screen.
+6. **Words**: the Today card, its chips and Start.
+7. **Class reminders and Live Activity** (Settings → Reminders, both on): **Test in 1 Minute**, lock the iPhone
+   right away: a minute later the reminder should sound and the Live Activity appear (expanded in the Dynamic
+   Island) without opening the app. Then the real thing: leave the app closed overnight and see that tomorrow's first
+   classes bring their reminder (one sound) and their Live Activity. If a Live Activity doesn't come but the
+   reminder does, tap the reminder: the activity starts.
+8. Anything off: a screenshot, the time, and whether the app had been opened since the evening before.
 
 ## Android 0.5.0 AI test (owner, with a real key)
 
@@ -186,27 +214,30 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 ## Handoff prompts
 
 > Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **A** follows the owner's
-> 0.7.0 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
+> 0.7.1 device test; **B** is the Android track (independent): the Countdown Island (0.5.1 branch) and the 0.5.0 AI test, then stage 7.
 
-### A. The owner's results for iOS 0.7.0 (the visual pass)
+### A. The owner's results for iOS 0.7.1 (glass, class reminders)
 
 ```
-[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.7.0 (the visual pass): fix what I report
+[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.7.1 (the glass look; class reminders that always come): fix what I report
 
 ## Read first
-HANDOFF.md (status, the 0.7.0 checklist, facts, gotchas), docs/design-0.7.md (tokens, colours, screens, testing),
-docs/todos-focus-spec.md §7, README, spec/fixtures/README.md.
+HANDOFF.md (status, the 0.7.1 checklist, facts, gotchas), docs/design-0.7.md (§5 the glass look),
+docs/todos-focus-spec.md §1 (class alerts, changed 2026-10-21) and §7, README, spec/fixtures/README.md.
 
 ## Goal
-1. I tell you how the 0.7.0 checklist went (light, dark, large text) with screenshots. Fix what I report: colour or
-   layout logic in CourseKit with tests and shared fixtures first (CourseColors contrast stays tested), then the app;
-   compare LookUITests screenshots before and after every UI change.
-2. Bump to 0.7.1 (build 11) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give
+1. I tell you how the 0.7.1 checklist went (light, dark, large text; Test in 1 Minute; real classes overnight) with
+   screenshots. Fix what I report: logic in CourseKit with tests first (CourseColors and SoftWallpaper readability
+   stay tested; ClassActivityPlan also in android/core), then the app; compare LookUITests screenshots before and
+   after every UI change.
+2. Bump to 0.7.2 (build 12) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give
    me a short checklist for what changed.
 
 ## Decided with me — don't reverse; ask if unsure
-Soft pastel course blocks by default, Solid as a setting; the warm paper background from the icon; the accent
-colour unchanged. Wallpapers come from Supabase (table focus_wallpapers + public bucket wallpapers). Storage never
+The glass look by default (Liquid Glass on iOS 26 + a 10 % white layer + a 1-pixel bright edge, frosted list
+rows), Classic (0.7.0's warm paper) one switch away; built-in soft-shape wallpapers, your photo or a Focus
+wallpaper. Every class gets its reminder notification; a scheduled Live Activity starts silently next to it.
+Soft pastel course blocks by default, Solid as a setting; the accent colour unchanged. Wallpapers come from Supabase (table focus_wallpapers + public bucket wallpapers). Storage never
 clears the timetable, unfinished to-dos, Words progress or AI connections. Everything in docs/ai-spec.md §1 and
 docs/ai-agent-spec.md §2 still holds. Swift + SwiftUI only; logic in CourseKit with tests that run on Windows
 (`swift test` in CourseKit/); the app compiles on GitHub Actions only. Never put a real API key, token or password in
@@ -375,7 +406,15 @@ links.
   inline chips. A colour `.background` reaches into the safe area unless `ignoresSafeAreaEdges: []`. Designing
   colours: `CourseColors` values come from `tools/course_colors.py` (OKLCH); keep the contrast and distinctness
   tests green.
-- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.7.0 / 10 now),
+- Gotchas from the 0.7.1 work: `.blur(radius:opaque: true)` + `.drawingGroup()` drew the wallpaper's shapes sharp
+  with black where the base should be (iOS 26 Simulator): the wallpapers are elliptical gradients now. A list
+  section can't be one glass shape: rows get `listRowBackground(FrostedFill())`, cards draw their own glass with zero
+  row insets. Several buttons in one list row: keep them borderless and put the glass on the label (other styles
+  make the row tap them all). `-appStyle classic` picks the look in UI tests (a launch argument with the setting's
+  own key would hide changes made in the app). In the Simulator a scheduled Live Activity (`request(…start:)`)
+  started on time with the app in the background. A screenshots job once stopped after 15 minutes without running a
+  step (a runner hiccup): `gh run rerun`. LookUITests now takes ~16 minutes.
+- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.7.1 / 11 now),
   `gh workflow run ipa.yml`, download to `C:\Users\AI\Downloads\CourseTable\CourseTable-<version>.ipa`, installed
   with iloader.
 - Gotchas from the AI work: List rows off screen aren't in the XCUITest tree (scroll first; the first cell can be a

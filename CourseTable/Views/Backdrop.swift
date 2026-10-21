@@ -10,7 +10,7 @@ enum AppBackground {
     static let key = "appearance.background"
     /// How much paper lies over a photo in the glass look (the classic look has `BackgroundPhoto.fadeKey`).
     static let glassFadeKey = "appearance.glassFade"
-    static let defaultGlassFade = 0.1
+    static let defaultGlassFade = 0.2
 
     /// The choice in effect.
     @MainActor

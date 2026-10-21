@@ -267,7 +267,7 @@ private enum LabelSurface {
     case none
     /// The paper, mostly opaque (the classic look on a picture).
     case paper
-    /// Frosted glass (the glass look).
+    /// Frosted glass (the glass look), thicker than a list row's: the small grey times stay readable on a dark photo.
     case frosted
 
     @ViewBuilder
@@ -275,7 +275,7 @@ private enum LabelSurface {
         switch self {
         case .none: Color.clear
         case .paper: Theme.paper.opacity(0.82)
-        case .frosted: FrostedFill()
+        case .frosted: Rectangle().fill(.regularMaterial).overlay(Color.white.opacity(0.10))
         }
     }
 }
