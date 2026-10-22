@@ -19,12 +19,13 @@ does what iOS does (see `README.md`, `docs/vocabulary-spec.md`, `docs/todos-focu
 | Languages | English + Simplified Chinese, with the iOS translations reused (§6). |
 | Name and icon | **StudyHour / 学时** on Android only (the iOS app stays "Course Table / 课程表"); the iOS icon redrawn as an adaptive icon. `applicationId` stays `io.github.hilbert0619.coursetable`. |
 | Builds | The app builds and tests on **Linux CI only** (no SDK here); `:core` also builds and tests on this PC with just the JDK (`settings.gradle.kts` leaves `:app` out without an SDK). |
+| Words on Android | **Hidden for now** (owner, 2026-10-22: users don't need it), from 0.7.1: `BuildConfig.WORDS = false` in `app/build.gradle.kts`. No Words tab, no sign-in link handling or Words sync, the Assistant without vocabulary tools, texts without Words. The code, its tests (the Words screenshots still run) and each phone's Words data (`vocabulary.db`, the account) stay; `true` brings it all back. The iOS app keeps Words. |
 
 ## 2. Feature parity
 
 | iOS feature | Android implementation | Difference to expect |
 |---|---|---|
-| Tabs: Today, Timetable, Focus, Words, Settings | `NavigationBar` with the same five destinations | — |
+| Tabs: Today, Timetable, Focus, Words, Settings | `NavigationBar` with the same five destinations | Words hidden on Android for now (§1) |
 | Courses, editor, clashes, colours, term, period times | Compose screens; Room database (`courses`, `settings`, `course_templates`) | — |
 | Import CSV/text/file (UTF-8, UTF-16, GB18030), preview, export CSV | Port of `CSV`, `CourseImport`, `ImportPlan`; files via the system picker (`ACTION_OPEN_DOCUMENT`), export via share sheet (`ACTION_SEND`, FileProvider) | — |
 | Course list + placing on the grid | Port of `CourseTemplate`; the same placing mode | — |
@@ -212,7 +213,12 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   Appearance: Glass / Classic, Paper, your photo, the six built-in wallpapers (`SoftWallpaperView`: elliptical
   gradients, as on iOS), a seen Focus wallpaper, Fade (its own value in each look), Soft / Solid, Block opacity. A 0.6.0
   photo carries over (`BackgroundChoice.resolve`).
-- **Waiting**: the owner's tests of 0.7.0 / 0.6.0 and of 0.5.0 with a real key, the island check of 0.4.1, then stage 7
+- **0.7.1 (10), 2026-10-22: Words hidden** (the owner's call: users don't need it; §1). `BuildConfig.WORDS = false`:
+  `MainActivity` makes no `WordsController` (the Words database and account aren't opened), `RootScreen` shows four
+  tabs, a sign-in link just opens the app; the Assistant gets `AppTools.tools(words = false)` and
+  `AIPrompts.assistant(…, words = false)` (no vocabulary, tested in `:core`), no Share My Hard Words, no words
+  suggestion and no study tools; Appearance, Storage and AI Help texts without Words (`…_no_words` strings).
+- **Waiting**: the owner's tests of 0.7.1 / 0.6.0 and of 0.5.0 with a real key, the island check of 0.4.1, then stage 7
   (release) — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)

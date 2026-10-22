@@ -1,8 +1,8 @@
-# Session Handoff — CourseTable (Android: StudyHour 0.7.0 with the glass look built — the catch-up with iOS 0.7.1 is complete — waiting for the owner's phone test · iOS 0.7.1 waiting for the owner's device test)
+# Session Handoff — CourseTable (Android: StudyHour 0.7.1 built — the glass look, Words hidden — waiting for the owner's phone test · iOS 0.7.1 waiting for the owner's device test)
 
 Date: 2026-10-22 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Android: StudyHour 0.7.0 built (2026-10-22) — the catch-up with iOS 0.6.0–0.7.1 is complete
+## Android: StudyHour 0.7.1 built (2026-10-22) — the glass look, Words hidden
 
 The owner's choices ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md) §3): **Haze** for the glass,
 **glass by default**; **two APKs**; the Countdown Island **stays apart**; the **iOS icon**. Both APKs are built:
@@ -15,10 +15,15 @@ The owner's choices ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.
   Appearance (Glass / Classic, Paper, your photo, the six built-in wallpapers, a seen Focus wallpaper, Fade, Soft /
   Solid, Block opacity). CI: branch 39711694855 / 39712426448 (screenshots in glass and classic, light, dark and
   Chinese checked; fixes after the first look: prominent glass on a solid accent, frosted top bars over a photo),
-  main 39713039695. **APK `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.0-debug-51.apk`** — it contains 0.6.0,
-  so the owner can install it directly and go through both checklists below.
+  main 39713039695. APK `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.0-debug-51.apk`.
+- **StudyHour 0.7.1 (10)** = 0.7.0 with **Words hidden** (the owner's call, 2026-10-22: users don't need it; the iOS
+  app keeps Words). `BuildConfig.WORDS = false` (`android/app/build.gradle.kts`): four tabs, no sign-in link handling
+  or Words sync, the Assistant without vocabulary tools, words suggestion, Share My Hard Words or study tools, texts
+  without Words. The code, its tests and each phone's Words data stay; `true` brings it back (`android/README.md`
+  "Words"). CI: branch 39715715258 (one old test tapped the Words tab) / 39716272854, main 39716727392. **APK `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.1-debug-54.apk`** — it contains
+  0.7.0 and 0.6.0, so the owner can install it directly and go through both checklists below.
 
-**Next (prompt B): the owner's results** of 0.7.0 / 0.6.0 (and of the Countdown Island and the 0.5.0 AI test), then
+**Next (prompt B): the owner's results** of 0.7.1 / 0.6.0 (and of the Countdown Island and the 0.5.0 AI test), then
 stage 7. The iOS 0.7.1 device test (below) runs in parallel; its results go to prompt A.
 
 ## iOS 0.7.1 (waiting for the owner's device test)
@@ -112,8 +117,8 @@ Handoff prompt A below picks up the owner's results.
 
 - **Android (StudyHour / 学时)**: stages 1–6 of [`docs/android-plan.md`](docs/android-plan.md) §7 are on `main`.
   **The catch-up with iOS 0.6.0–0.7.1** ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md)) is
-  **complete**: 0.6.0 (8) and **0.7.0 (9)** built 2026-10-22 (APK `StudyHour-0.7.0-debug-51.apk`, checklists below).
-  `android/core` also has 0.7.1's `ClassActivityPlan` change (unused on Android).
+  **complete**: 0.6.0 (8) and 0.7.0 (9) built 2026-10-22. **0.7.1 (10) hides Words** (the owner's call; APK
+  `StudyHour-0.7.1-debug-54.apk`, checklists below). `android/core` also has 0.7.1's `ClassActivityPlan` change (unused on Android).
   - Stage 4 (alerts, Focus, Reliable Reminders): APK 0.3.0, **tested on the phone by the owner: no issues**.
   - Stage 5: VocabKit ported to `android/core` with shared cases `spec/fixtures/vocab-*.json`.
   - Stage 6 (the Words tab): APK 0.4.0, **tested on the phone by the owner (2026-10-15): no major issues**.
@@ -176,12 +181,13 @@ larger text size.
    reminder does, tap the reminder: the activity starts.
 8. Anything off: a screenshot, the time, and whether the app had been opened since the evening before.
 
-## Android 0.7.0 test (owner): the glass look
+## Android 0.7.1 test (owner): the glass look, Words hidden
 
-Install `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.0-debug-51.apk` over 0.5.x or 0.6.0 (everything stays;
-over the Countdown Island APK 0.5.1 the island goes away, as planned). It contains 0.6.0: go through these, then the
-0.6.0 list below (in Settings → Appearance → Classic, everything looks as 0.6.0 does). Light and dark mode.
-1. **Glass** (the default): Today, Timetable, Focus and Words on the Dawn wallpaper (or on your 0.6.0 timetable photo,
+Install `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.1-debug-54.apk` over 0.5.x, 0.6.0 or 0.7.0 (everything stays,
+Words progress included, just not shown; over the Countdown Island APK 0.5.1 the island goes away, as planned). It
+contains 0.6.0: go through these, then the 0.6.0 list below (in Settings → Appearance → Classic, everything looks as
+0.6.0 does). Light and dark mode.
+1. **Glass** (the default): Today, Timetable and Focus on the Dawn wallpaper (or on your 0.6.0 timetable photo,
    if you chose one): list sections frosted, the tab bar frosted, cards and buttons of glass that bend the wallpaper at
    their edges (Android 13+; the iQOO runs 16). Titles, section headers and the date stay easy to read.
 2. **Today**: the day arrows and Today are glass circles/capsules; the Now / Next card is glass tinted in the class's
@@ -189,18 +195,21 @@ over the Countdown Island APK 0.5.1 the island goes away, as planned). It contai
 3. **Timetable**: course blocks of tinted glass; the days and period times on thicker frosting; the now-line.
 4. **Focus**: the plan card of glass, the chips of glass (the chosen one in blue), Start floating in blue; while
    running, the countdown card of glass (when there's no photo yet), Pause in blue, Stop, Full Screen.
-5. **Words**: the Today card of glass, its chips and Start.
+5. **No Words**: four tabs (Today, Timetable, Focus, Settings). Today → ✨ (the Assistant): no "How are my words
+   going?", no Long Sentences / Writing Feedback, and ⋯ has no Share My Hard Words. Settings → Appearance, Storage and
+   AI Help don't mention Words.
 6. **Settings → Appearance**: Glass / Classic (Classic = 0.6.0's paper; the background then shows behind the timetable
    only); each built-in wallpaper (Dawn, Lagoon, Meadow, Lavender, Sky, Ember); Choose a Photo… and a Focus wallpaper
    you've seen; Fade for a photo (glass and classic keep their own); Soft / Solid and Block opacity. On a photo the top
    bars are frosted too. Storage lists the photo as Background Photo.
-7. Smoothness: scroll Today and Words and switch weeks on the timetable: does it stay fluid? (Each card of glass is
+7. Smoothness: scroll Today and Focus and switch weeks on the timetable: does it stay fluid? (Each card of glass is
    drawn by the GPU; tell me if anything stutters.)
 8. Anything off: a screenshot, light or dark, which background.
 
 ## Android 0.6.0 test (owner)
 
-Part of 0.7.0 (above); with 0.6.0's own APK (`StudyHour-0.6.0-debug-48.apk`) the same, on the paper.
+Part of 0.7.1 (above), except Words (step 9: 0.6.0's own APK `StudyHour-0.6.0-debug-48.apk` only); with that APK the
+same, on the paper.
 1. **Icon**: the new picture on the Home Screen (and in Recents). With themed icons on, a one-colour calendar, clock
    and Z.
 2. **Look**: warm paper behind every screen in light mode (black in dark), white cards.
@@ -227,6 +236,7 @@ Part of 0.7.0 (above); with 0.6.0's own APK (`StudyHour-0.6.0-debug-48.apk`) the
 
 ## Android 0.5.0 AI test (owner, with a real key)
 
+On 0.7.1 (`StudyHour-0.7.1-debug-54.apk`) steps 2, 3 and 6 don't apply (they're in the hidden Words tab); the rest is the same there.
 Install `C:\Users\AI\Downloads\CourseTable\StudyHour-0.5.0-debug-39.apk` over 0.4.x (timetable, to-dos, Focus and Words stay). Keys don't come over from the iPhone: add the
 connection on the phone itself (the same key works on both). Use a model that calls tools: DeepSeek
 (`deepseek-v4-flash`), GLM (`glm-4.7-flash`, free) or Qwen.
@@ -328,21 +338,21 @@ backend.yml on the branch first, then backend-deploy.yml (gh workflow run, when 
 at the end with run links.
 ```
 
-### B. Android: the owner's results of StudyHour 0.7.0 (and 0.6.0), then what's still open
+### B. Android: the owner's results of StudyHour 0.7.1 (and 0.6.0), then what's still open
 
 ```
-[PROJECT HANDOFF] CourseTable — Android (StudyHour): fix what I report from 0.7.0 (the glass look) and 0.6.0; then the Countdown Island, the 0.5.0 AI test, stage 7
+[PROJECT HANDOFF] CourseTable — Android (StudyHour): fix what I report from 0.7.1 (the glass look, Words hidden) and 0.6.0; then the Countdown Island, the 0.5.0 AI test, stage 7
 
 ## Read first
-HANDOFF.md (status, the 0.7.0 and 0.6.0 checklists, facts, gotchas), docs/android-port-0.6-0.7.md (§3 my answers,
+HANDOFF.md (status, the 0.7.1 and 0.6.0 checklists, facts, gotchas), docs/android-port-0.6-0.7.md (§3 my answers,
 §4 progress), docs/android-plan.md (§1 decisions, §7 stages, §8 progress), android/README.md ("The look, Focus
 wallpapers and Storage"), docs/design-0.7.md (§5 the glass look), spec/fixtures/README.md.
 
 ## Goal
-1. I tell you how the 0.7.0 checklist (glass) and the 0.6.0 one went, with screenshots. Fix what I report: logic in
+1. I tell you how the 0.7.1 checklist (glass, no Words) and the 0.6.0 one went, with screenshots. Fix what I report: logic in
    android/core with tests first (shared fixtures updated with iOS when a rule changes), then the app; screenshots
    before and after every UI change (glass and classic, light and dark, English and Chinese).
-2. Bump the version (0.7.1, versionCode 10) if anything changed, build the APK on main, save it to
+2. Bump the version (0.7.2, versionCode 11) if anything changed, build the APK on main, save it to
    C:\Users\AI\Downloads\CourseTable\, give me a short checklist for what changed.
 3. Then, as I report: the Countdown Island (branch android-island-overlay, HANDOFF "Countdown Island test"; merge
    main into it first), the 0.5.0 AI test, and stage 7 (a signed release APK: ask me first about the release keystore,
@@ -350,7 +360,8 @@ wallpapers and Storage"), docs/design-0.7.md (§5 the glass look), spec/fixtures
 
 ## Decided with me — don't reverse; ask if unsure
 Haze for the glass, glass as the default, Classic (the 0.6.0 paper) one switch away; prominent glass on a solid
-accent. Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and
+accent. Words is hidden on Android (BuildConfig.WORDS = false, 2026-10-22: users don't need it): don't bring it back
+or remove its code unless I ask; the iOS app keeps Words. Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and
 schema unchanged, supabase-kt, APK, StudyHour/学时 on Android only). iOS is the reference and stays unchanged. iOS
 0.7.1's class-alert change is not ported (Android posts its own live notification on time). Storage never clears the
 timetable, unfinished to-dos, Words progress or AI connections. vivo's own Atom Island stays closed. Keep the repo
