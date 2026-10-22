@@ -115,8 +115,8 @@ android/
    statistics; tested against the same cloud project with the owner's account.
    - Added later at the owner's choice: AI help and the agent (0.5.0, done); the Countdown Island (0.5.1, branch);
      **catching up with iOS 0.6.0–0.7.1**, planned in [`android-port-0.6-0.7.md`](android-port-0.6-0.7.md), in two
-     APKs: StudyHour 0.6.0 (icon, Focus wallpapers, Storage, the visual pass; built 2026-10-22) and 0.7.0 (the glass
-     look; next).
+     APKs: StudyHour 0.6.0 (icon, Focus wallpapers, Storage, the visual pass) and 0.7.0 (the glass look), both built
+     2026-10-22.
 7. **Release**: signed APK 0.3.x for Android, device test, docs (README, an Android development record, HANDOFF).
 
 Each stage ends with a short report, run links, and screenshots; the owner tests on the phone at the end of stages
@@ -200,8 +200,20 @@ Each stage ends with a short report, run links, and screenshots; the owner tests
   photo picker or a seen wallpaper, Fade, Block opacity) and Settings → Storage; the Words ring and chips; AI Help's
   privacy in three lines with What's Sent; a bounce and a haptic when a to-do is ticked off; the iOS 0.6 icon as the
   adaptive icon (the picture at 66 of 108 units, its edges repeated outward, a drawn themed glyph).
-- **Waiting**: the owner's test of 0.5.0 with a real key, the island check of 0.4.1, then stage 7 (release) — see
-  `HANDOFF.md`.
+- **0.7.0 (9), 2026-10-22: the glass look of iOS 0.7.1**, with **Haze 2.0.1** (the owner's choice; glass by default).
+  `RootScreen` draws the background once behind Today, Timetable, Focus and Words (behind the timetable alone in the
+  classic look) and captures it with `hazeSource`; the tab bar is frosted. `ui/components/Glass.kt`: glass
+  (`hazeGlass`: blur, saturation, refraction and specular light on Android 13+, a tint and a soft rim before) plus the
+  owner's 10 % white layer and 1-pixel bright edge; frosted sections (`hazeBlur` with a veil of the paper); glass
+  buttons (prominent ones on a solid accent so white text reads), chips, the Now / Next card, the Focus plan and
+  countdown cards, Words' Today card and glass course blocks (soft 75 %, solid 95 % of Block opacity); the timetable's
+  days and times on thicker frosting, and the top bars too over a photo. Screens opt in (`GlassScope`); pushed screens,
+  dialogs (`EditorDialog` → `PaperScope`) and Settings keep the paper. Settings → Appearance replaces Timetable
+  Appearance: Glass / Classic, Paper, your photo, the six built-in wallpapers (`SoftWallpaperView`: elliptical
+  gradients, as on iOS), a seen Focus wallpaper, Fade (its own value in each look), Soft / Solid, Block opacity. A 0.6.0
+  photo carries over (`BackgroundChoice.resolve`).
+- **Waiting**: the owner's tests of 0.7.0 / 0.6.0 and of 0.5.0 with a real key, the island check of 0.4.1, then stage 7
+  (release) — see `HANDOFF.md`.
 
 ## 9. Open questions at the start (answered 2026-10-09)
 

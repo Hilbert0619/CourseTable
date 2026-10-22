@@ -1,21 +1,25 @@
-# Session Handoff — CourseTable (Android: StudyHour 0.6.0 built, waiting for the owner's phone test; next 0.7.0, the glass look · iOS 0.7.1 waiting for the owner's device test)
+# Session Handoff — CourseTable (Android: StudyHour 0.7.0 with the glass look built — the catch-up with iOS 0.7.1 is complete — waiting for the owner's phone test · iOS 0.7.1 waiting for the owner's device test)
 
 Date: 2026-10-22 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
-## Android: StudyHour 0.6.0 built (2026-10-22); next 0.7.0, the glass look (handoff prompt B)
+## Android: StudyHour 0.7.0 built (2026-10-22) — the catch-up with iOS 0.6.0–0.7.1 is complete
 
-The owner's choices for the catch-up with iOS 0.6.0–0.7.1 ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md)
-§3): **Haze** for the glass, **glass by default**; **two APKs**; the Countdown Island **stays apart**; the **iOS icon**.
+The owner's choices ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md) §3): **Haze** for the glass,
+**glass by default**; **two APKs**; the Countdown Island **stays apart**; the **iOS icon**. Both APKs are built:
+- **StudyHour 0.6.0 (8)** = iOS 0.6.0–0.7.0: the new icon, Focus wallpapers (one downloaded ahead), deleting focus
+  sessions and All Sessions, Settings → Storage, the visual pass. CI: branch 39661839070 / 39674220972, main
+  39674638097; CourseKit 39674638104 (the new shared `backgrounds.json`, also read by a Swift test). APK
+  `C:\Users\AI\Downloads\CourseTable\StudyHour-0.6.0-debug-48.apk`.
+- **StudyHour 0.7.0 (9)** = the glass look of iOS 0.7.1 with **Haze 2.0.1** (its Glass gives blur, saturation,
+  refraction and specular light on Android 13+, plus our 10 % white layer and 1-pixel bright edge), and Settings →
+  Appearance (Glass / Classic, Paper, your photo, the six built-in wallpapers, a seen Focus wallpaper, Fade, Soft /
+  Solid, Block opacity). CI: branch 39711694855 / 39712426448 (screenshots in glass and classic, light, dark and
+  Chinese checked; fixes after the first look: prominent glass on a solid accent, frosted top bars over a photo),
+  main 39713039695. **APK `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.0-debug-51.apk`** — it contains 0.6.0,
+  so the owner can install it directly and go through both checklists below.
 
-**StudyHour 0.6.0 (versionCode 8)** = everything of iOS 0.6.0–0.7.0: the new icon, Focus wallpapers (one downloaded
-ahead), deleting focus sessions and All Sessions, Settings → Storage, the visual pass (warm paper, soft course blocks,
-the now-line, the Now / Next card, the Focus plan card and full screen, the Words ring, AI Help's privacy lines) and
-Settings → Courses → Timetable Appearance. `:core` got `CourseColors`, `gridPosition`, `FocusWallpapers`,
-`FolderUsage`, `SoftWallpaper`/`BackgroundChoice` with the shared fixtures (new: `backgrounds.json`, also read by a
-Swift test). CI: branch 39661839070 and 39674220972 (screenshots of every new screen checked), main 39674638097,
-CourseKit 39674638104. **APK** `C:\Users\AI\Downloads\CourseTable\StudyHour-0.6.0-debug-48.apk`. Checklist below.
-**Next (prompt B): StudyHour 0.7.0 (9)**, the glass look with Haze and Settings → Appearance. The iOS 0.7.1 device
-test (below) runs in parallel; its results go to prompt A.
+**Next (prompt B): the owner's results** of 0.7.0 / 0.6.0 (and of the Countdown Island and the 0.5.0 AI test), then
+stage 7. The iOS 0.7.1 device test (below) runs in parallel; its results go to prompt A.
 
 ## iOS 0.7.1 (waiting for the owner's device test)
 
@@ -107,9 +111,9 @@ Handoff prompt A below picks up the owner's results.
 ## Status
 
 - **Android (StudyHour / 学时)**: stages 1–6 of [`docs/android-plan.md`](docs/android-plan.md) §7 are on `main`.
-  **The catch-up with iOS 0.6.0–0.7.1** ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md)): **0.6.0 (8)
-  built 2026-10-22** (iOS 0.6.0–0.7.0; APK `StudyHour-0.6.0-debug-48.apk`, checklist below); **next 0.7.0 (9), the glass
-  look** (prompt B). `android/core` already has 0.7.1's `ClassActivityPlan` change (unused on Android).
+  **The catch-up with iOS 0.6.0–0.7.1** ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.md)) is
+  **complete**: 0.6.0 (8) and **0.7.0 (9)** built 2026-10-22 (APK `StudyHour-0.7.0-debug-51.apk`, checklists below).
+  `android/core` also has 0.7.1's `ClassActivityPlan` change (unused on Android).
   - Stage 4 (alerts, Focus, Reliable Reminders): APK 0.3.0, **tested on the phone by the owner: no issues**.
   - Stage 5: VocabKit ported to `android/core` with shared cases `spec/fixtures/vocab-*.json`.
   - Stage 6 (the Words tab): APK 0.4.0, **tested on the phone by the owner (2026-10-15): no major issues**.
@@ -172,10 +176,31 @@ larger text size.
    reminder does, tap the reminder: the activity starts.
 8. Anything off: a screenshot, the time, and whether the app had been opened since the evening before.
 
+## Android 0.7.0 test (owner): the glass look
+
+Install `C:\Users\AI\Downloads\CourseTable\StudyHour-0.7.0-debug-51.apk` over 0.5.x or 0.6.0 (everything stays;
+over the Countdown Island APK 0.5.1 the island goes away, as planned). It contains 0.6.0: go through these, then the
+0.6.0 list below (in Settings → Appearance → Classic, everything looks as 0.6.0 does). Light and dark mode.
+1. **Glass** (the default): Today, Timetable, Focus and Words on the Dawn wallpaper (or on your 0.6.0 timetable photo,
+   if you chose one): list sections frosted, the tab bar frosted, cards and buttons of glass that bend the wallpaper at
+   their edges (Android 13+; the iQOO runs 16). Titles, section headers and the date stay easy to read.
+2. **Today**: the day arrows and Today are glass circles/capsules; the Now / Next card is glass tinted in the class's
+   colour.
+3. **Timetable**: course blocks of tinted glass; the days and period times on thicker frosting; the now-line.
+4. **Focus**: the plan card of glass, the chips of glass (the chosen one in blue), Start floating in blue; while
+   running, the countdown card of glass (when there's no photo yet), Pause in blue, Stop, Full Screen.
+5. **Words**: the Today card of glass, its chips and Start.
+6. **Settings → Appearance**: Glass / Classic (Classic = 0.6.0's paper; the background then shows behind the timetable
+   only); each built-in wallpaper (Dawn, Lagoon, Meadow, Lavender, Sky, Ember); Choose a Photo… and a Focus wallpaper
+   you've seen; Fade for a photo (glass and classic keep their own); Soft / Solid and Block opacity. On a photo the top
+   bars are frosted too. Storage lists the photo as Background Photo.
+7. Smoothness: scroll Today and Words and switch weeks on the timetable: does it stay fluid? (Each card of glass is
+   drawn by the GPU; tell me if anything stutters.)
+8. Anything off: a screenshot, light or dark, which background.
+
 ## Android 0.6.0 test (owner)
 
-Install `C:\Users\AI\Downloads\CourseTable\StudyHour-0.6.0-debug-48.apk` over 0.5.x (everything stays; over the
-Countdown Island APK 0.5.1 the island goes away, as planned). Light and dark mode.
+Part of 0.7.0 (above); with 0.6.0's own APK (`StudyHour-0.6.0-debug-48.apk`) the same, on the paper.
 1. **Icon**: the new picture on the Home Screen (and in Recents). With themed icons on, a one-colour calendar, clock
    and Z.
 2. **Look**: warm paper behind every screen in light mode (black in dark), white cards.
@@ -261,9 +286,9 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 
 ## Handoff prompts
 
-> Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **B** is next: Android
-> 0.7.0, the glass look (and fixes from the 0.6.0 test). **A** follows the owner's iOS 0.7.1 device test (independent;
-> in its own worktree).
+> Copy one whole block into a new Claude Code session opened in `D:\Projects\CourseTable`. **B** follows the owner's
+> Android 0.7.0 / 0.6.0 phone test. **A** follows the owner's iOS 0.7.1 device test (independent; in its own
+> worktree).
 
 ### A. The owner's results for iOS 0.7.1 (glass, class reminders)
 
@@ -303,51 +328,44 @@ backend.yml on the branch first, then backend-deploy.yml (gh workflow run, when 
 at the end with run links.
 ```
 
-### B. Android: the glass look (StudyHour 0.7.0), and the owner's 0.6.0 results
+### B. Android: the owner's results of StudyHour 0.7.0 (and 0.6.0), then what's still open
 
 ```
-[PROJECT HANDOFF] CourseTable — Android: the glass look of iOS 0.7.1 as StudyHour 0.7.0 (Haze, glass by default, Settings → Appearance); fix what I report from 0.6.0
+[PROJECT HANDOFF] CourseTable — Android (StudyHour): fix what I report from 0.7.0 (the glass look) and 0.6.0; then the Countdown Island, the 0.5.0 AI test, stage 7
 
 ## Read first
-docs/android-port-0.6-0.7.md (§1 "0.7.1 — the glass look", §3 my answers, §4 progress), HANDOFF.md (status, the
-0.6.0 checklist, facts, gotchas), docs/design-0.7.md §5 (the glass look), docs/android-plan.md (§1 decisions, §8
-progress), android/README.md ("The look, Focus wallpapers and Storage"), spec/fixtures/README.md. The iOS reference:
-CourseTable/Views/Glass.swift, Backdrop.swift, AppearanceView.swift, and the glass parts of TodayView, WeekView,
-FocusView, WordsHomeView.
+HANDOFF.md (status, the 0.7.0 and 0.6.0 checklists, facts, gotchas), docs/android-port-0.6-0.7.md (§3 my answers,
+§4 progress), docs/android-plan.md (§1 decisions, §7 stages, §8 progress), android/README.md ("The look, Focus
+wallpapers and Storage"), docs/design-0.7.md (§5 the glass look), spec/fixtures/README.md.
 
 ## Goal
-1. If I report results of the 0.6.0 checklist, fix those first (logic in android/core with tests; screenshots before
-   and after).
-2. StudyHour 0.7.0 (versionCode 9): Settings → Appearance replacing Timetable Appearance (Glass / Classic; Background:
-   Paper, the six built-in wallpapers, your photo, a seen Focus wallpaper; Fade for a photo; Soft / Solid and Block
-   opacity), the built-in wallpapers drawn as on iOS (elliptical gradients; `SoftWallpaper` is already in :core with
-   backgrounds.json), and the glass look on Today, Timetable, Focus and Words: Haze (dev.chrisbanes.haze; look up the
-   current version) blurring what's behind on Android 12+, a frosted tint before, plus a 10 % white layer, a 1 px
-   bright edge and a soft glow inside the rim; frosted list rows; glass chips and buttons; the timetable's day row
-   and period times on thicker frosting; glass course blocks (soft 75 %, solid 95 % of Block opacity). Pushed screens,
-   dialogs and Settings keep the paper. Screenshots (English + Chinese, light + dark, classic too) checked at each step.
-3. APK to C:\Users\AI\Downloads\CourseTable\, a short checklist for my phone, docs (android-plan.md §8,
-   android-port-0.6-0.7.md §4, android/README.md, HANDOFF).
+1. I tell you how the 0.7.0 checklist (glass) and the 0.6.0 one went, with screenshots. Fix what I report: logic in
+   android/core with tests first (shared fixtures updated with iOS when a rule changes), then the app; screenshots
+   before and after every UI change (glass and classic, light and dark, English and Chinese).
+2. Bump the version (0.7.1, versionCode 10) if anything changed, build the APK on main, save it to
+   C:\Users\AI\Downloads\CourseTable\, give me a short checklist for what changed.
+3. Then, as I report: the Countdown Island (branch android-island-overlay, HANDOFF "Countdown Island test"; merge
+   main into it first), the 0.5.0 AI test, and stage 7 (a signed release APK: ask me first about the release keystore,
+   version and notes).
 
 ## Decided with me — don't reverse; ask if unsure
-Haze, glass as the default, Classic (0.6.0's paper) one switch away. Two APKs: 0.6.0 is out; this is 0.7.0. The
-Countdown Island (0.5.1, branch android-island-overlay) stays apart until I report on it. Everything in
-docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and schema unchanged,
-StudyHour/学时 on Android only). iOS is the reference and stays unchanged. A 0.6.0 timetable photo and settings carry
-over (BackgroundChoice.resolve). iOS 0.7.1's class-alert change is not ported. Storage never clears the timetable,
-unfinished to-dos, Words progress or AI connections. Keep the repo secret ANDROID_DEBUG_KEYSTORE; don't create or
-change secrets without asking. No Android Studio/SDK on this PC: the app builds on CI only. Never put a real API key,
-token or password in code, tests, CI or chat. Still open on the Android track, when I report: the Countdown Island,
-the 0.5.0 AI test, then stage 7 (a signed release APK: ask me first about the release keystore, version and notes).
+Haze for the glass, glass as the default, Classic (the 0.6.0 paper) one switch away; prominent glass on a solid
+accent. Everything in docs/android-plan.md §1 (native Kotlin + Compose, core port, the same Supabase project and
+schema unchanged, supabase-kt, APK, StudyHour/学时 on Android only). iOS is the reference and stays unchanged. iOS
+0.7.1's class-alert change is not ported (Android posts its own live notification on time). Storage never clears the
+timetable, unfinished to-dos, Words progress or AI connections. vivo's own Atom Island stays closed. Keep the repo
+secret ANDROID_DEBUG_KEYSTORE; don't create or change secrets without asking. No Android Studio/SDK on this PC: the
+app builds on CI only. AI: everything in docs/ai-spec.md §1 and docs/ai-agent-spec.md §2. Never put a real API key,
+token or password in code, tests, CI or chat.
 
 ## How to work
-Work on a branch from main (e.g. android-0.7); main is checked out in D:\Projects\CourseTable (the iOS worktree
+Work on a branch from main; main is checked out in D:\Projects\CourseTable (the iOS worktree
 D:\Projects\CourseTable-ios07 is the iOS session's). Logic in android/core with tests first (./gradlew :core:test,
-with the proxy flags in HANDOFF's gotchas). Iterate the app on the branch: push, `gh workflow run android.yml --ref
-<branch>`, download the screenshots and look at them, fix, repeat; when green, fast-forward main and push (main builds
-the APK). Strings: same English as iOS, `python tools/xcstrings_to_android.py` for Chinese. Use the Write/Edit tools
-for code (or Python scripts written with Write), never Python with backslashes through a bash heredoc. Short report
-at the end of each step with run links.
+with the proxy flags in HANDOFF's gotchas); the app stays thin. Iterate on the branch: push, `gh workflow run
+android.yml --ref <branch>`, download the screenshots and look at them, fix, repeat; when green, fast-forward main and
+push (main builds the APK). Strings: same English as iOS, `python tools/xcstrings_to_android.py` for Chinese. Use the
+Write/Edit tools for code (or Python scripts written with Write), never Python with backslashes through a bash heredoc.
+Short report at the end of each step with run links.
 ```
 
 ## Facts and constraints
@@ -365,14 +383,15 @@ at the end of each step with run links.
   (Room `AppDatabase` v1), `alerts`, `focus`, `words` (`SupabaseBackend` with the URL + publishable key, Room
   `VocabDatabase` v1 → `vocabulary.db`, `RoomVocabStore`, `Pronunciation`), `ui` (… `words`: `WordsTab` +
   `WordsController`/`LocalWordsController`, sign-in, study session, word/search/list screens, books + import,
-  settings, statistics), `widget`, `appearance` (Timetable Appearance settings, the background photo),
+  settings, statistics), `widget`, `appearance` (Settings → Appearance, the background photo),
   `focus/WallpaperStore.kt` (Focus wallpapers). Room schema JSON for both databases in `app/schemas/`: bump the
   version and add a migration for any change.
 - App tests (`app/src/test`): `AlertPlannerTest` (plain JVM), `FocusEngineTest`, `RepositoryTest`, `VocabRoomTest`
-  (Robolectric), `ScreenshotTests` (34 screens, incl. a drawn `DemoWallpaper` and the launcher icon),
+  (Robolectric), `ScreenshotTests` (41 screens: glass by default, classic and other wallpapers too, a drawn
+  `DemoWallpaper`, the launcher icon),
   `WordsScreenshotTests` (13 Words screens with `DemoBackend` + `InMemoryVocabStore` at a fixed clock).
 - Strings: English in `app/src/main/res/values/strings.xml` (same English as iOS where possible);
-  `python tools/xcstrings_to_android.py` generates `values-zh-rCN` (689 strings) from `Shared/Localizable.xcstrings` +
+  `python tools/xcstrings_to_android.py` generates `values-zh-rCN` (703 strings) from `Shared/Localizable.xcstrings` +
   `android/strings-zh.json`; CI runs it with `--check`.
 - Shared test cases: `spec/fixtures/` (README there). A logic change goes into CourseKit/VocabKit *and*
   `android/core`, with the fixtures updated.
@@ -426,6 +445,12 @@ at the end of each step with run links.
   Compose screenshots with two scrollables need `onAllNodes(hasScrollAction()).onFirst()`. The saved-key hint is in
   the key field's label, which always shows (as a placeholder it didn't).
 - Auto mode once blocked plain reads right after a secret was written (`gh secret set`); ask before secret changes.
+- Gotchas from Android 0.7 (Haze 2.0.1): its API changed from 1.x (`hazeBlur`/`hazeGlass` with
+  `HazeInput.Sources(state)`, styles as builders: `GlassStyle.regular.then { shape(…); tint(…) }`); `haze-glass` is
+  `@ExperimentalHazeApi`; the sources jars on Maven Central (`…-android-2.0.1-sources.jar`) show the real API. A
+  Compose Dialog inherits composition locals: glass must not cross into it (`PaperScope`). Material's dark `primary`
+  is light lavender: prominent glass uses the light accent in both modes. In a style builder, name the captured values
+  differently from the builder's functions (`shape(glassShape)`).
 - Gotchas from Android 0.6: no Pillow/numpy here; images are made with .NET System.Drawing from PowerShell
   (`tools/make_android_icon.ps1`, run as a script block). In PowerShell, `New-Object T(a * b, c)` parses the comma
   first: compute arguments into variables; a `[string]` parameter turns a later assignment of the same name into a

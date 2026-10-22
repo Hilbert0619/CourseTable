@@ -35,18 +35,28 @@ decisions and stages: [`docs/android-plan.md`](../docs/android-plan.md).
 - **Settings → Reliable Reminders** checks notifications, exact alarms, battery optimisation and Live Updates, links to
   vivo/iQOO's auto-start page, and sends a test reminder. Notifications themselves are checked on the phone.
 
-## The look, Focus wallpapers and Storage (0.6, `app/…/appearance`, `app/…/focus/WallpaperStore.kt`)
+## The look, Focus wallpapers and Storage (0.6–0.7, `app/…/appearance`, `app/…/focus/WallpaperStore.kt`)
 
-The iOS 0.6–0.7.0 updates (`docs/design-0.7.md` §1–4, `docs/todos-focus-spec.md` §7).
+The iOS 0.6–0.7.1 updates (`docs/design-0.7.md`, `docs/todos-focus-spec.md` §7).
 
 - **Colours**: `ui/theme/Theme.kt` puts the icon's warm paper (#F4F2EE; black in dark mode) behind every screen and the
   cards (`surfaceContainerLow`) in white / #1C1C1E. Course colours come from the core's `CourseColors`
   (`CoursePalette`): soft blocks (tint, same-hue text, a stripe) by default, solid as a setting; the solid colour is
   also each course's stripe, dot, notification and widget colour.
-- **Settings → Timetable Appearance** (`AppearancePreferences`, the iOS keys): block style, and a photo behind the
-  timetable (`TimetableBackground`: from the system photo picker, no permission, or a Focus wallpaper you've seen;
-  downscaled to 2400 px, upright on Android 9+, kept in `files/TimetableBackground.jpg`) with Fade and Block opacity.
-  The screens read it through `LocalAppearance`; screenshots pass a drawn picture.
+- **The glass look** (0.7, the default; `ui/components/Glass.kt`, docs/design-0.7.md §5): `RootScreen` draws the
+  background (`AppBackdrop`: a built-in wallpaper, the photo with a fade, or the paper) once behind Today, Timetable,
+  Focus and Words — behind the timetable alone in the classic look — and captures it for Haze (`hazeSource`). Screens
+  opt in with `GlassScope`; then `Section` becomes frosted rows (`hazeBlur` with a veil of the paper) or a glass card,
+  and `Modifier.glass`, `GlassButton`, `GlassIconButton` draw Haze's Glass (blur, saturation, refraction and specular
+  light on Android 13+, tint and a soft rim before) with the owner's 10 % white layer and 1-pixel bright edge. Pushed
+  screens, dialogs (`EditorDialog` wraps its content in `PaperScope`) and Settings keep the paper. Prominent glass
+  (Start, Pause, a chosen chip) lies on a solid accent so white text reads.
+- **Settings → Appearance** (`AppearancePreferences`, the iOS keys): Glass / Classic; the background (Paper, your
+  photo, the six `SoftWallpaper`s drawn as elliptical gradients, or a Focus wallpaper you've seen); Fade (one value per
+  look); Soft / Solid blocks and Block opacity. The photo (`TimetableBackground`: from the system photo picker, no
+  permission; downscaled to 2400 px, upright on Android 9+, kept in `files/TimetableBackground.jpg`, its 0.6.0 name) is
+  listed in Storage as the background photo. The screens read it all through `LocalAppearance`; screenshots pass a
+  drawn picture and wallpapers.
 - **Focus wallpapers** (`WallpaperStore`): the list is a plain GET of `focus_wallpapers` with the publishable key
   (no account), kept for 12 h in `cache/Wallpapers/catalog.json`; pictures `<id>.jpg` next to it (40 files / 60 MB,
   `FocusWallpaperCache`). The store follows the focus sessions (a new one gets a new photo; a relaunch shows the same
@@ -133,6 +143,6 @@ Android-only texts are translated in `strings-zh.json`. CI fails if a translatio
 
 ## Credits
 
-Tab icons: [Material Symbols](https://github.com/google/material-design-icons) (Apache License 2.0). The launcher icon
+Tab icons: [Material Symbols](https://github.com/google/material-design-icons) (Apache License 2.0). The glass: [Haze](https://github.com/chrisbanes/haze) (Apache License 2.0). The launcher icon
 is the iOS app's icon (the owner's picture). Focus wallpapers: photos from Unsplash under the Unsplash License, each
 credited on the countdown (`content/wallpapers/SOURCES.md`).

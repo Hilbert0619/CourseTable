@@ -131,8 +131,8 @@ with screenshots (Roborazzi, English + Chinese, light + dark):
 - **StudyHour 0.6.0 (8), built 2026-10-22** (branch `android-0.6`, CI 39661839070 and 39674220972, then `main`):
   steps 1–3 and the icon of §2 — everything of iOS 0.6.0–0.7.0. `SoftWallpaper`/`BackgroundChoice` are already in
   `:core` (with `backgrounds.json` and its Swift test) for 0.7.0. Details: [`android-plan.md`](android-plan.md) §8.
-- **Next: StudyHour 0.7.0 (9)**, the glass look (§1 "0.7.1"), with Haze: Settings → Appearance replaces Timetable
-  Appearance (Glass / Classic, the six built-in wallpapers, your photo or a seen Focus wallpaper, Fade, Soft / Solid,
-  Block opacity); glass cards, chips and buttons on Today, Timetable, Focus and Words; frosted rows; the day row and
-  period times on thicker frosting; glass course blocks. The existing photo (`files/TimetableBackground.jpg`) and
-  settings (`appearance` preferences, the iOS keys) carry over: `BackgroundChoice.resolve` keeps a 0.6.0 photo.
+- **StudyHour 0.7.0 (9), built 2026-10-22** (branch `android-0.7`, CI 39711694855 and 39712426448, then `main`): the
+  glass look (§1 "0.7.1") with Haze 2.0.1's Glass, which also gives step (4) of the recipe, refraction at the edges, on
+  Android 13+. Settings → Appearance replaces Timetable Appearance; the 0.6.0 photo and settings carry over. Details:
+  [`android-plan.md`](android-plan.md) §8. **The catch-up is complete**: Android has everything of iOS 0.6.0–0.7.1
+  except the iOS-only class-alert change.
