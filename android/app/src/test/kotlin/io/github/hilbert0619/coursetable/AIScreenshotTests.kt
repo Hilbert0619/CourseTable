@@ -25,6 +25,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -272,6 +273,18 @@ class AIScreenshotTests {
     fun assistantWelcome() {
         assistant(words())
         compose.onNodeWithText("How are my words going?").assertExists()
+        capture()
+    }
+
+    @Test
+    fun assistantWelcomeWithoutWords() {
+        assistant()
+        compose.onNodeWithText("How are my words going?").assertDoesNotExist()
+        compose.onNodeWithText("Long Sentences").assertDoesNotExist()
+        compose.onNodeWithText("focus sessions to answer", substring = true).assertExists()
+        compose.onNodeWithContentDescription("Options").performClick()
+        compose.onNodeWithText("Share My Hard Words").assertDoesNotExist()
+        compose.onNodeWithText("Share This Week's Classes").assertExists()
         capture()
     }
 

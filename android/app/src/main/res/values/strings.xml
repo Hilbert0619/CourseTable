@@ -10,8 +10,6 @@
     <string name="tab_focus">Focus</string>
     <string name="tab_words">Words</string>
     <string name="tab_settings">Settings</string>
-    <string name="placeholder_words">Vocabulary study and sync will be here.</string>
-    <string name="placeholder_note">StudyHour for Android is being built.</string>
 
     <!-- Common -->
     <string name="cancel">Cancel</string>
@@ -214,6 +212,7 @@
     <string name="style_glass">Glass</string>
     <string name="style_classic">Classic</string>
     <string name="style_footer_glass">Today, Timetable, Focus and Words on the background below, with cards and buttons of glass.</string>
+    <string name="style_footer_glass_no_words">Today, Timetable and Focus on the background below, with cards and buttons of glass.</string>
     <string name="style_footer_classic">The warm paper of the icon. The background below shows behind the timetable only.</string>
     <string name="background_paper">Paper</string>
     <string name="background_photo">Photo</string>
@@ -240,6 +239,7 @@
     <string name="storage_footer">Clear focus history, completed to-dos, AI chats and downloaded files.</string>
     <string name="records">Records</string>
     <string name="records_footer">Your timetable, unfinished to-dos, Words progress and AI connections are never cleared here.</string>
+    <string name="records_footer_no_words">Your timetable, unfinished to-dos and AI connections are never cleared here.</string>
     <string name="downloaded_files">Downloaded Files</string>
     <string name="downloaded_files_footer">Downloaded again when needed — except the background photo, which is your choice.</string>
     <string name="completed_todos">Completed To-Dos</string>
@@ -634,6 +634,7 @@
     <!-- AI help -->
     <string name="ai_help">AI Help</string>
     <string name="ai_settings_footer">Word explanations and more from an AI provider you choose, with your own key.</string>
+    <string name="ai_settings_footer_no_words">The Assistant and more from an AI provider you choose, with your own key.</string>
     <string name="ai_thinking">Thinking…</string>
     <string name="ai_asking">Asking %1$s…</string>
     <string name="ai_cut_off">The answer was cut off by the provider\'s length limit.</string>
@@ -658,9 +659,12 @@
     <string name="ai_privacy">Privacy</string>
     <string name="ai_privacy_direct">Your questions go straight from this phone to the provider you chose, under their terms, and are paid from your account with them. StudyHour\'s server never sees them. Keys stay on this phone, encrypted.</string>
     <string name="ai_privacy_minimal">Each feature sends only what it needs: a word and its dictionary entry, a sentence you paste, or a to-do note with your course names.</string>
+    <string name="ai_privacy_minimal_no_words">Each feature sends only what it needs, such as a to-do note with your course names.</string>
     <string name="ai_privacy_tools">With tools, the Assistant also looks at your to-dos, classes, focus sessions and vocabulary numbers while you chat, and sends what it looks at. It changes nothing until you tap Confirm.</string>
+    <string name="ai_privacy_tools_no_words">With tools, the Assistant also looks at your to-dos, classes and focus sessions while you chat, and sends what it looks at. It changes nothing until you tap Confirm.</string>
     <string name="ai_privacy_photos">A timetable photo goes to the provider only when you choose one. For a model that can\'t read photos, this phone reads the text and sends only the text.</string>
     <string name="ai_privacy_wrong">AI answers can be wrong. The dictionary still decides what counts as a correct answer.</string>
+    <string name="ai_privacy_wrong_no_words">AI answers can be wrong: check anything that matters.</string>
     <string name="ai_saved_footer">Answers and Assistant chats are saved on this phone, so opening them again is free.</string>
     <string name="ai_delete_saved">Delete Saved Answers</string>
     <string name="ai_delete_saved_question">Delete all saved AI answers and Assistant chats?</string>
@@ -688,6 +692,7 @@
     <string name="ai_address_hint">Enter the provider\'s OpenAI-compatible base URL, ending before /chat/completions.</string>
     <string name="ai_assistant">Assistant</string>
     <string name="ai_assistant_footer">Tools let the Assistant look at your to-dos, classes, focus and vocabulary numbers and suggest changes; they need a model that can call tools. Timetable photos go to a model that reads photos (this one, or the photo model); without one, this phone reads the text and sends only the text.</string>
+    <string name="ai_assistant_footer_no_words">Tools let the Assistant look at your to-dos, classes and focus and suggest changes; they need a model that can call tools. Timetable photos go to a model that reads photos (this one, or the photo model); without one, this phone reads the text and sends only the text.</string>
     <string name="ai_use_tools">Use the App\'s Tools</string>
     <string name="ai_model_reads_photos">Model Reads Photos</string>
     <string name="ai_photo_model">Photo Model</string>
@@ -758,6 +763,7 @@
     <string name="agent_not_set_up">Ask about your studies, English or anything else, using an AI provider you choose with your own key.</string>
     <string name="agent_welcome">Ask about your studies, English, planning or anything else.</string>
     <string name="agent_tools_note">The Assistant can look at your to-dos, classes, focus sessions and vocabulary progress to answer, sending what it looks at to %1$s. It suggests changes as cards; nothing changes until you tap Confirm.</string>
+    <string name="agent_tools_note_no_words">The Assistant can look at your to-dos, classes and focus sessions to answer, sending what it looks at to %1$s. It suggests changes as cards; nothing changes until you tap Confirm.</string>
     <string name="agent_suggest_reminder">Remind me to hand in the paper after class tomorrow</string>
     <string name="agent_suggest_progress">How are my words going?</string>
     <string name="agent_suggest_focus">Start a 25-minute focus session</string>

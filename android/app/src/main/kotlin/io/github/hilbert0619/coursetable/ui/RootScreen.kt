@@ -2,16 +2,10 @@ package io.github.hilbert0619.coursetable.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +13,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.CompositionLocalProvider
 import io.github.hilbert0619.coursetable.R
@@ -57,7 +49,7 @@ import io.github.hilbert0619.coursetable.ui.settings.SettingsScreen
 import io.github.hilbert0619.coursetable.ui.timetable.TimetableScreen
 import io.github.hilbert0619.coursetable.ui.today.TodayScreen
 
-/** The five tabs, as on iOS. */
+/** The five tabs, as on iOS; Android hides Words for now ([RootScreen]). */
 enum class Tab(
     @param:StringRes val title: Int,
     @param:DrawableRes val icon: Int,
@@ -72,7 +64,7 @@ enum class Tab(
 
 /**
  * The tab bar and the selected tab. [data] is `null` until the database has been read. [requestedTab] comes from a
- * notification; [onTabShown] clears it.
+ * notification; [onTabShown] clears it. Without [words] there's no Words tab (hidden for now: `BuildConfig.WORDS`).
  */
 @Composable
 fun RootScreen(
@@ -86,10 +78,11 @@ fun RootScreen(
     onTabShown: () -> Unit = {},
     words: WordsController? = null,
 ) {
-    var tab by rememberSaveable { mutableStateOf(initialTab) }
+    val tabs = Tab.entries.filter { it != Tab.WORDS || words != null }
+    var tab by rememberSaveable { mutableStateOf(initialTab.takeIf { it in tabs } ?: Tab.TODAY) }
     LaunchedEffect(requestedTab) {
         if (requestedTab != null) {
-            tab = requestedTab
+            if (requestedTab in tabs) tab = requestedTab
             onTabShown()
         }
     }
@@ -111,7 +104,7 @@ fun RootScreen(
                         containerColor = if (glassBar) Color.Transparent else NavigationBarDefaults.containerColor,
                         tonalElevation = if (glassBar) 0.dp else NavigationBarDefaults.Elevation,
                     ) {
-                        Tab.entries.forEach { item ->
+                        tabs.forEach { item ->
                             val selected = item == tab
                             NavigationBarItem(
                                 selected = selected,
@@ -146,47 +139,12 @@ fun RootScreen(
                         focus, data.focusSessions, focusActions, content,
                         onDeleteSessions = actions::deleteFocusSessions, onClearHistory = actions::deleteAllFocusSessions,
                     )
-                    Tab.WORDS -> if (words != null) WordsTab(words, content) else Placeholder(tab, R.string.placeholder_words, content)
+                    Tab.WORDS -> words?.let { WordsTab(it, content) }
                     Tab.SETTINGS -> SettingsScreen(
                         data.timetable, reminders, actions, content,
                         focusSessionCount = data.focusSessions.size, completedTodoCount = data.todos.count { it.isDone },
                     )
                 }
-            }
-        }
-    }
-}
-
-/** What a tab shows until its screens are built. */
-@Composable
-private fun Placeholder(tab: Tab, @StringRes text: Int, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxSize().safeDrawingPadding()) {
-        Text(
-            stringResource(tab.title),
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(start = 20.dp, top = 24.dp, end = 20.dp),
-        )
-        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(horizontal = 32.dp),
-            ) {
-                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
-                    Icon(
-                        painterResource(tab.selectedIcon),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(20.dp).size(40.dp),
-                    )
-                }
-                Text(stringResource(text), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-                Text(
-                    stringResource(R.string.placeholder_note),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
             }
         }
     }

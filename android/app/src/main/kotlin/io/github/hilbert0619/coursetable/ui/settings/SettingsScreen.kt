@@ -155,7 +155,7 @@ private fun SettingsList(
 
             LocalAI.current?.let { ai ->
                 val aiState by ai.state.collectAsStateWithLifecycle()
-                Section(footer = stringResource(R.string.ai_settings_footer)) {
+                Section(footer = stringResource(if (BuildConfig.WORDS) R.string.ai_settings_footer else R.string.ai_settings_footer_no_words)) {
                     ValueRow(stringResource(R.string.ai_help), aiState.defaultConnection?.name ?: stringResource(R.string.status_off), onClick = onShowAI)
                 }
             }

@@ -17,8 +17,11 @@ android {
         applicationId = "io.github.hilbert0619.coursetable"
         minSdk = 26
         targetSdk = 37
-        versionCode = 9
-        versionName = "0.7.0"
+        versionCode = 10
+        versionName = "0.7.1"
+        // The Words tab is hidden for now (owner, 2026-10-22: users don't need it). Its code, tests and each phone's
+        // Words data stay; true brings the tab back.
+        buildConfigField("boolean", "WORDS", "false")
     }
 
     buildTypes {

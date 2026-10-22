@@ -143,6 +143,8 @@ class ScreenshotTests {
         show { RootScreen(data(chinese = false), AppActions.None) }
         compose.onNodeWithText("Hand in the paper").assertExists()
         compose.onNodeWithText("Pick up the package").assertExists()
+        // Four tabs: Words is hidden for now (BuildConfig.WORDS).
+        compose.onNodeWithText("Words").assertDoesNotExist()
         capture()
     }
 

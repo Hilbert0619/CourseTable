@@ -7,8 +7,6 @@
     <string name="tab_focus">专注</string>
     <string name="tab_words">单词</string>
     <string name="tab_settings">设置</string>
-    <string name="placeholder_words">这里将是背单词和同步。</string>
-    <string name="placeholder_note">学时 Android 版正在开发中。</string>
     <string name="cancel">取消</string>
     <string name="save">保存</string>
     <string name="add">添加</string>
@@ -183,6 +181,7 @@
     <string name="style_glass">玻璃</string>
     <string name="style_classic">经典</string>
     <string name="style_footer_glass">今天、课表、专注和单词显示在下面选的背景上，卡片和按钮是玻璃质感。</string>
+    <string name="style_footer_glass_no_words">今天、课表和专注显示在下面选的背景上，卡片和按钮是玻璃质感。</string>
     <string name="style_footer_classic">图标的暖白纸色。下面选的背景只显示在课表后面。</string>
     <string name="background_paper">纸张</string>
     <string name="background_photo">照片</string>
@@ -209,6 +208,7 @@
     <string name="storage_footer">清除专注记录、已完成的待办、AI 对话和下载的文件。</string>
     <string name="records">记录</string>
     <string name="records_footer">课程表、未完成的待办、单词学习进度和 AI 连接不会在这里被清除。</string>
+    <string name="records_footer_no_words">课程表、未完成的待办和 AI 连接不会在这里被清除。</string>
     <string name="downloaded_files">下载的文件</string>
     <string name="downloaded_files_footer">需要时会重新下载——背景照片除外，它由你自己选择。</string>
     <string name="completed_todos">已完成的待办</string>
@@ -562,6 +562,7 @@
     <string name="more_classes">还有 %1$d 节</string>
     <string name="ai_help">AI 帮助</string>
     <string name="ai_settings_footer">由你选择的 AI 服务商（使用你自己的密钥）提供单词讲解等帮助。</string>
+    <string name="ai_settings_footer_no_words">由你选择的 AI 服务商（使用你自己的密钥）提供助手等帮助。</string>
     <string name="ai_thinking">正在思考…</string>
     <string name="ai_asking">正在询问 %1$s…</string>
     <string name="ai_cut_off">回答因服务商的长度限制被截断。</string>
@@ -586,9 +587,12 @@
     <string name="ai_privacy">隐私</string>
     <string name="ai_privacy_direct">你的提问直接从这台手机发送到你选择的服务商，适用其条款，费用从你在该服务商的账户中扣除。学时的服务器不会看到这些内容。密钥加密后只保存在这台手机上。</string>
     <string name="ai_privacy_minimal">每项功能只发送所需内容：一个单词及其词典释义、你粘贴的句子，或一条待办备注和你的课程名称。</string>
+    <string name="ai_privacy_minimal_no_words">每项功能只发送所需内容，例如一条待办备注和你的课程名称。</string>
     <string name="ai_privacy_tools">开启工具后，助手在对话中还会查看你的待办、课程、专注记录和单词数据，并发送它查看的内容。你点“确认”之前它不会做任何修改。</string>
+    <string name="ai_privacy_tools_no_words">开启工具后，助手在对话中还会查看你的待办、课程和专注记录，并发送它查看的内容。你点“确认”之前它不会做任何修改。</string>
     <string name="ai_privacy_photos">只有你选择课程表照片时，照片才会发送给服务商。如果模型不能识别图片，这台手机会先识别文字，只发送文字。</string>
     <string name="ai_privacy_wrong">AI 的回答可能有误。判断答题对错仍以词典为准。</string>
+    <string name="ai_privacy_wrong_no_words">AI 的回答可能有误，重要的内容请自己核对。</string>
     <string name="ai_saved_footer">回答和助手对话保存在这台手机上，再次打开无需付费。</string>
     <string name="ai_delete_saved">删除已保存的回答</string>
     <string name="ai_delete_saved_question">删除所有已保存的 AI 回答和助手对话？</string>
@@ -616,6 +620,7 @@
     <string name="ai_address_hint">输入服务商兼容 OpenAI 的基础网址（不含 /chat/completions）。</string>
     <string name="ai_assistant">助手</string>
     <string name="ai_assistant_footer">工具让助手可以查看你的待办、课程、专注和单词数据，并提出修改；需要支持工具调用（function calling）的模型。课程表照片会发送给能识别图片的模型（本模型或图片模型）；如果没有，这台手机会先识别文字，只发送文字。</string>
+    <string name="ai_assistant_footer_no_words">工具让助手可以查看你的待办、课程和专注记录，并提出修改；需要支持工具调用（function calling）的模型。课程表照片会发送给能识别图片的模型（本模型或图片模型）；如果没有，这台手机会先识别文字，只发送文字。</string>
     <string name="ai_use_tools">使用应用工具</string>
     <string name="ai_model_reads_photos">模型可识别图片</string>
     <string name="ai_photo_model">图片模型</string>
@@ -683,6 +688,7 @@
     <string name="agent_not_set_up">用你选择的 AI 服务商（使用你自己的密钥）询问学习、英语或其他任何问题。</string>
     <string name="agent_welcome">可以问学习、英语、计划或其他任何问题。</string>
     <string name="agent_tools_note">助手可以查看你的待办、课程、专注记录和单词进度来回答，查看的内容会发送给 %1$s。它会用卡片提出修改，你点“确认”之前不会有任何改动。</string>
+    <string name="agent_tools_note_no_words">助手可以查看你的待办、课程和专注记录来回答，查看的内容会发送给 %1$s。它会用卡片提出修改，你点“确认”之前不会有任何改动。</string>
     <string name="agent_suggest_reminder">提醒我明天下课后交论文</string>
     <string name="agent_suggest_progress">我的单词学得怎么样？</string>
     <string name="agent_suggest_focus">开始 25 分钟专注</string>

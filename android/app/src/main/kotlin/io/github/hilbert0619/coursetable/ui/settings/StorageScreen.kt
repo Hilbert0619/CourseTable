@@ -46,6 +46,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursekit.FolderUsage
+import io.github.hilbert0619.coursetable.BuildConfig
 import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.ai.AIStoreState
 import io.github.hilbert0619.coursetable.ui.AppActions
@@ -167,7 +168,7 @@ fun StorageScreen(
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).verticalScroll(rememberScrollState())) {
-            Section(title = stringResource(R.string.records), footer = stringResource(R.string.records_footer)) {
+            Section(title = stringResource(R.string.records), footer = stringResource(if (BuildConfig.WORDS) R.string.records_footer else R.string.records_footer_no_words)) {
                 StorageItem.RECORDS.forEachIndexed { index, item ->
                     if (index > 0) RowDivider()
                     StorageRow(item, detail(item, count(item), sizes), selected = item in selection, enabled = item in clearable) { on ->

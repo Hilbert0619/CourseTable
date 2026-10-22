@@ -172,6 +172,12 @@ object AppTools {
         getVocabOverview, getVocabHistory, getHardWords, getWordProgress, startFocus, getFocusHistory,
     )
 
+    /** The tools that read the Words tab's learning numbers. */
+    val vocabTools: List<AITool> = listOf(getVocabOverview, getVocabHistory, getHardWords, getWordProgress)
+
+    /** The tools the model gets: without [vocabTools] in an app without the Words tab (Android, for now). */
+    fun tools(words: Boolean): List<AITool> = if (words) all else all - vocabTools.toSet()
+
     /** The longest result a reading tool returns; longer lists end with "…and N more". */
     const val MAX_RESULT_CHARACTERS = 4000
 

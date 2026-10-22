@@ -38,8 +38,11 @@ class MainActivity : ComponentActivity() {
     /** The tab a notification asked for ([EXTRA_TAB]), until it's shown. */
     private var requestedTab by mutableStateOf<Tab?>(null)
 
-    /** The Words tab's actions run in the app's scope, so leaving a screen doesn't cut a sync short. */
-    private val words by lazy { WordsController(app.vocab, app.scope, app.pronunciation::speak, Instant::now) }
+    /**
+     * The Words tab's actions run in the app's scope, so leaving a screen doesn't cut a sync short. `null` while the
+     * tab is hidden ([BuildConfig.WORDS]): then the Words database and account aren't even opened.
+     */
+    private val words by lazy { if (BuildConfig.WORDS) WordsController(app.vocab, app.scope, app.pronunciation::speak, Instant::now) else null }
 
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         Alerts.requestSync(this)
@@ -84,8 +87,12 @@ class MainActivity : ComponentActivity() {
         openLink(intent)
     }
 
-    /** A sign-in email link (`io.github.hilbert0619.coursetable://auth-callback#…`): shows its result in the Words tab. */
+    /**
+     * A sign-in email link (`io.github.hilbert0619.coursetable://auth-callback#…`): shows its result in the Words tab.
+     * Without the tab the app just opens.
+     */
     private fun openLink(intent: Intent?) {
+        val words = words ?: return
         val url = intent?.data?.takeIf { it.scheme.equals(AuthLink.SCHEME, ignoreCase = true) }?.toString() ?: return
         requestedTab = Tab.WORDS
         words.launch { open(url) }
@@ -97,7 +104,7 @@ class MainActivity : ComponentActivity() {
         Alerts.requestSync(this)
         app.focus.refresh()
         // Coming back uploads answers given offline and fetches other devices' answers.
-        app.vocabIfCreated?.let { vocab -> words.launch { vocab.syncNow() } }
+        app.vocabIfCreated?.let { vocab -> words?.launch { vocab.syncNow() } }
     }
 
     override fun onStop() {

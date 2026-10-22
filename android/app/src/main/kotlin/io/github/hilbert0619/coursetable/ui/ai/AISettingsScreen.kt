@@ -52,6 +52,7 @@ import io.github.hilbert0619.aikit.AIProvider
 import io.github.hilbert0619.aikit.AIWireFormat
 import io.github.hilbert0619.aikit.modelIDs
 import io.github.hilbert0619.aikit.modelsRequest
+import io.github.hilbert0619.coursetable.BuildConfig
 import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.ai.AIStore
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
@@ -97,9 +98,14 @@ private fun AIPrivacyDetails(onBack: () -> Unit, modifier: Modifier = Modifier) 
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
             Section {
+                // Without the Words tab (hidden for now) nothing sends words or vocabulary numbers.
+                val words = BuildConfig.WORDS
                 listOf(
-                    R.string.ai_privacy_direct, R.string.ai_privacy_minimal, R.string.ai_privacy_tools,
-                    R.string.ai_privacy_photos, R.string.ai_privacy_wrong,
+                    R.string.ai_privacy_direct,
+                    if (words) R.string.ai_privacy_minimal else R.string.ai_privacy_minimal_no_words,
+                    if (words) R.string.ai_privacy_tools else R.string.ai_privacy_tools_no_words,
+                    R.string.ai_privacy_photos,
+                    if (words) R.string.ai_privacy_wrong else R.string.ai_privacy_wrong_no_words,
                 ).forEachIndexed { index, text ->
                     if (index > 0) RowDivider()
                     Text(stringResource(text), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
@@ -428,7 +434,7 @@ fun AIConnectionEditor(store: AIStore, connection: AIConnection?, onDismiss: () 
                 Field(stringResource(R.string.ai_address), baseURL, keyboardType = KeyboardType.Uri) { baseURL = it }
             }
 
-            Section(title = stringResource(R.string.ai_assistant), footer = stringResource(R.string.ai_assistant_footer)) {
+            Section(title = stringResource(R.string.ai_assistant), footer = stringResource(if (BuildConfig.WORDS) R.string.ai_assistant_footer else R.string.ai_assistant_footer_no_words)) {
                 SwitchRow(stringResource(R.string.ai_use_tools), toolsOn) { toolsOn = it }
                 RowDivider()
                 SwitchRow(stringResource(R.string.ai_model_reads_photos), imagesOn) { imagesOn = it }

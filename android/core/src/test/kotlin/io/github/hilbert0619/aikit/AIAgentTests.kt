@@ -283,6 +283,24 @@ class AIConnectionCapabilityTests {
     }
 
     @Test
+    fun withoutWordsTheAssistantNeitherMentionsNorOffersVocabulary() {
+        val today = LocalDate(2026, 10, 15)
+        val words = AIPrompts.assistant(AIAnswerLanguage.ENGLISH, today, schedule = null, weakWords = null, usesTools = true)
+        assertTrue(words.contains("vocabulary"))
+        val none = AIPrompts.assistant(AIAnswerLanguage.ENGLISH, today, schedule = null, weakWords = listOf("abandon"), usesTools = true, words = false)
+        assertFalse(none.contains("vocabulary"))
+        assertFalse(none.contains("abandon"))
+        assertTrue(none.contains("focus sessions"))
+        assertTrue(none.contains("tap Confirm"))
+
+        assertEquals(AppTools.all, AppTools.tools(words = true))
+        val names = AppTools.tools(words = false).map { it.name }
+        assertEquals(AppTools.all.map { it.name } - AppTools.vocabTools.map { it.name }.toSet(), names)
+        assertFalse(names.any { "vocab" in it || "word" in it })
+        assertTrue("start_focus" in names && "list_todos" in names)
+    }
+
+    @Test
     fun toolAndPictureChecks() {
         val deepSeek = AIConnection(AIProvider.preset("deepseek")!!)
         val body = parseJson(String(assertNotNull(deepSeek.chatRequest(AIPrompts.toolTest, "k").body), Charsets.UTF_8))

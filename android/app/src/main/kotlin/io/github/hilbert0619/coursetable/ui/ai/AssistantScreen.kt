@@ -136,9 +136,11 @@ fun AssistantScreen(store: AIStore, context: AgentContext, startMessage: String?
     val usesTools = state.defaultConnection?.usesTools ?: false
     var includeSchedule by rememberSaveable { mutableStateOf(false) }
     var includeHardWords by rememberSaveable { mutableStateOf(false) }
+    // Without the Words tab (hidden for now) nothing here mentions or reads vocabulary.
+    val words = context.vocab != null
 
     fun newRun(conversation: AIConversation = AIConversation()) =
-        AgentRun(scope, store, texts, conversation, usesTools).also { it.context = context }
+        AgentRun(scope, store, texts, conversation, usesTools, words).also { it.context = context }
 
     var run by remember { mutableStateOf(newRun()) }
     SideEffect { run.context = context }
@@ -158,7 +160,7 @@ fun AssistantScreen(store: AIStore, context: AgentContext, startMessage: String?
         val world = context.world(now)
         val schedule = if (includeSchedule) AIPrompts.weekSchedule(context.timetable, world.today) else null
         val hardWords = if (includeHardWords) context.vocab?.model?.state?.value?.hardWords?.take(20)?.map { it.headword } else null
-        return AIPrompts.assistant(language, world.today, world.now, schedule, hardWords, run.usesTools)
+        return AIPrompts.assistant(language, world.today, world.now, schedule, hardWords, run.usesTools, words)
     }
 
     fun send(typed: String) {
@@ -229,11 +231,13 @@ fun AssistantScreen(store: AIStore, context: AgentContext, startMessage: String?
                                     onClick = { includeSchedule = !includeSchedule },
                                     trailingIcon = { if (includeSchedule) AppIcon(R.drawable.ic_check, null) },
                                 )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.agent_share_hard_words)) },
-                                    onClick = { includeHardWords = !includeHardWords },
-                                    trailingIcon = { if (includeHardWords) AppIcon(R.drawable.ic_check, null) },
-                                )
+                                if (words) {
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.agent_share_hard_words)) },
+                                        onClick = { includeHardWords = !includeHardWords },
+                                        trailingIcon = { if (includeHardWords) AppIcon(R.drawable.ic_check, null) },
+                                    )
+                                }
                                 HorizontalDivider()
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.agent_earlier_chats)) },
@@ -271,7 +275,7 @@ fun AssistantScreen(store: AIStore, context: AgentContext, startMessage: String?
         } else {
             Chat(
                 run, state.defaultConnection?.name.orEmpty(), includeSchedule, includeHardWords,
-                studyTools = context.vocab != null, onTool = { tool = it }, onSuggestion = ::send,
+                words = words, onTool = { tool = it }, onSuggestion = ::send,
                 modifier = Modifier.fillMaxSize().padding(padding),
             )
         }
@@ -331,7 +335,7 @@ private fun Chat(
     provider: String,
     includeSchedule: Boolean,
     includeHardWords: Boolean,
-    studyTools: Boolean,
+    words: Boolean,
     onTool: (String) -> Unit,
     onSuggestion: (String) -> Unit,
     modifier: Modifier,
@@ -346,7 +350,7 @@ private fun Chat(
     }
     LazyColumn(modifier, state = list, contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (run.isEmpty) {
-            item(key = "welcome") { Welcome(run.usesTools, provider, includeSchedule, includeHardWords, studyTools, onTool, onSuggestion) }
+            item(key = "welcome") { Welcome(run.usesTools, provider, includeSchedule, includeHardWords, words, onTool, onSuggestion) }
         }
         items(rows, key = { it.key }) { row ->
             when (row) {
@@ -372,7 +376,7 @@ private fun Bubble(content: @Composable () -> Unit) {
 
 @Composable
 private fun Welcome(
-    usesTools: Boolean, provider: String, includeSchedule: Boolean, includeHardWords: Boolean, studyTools: Boolean,
+    usesTools: Boolean, provider: String, includeSchedule: Boolean, includeHardWords: Boolean, words: Boolean,
     onTool: (String) -> Unit, onSuggestion: (String) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -381,8 +385,10 @@ private fun Welcome(
             Text(stringResource(R.string.agent_welcome), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (usesTools) {
-            Text(stringResource(R.string.agent_tools_note, provider), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            for (suggestion in listOf(R.string.agent_suggest_reminder, R.string.agent_suggest_progress, R.string.agent_suggest_focus)) {
+            val note = if (words) R.string.agent_tools_note else R.string.agent_tools_note_no_words
+            Text(stringResource(note, provider), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            val suggestions = listOfNotNull(R.string.agent_suggest_reminder, R.string.agent_suggest_progress.takeIf { words }, R.string.agent_suggest_focus)
+            for (suggestion in suggestions) {
                 val text = stringResource(suggestion)
                 Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.clickable { onSuggestion(text) }) {
                     Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp))
@@ -396,7 +402,8 @@ private fun Welcome(
             }
             Text(stringResource(summary), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        if (studyTools) {
+        // The study tools look words up in the book.
+        if (words) {
             Section {
                 ActionRow(R.drawable.ic_notes, stringResource(R.string.ai_long_sentences)) { onTool("sentences") }
                 ActionRow(R.drawable.ic_edit_note, stringResource(R.string.ai_writing_feedback)) { onTool("essay") }

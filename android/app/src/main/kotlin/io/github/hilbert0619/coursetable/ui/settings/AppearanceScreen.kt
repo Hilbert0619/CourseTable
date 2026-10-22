@@ -59,6 +59,7 @@ import io.github.hilbert0619.coursekit.BackgroundChoice
 import io.github.hilbert0619.coursekit.CourseBlockStyle
 import io.github.hilbert0619.coursekit.FocusWallpaper
 import io.github.hilbert0619.coursekit.SoftWallpaper
+import io.github.hilbert0619.coursetable.BuildConfig
 import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.appearance.AppStyle
 import io.github.hilbert0619.coursetable.appearance.AppearanceSettings
@@ -116,7 +117,13 @@ fun AppearanceScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
             Section(
                 title = stringResource(R.string.style),
-                footer = stringResource(if (settings.isGlass) R.string.style_footer_glass else R.string.style_footer_classic),
+                footer = stringResource(
+                    when {
+                        !settings.isGlass -> R.string.style_footer_classic
+                        BuildConfig.WORDS -> R.string.style_footer_glass
+                        else -> R.string.style_footer_glass_no_words
+                    },
+                ),
             ) {
                 ChoiceRow(
                     listOf(AppStyle.GLASS, AppStyle.CLASSIC), settings.style,

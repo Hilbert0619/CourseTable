@@ -28,7 +28,8 @@ import kotlinx.coroutines.CoroutineScope
 /**
  * An Assistant chat with the app's tools (docs/ai-agent-spec.md, iOS `AgentRun`): each round streams through [round];
  * reading tools run at once; changes wait as cards until the user confirms or cancels them, and the next round starts
- * when every call has its result. The screen keeps [context] up to date. Main thread only.
+ * when every call has its result. The screen keeps [context] up to date. Without [words] (no Words tab) the model
+ * gets no vocabulary tools. Main thread only.
  */
 class AgentRun(
     scope: CoroutineScope,
@@ -36,6 +37,7 @@ class AgentRun(
     private val text: AgentTexts,
     conversation: AIConversation = AIConversation(),
     usesTools: Boolean,
+    words: Boolean = true,
 ) {
     enum class Notice {
         /** The provider rejected the tools; the chat goes on without them. */
@@ -57,7 +59,7 @@ class AgentRun(
     )
         private set
 
-    private var session = AIAgentSession(conversation.messages, if (usesTools) AppTools.all else emptyList())
+    private var session = AIAgentSession(conversation.messages, if (usesTools) AppTools.tools(words) else emptyList())
 
     /** The conversation so far, as the chat shows it. */
     var messages by mutableStateOf(session.messages.toList())

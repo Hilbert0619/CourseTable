@@ -129,23 +129,25 @@ object AIPrompts {
 
     /**
      * The Assistant's system prompt, with the context the user switched on and, when the connection uses them, how to
-     * use the app's tools ([AppTools]).
+     * use the app's tools ([AppTools]). Without [words] (an app without the Words tab: Android, for now) it says
+     * nothing about vocabulary, to go with [AppTools.tools].
      */
     fun assistant(
         language: AIAnswerLanguage, today: LocalDate, now: TimeOfDay? = null, schedule: String?, weakWords: List<String>?,
-        usesTools: Boolean = false,
+        usesTools: Boolean = false, words: Boolean = true,
     ): String {
         val weekday = WEEKDAY_NAMES[today.weekday.rawValue - 1]
+        val app = if (words) "a timetable and 考研 vocabulary app" else "a timetable, to-do and focus app"
         val lines = mutableListOf(
-            "You are the study assistant in CourseTable, a timetable and 考研 vocabulary app used by a Chinese " +
+            "You are the study assistant in CourseTable, $app used by a Chinese " +
                 "university student. Help with study questions, English, planning and everyday questions. Be concise; " +
                 "use Markdown.",
             "The user's language: ${if (language == AIAnswerLanguage.SIMPLIFIED_CHINESE) "Simplified Chinese" else "English"}; answer in it unless asked otherwise.",
             "Today is $today ($weekday)${now?.let { ", now $it" } ?: ""}.",
         )
-        if (usesTools) lines += TOOL_GUIDE
+        if (usesTools) lines += if (words) TOOL_GUIDE else TOOL_GUIDE.replace(", vocabulary progress", "")
         if (!schedule.isNullOrEmpty()) lines += "The user's classes this week:\n$schedule"
-        if (!weakWords.isNullOrEmpty()) lines += "Words the user often gets wrong: ${weakWords.joinToString(", ")}"
+        if (words && !weakWords.isNullOrEmpty()) lines +="Words the user often gets wrong: ${weakWords.joinToString(", ")}"
         return lines.joinToString("\n\n")
     }
 
