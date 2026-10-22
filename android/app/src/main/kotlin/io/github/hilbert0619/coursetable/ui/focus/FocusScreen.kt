@@ -94,6 +94,8 @@ import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
 import io.github.hilbert0619.coursetable.ui.components.CardShape
+import io.github.hilbert0619.coursetable.ui.components.GlassAccent
+import io.github.hilbert0619.coursetable.ui.components.topBarFrosting
 import io.github.hilbert0619.coursetable.ui.components.GlassButton
 import io.github.hilbert0619.coursetable.ui.components.GlassScope
 import io.github.hilbert0619.coursetable.ui.components.LocalGlass
@@ -143,6 +145,7 @@ fun FocusScreen(
         containerColor = screenBackground(),
         topBar = {
             TopAppBar(
+                modifier = Modifier.topBarFrosting(),
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = screenBackground(), scrolledContainerColor = screenBackground()),
                 title = { Text(stringResource(R.string.tab_focus)) },
             )
@@ -334,7 +337,7 @@ private fun FocusPlanCard(plan: FocusPlan, totalMinutes: Int, text: FocusText, o
                         selected -> MaterialTheme.colorScheme.onPrimary
                         else -> MaterialTheme.colorScheme.onSurface
                     },
-                    modifier = Modifier.weight(1f).glass(CircleShape, if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.85f) else null)
+                    modifier = Modifier.weight(1f).glass(CircleShape, fill = if (selected) GlassAccent.copy(alpha = 0.9f) else null)
                         .semantics { this.selected = selected },
                 ) {
                     Text(

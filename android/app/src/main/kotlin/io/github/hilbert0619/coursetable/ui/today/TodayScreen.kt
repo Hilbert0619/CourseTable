@@ -85,6 +85,7 @@ import io.github.hilbert0619.coursetable.ui.components.SwipeDeleteBackground
 import io.github.hilbert0619.coursetable.ui.components.glassCard
 import io.github.hilbert0619.coursetable.ui.components.rowBackground
 import io.github.hilbert0619.coursetable.ui.components.screenBackground
+import io.github.hilbert0619.coursetable.ui.components.topBarFrosting
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
 import io.github.hilbert0619.coursetable.ui.currentMoment
@@ -114,6 +115,7 @@ fun TodayScreen(timetable: Timetable, todos: List<Todo>, actions: AppActions, mo
         containerColor = screenBackground(),
         topBar = {
             TopAppBar(
+                modifier = Modifier.topBarFrosting(),
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = screenBackground(), scrolledContainerColor = screenBackground()),
                 title = { Text(stringResource(R.string.tab_today)) },
                 actions = {
@@ -229,7 +231,11 @@ private fun TodayContent(
 /** The date, the term week, and the buttons to move between days. */
 @Composable
 private fun DayHeader(day: LocalDate, isToday: Boolean, status: String, names: Names, onPick: (LocalDate) -> Unit, today: LocalDate) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(if (LocalGlass.current != null) 8.dp else 0.dp),
+    ) {
         GlassIconButton(onClick = { onPick(day.adding(-1)) }) { AppIcon(R.drawable.ic_chevron_left, stringResource(R.string.previous_day)) }
         Column(Modifier.weight(1f)) {
             Text(names.fullDate(day), style = MaterialTheme.typography.titleMedium)

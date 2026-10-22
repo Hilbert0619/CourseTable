@@ -68,6 +68,7 @@ import io.github.hilbert0619.coursetable.ui.components.GlassScope
 import io.github.hilbert0619.coursetable.ui.components.LocalGlass
 import io.github.hilbert0619.coursetable.ui.components.glass
 import io.github.hilbert0619.coursetable.ui.components.screenBackground
+import io.github.hilbert0619.coursetable.ui.components.topBarFrosting
 import io.github.hilbert0619.coursetable.ui.components.EditorDialog
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
@@ -197,6 +198,7 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
         containerColor = screenBackground(),
         topBar = {
             TopAppBar(
+                modifier = Modifier.topBarFrosting(),
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = screenBackground(), scrolledContainerColor = screenBackground()),
                 title = { Text(stringResource(R.string.tab_words)) },
                 actions = {

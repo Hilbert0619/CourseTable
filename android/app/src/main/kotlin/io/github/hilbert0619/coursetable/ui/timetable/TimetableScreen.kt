@@ -59,6 +59,7 @@ import io.github.hilbert0619.coursetable.ui.components.LocalAppearance
 import io.github.hilbert0619.coursetable.ui.components.AppBackdrop
 import io.github.hilbert0619.coursetable.ui.components.GlassScope
 import io.github.hilbert0619.coursetable.ui.components.LocalTabBackdrop
+import io.github.hilbert0619.coursetable.ui.components.topBarFrosting
 import io.github.hilbert0619.coursetable.ui.currentMoment
 import io.github.hilbert0619.coursetable.ui.rememberNames
 import java.util.UUID
@@ -124,6 +125,7 @@ fun TimetableScreen(
             containerColor = Color.Transparent,
             topBar = {
                 CenterAlignedTopAppBar(
+                    modifier = Modifier.topBarFrosting(),
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = if (clearBar) Color.Transparent else MaterialTheme.colorScheme.surface,
                     ),

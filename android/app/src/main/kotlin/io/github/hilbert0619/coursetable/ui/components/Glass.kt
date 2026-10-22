@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -44,6 +45,7 @@ import dev.chrisbanes.haze.blur.HazeColorEffect
 import dev.chrisbanes.haze.blur.hazeBlur
 import dev.chrisbanes.haze.glass.GlassStyle
 import dev.chrisbanes.haze.glass.hazeGlass
+import io.github.hilbert0619.coursekit.BackgroundChoice
 import io.github.hilbert0619.coursetable.ui.theme.isDarkTheme
 
 /*
@@ -92,11 +94,18 @@ private fun edgeBrush(): Brush {
 }
 
 /**
- * Glass behind this element: the wallpaper blurred and bent at the edges (Haze's Glass), [tint] mixed in, the 10 %
- * white layer and the bright edge. Without glass (the classic look): [classic] as a plain fill, if given.
+ * The accent of prominent glass (Start, Pause, a chosen chip), the same in light and dark mode as on iOS: a solid
+ * colour under the glass's sheen, so white text on it stays readable.
+ */
+val GlassAccent = Color(0xFF3A4DCD)
+
+/**
+ * Glass behind this element: the wallpaper blurred and bent at the edges (Haze's Glass), [tint] mixed in, [fill] laid
+ * over it (prominent glass), the 10 % white layer and the bright edge. Without glass (the classic look): [classic] as
+ * a plain fill, if given.
  */
 @Composable
-fun Modifier.glass(shape: RoundedCornerShape, tint: Color? = null, classic: Color? = null): Modifier {
+fun Modifier.glass(shape: RoundedCornerShape, tint: Color? = null, classic: Color? = null, fill: Color? = null): Modifier {
     val haze = LocalGlass.current
     if (haze == null) return if (classic != null) clip(shape).background(classic) else this
     val glassShape = shape
@@ -108,6 +117,7 @@ fun Modifier.glass(shape: RoundedCornerShape, tint: Color? = null, classic: Colo
         }
     }
     return hazeGlass(input = HazeInput.Sources(haze), style = style)
+        .then(if (fill != null) Modifier.background(fill, shape) else Modifier)
         .background(Color.White.copy(alpha = 0.10f), shape)
         .border(hairline(), edgeBrush(), shape)
 }
@@ -127,6 +137,23 @@ val CardShape = RoundedCornerShape(16.dp)
 @Composable
 fun Modifier.frosted(shape: Shape, thick: Boolean = false): Modifier {
     val haze = LocalGlass.current ?: return this
+    return frosted(haze, shape, thick)
+}
+
+/**
+ * Behind a glass tab's top bar: thick frosting when the background is a photo (made for looking at, not for reading
+ * on); nothing on a built-in wallpaper, which keeps text readable by itself.
+ */
+@Composable
+fun Modifier.topBarFrosting(): Modifier {
+    val haze = LocalTabBackdrop.current ?: return this
+    val appearance = LocalAppearance.current
+    if (!appearance.settings.isGlass || appearance.choice != BackgroundChoice.Photo) return this
+    return frosted(haze, RectangleShape, thick = true)
+}
+
+@Composable
+private fun Modifier.frosted(haze: HazeState, shape: Shape, thick: Boolean): Modifier {
     val veil = MaterialTheme.colorScheme.background.copy(alpha = if (thick) 0.62f else 0.42f)
     val style = remember(veil, thick) {
         HazeBlurStyle {
@@ -165,7 +192,6 @@ fun GlassButton(
         return
     }
     val shape = RoundedCornerShape(50)
-    val tint = if (prominent) MaterialTheme.colorScheme.primary.copy(alpha = 0.85f) else null
     val contentColor = when {
         prominent -> Color.White
         color != null -> color
@@ -173,7 +199,7 @@ fun GlassButton(
     }
     Row(
         modifier.defaultMinSize(minWidth = 58.dp, minHeight = 40.dp)
-            .glass(shape, tint)
+            .glass(shape, fill = if (prominent) GlassAccent.copy(alpha = if (enabled) 0.9f else 0.45f) else null)
             .clip(shape)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(contentPadding),

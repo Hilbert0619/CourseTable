@@ -162,6 +162,13 @@ class ScreenshotTests {
     }
 
     @Test
+    @Config(qualifiers = "+night")
+    fun todayOnAPhotoDark() {
+        show(appearance = onPhoto) { RootScreen(data(chinese = false), AppActions.None) }
+        capture()
+    }
+
+    @Test
     fun todayClassic() {
         show(appearance = classic) { RootScreen(data(chinese = false), AppActions.None) }
         capture()
