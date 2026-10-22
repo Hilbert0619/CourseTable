@@ -1,6 +1,13 @@
 package io.github.hilbert0619.coursetable
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
+import io.github.hilbert0619.coursetable.ui.components.AppBackdrop
+import io.github.hilbert0619.coursetable.ui.components.LocalTabBackdrop
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasSetTextAction
@@ -81,6 +88,16 @@ class WordsScreenshotTests {
 
     private fun capture() = compose.onRoot().captureRoboImage()
 
+    /** The tab on the default wallpaper, captured for the glass, as `RootScreen` draws it. */
+    @Composable
+    private fun OnWallpaper(content: @Composable () -> Unit) {
+        val haze = rememberHazeState()
+        Box(Modifier.fillMaxSize()) {
+            AppBackdrop(Modifier.hazeSource(haze))
+            CompositionLocalProvider(LocalTabBackdrop provides haze, content = content)
+        }
+    }
+
     /** The session the study screen starts, made the same way, and its first question. */
     private fun firstQuestion(controller: WordsController): Pair<StudySession, StudyItem> {
         val state = controller.vocab.model.state.value
@@ -103,6 +120,22 @@ class WordsScreenshotTests {
         val controller = words()
         show(controller) { WordsTab(controller) }
         compose.onNodeWithText("考研词汇 (ECDICT)").assertExists()
+        capture()
+    }
+
+    @Test
+    fun homeInGlass() {
+        val controller = words()
+        show(controller) { OnWallpaper { WordsTab(controller) } }
+        compose.onNodeWithText("考研词汇 (ECDICT)").assertExists()
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN-night")
+    fun homeInGlassChineseDark() {
+        val controller = words()
+        show(controller) { OnWallpaper { WordsTab(controller) } }
         capture()
     }
 

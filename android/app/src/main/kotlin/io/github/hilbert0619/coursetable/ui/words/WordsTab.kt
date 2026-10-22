@@ -25,7 +25,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -35,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -63,6 +63,11 @@ import io.github.hilbert0619.coursetable.ui.ai.EssayFeedbackScreen
 import io.github.hilbert0619.coursetable.ui.ai.LocalAI
 import io.github.hilbert0619.coursetable.ui.ai.SentenceAnalysisScreen
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
+import io.github.hilbert0619.coursetable.ui.components.GlassButton
+import io.github.hilbert0619.coursetable.ui.components.GlassScope
+import io.github.hilbert0619.coursetable.ui.components.LocalGlass
+import io.github.hilbert0619.coursetable.ui.components.glass
+import io.github.hilbert0619.coursetable.ui.components.screenBackground
 import io.github.hilbert0619.coursetable.ui.components.EditorDialog
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
@@ -189,8 +194,10 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
+        containerColor = screenBackground(),
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = screenBackground(), scrolledContainerColor = screenBackground()),
                 title = { Text(stringResource(R.string.tab_words)) },
                 actions = {
                     AssistantButton()
@@ -206,31 +213,33 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
             onRefresh = { controller.launch { syncNow() } },
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                vocab.storeProblem?.let { problem ->
-                    Section { WarningRow(stringResource(R.string.store_problem, problem), blocking = true) }
-                }
-                TodaySection(state, plan, now, onStart = { studying = true })
-                state.examCountdown(now)?.let { ExamSection(it) }
-                BookSection(state, onOpen)
-                Section {
-                    LinkRow(R.drawable.ic_search, stringResource(R.string.search)) { onOpen(WordsRoute.Search) }
-                    RowDivider()
-                    LinkRow(R.drawable.ic_star, stringResource(R.string.favourites), "${state.favorites.size}") { onOpen(WordsRoute.Favorites) }
-                    RowDivider()
-                    LinkRow(R.drawable.ic_hard_words, stringResource(R.string.hard_words), "${state.hardWords.size}") { onOpen(WordsRoute.HardWords) }
-                    RowDivider()
-                    LinkRow(R.drawable.ic_bar_chart, stringResource(R.string.statistics)) { onOpen(WordsRoute.Statistics) }
-                }
-                if (LocalAI.current != null) {
-                    Section(title = stringResource(R.string.ai_tools)) {
-                        LinkRow(R.drawable.ic_notes, stringResource(R.string.ai_long_sentences)) { onOpen(WordsRoute.Sentences) }
-                        RowDivider()
-                        LinkRow(R.drawable.ic_edit_note, stringResource(R.string.ai_writing_feedback)) { onOpen(WordsRoute.Essay) }
+            GlassScope {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    vocab.storeProblem?.let { problem ->
+                        Section { WarningRow(stringResource(R.string.store_problem, problem), blocking = true) }
                     }
+                    TodaySection(state, plan, now, onStart = { studying = true })
+                    state.examCountdown(now)?.let { ExamSection(it) }
+                    BookSection(state, onOpen)
+                    Section {
+                        LinkRow(R.drawable.ic_search, stringResource(R.string.search)) { onOpen(WordsRoute.Search) }
+                        RowDivider()
+                        LinkRow(R.drawable.ic_star, stringResource(R.string.favourites), "${state.favorites.size}") { onOpen(WordsRoute.Favorites) }
+                        RowDivider()
+                        LinkRow(R.drawable.ic_hard_words, stringResource(R.string.hard_words), "${state.hardWords.size}") { onOpen(WordsRoute.HardWords) }
+                        RowDivider()
+                        LinkRow(R.drawable.ic_bar_chart, stringResource(R.string.statistics)) { onOpen(WordsRoute.Statistics) }
+                    }
+                    if (LocalAI.current != null) {
+                        Section(title = stringResource(R.string.ai_tools)) {
+                            LinkRow(R.drawable.ic_notes, stringResource(R.string.ai_long_sentences)) { onOpen(WordsRoute.Sentences) }
+                            RowDivider()
+                            LinkRow(R.drawable.ic_edit_note, stringResource(R.string.ai_writing_feedback)) { onOpen(WordsRoute.Essay) }
+                        }
+                    }
+                    Section { SyncStatusRow() }
+                    Spacer(Modifier.heightIn(min = 8.dp))
                 }
-                Section { SyncStatusRow() }
-                Spacer(Modifier.heightIn(min = 8.dp))
             }
         }
     }
@@ -249,7 +258,7 @@ fun WordsHome(onOpen: (WordsRoute) -> Unit, modifier: Modifier = Modifier) {
 private fun TodaySection(state: VocabState, plan: DailyPlan, now: Instant, onStart: () -> Unit) {
     val streak = VocabStats.streak(state.events, state.today(now))
     val countdown = state.examCountdown(now)
-    Section(title = stringResource(R.string.tab_today)) {
+    Section(title = stringResource(R.string.tab_today), card = true) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                 TodayRing(plan.progress.toFloat(), plan.isComplete, Modifier.size(84.dp))
@@ -282,8 +291,9 @@ private fun TodaySection(state: VocabState, plan: DailyPlan, now: Instant, onSta
                     Text(stringResource(R.string.done_for_today), style = MaterialTheme.typography.titleMedium, color = GOOD_GREEN)
                 }
             } else {
-                Button(
+                GlassButton(
                     onClick = onStart,
+                    prominent = true,
                     enabled = state.bookWords.isNotEmpty() || plan.reviewsRemaining > 0,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                 ) {
@@ -330,8 +340,10 @@ private fun StatLine(label: String, value: String) {
 /** A small capsule: an icon in [tint] and a text, on a light wash of the tint. */
 @Composable
 private fun Chip(@DrawableRes icon: Int, tint: Color, text: String) {
+    // A wash of the tint on the paper; a capsule of glass tinted with it on the wallpaper.
+    val surface = if (LocalGlass.current != null) Modifier.glass(CircleShape, tint.copy(alpha = 0.15f)) else Modifier.background(tint.copy(alpha = 0.12f), CircleShape)
     Row(
-        Modifier.background(tint.copy(alpha = 0.12f), CircleShape).padding(horizontal = 10.dp, vertical = 5.dp),
+        surface.padding(horizontal = 10.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
     ) {

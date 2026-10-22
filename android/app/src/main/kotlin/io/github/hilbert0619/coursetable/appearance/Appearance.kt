@@ -22,16 +22,37 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Settings → Timetable Appearance (iOS 0.7.0 `TimetableAppearance` and `TimetableBackground`). Per device. */
+/** The app's look (docs/design-0.7.md §5): glass on a wallpaper, the default since 0.7, or the classic warm paper. */
+enum class AppStyle(val rawValue: String) {
+    GLASS("glass"),
+    CLASSIC("classic");
+
+    companion object {
+        fun of(rawValue: String?): AppStyle? = entries.firstOrNull { it.rawValue == rawValue }
+    }
+}
+
+/** Settings → Appearance (iOS `AppAppearance`, `AppBackground`, `BackgroundPhoto`, `TimetableAppearance`). Per device. */
 data class AppearanceSettings(
+    val style: AppStyle = AppStyle.GLASS,
+    /** [io.github.hilbert0619.coursekit.BackgroundChoice.stored]; empty until something is chosen. */
+    val background: String = "",
     val blockStyle: CourseBlockStyle = CourseBlockStyle.SOFT,
-    /** How much of the paper is drawn over a background photo. */
+    /** How much of the paper is drawn over a background photo in the classic look. */
     val fade: Float = DEFAULT_FADE,
-    /** Course blocks' fill over a photo (the text and stripe stay solid). */
+    /** The same in the glass look: less, as the glass needs the picture's colour. */
+    val glassFade: Float = DEFAULT_GLASS_FADE,
+    /** Course blocks' fill over a picture (the text and stripe stay solid). */
     val blockOpacity: Float = DEFAULT_BLOCK_OPACITY,
 ) {
+    val isGlass: Boolean get() = style == AppStyle.GLASS
+
+    /** The fade over a photo in the look in use. */
+    val photoFade: Float get() = if (isGlass) glassFade else fade
+
     companion object {
         const val DEFAULT_FADE = 0.45f
+        const val DEFAULT_GLASS_FADE = 0.2f
         const val DEFAULT_BLOCK_OPACITY = 0.9f
         val FADE_RANGE = 0f..0.8f
         val BLOCK_OPACITY_RANGE = 0.5f..1f
@@ -46,17 +67,27 @@ class AppearancePreferences(context: Context) {
 
     fun update(transform: (AppearanceSettings) -> AppearanceSettings) {
         val settings = transform(_settings.value).let {
-            it.copy(fade = it.fade.coerceIn(AppearanceSettings.FADE_RANGE), blockOpacity = it.blockOpacity.coerceIn(AppearanceSettings.BLOCK_OPACITY_RANGE))
+            it.copy(
+                fade = it.fade.coerceIn(AppearanceSettings.FADE_RANGE),
+                glassFade = it.glassFade.coerceIn(AppearanceSettings.FADE_RANGE),
+                blockOpacity = it.blockOpacity.coerceIn(AppearanceSettings.BLOCK_OPACITY_RANGE),
+            )
         }
         prefs.edit()
+            .putString(STYLE, settings.style.rawValue)
+            .putString(BACKGROUND, settings.background)
             .putString(BLOCK_STYLE, settings.blockStyle.rawValue)
             .putFloat(FADE, settings.fade)
+            .putFloat(GLASS_FADE, settings.glassFade)
             .putFloat(BLOCK_OPACITY, settings.blockOpacity)
             .apply()
         _settings.value = settings
     }
 
     private fun read() = AppearanceSettings(
+        style = AppStyle.of(prefs.getString(STYLE, null)) ?: AppStyle.GLASS,
+        background = prefs.getString(BACKGROUND, null).orEmpty(),
+        glassFade = prefs.getFloat(GLASS_FADE, AppearanceSettings.DEFAULT_GLASS_FADE),
         blockStyle = CourseBlockStyle.of(prefs.getString(BLOCK_STYLE, null).orEmpty()) ?: CourseBlockStyle.SOFT,
         fade = prefs.getFloat(FADE, AppearanceSettings.DEFAULT_FADE),
         blockOpacity = prefs.getFloat(BLOCK_OPACITY, AppearanceSettings.DEFAULT_BLOCK_OPACITY),
@@ -64,6 +95,9 @@ class AppearancePreferences(context: Context) {
 
     private companion object {
         // The iOS keys.
+        const val STYLE = "appearance.style"
+        const val BACKGROUND = "appearance.background"
+        const val GLASS_FADE = "appearance.glassFade"
         const val BLOCK_STYLE = "timetable.blockStyle"
         const val FADE = "timetable.backgroundFade"
         const val BLOCK_OPACITY = "timetable.blockOpacity"
@@ -71,8 +105,9 @@ class AppearancePreferences(context: Context) {
 }
 
 /**
- * The photo behind the timetable (Settings → Timetable Appearance): one of the downloaded Focus wallpapers or your
- * own, downscaled and kept in the app's files (it isn't a cache: clearing it is up to you, in Storage).
+ * The background photo (Settings → Appearance): one of the downloaded Focus wallpapers or your own, downscaled and
+ * kept in the app's files (it isn't a cache: clearing it is up to you, in Storage). The file keeps its 0.6.0 name,
+ * when it was the timetable's alone.
  */
 class TimetableBackground(private val file: File, scope: CoroutineScope) {
     private val _image = MutableStateFlow<ImageBitmap?>(null)

@@ -69,12 +69,12 @@ enum class StorageItem(@param:StringRes val title: Int, @param:DrawableRes val i
     SAVED_ANSWERS(R.string.saved_ai_answers, R.drawable.ic_sparkles),
     AI_USAGE(R.string.ai_usage_counts, R.drawable.ic_bar_chart),
     WALLPAPERS(R.string.focus_wallpapers, R.drawable.ic_photo_library),
-    TIMETABLE_BACKGROUND(R.string.timetable_background, R.drawable.ic_photo),
+    BACKGROUND_PHOTO(R.string.background_photo_title, R.drawable.ic_photo),
     OTHER_FILES(R.string.other_cached_files, R.drawable.ic_document);
 
     companion object {
         val RECORDS = listOf(FOCUS_HISTORY, COMPLETED_TODOS, ASSISTANT_CHATS, SAVED_ANSWERS, AI_USAGE)
-        val FILES = listOf(WALLPAPERS, TIMETABLE_BACKGROUND, OTHER_FILES)
+        val FILES = listOf(WALLPAPERS, BACKGROUND_PHOTO, OTHER_FILES)
     }
 }
 
@@ -121,7 +121,7 @@ fun StorageScreen(
         StorageItem.SAVED_ANSWERS -> aiState.savedAnswerCount.toLong()
         StorageItem.AI_USAGE -> aiState.countedRequests.toLong()
         StorageItem.WALLPAPERS -> sizes.wallpaperBytes
-        StorageItem.TIMETABLE_BACKGROUND -> sizes.backgroundBytes
+        StorageItem.BACKGROUND_PHOTO -> sizes.backgroundBytes
         StorageItem.OTHER_FILES -> sizes.otherBytes
     }
     val clearable = StorageItem.entries.filter { count(it) > 0 }.toSet()
@@ -204,7 +204,7 @@ fun StorageScreen(
                         StorageItem.SAVED_ANSWERS -> ai?.clearAnswers()
                         StorageItem.AI_USAGE -> ai?.clearUsage()
                         StorageItem.WALLPAPERS -> wallpapers.clearCache()
-                        StorageItem.TIMETABLE_BACKGROUND -> appearance.removePhoto()
+                        StorageItem.BACKGROUND_PHOTO -> appearance.removePhoto()
                         StorageItem.OTHER_FILES -> otherCacheFiles(cache).forEach { it.delete() }
                     }
                 }
@@ -237,7 +237,7 @@ private fun detail(item: StorageItem, count: Long, sizes: FileSizes): String {
         StorageItem.WALLPAPERS -> pluralStringResource(
             R.plurals.storage_photos, sizes.wallpaperCount, sizes.wallpaperCount, Formatter.formatShortFileSize(context, sizes.wallpaperBytes),
         )
-        StorageItem.TIMETABLE_BACKGROUND, StorageItem.OTHER_FILES -> Formatter.formatShortFileSize(context, count)
+        StorageItem.BACKGROUND_PHOTO, StorageItem.OTHER_FILES -> Formatter.formatShortFileSize(context, count)
     }
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +25,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +35,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -76,6 +77,14 @@ import io.github.hilbert0619.coursetable.ui.ai.AssistantButton
 import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.Names
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
+import io.github.hilbert0619.coursetable.ui.components.GlassButton
+import io.github.hilbert0619.coursetable.ui.components.GlassIconButton
+import io.github.hilbert0619.coursetable.ui.components.GlassScope
+import io.github.hilbert0619.coursetable.ui.components.LocalGlass
+import io.github.hilbert0619.coursetable.ui.components.SwipeDeleteBackground
+import io.github.hilbert0619.coursetable.ui.components.glassCard
+import io.github.hilbert0619.coursetable.ui.components.rowBackground
+import io.github.hilbert0619.coursetable.ui.components.screenBackground
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
 import io.github.hilbert0619.coursetable.ui.currentMoment
@@ -102,8 +111,10 @@ fun TodayScreen(timetable: Timetable, todos: List<Todo>, actions: AppActions, mo
 
     Scaffold(
         modifier = modifier,
+        containerColor = screenBackground(),
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = screenBackground(), scrolledContainerColor = screenBackground()),
                 title = { Text(stringResource(R.string.tab_today)) },
                 actions = {
                     AssistantButton()
@@ -114,13 +125,15 @@ fun TodayScreen(timetable: Timetable, todos: List<Todo>, actions: AppActions, mo
             )
         },
     ) { padding ->
-        TodayContent(
-            timetable = timetable, todos = todos, now = now, day = day,
-            pickDay = { picked -> pickedDay = if (picked == now.day) null else picked.daysSinceEpoch },
-            edit = { editing = it },
-            actions = actions,
-            modifier = Modifier.padding(padding),
-        )
+        GlassScope {
+            TodayContent(
+                timetable = timetable, todos = todos, now = now, day = day,
+                pickDay = { picked -> pickedDay = if (picked == now.day) null else picked.daysSinceEpoch },
+                edit = { editing = it },
+                actions = actions,
+                modifier = Modifier.padding(padding),
+            )
+        }
     }
 
     editing?.let { target ->
@@ -186,7 +199,7 @@ private fun TodayContent(
                                 stringResource(if (isToday) R.string.no_classes_today else R.string.no_classes_on_this_day),
                                 style = MaterialTheme.typography.titleMedium,
                             )
-                            FilledTonalButton(onClick = { edit(TodoEditorTarget.New(day)) }) { Text(stringResource(R.string.add_todo)) }
+                            GlassButton(onClick = { edit(TodoEditorTarget.New(day)) }) { Text(stringResource(R.string.add_todo)) }
                         }
                     }
                 }
@@ -217,15 +230,19 @@ private fun TodayContent(
 @Composable
 private fun DayHeader(day: LocalDate, isToday: Boolean, status: String, names: Names, onPick: (LocalDate) -> Unit, today: LocalDate) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { onPick(day.adding(-1)) }) { AppIcon(R.drawable.ic_chevron_left, stringResource(R.string.previous_day)) }
+        GlassIconButton(onClick = { onPick(day.adding(-1)) }) { AppIcon(R.drawable.ic_chevron_left, stringResource(R.string.previous_day)) }
         Column(Modifier.weight(1f)) {
             Text(names.fullDate(day), style = MaterialTheme.typography.titleMedium)
             Text(status, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (!isToday) {
-            TextButton(onClick = { onPick(today) }) { Text(stringResource(R.string.tab_today)) }
+            if (LocalGlass.current != null) {
+                GlassButton(onClick = { onPick(today) }, contentPadding = PaddingValues(horizontal = 14.dp)) { Text(stringResource(R.string.tab_today)) }
+            } else {
+                TextButton(onClick = { onPick(today) }) { Text(stringResource(R.string.tab_today)) }
+            }
         }
-        IconButton(onClick = { onPick(day.adding(1)) }) { AppIcon(R.drawable.ic_chevron_right, stringResource(R.string.next_day)) }
+        GlassIconButton(onClick = { onPick(day.adding(1)) }) { AppIcon(R.drawable.ic_chevron_right, stringResource(R.string.next_day)) }
     }
 }
 
@@ -238,11 +255,12 @@ private fun NowNextCard(now: Moment, current: ClassSession?, next: ClassSession?
     val session = current ?: next
     val tint = session?.let { CoursePalette.block(it.course.colorIndex, CourseBlockStyle.SOFT) }
     val ink = tint?.text ?: MaterialTheme.colorScheme.onSurface
+    // Glass tinted in the course's soft colour on the wallpaper, the soft colour itself on the paper.
     Surface(
-        shape = RoundedCornerShape(16.dp),
-        color = tint?.fill ?: MaterialTheme.colorScheme.surfaceContainerLow,
+        color = Color.Transparent,
         contentColor = ink,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).semantics(mergeDescendants = true) {},
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).glassCard(tint?.fill)
+            .semantics(mergeDescendants = true) {},
     ) {
         Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             if (session != null) {
@@ -366,21 +384,14 @@ private fun TodoRow(
     SwipeToDismissBox(
         state = dismiss,
         enableDismissFromStartToEnd = false,
-        backgroundContent = {
-            Box(
-                Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer).padding(horizontal = 20.dp),
-                contentAlignment = Alignment.CenterEnd,
-            ) {
-                AppIcon(R.drawable.ic_delete, stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onErrorContainer)
-            }
-        },
+        backgroundContent = { SwipeDeleteBackground(dismiss) },
     ) {
         val done = todo.todo.isDone
         val haptics = LocalHapticFeedback.current
         val scope = rememberCoroutineScope()
         val bounce = remember { Animatable(1f) }
         Row(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow)
+            Modifier.fillMaxWidth().background(rowBackground())
                 .clickable { edit(TodoEditorTarget.Edit(todo.todo)) }
                 .padding(start = if (isUnderItsClass) 22.dp else 4.dp, end = 16.dp, top = 2.dp, bottom = 2.dp),
             verticalAlignment = Alignment.CenterVertically,

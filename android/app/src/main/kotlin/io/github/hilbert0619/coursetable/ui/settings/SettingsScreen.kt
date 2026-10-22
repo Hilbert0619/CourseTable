@@ -40,6 +40,7 @@ import io.github.hilbert0619.coursetable.ui.ai.LocalAI
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.DayPickerDialog
+import io.github.hilbert0619.coursetable.ui.components.LocalAppearance
 import io.github.hilbert0619.coursetable.ui.components.MenuRow
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
 import io.github.hilbert0619.coursetable.ui.components.Section
@@ -71,7 +72,7 @@ fun SettingsScreen(
     when {
         showingAppearance -> {
             BackHandler { showingAppearance = false }
-            TimetableAppearanceScreen(onBack = { showingAppearance = false }, modifier = modifier)
+            AppearanceScreen(onBack = { showingAppearance = false }, modifier = modifier)
         }
         showingStorage -> {
             BackHandler { showingStorage = false }
@@ -138,8 +139,16 @@ private fun SettingsList(
                 ActionRow(R.drawable.ic_export, stringResource(R.string.export_csv), enabled = timetable.courses.isNotEmpty()) {
                     shareCsv(context, timetable.courses)
                 }
-                RowDivider()
-                ActionRow(R.drawable.ic_palette, stringResource(R.string.timetable_appearance), onClick = onShowAppearance)
+            }
+
+            // The look in use, and the way to change it (iOS `AppearanceSection`).
+            val glass = LocalAppearance.current.settings.isGlass
+            Section(footer = stringResource(R.string.appearance_footer)) {
+                ValueRow(
+                    stringResource(R.string.appearance),
+                    stringResource(if (glass) R.string.style_glass else R.string.style_classic),
+                    onClick = onShowAppearance,
+                )
             }
 
             ReminderSection(reminders, actions, onShowReliable)

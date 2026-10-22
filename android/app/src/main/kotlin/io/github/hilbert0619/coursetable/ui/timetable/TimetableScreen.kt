@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.github.hilbert0619.coursekit.BackgroundChoice
 import io.github.hilbert0619.coursekit.CourseTemplate
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursekit.WeekParity
@@ -55,7 +56,9 @@ import io.github.hilbert0619.coursetable.ui.AppActions
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
 import io.github.hilbert0619.coursetable.ui.components.LocalAppearance
-import io.github.hilbert0619.coursetable.ui.components.TimetableBackdrop
+import io.github.hilbert0619.coursetable.ui.components.AppBackdrop
+import io.github.hilbert0619.coursetable.ui.components.GlassScope
+import io.github.hilbert0619.coursetable.ui.components.LocalTabBackdrop
 import io.github.hilbert0619.coursetable.ui.currentMoment
 import io.github.hilbert0619.coursetable.ui.rememberNames
 import java.util.UUID
@@ -89,7 +92,15 @@ fun TimetableScreen(
     var placingOnWeekend by rememberSaveable { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
     val appearance = LocalAppearance.current
-    val isOnPhoto = appearance.photo != null
+    val glass = appearance.settings.isGlass
+    val onPicture = appearance.choice != BackgroundChoice.Paper
+    // What the day row and the period times sit on: frosted glass, the paper over a picture, or nothing.
+    val labels = when {
+        glass -> LabelSurface.FROSTED
+        onPicture -> LabelSurface.PAPER
+        else -> LabelSurface.NONE
+    }
+    val clearBar = glass || onPicture
     val now = currentMoment()
 
     val templates = timetable.placementTemplates(savedTemplates)
@@ -107,13 +118,14 @@ fun TimetableScreen(
 
     // The paper, or the chosen photo faded towards it, behind everything (also the bar at the top).
     Box(modifier) {
-        TimetableBackdrop()
+        // RootScreen draws the background behind the tab; on its own (the screenshots) the screen draws it.
+        if (LocalTabBackdrop.current == null) AppBackdrop()
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
                 CenterAlignedTopAppBar(
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = if (isOnPhoto) Color.Transparent else MaterialTheme.colorScheme.surface,
+                        containerColor = if (clearBar) Color.Transparent else MaterialTheme.colorScheme.surface,
                     ),
                     title = { WeekSwitcher(week, isThisWeek = week == semester.status(today).week, total = semester.totalWeeks, onPick = { selectedWeek = it }, onStep = ::step) },
                     navigationIcon = {
@@ -192,31 +204,33 @@ fun TimetableScreen(
                     },
             ) {
                 val layout = GridLayout(maxWidth, days)
-                Column(Modifier.fillMaxSize()) {
-                    DayHeaderRow(layout, timetable, week, today, names, isOnPhoto)
-                    HorizontalDivider()
-                    Column(Modifier.verticalScroll(rememberScrollState())) {
-                        WeekGridView(
-                            layout = layout,
-                            timetable = timetable,
-                            week = week,
-                            today = today,
-                            now = now,
-                            blockStyle = appearance.settings.blockStyle,
-                            blockOpacity = if (isOnPhoto) appearance.settings.blockOpacity else 1f,
-                            isOnPhoto = isOnPhoto,
-                            showsAllWeeks = placing,
-                            onSelectCourse = { editor = CourseEditorTarget.Edit(it) },
-                            onSelectSlot = { day, period ->
-                                val template = templates.firstOrNull { it.id == placementId }
-                                if (placing && template != null) {
-                                    actions.saveCourse(timetable.placing(template, day, period, placementLength, placementParity))
-                                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                                } else {
-                                    editor = CourseEditorTarget.New(day, period)
-                                }
-                            },
-                        )
+                GlassScope {
+                    Column(Modifier.fillMaxSize()) {
+                        DayHeaderRow(layout, timetable, week, today, names, labels)
+                        HorizontalDivider()
+                        Column(Modifier.verticalScroll(rememberScrollState())) {
+                            WeekGridView(
+                                layout = layout,
+                                timetable = timetable,
+                                week = week,
+                                today = today,
+                                now = now,
+                                blockStyle = appearance.settings.blockStyle,
+                                blockOpacity = if (labels == LabelSurface.NONE) 1f else appearance.settings.blockOpacity,
+                                labels = labels,
+                                showsAllWeeks = placing,
+                                onSelectCourse = { editor = CourseEditorTarget.Edit(it) },
+                                onSelectSlot = { day, period ->
+                                    val template = templates.firstOrNull { it.id == placementId }
+                                    if (placing && template != null) {
+                                        actions.saveCourse(timetable.placing(template, day, period, placementLength, placementParity))
+                                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                    } else {
+                                        editor = CourseEditorTarget.New(day, period)
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
                 if (timetable.courses.isEmpty() && !placing) {

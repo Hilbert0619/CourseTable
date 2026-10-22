@@ -17,8 +17,8 @@ android {
         applicationId = "io.github.hilbert0619.coursetable"
         minSdk = 26
         targetSdk = 37
-        versionCode = 8
-        versionName = "0.6.0"
+        versionCode = 9
+        versionName = "0.7.0"
     }
 
     buildTypes {
@@ -103,6 +103,9 @@ dependencies {
     implementation(libs.supabase.postgrest)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.mlkit.text.recognition.chinese)
+    implementation(libs.haze)
+    implementation(libs.haze.blur)
+    implementation(libs.haze.glass)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 

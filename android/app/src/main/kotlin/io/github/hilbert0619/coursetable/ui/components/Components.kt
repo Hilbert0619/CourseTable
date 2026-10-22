@@ -3,6 +3,7 @@
 package io.github.hilbert0619.coursetable.ui.components
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.rememberScrollState
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -30,6 +30,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -37,6 +38,8 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -44,6 +47,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,12 +75,16 @@ fun AppIcon(@DrawableRes id: Int, contentDescription: String?, modifier: Modifie
     }
 }
 
-/** A grouped list section (the iOS inset-grouped `Section`): a header, rows on a rounded surface, a footer. */
+/**
+ * A grouped list section (the iOS inset-grouped `Section`): a header, rows on a rounded surface, a footer. In the glass
+ * look the rows are frosted glass, or with [card] the section is a card of glass (the Focus plan, Words' Today).
+ */
 @Composable
 fun Section(
     modifier: Modifier = Modifier,
     title: String? = null,
     footer: String? = null,
+    card: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -88,8 +96,14 @@ fun Section(
                 modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
             )
         }
-        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
-            Column(Modifier.fillMaxWidth(), content = content)
+        if (LocalGlass.current == null) {
+            Surface(shape = CardShape, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                Column(Modifier.fillMaxWidth(), content = content)
+            }
+        } else {
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                Column(Modifier.fillMaxWidth().then(if (card) Modifier.glassCard() else Modifier.frosted(CardShape)), content = content)
+            }
         }
         if (footer != null) {
             Text(
@@ -99,6 +113,22 @@ fun Section(
                 modifier = Modifier.padding(start = 4.dp, top = 6.dp, end = 4.dp),
             )
         }
+    }
+}
+
+/** A row's own background (under a swipe): the card colour, or nothing so the glass shows through. */
+@Composable
+fun rowBackground(): Color = if (LocalGlass.current != null) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerLow
+
+/** Behind a row swiped left to delete it: red with a bin, shown only while swiping (rows of glass are see-through). */
+@Composable
+fun SwipeDeleteBackground(state: SwipeToDismissBoxState) {
+    if (state.dismissDirection != SwipeToDismissBoxValue.EndToStart) return
+    Box(
+        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer).padding(horizontal = 20.dp),
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        AppIcon(R.drawable.ic_delete, stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onErrorContainer)
     }
 }
 
@@ -240,7 +270,8 @@ fun WarningRow(text: String, blocking: Boolean = false, modifier: Modifier = Mod
 /** A full-screen editor (the iOS sheets); [content] is usually an [EditorScaffold]. */
 @Composable
 fun EditorDialog(onDismiss: () -> Unit, content: @Composable () -> Unit) {
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false), content = content)
+    // A window of its own on the paper: the glass of the screen below can't reach it.
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) { PaperScope(content) }
 }
 
 /** An editor screen: close, a title, a confirm action such as Save, and scrolling content. */

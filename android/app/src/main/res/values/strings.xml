@@ -207,15 +207,30 @@
     <string name="period_issue_ends_before_start">Period %1$d ends before it starts.</string>
     <string name="period_issue_overlaps_previous">Period %1$d starts before the previous one ends.</string>
 
-    <!-- Settings: Timetable Appearance, Storage (0.6) -->
-    <string name="timetable_appearance">Timetable Appearance</string>
+    <!-- Settings: Appearance (0.7), Storage (0.6) -->
+    <string name="appearance">Appearance</string>
+    <string name="appearance_footer">Glass or classic, the wallpaper, and how course blocks look.</string>
+    <string name="style">Style</string>
+    <string name="style_glass">Glass</string>
+    <string name="style_classic">Classic</string>
+    <string name="style_footer_glass">Today, Timetable, Focus and Words on the background below, with cards and buttons of glass.</string>
+    <string name="style_footer_classic">The warm paper of the icon. The background below shows behind the timetable only.</string>
+    <string name="background_paper">Paper</string>
+    <string name="background_photo">Photo</string>
+    <string name="background_photo_title">Background Photo</string>
+    <string name="wallpaper_dawn">Dawn</string>
+    <string name="wallpaper_lagoon">Lagoon</string>
+    <string name="wallpaper_meadow">Meadow</string>
+    <string name="wallpaper_lavender">Lavender</string>
+    <string name="wallpaper_sky">Sky</string>
+    <string name="wallpaper_ember">Ember</string>
     <string name="course_blocks_header">Course Blocks</string>
     <string name="course_blocks_footer">Soft: a light tint with dark text, easy to read. Solid: full colour with white text.</string>
     <string name="block_style_soft">Soft</string>
     <string name="block_style_solid">Solid</string>
     <string name="background">Background</string>
-    <string name="background_footer_own">Use one of your own photos. The Focus wallpapers you\'ve seen also show here.</string>
-    <string name="background_footer_wallpapers">Your own photo, or one of the Focus wallpapers you\'ve seen.</string>
+    <string name="background_footer_own">A wallpaper of soft shapes keeps text easy to read. Or use one of your own photos; the Focus wallpapers you\'ve seen also show here.</string>
+    <string name="background_footer_wallpapers">A wallpaper of soft shapes keeps text easy to read. Or use your own photo, or one of the Focus wallpapers you\'ve seen.</string>
     <string name="fade">Fade</string>
     <string name="block_opacity">Block opacity</string>
     <string name="remove_photo">Remove Photo</string>
@@ -226,13 +241,12 @@
     <string name="records">Records</string>
     <string name="records_footer">Your timetable, unfinished to-dos, Words progress and AI connections are never cleared here.</string>
     <string name="downloaded_files">Downloaded Files</string>
-    <string name="downloaded_files_footer">Downloaded again when needed — except the timetable background, which is your choice.</string>
+    <string name="downloaded_files_footer">Downloaded again when needed — except the background photo, which is your choice.</string>
     <string name="completed_todos">Completed To-Dos</string>
     <string name="assistant_chats">Assistant Chats</string>
     <string name="saved_ai_answers">Saved AI Answers</string>
     <string name="ai_usage_counts">AI Usage Counts</string>
     <string name="focus_wallpapers">Focus Wallpapers</string>
-    <string name="timetable_background">Timetable Background</string>
     <string name="other_cached_files">Other Cached Files</string>
     <string name="select_all">Select All</string>
     <string name="deselect_all">Deselect All</string>

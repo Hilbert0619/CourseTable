@@ -32,6 +32,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.hilbert0619.coursekit.BackgroundChoice
 import io.github.hilbert0619.coursekit.CourseBlockStyle
 import io.github.hilbert0619.coursekit.CourseCSV
 import io.github.hilbert0619.coursekit.CourseTemplate
@@ -41,9 +42,11 @@ import io.github.hilbert0619.coursekit.FocusSettings
 import io.github.hilbert0619.coursekit.LocalDate
 import io.github.hilbert0619.coursekit.Moment
 import io.github.hilbert0619.coursekit.Semester
+import io.github.hilbert0619.coursekit.SoftWallpaper
 import io.github.hilbert0619.coursekit.TimeOfDay
 import io.github.hilbert0619.coursekit.Timetable
 import io.github.hilbert0619.coursetable.alerts.ReminderSettings
+import io.github.hilbert0619.coursetable.appearance.AppStyle
 import io.github.hilbert0619.coursetable.appearance.AppearanceSettings
 import io.github.hilbert0619.coursetable.data.DemoData
 import io.github.hilbert0619.coursetable.data.FocusSessionRecord
@@ -65,7 +68,7 @@ import io.github.hilbert0619.coursetable.ui.settings.PeriodScheduleEditor
 import io.github.hilbert0619.coursetable.ui.settings.ReliableRemindersScreen
 import io.github.hilbert0619.coursetable.ui.settings.StorageItem
 import io.github.hilbert0619.coursetable.ui.settings.StorageScreen
-import io.github.hilbert0619.coursetable.ui.settings.TimetableAppearanceScreen
+import io.github.hilbert0619.coursetable.ui.settings.AppearanceScreen
 import io.github.hilbert0619.coursetable.ui.theme.StudyHourTheme
 import io.github.hilbert0619.coursetable.ui.timetable.CourseEditorContent
 import io.github.hilbert0619.coursetable.ui.timetable.CourseEditorTarget
@@ -125,6 +128,8 @@ class ScreenshotTests {
     }
 
     private val onPhoto = AppearanceState(photo = DemoWallpaper.image)
+    private val classic = AppearanceState(AppearanceSettings(style = AppStyle.CLASSIC))
+    private fun on(wallpaper: SoftWallpaper) = AppearanceState(AppearanceSettings(background = BackgroundChoice.Wallpaper(wallpaper).stored))
     private val onWallpaper = WallpaperState(enabled = true, shown = DemoWallpaper.shown)
 
     private fun capture() = compose.onRoot().captureRoboImage()
@@ -153,6 +158,19 @@ class ScreenshotTests {
     @Config(qualifiers = "+night")
     fun todayDark() {
         show("10:30") { RootScreen(data(chinese = false), AppActions.None) }
+        capture()
+    }
+
+    @Test
+    fun todayClassic() {
+        show(appearance = classic) { RootScreen(data(chinese = false), AppActions.None) }
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+night")
+    fun todayOnLagoonDark() {
+        show("10:30", appearance = on(SoftWallpaper.LAGOON)) { RootScreen(data(chinese = false), AppActions.None) }
         capture()
     }
 
@@ -208,6 +226,21 @@ class ScreenshotTests {
         show(appearance = onPhoto.copy(settings = AppearanceSettings(blockStyle = CourseBlockStyle.SOLID))) {
             RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.TIMETABLE)
         }
+        capture()
+    }
+
+    @Test
+    fun timetableClassicOnAPhoto() {
+        show(appearance = onPhoto.copy(settings = AppearanceSettings(style = AppStyle.CLASSIC))) {
+            RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.TIMETABLE)
+        }
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+zh-rCN")
+    fun timetableOnMeadowChinese() {
+        show(appearance = on(SoftWallpaper.MEADOW)) { RootScreen(data(chinese = true), AppActions.None, initialTab = Tab.TIMETABLE) }
         capture()
     }
 
@@ -314,6 +347,25 @@ class ScreenshotTests {
     }
 
     @Test
+    fun focusSetupClassic() {
+        val state = FocusState(settings = FocusSettings(totalMinutes = 150), goal = "Calculus review")
+        show(appearance = classic) {
+            RootScreen(data(chinese = false).copy(focusSessions = focusHistory), AppActions.None, initialTab = Tab.FOCUS, focus = state)
+        }
+        capture()
+    }
+
+    @Test
+    @Config(qualifiers = "+night")
+    fun focusSetupOnEmberDark() {
+        val state = FocusState(settings = FocusSettings(totalMinutes = 50), goal = "Calculus review")
+        show(appearance = on(SoftWallpaper.EMBER)) {
+            RootScreen(data(chinese = false).copy(focusSessions = focusHistory), AppActions.None, initialTab = Tab.FOCUS, focus = state)
+        }
+        capture()
+    }
+
+    @Test
     fun focusOnAWallpaper() {
         show(wallpapers = onWallpaper) { RootScreen(data(chinese = false), AppActions.None, initialTab = Tab.FOCUS, focus = FocusState(run = focusRun(7))) }
         compose.onNodeWithText("Photo by Demo Photographer on Unsplash").assertExists()
@@ -399,16 +451,17 @@ class ScreenshotTests {
     }
 
     @Test
-    fun timetableAppearanceWithAPhoto() {
-        show(appearance = onPhoto) { TimetableAppearanceScreen(onBack = {}) }
-        compose.onNodeWithText("Remove Photo").assertExists()
+    fun appearance() {
+        show { AppearanceScreen(onBack = {}) }
+        compose.onNodeWithText("Dawn").assertExists()
         capture()
     }
 
     @Test
     @Config(qualifiers = "+zh-rCN-night")
-    fun timetableAppearanceChineseDark() {
-        show { TimetableAppearanceScreen(onBack = {}) }
+    fun appearanceClassicWithAPhotoChineseDark() {
+        show(appearance = onPhoto.copy(settings = AppearanceSettings(style = AppStyle.CLASSIC, background = "photo"))) { AppearanceScreen(onBack = {}) }
+        compose.onNodeWithText("移除照片").assertExists()
         capture()
     }
 

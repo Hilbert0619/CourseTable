@@ -23,7 +23,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -37,6 +36,7 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -93,6 +93,15 @@ import io.github.hilbert0619.coursetable.focus.FocusText
 import io.github.hilbert0619.coursetable.ui.LocalNowSource
 import io.github.hilbert0619.coursetable.ui.components.ActionRow
 import io.github.hilbert0619.coursetable.ui.components.AppIcon
+import io.github.hilbert0619.coursetable.ui.components.CardShape
+import io.github.hilbert0619.coursetable.ui.components.GlassButton
+import io.github.hilbert0619.coursetable.ui.components.GlassScope
+import io.github.hilbert0619.coursetable.ui.components.LocalGlass
+import io.github.hilbert0619.coursetable.ui.components.SwipeDeleteBackground
+import io.github.hilbert0619.coursetable.ui.components.glass
+import io.github.hilbert0619.coursetable.ui.components.glassCard
+import io.github.hilbert0619.coursetable.ui.components.rowBackground
+import io.github.hilbert0619.coursetable.ui.components.screenBackground
 import io.github.hilbert0619.coursetable.ui.components.ConfirmDialog
 import io.github.hilbert0619.coursetable.ui.components.MenuRow
 import io.github.hilbert0619.coursetable.ui.components.RowDivider
@@ -131,21 +140,31 @@ fun FocusScreen(
     val askForNotifications = rememberNotificationRequest()
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.tab_focus)) }) },
+        containerColor = screenBackground(),
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = screenBackground(), scrolledContainerColor = screenBackground()),
+                title = { Text(stringResource(R.string.tab_focus)) },
+            )
+        },
         bottomBar = {
-            // Always in reach, above the tab bar; the list fades out under it.
+            // Always in reach, above the tab bar; on the paper the list fades out under it, on glass it floats.
             if (run == null) {
-                StartBar(onStart = {
-                    actions.start()
-                    askForNotifications()
-                })
+                GlassScope {
+                    StartBar(onStart = {
+                        actions.start()
+                        askForNotifications()
+                    })
+                }
             }
         },
     ) { padding ->
-        if (run != null) {
-            RunningFocus(run, state, actions, Modifier.padding(padding))
-        } else {
-            FocusSetup(state, sessions, actions, onDeleteSessions, onShowHistory = { showingHistory = true }, padding)
+        GlassScope {
+            if (run != null) {
+                RunningFocus(run, state, actions, Modifier.padding(padding))
+            } else {
+                FocusSetup(state, sessions, actions, onDeleteSessions, onShowHistory = { showingHistory = true }, padding)
+            }
         }
     }
 }
@@ -169,12 +188,9 @@ private val BREAK_GREEN_ON_PHOTO = Color(0.62f, 0.95f, 0.72f)
 @Composable
 private fun StartBar(onStart: () -> Unit) {
     val paper = MaterialTheme.colorScheme.background
-    Box(
-        Modifier.fillMaxWidth()
-            .background(Brush.verticalGradient(0f to paper.copy(alpha = 0f), 0.4f to paper))
-            .padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 8.dp),
-    ) {
-        Button(onClick = onStart, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+    val fade = if (LocalGlass.current == null) Modifier.background(Brush.verticalGradient(0f to paper.copy(alpha = 0f), 0.4f to paper)) else Modifier
+    Box(Modifier.fillMaxWidth().then(fade).padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 8.dp)) {
+        GlassButton(onClick = onStart, prominent = true, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
             AppIcon(R.drawable.ic_play, null, Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.start_focusing), style = MaterialTheme.typography.titleMedium)
@@ -203,7 +219,7 @@ private fun FocusSetup(
 
     // The list scrolls on under the Start button.
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).verticalScroll(rememberScrollState())) {
-        Section {
+        Section(card = true) {
             FocusPlanCard(state.plan, settings.totalMinutes, text) { change(settings.copy(totalMinutes = it)) }
         }
 
@@ -300,15 +316,26 @@ private fun FocusPlanCard(plan: FocusPlan, totalMinutes: Int, text: FocusText, o
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PRESETS.forEach { minutes ->
                 val selected = totalMinutes == minutes
+                // A capsule, the chosen one in the accent colour; of glass on the wallpaper.
+                val glass = LocalGlass.current != null
                 Surface(
                     onClick = {
                         if (!selected) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
                         onPick(minutes)
                     },
                     shape = CircleShape,
-                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-                    contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f).semantics { this.selected = selected },
+                    color = when {
+                        glass -> Color.Transparent
+                        selected -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+                    },
+                    contentColor = when {
+                        selected && glass -> Color.White
+                        selected -> MaterialTheme.colorScheme.onPrimary
+                        else -> MaterialTheme.colorScheme.onSurface
+                    },
+                    modifier = Modifier.weight(1f).glass(CircleShape, if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.85f) else null)
+                        .semantics { this.selected = selected },
                 ) {
                     Text(
                         text.presetLength(minutes),
@@ -421,17 +448,10 @@ private fun SessionRow(session: FocusSessionRecord, text: FocusText, showsDay: B
     SwipeToDismissBox(
         state = dismiss,
         enableDismissFromStartToEnd = false,
-        backgroundContent = {
-            Box(
-                Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer).padding(horizontal = 20.dp),
-                contentAlignment = Alignment.CenterEnd,
-            ) {
-                AppIcon(R.drawable.ic_delete, stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onErrorContainer)
-            }
-        },
+        backgroundContent = { SwipeDeleteBackground(dismiss) },
     ) {
         Row(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow).padding(horizontal = 16.dp, vertical = 10.dp),
+            Modifier.fillMaxWidth().background(rowBackground()).padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
@@ -586,9 +606,10 @@ private fun RunningFocus(run: FocusRun, state: FocusState, actions: FocusActions
     val secondary = if (onPhoto) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        // The session's photo, else glass (the glass look) or the plain card colour.
         Box(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                .then(if (shown == null) Modifier.glassCard() else Modifier.clip(CardShape)),
         ) {
             // The card draws its own background, so the photo shows as soon as it arrives.
             if (shown != null) WallpaperBackground(shown, Modifier.matchParentSize())
@@ -628,21 +649,21 @@ private fun RunningFocus(run: FocusRun, state: FocusState, actions: FocusActions
         }
 
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = actions::togglePause, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) {
+            GlassButton(onClick = actions::togglePause, prominent = true, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) {
                 AppIcon(if (run.isPaused) R.drawable.ic_play else R.drawable.ic_pause, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(stringResource(if (run.isPaused) R.string.resume else R.string.pause))
             }
-            OutlinedButton(
+            GlassButton(
                 onClick = { confirmingStop = true },
                 modifier = Modifier.weight(1f).heightIn(min = 48.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                color = MaterialTheme.colorScheme.error,
             ) {
                 AppIcon(R.drawable.ic_stop, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(stringResource(R.string.stop))
             }
-            OutlinedButton(onClick = { fullScreen = true }, modifier = Modifier.heightIn(min = 48.dp), contentPadding = PaddingValues(horizontal = 14.dp)) {
+            GlassButton(onClick = { fullScreen = true }, modifier = Modifier.heightIn(min = 48.dp), contentPadding = PaddingValues(horizontal = 14.dp)) {
                 AppIcon(R.drawable.ic_fullscreen, stringResource(R.string.full_screen), Modifier.size(20.dp))
             }
         }

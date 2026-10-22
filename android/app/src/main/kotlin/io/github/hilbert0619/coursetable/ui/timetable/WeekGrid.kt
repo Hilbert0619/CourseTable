@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.res.stringResource
@@ -50,6 +51,9 @@ import io.github.hilbert0619.coursekit.Weekday
 import io.github.hilbert0619.coursekit.gridPlacements
 import io.github.hilbert0619.coursetable.R
 import io.github.hilbert0619.coursetable.ui.Names
+import io.github.hilbert0619.coursetable.ui.components.LocalGlass
+import io.github.hilbert0619.coursetable.ui.components.frosted
+import io.github.hilbert0619.coursetable.ui.components.glass
 import io.github.hilbert0619.coursetable.ui.theme.CoursePalette
 import kotlin.math.floor
 
@@ -67,16 +71,29 @@ class GridLayout(width: Dp, val days: List<Weekday>) {
     }
 }
 
-/** The paper behind the days and period times when a photo is behind the timetable, so they stay readable. */
+/** What the day row and the period times sit on, so they stay readable on a picture (iOS `LabelSurface`). */
+enum class LabelSurface {
+    NONE,
+
+    /** The paper, mostly opaque (the classic look on a picture). */
+    PAPER,
+
+    /** Frosted glass, thicker than a list row's: the small grey times stay readable on a dark photo (the glass look). */
+    FROSTED,
+}
+
 @Composable
-private fun onPhotoBackground(isOnPhoto: Boolean): Color =
-    if (isOnPhoto) MaterialTheme.colorScheme.background.copy(alpha = 0.82f) else Color.Transparent
+private fun Modifier.labelSurface(surface: LabelSurface): Modifier = when (surface) {
+    LabelSurface.NONE -> this
+    LabelSurface.PAPER -> background(MaterialTheme.colorScheme.background.copy(alpha = 0.82f))
+    LabelSurface.FROSTED -> frosted(RectangleShape, thick = true)
+}
 
 /** The month, then each day's name and date; today highlighted. */
 @Composable
-fun DayHeaderRow(layout: GridLayout, timetable: Timetable, week: Int, today: LocalDate, names: Names, isOnPhoto: Boolean = false) {
+fun DayHeaderRow(layout: GridLayout, timetable: Timetable, week: Int, today: LocalDate, names: Names, labels: LabelSurface = LabelSurface.NONE) {
     val semester = timetable.semester
-    Row(Modifier.background(onPhotoBackground(isOnPhoto))) {
+    Row(Modifier.labelSurface(labels)) {
         Text(
             names.month(semester.date(Weekday.MONDAY, week)),
             style = MaterialTheme.typography.labelSmall,
@@ -119,7 +136,7 @@ fun WeekGridView(
     onSelectSlot: (Weekday, Int) -> Unit,
     blockStyle: CourseBlockStyle = CourseBlockStyle.SOFT,
     blockOpacity: Float = 1f,
-    isOnPhoto: Boolean = false,
+    labels: LabelSurface = LabelSurface.NONE,
 ) {
     val periods = timetable.periods.periods
     val rowHeight = GridLayout.ROW_HEIGHT
@@ -127,7 +144,7 @@ fun WeekGridView(
     val todayColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)
     val current = timetable.currentAndNext(now).current
     Box(Modifier.width(layout.totalWidth).height(rowHeight * periods.size)) {
-        Box(Modifier.width(GridLayout.TIME_COLUMN_WIDTH).fillMaxHeight().background(onPhotoBackground(isOnPhoto)))
+        Box(Modifier.width(GridLayout.TIME_COLUMN_WIDTH).fillMaxHeight().labelSurface(labels))
         periods.forEachIndexed { index, period ->
             Column(
                 Modifier.offset(y = layout.y(index + 1)).size(GridLayout.TIME_COLUMN_WIDTH, rowHeight),
@@ -196,8 +213,9 @@ private fun NowLine(width: Dp, modifier: Modifier = Modifier) {
 
 /**
  * A course on the grid: soft (a tint, same-hue text and a stripe in the course's colour) or solid (the colour with
- * white text), and outlined and lifted while the class is on. [fillOpacity] is below 1 over a photo (the text and
- * stripe stay solid). Small type, as day columns are narrow; long English words shrink instead of breaking.
+ * white text), of glass tinted in that colour in the glass look, and outlined and lifted while the class is on.
+ * [fillOpacity] is below 1 over a picture (the text and stripe stay solid). Small type, as day columns are narrow;
+ * long English words shrink instead of breaking.
  */
 @Composable
 fun CourseBlock(
@@ -211,6 +229,12 @@ fun CourseBlock(
     val colors = CoursePalette.block(course.colorIndex, style)
     val stripe = CoursePalette.color(course.colorIndex)
     val shape = RoundedCornerShape(6.dp)
+    // Tinted glass lets more of the picture through for soft blocks (75 %) than for solid ones (95 %), as on iOS.
+    val fill = if (LocalGlass.current != null) {
+        Modifier.glass(shape, colors.fill.copy(alpha = fillOpacity * if (style == CourseBlockStyle.SOFT) 0.75f else 0.95f))
+    } else {
+        Modifier.clip(shape).background(colors.fill.copy(alpha = fillOpacity))
+    }
     val leading = if (style == CourseBlockStyle.SOFT) 6.dp else 3.dp
     val lifted = if (isCurrent) Modifier.shadow(6.dp, shape, ambientColor = stripe, spotColor = stripe) else Modifier
     val outline = if (isCurrent) {
@@ -219,7 +243,7 @@ fun CourseBlock(
         Modifier
     }
     BoxWithConstraints(
-        modifier.then(lifted).clip(shape).background(colors.fill.copy(alpha = fillOpacity))
+        modifier.then(lifted).then(fill).clip(shape)
             .let { if (onClick != null) it.clickable(onClick = onClick) else it }
             .then(outline),
     ) {
