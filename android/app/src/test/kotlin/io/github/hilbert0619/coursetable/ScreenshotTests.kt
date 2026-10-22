@@ -18,6 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -510,8 +514,10 @@ class ScreenshotTests {
     @Test
     fun tappingATabSwitchesToIt() {
         show { RootScreen(data(chinese = false), AppActions.None) }
-        compose.onNodeWithText("Words").performClick()
-        compose.onNodeWithText("Vocabulary study and sync will be here.").assertExists()
+        compose.onNode(hasText("Focus") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).performClick()
+        compose.onNodeWithText("Start Focusing").assertExists()
+        // Words is hidden for now (BuildConfig.WORDS): four tabs.
+        compose.onAllNodes(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).assertCountEquals(4)
     }
 
     private object PeriodTimesFixture {

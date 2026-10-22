@@ -97,6 +97,13 @@ our server.
 
 ## Words (`core/…/vocabkit/backend`, `core/…/vocabkit/store`, `app/…/words`, `app/…/ui/words`)
 
+> **Hidden since 0.7.1** (the owner's call, 2026-10-22: users don't need it): `buildConfigField("boolean", "WORDS",
+> "false")` in `app/build.gradle.kts`. `MainActivity` then makes no `WordsController`, so `RootScreen` shows four tabs,
+> nothing opens `vocabulary.db` or the account, a sign-in link just opens the app, and the Assistant has no vocabulary
+> tools, Share My Hard Words, words suggestion or study tools (`AppTools.tools(words)`, `AIPrompts.assistant(…, words)`);
+> Appearance, Storage and AI Help use their `…_no_words` texts. Everything below still builds and is tested (the Words
+> screenshots run as before); set it to `"true"` to bring Words back.
+
 - **The same cloud project as iOS** (Supabase, `docs/vocabulary-spec.md`): one account studies on both. The URL and
   the publishable key (public by design; row-level security protects the data) are in `SupabaseBackend.kt`.
 - **Logic in `core`, tested on the JVM**: `VocabApp` (account state, email links, sign-out, deleting the account),
