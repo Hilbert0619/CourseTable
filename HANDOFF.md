@@ -42,7 +42,11 @@ Users' requests passed on by the owner on 2026-11-18 (with 0.7.1 installed), bui
    (or Tinted) puts every widget on Liquid Glass; ours are tuned for it (`widgetAccentable`).
 - CI: CourseKit 44366155967, iOS 44368461857 (build + unit tests), screenshots 44370009358 (compact island before and
   during) and 44382126089 (the widget gallery in the default and the Clear look; the Focus Start button was a blank
-  capsule on Clear before, now bordered there). IPA_LINE
+  capsule on Clear before, now bordered there). **IPA 0.7.2 (build 12)**: run 44385561713 (commit
+  c0c18d6), saved as `C:\Users\AI\Downloads\CourseTable\CourseTable-0.7.2.ipa`; on `main`. Checklist below (it
+  contains 0.7.1, whose device test hasn't been reported either: go through both lists).
+
+## iOS 0.7.1 (its device test not reported yet; in 0.7.2)
 
 The owner's 0.7.0 device test: **no issues** (2026-10-21). Then two requests, built as **0.7.1 (build 11)** on branch
 `ios-0.7.1` (worktree `D:\Projects\CourseTable-ios07`):
