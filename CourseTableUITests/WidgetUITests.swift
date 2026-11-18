@@ -18,15 +18,26 @@ final class WidgetUITests: XCTestCase {
         Thread.sleep(forTimeInterval: 2)
         goHome()
 
-        // Each widget in turn: the gallery's pages are its sizes.
-        for (index, name) in ["Class Schedule", "To-Dos", "Focus"].enumerated() {
-            guard openGallery(index: index) else { break }
-            // The app's page lists its widgets; pick this one if the gallery shows a list.
-            if springboard.staticTexts[name].firstMatch.waitForExistence(timeout: 2) {
-                snapshot("widget-\(index)-\(name)-list")
+        // The app's page: one horizontal page per widget size (Class Schedule 2, To-Dos 3, Focus 1).
+        if openGallery(index: 0) {
+            for page in 0..<6 {
+                snapshot("widget-1-page-\(page)")
+                springboard.swipeLeft()
+                Thread.sleep(forTimeInterval: 1)
             }
-            for page in 0..<3 {
-                snapshot("widget-\(index)-\(name)-size-\(page)")
+            dismissGallery()
+        }
+        // The Clear look (Edit → Customize → Clear): iOS draws widgets on glass, in their accented rendering.
+        if customize(choosing: "Clear"), openGallery(index: 2) {
+            for page in 0..<6 {
+                snapshot("widget-2-clear-page-\(page)")
+                // Page 3 is the medium To-Dos: put it on the Home Screen, on glass.
+                if page == 3, springboard.buttons["Add Widget"].firstMatch.exists {
+                    springboard.buttons["Add Widget"].firstMatch.tap()
+                    Thread.sleep(forTimeInterval: 2)
+                    snapshot("widget-3-clear-added")
+                    break
+                }
                 springboard.swipeLeft()
                 Thread.sleep(forTimeInterval: 1)
             }
@@ -83,10 +94,36 @@ final class WidgetUITests: XCTestCase {
             return false
         }
         Thread.sleep(forTimeInterval: 2)
-        // Further widgets of the app are further pages of kinds, or rows to tap.
-        for _ in 0..<index {
-            springboard.swipeUp()
+        return true
+    }
+
+    /// Edit Home Screen → Customize → `style` (Default, Dark, Clear, Tinted), then back to the Home Screen.
+    @MainActor
+    private func customize(choosing style: String) -> Bool {
+        springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.62)).press(forDuration: 1.6)
+        Thread.sleep(forTimeInterval: 1.5)
+        let edit = springboard.buttons["Edit"].firstMatch
+        if edit.waitForExistence(timeout: 3) {
+            edit.tap()
+            Thread.sleep(forTimeInterval: 1)
         }
+        let customize = springboard.buttons["Customize"].firstMatch
+        guard customize.waitForExistence(timeout: 3) else {
+            snapshot("widget-2-a-no-customize")
+            return false
+        }
+        customize.tap()
+        Thread.sleep(forTimeInterval: 2)
+        snapshot("widget-2-a-customize")
+        let option = springboard.buttons[style].firstMatch
+        guard option.waitForExistence(timeout: 3) else {
+            snapshot("widget-2-b-no-\(style)")
+            return false
+        }
+        option.tap()
+        Thread.sleep(forTimeInterval: 2)
+        snapshot("widget-2-b-\(style)")
+        dismissGallery()
         return true
     }
 
