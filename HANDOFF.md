@@ -41,7 +41,8 @@ Users' requests passed on by the owner on 2026-11-18 (with 0.7.1 installed), bui
    isn't open to other apps. The owner chose **the system's glass only**: Home Screen → Edit → Customize → **Clear**
    (or Tinted) puts every widget on Liquid Glass; ours are tuned for it (`widgetAccentable`).
 - CI: CourseKit 44366155967, iOS 44368461857 (build + unit tests), screenshots 44370009358 (compact island before and
-  during, the widget gallery), WIDGET_RUN.
+  during) and 44382126089 (the widget gallery in the default and the Clear look; the Focus Start button was a blank
+  capsule on Clear before, now bordered there). IPA_LINE
 
 The owner's 0.7.0 device test: **no issues** (2026-10-21). Then two requests, built as **0.7.1 (build 11)** on branch
 `ios-0.7.1` (worktree `D:\Projects\CourseTable-ios07`):
@@ -173,6 +174,24 @@ Handoff prompt A below picks up the owner's results.
   **the owner's device test with a real key passed** (2026-10-15).
 - **AI agent** ([`docs/ai-agent-spec.md`](docs/ai-agent-spec.md)), built 2026-10-15 as 0.5.0 (build 7) (IPA run
   38774424881); **the owner's device test passed with no major bugs** (2026-10-16). Android has both since 0.5.0.
+
+## iOS 0.7.2 test (owner)
+
+Install `CourseTable-0.7.2.ipa` over 0.7.1 with iloader (everything stays). Then open the app once (it writes the
+widgets' data).
+1. **Before a class** (Live Activity on): the compact Dynamic Island shows a pin in the course colour on the left and
+   the room on the right (the start time if the class has no room), narrower than before. Long-press it: the
+   expanded island still counts down. (Settings → Reminders → Test in 1 Minute shows it quickly.)
+2. **During the class**: the compact island shows the course name and a ring filling up; no numbers.
+3. **To-Dos widget** (long-press the Home Screen → Edit → Add Widget → Course Table): small, medium and large.
+   Today's to-dos by time, done ones struck through, times in red once passed. Tap a circle: it's ticked off on the
+   widget and in the app (with the app closed too; the to-do's reminder doesn't come). Tap it again to undo.
+4. **Focus widget** (small): today's focus time and days in a row; **25 min** starts a session (its Live Activity
+   appears) without changing your Focus setup; then Pause / Resume and Stop on the widget. After it ends, today's
+   time grows.
+5. **Glass**: Home Screen → Edit → Customize → **Clear** (or Tinted): all Course Table widgets on glass, text and
+   buttons readable. In Default they keep their solid background (iOS doesn't offer the Batteries glass there).
+6. Anything off: a screenshot, and whether the app had been opened since.
 
 ## iOS 0.7.1 test (owner)
 
@@ -315,27 +334,30 @@ Claude the OriginOS build (设置 → 系统升级) so the docs can record it.
 > Android 0.7.0 / 0.6.0 phone test. **A** follows the owner's iOS 0.7.1 device test (independent; in its own
 > worktree).
 
-### A. The owner's results for iOS 0.7.1 (glass, class reminders)
+### A. The owner's results for iOS 0.7.2 (compact island, To-Dos and Focus widgets) and 0.7.1 (glass, class reminders)
 
 ```
-[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.7.1 (the glass look; class reminders that always come): fix what I report
+[PROJECT HANDOFF] CourseTable — the owner's device test of iOS 0.7.2 (compact island, To-Dos and Focus widgets, widgets on the Clear glass) and 0.7.1 (the glass look; class reminders that always come): fix what I report
 
 ## Read first
-HANDOFF.md (status, the 0.7.1 checklist, facts, gotchas), docs/design-0.7.md (§5 the glass look),
+HANDOFF.md (status, the 0.7.2 and 0.7.1 checklists, facts, gotchas), docs/design-0.7.md (§5 the glass look, §6 widgets and the compact island),
 docs/todos-focus-spec.md §1 (class alerts, changed 2026-10-21) and §7, README, spec/fixtures/README.md.
 
 ## Goal
-1. I tell you how the 0.7.1 checklist went (light, dark, large text; Test in 1 Minute; real classes overnight) with
-   screenshots. Fix what I report: logic in CourseKit with tests first (CourseColors and SoftWallpaper readability
+1. I tell you how the 0.7.2 and 0.7.1 checklists went (light, dark, large text; Test in 1 Minute; real classes
+   overnight; the widgets in Default and Clear) with screenshots. Fix what I report: logic in CourseKit with tests first (CourseColors and SoftWallpaper readability
    stay tested; ClassActivityPlan also in android/core), then the app; compare LookUITests screenshots before and
    after every UI change.
-2. Bump to 0.7.2 (build 12) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give
+2. Bump to 0.7.3 (build 13) if anything changed, build the IPA, save it to C:\Users\AI\Downloads\CourseTable\, give
    me a short checklist for what changed.
 
 ## Decided with me — don't reverse; ask if unsure
 The glass look by default (Liquid Glass on iOS 26 + a 10 % white layer + a 1-pixel bright edge, frosted list
 rows), Classic (0.7.0's warm paper) one switch away; built-in soft-shape wallpapers, your photo or a Focus
 wallpaper. Every class gets its reminder notification; a scheduled Live Activity starts silently next to it.
+The compact island: pin + room before a class, course name + ring during it (no countdown there). Widgets:
+Class Schedule, To-Dos (checkbox runs in the app) and Focus (25 min Start); glass only from the system's
+Clear/Tinted Home Screen, no wallpaper-screenshot trick.
 Soft pastel course blocks by default, Solid as a setting; the accent colour unchanged. Wallpapers come from Supabase
 (table focus_wallpapers + public bucket wallpapers). Storage never clears the timetable, unfinished to-dos, Words
 progress or AI connections. Everything in docs/ai-spec.md §1 and
@@ -533,7 +555,14 @@ Short report at the end of each step with run links.
   own key would hide changes made in the app). In the Simulator a scheduled Live Activity (`request(…start:)`)
   started on time with the app in the background. A screenshots job once stopped after 15 minutes without running a
   step (a runner hiccup): `gh run rerun`. LookUITests now takes ~16 minutes.
-- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.7.1 / 11 now),
+- Gotchas from the 0.7.2 work: widgets are seen in `WidgetUITests` through the Home Screen's widget gallery (one
+  horizontal page per size of every kind; sample content from `isPreview`), and Edit → Customize → Clear switches the
+  Simulator to the glass look. CI builds are unsigned, so there's no App Group: placed widgets ask to open the app.
+  On Clear/Tinted (accented rendering) a `.borderedProminent` button's fill and label are tinted alike: use
+  `.bordered` there (`PrimaryWidgetButton`). A widget button that must act in the app is a `LiveActivityIntent`
+  (iOS runs it in the app's process). A `Text(cond ? "a" : "b")` is a String, not localized: write
+  `cond ? Text("a") : Text("b")`.
+- iOS release: bump MARKETING_VERSION/CURRENT_PROJECT_VERSION (16 places in project.pbxproj; 0.7.2 / 12 now),
   `gh workflow run ipa.yml`, download to `C:\Users\AI\Downloads\CourseTable\CourseTable-<version>.ipa`, installed
   with iloader.
 - Gotchas from the AI work: List rows off screen aren't in the XCUITest tree (scroll first; the first cell can be a
