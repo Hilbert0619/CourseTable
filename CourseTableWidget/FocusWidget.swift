@@ -105,10 +105,8 @@ private struct IdleFocusView: View {
                     .font(.caption.weight(.semibold))
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .modifier(PrimaryWidgetButton(color: .indigo))
             .buttonBorderShape(.capsule)
-            .tint(.indigo)
-            .widgetAccentable()
             .accessibilityLabel(Text("Start a 25-minute focus session"))
         }
     }
@@ -167,9 +165,7 @@ private struct RunningFocusView: View {
                         .font(.footnote.weight(.bold))
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(color)
-                .widgetAccentable()
+                .modifier(PrimaryWidgetButton(color: color))
                 .accessibilityLabel(state.isPaused ? Text("Resume") : Text("Pause"))
                 Button(intent: StopFocusIntent()) {
                     Image(systemName: "stop.fill")
@@ -191,6 +187,25 @@ private struct RunningFocusView: View {
             return Text(verbatim: String(format: "%d:%02d", total / 60, total % 60))
         }
         return Text(timerInterval: min(state.phaseStart, state.phaseEnd)...state.phaseEnd, countsDown: true, showsHours: false)
+    }
+}
+
+/// A filled button in full colour. On the Clear and Tinted Home Screen iOS tints a filled button's background and
+/// its label alike (a blank capsule in the 0.7.2 screenshots), so there it's a bordered one.
+private struct PrimaryWidgetButton: ViewModifier {
+    @Environment(\.widgetRenderingMode) private var renderingMode
+    let color: Color
+
+    func body(content: Content) -> some View {
+        if renderingMode == .fullColor {
+            content
+                .buttonStyle(.borderedProminent)
+                .tint(color)
+        } else {
+            content
+                .buttonStyle(.bordered)
+                .widgetAccentable()
+        }
     }
 }
 

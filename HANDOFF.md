@@ -1,6 +1,6 @@
-# Session Handoff — CourseTable (Android: StudyHour 0.7.1 built — the glass look, Words hidden — waiting for the owner's phone test · iOS 0.7.1 waiting for the owner's device test)
+# Session Handoff — CourseTable (Android: StudyHour 0.7.1 built — the glass look, Words hidden — waiting for the owner's phone test · iOS 0.7.2 built — compact island, To-Dos and Focus widgets — waiting for the owner's device test)
 
-Date: 2026-10-22 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
+Date: 2026-11-18 (iOS 0.7.2); Android 2026-10-22 · Repo: `D:\Projects\CourseTable` → https://github.com/Hilbert0619/CourseTable (public), branch `main`
 
 ## Android: StudyHour 0.7.1 built (2026-10-22) — the glass look, Words hidden
 
@@ -26,7 +26,22 @@ The owner's choices ([`docs/android-port-0.6-0.7.md`](docs/android-port-0.6-0.7.
 **Next (prompt B): the owner's results** of 0.7.1 / 0.6.0 (and of the Countdown Island and the 0.5.0 AI test), then
 stage 7. The iOS 0.7.1 device test (below) runs in parallel; its results go to prompt A.
 
-## iOS 0.7.1 (waiting for the owner's device test)
+## iOS 0.7.2 (waiting for the owner's device test)
+
+Users' requests passed on by the owner on 2026-11-18 (with 0.7.1 installed), built as **0.7.2 (build 12)** on branch
+`ios-0.7.2` (worktree `D:\Projects\CourseTable-ios07`); details in [`docs/design-0.7.md`](docs/design-0.7.md) §6:
+1. **During class, the compact Dynamic Island**: the course name and a ring that fills up; no countdown.
+2. **Before class, the compact island**: a pin in the course colour and the room (the start time without a room);
+   the owner chose this over "course name + room". The expanded island and Lock Screen keep the countdown.
+3. **New widgets** (the owner picked To-Dos and Focus): **To-Dos** (small/medium/large, a checkbox that ticks a to-do
+   off on the Home Screen) and **Focus** (small: today's time, days in a row, Start 25 min; while running Pause/Stop).
+   Their buttons are `LiveActivityIntent`s run in the app (`Shared/WidgetIntents.swift`, `TodoControl`,
+   `FocusControl.start`); the app writes `planner-snapshot.json` (CourseKit `PlannerSnapshot`, 8 tests).
+4. **Glass widget backgrounds**: the see-through glass of Apple's Batteries widget in the *default* Home Screen look
+   isn't open to other apps. The owner chose **the system's glass only**: Home Screen → Edit → Customize → **Clear**
+   (or Tinted) puts every widget on Liquid Glass; ours are tuned for it (`widgetAccentable`).
+- CI: CourseKit 44366155967, iOS 44368461857 (build + unit tests), screenshots 44370009358 (compact island before and
+  during, the widget gallery), WIDGET_RUN.
 
 The owner's 0.7.0 device test: **no issues** (2026-10-21). Then two requests, built as **0.7.1 (build 11)** on branch
 `ios-0.7.1` (worktree `D:\Projects\CourseTable-ios07`):
