@@ -91,3 +91,38 @@ accent-tinted), Start, Pause, Stop and Full Screen are glass, and the countdown 
 Words' Today card, its chips and Start are glass. Pushed screens, sheets and Settings keep the paper.
 `LookUITests` also runs the classic look in light and dark, and `testAppearance` goes through a photo, Lagoon with
 solid blocks, and Classic on Lagoon.
+
+## 6. Widgets and the compact island (0.7.2)
+
+Users' requests passed on by the owner on 2026-11-18, after 0.7.1:
+
+1. **During class, the compact Dynamic Island** shows the course name and a ring that fills up through the class.
+   The countdown is gone (`ClassActivityWidget` `compactTrailing`, the same ring as the minimal view).
+2. **Before class**, the countdown took too much room: the compact island shows a pin in the course colour and
+   the room (the start time if the class has no room). The owner chose this narrowest layout over "course name + room".
+   The expanded island and the Lock Screen keep the countdown and the progress bar.
+3. **More widgets** (the owner picked two of four ideas: Configurable schedule and Week timetable not taken):
+   - **To-Dos** (small, medium, large): today's to-dos, unfinished ones by time, those without a time next, done
+     ones last; overdue times in red, a dot in the course colour for "after class". The checkbox ticks a to-do
+     off on the Home Screen: `ToggleTodoIntent` is a `LiveActivityIntent`, so iOS runs it in the app (launched in
+     the background if needed, like the focus Live Activity's buttons), where `TodoControl` saves it and removes
+     its pending reminder.
+   - **Focus** (small): today's focus time and the days in a row (a day counts with ≥ 1 minute), and a **25 min**
+     Start (`StartFocusIntent`: a session of 25 minutes without changing the Focus setup, with its Live
+     Activity). While a session runs: the phase, the time left in it, Pause / Resume and Stop.
+   - Data: the app writes `planner-snapshot.json` (CourseKit `PlannerSnapshot`: to-dos from yesterday on, focus
+     seconds per day for 400 days, the session in progress) next to the timetable snapshot whenever the to-dos,
+     the focus history or the session change, and reloads those two widgets. The lists, the streak and the
+     timelines (each to-do's time, each switch between focus and break, midnight) are CourseKit logic with
+     tests (`PlannerSnapshotTests`).
+4. **Glass widget backgrounds**: in iOS 26's default Home Screen look, the see-through glass of Apple's own widgets
+   (Batteries) isn't available to other apps: a widget's background stays solid there (Apple's forums: the system
+   decides; a widget in full colour can't show the wallpaper). The owner chose **the system's glass only**: with
+   the Home Screen set to **Clear** or **Tinted** (long-press the Home Screen → Edit → Customize), iOS draws every
+   widget, ours included, on Liquid Glass. The widgets are tuned for that (`widgetAccentable` on the course
+   colours, headings and the main buttons, so they stand out in the tint). Not taken: matching the wallpaper with
+   a screenshot of the Home Screen, or imitation glass.
+
+`WidgetUITests` takes the widget gallery in the Simulator (sample content; CI builds have no App Group, so placed
+widgets ask to open the app); `LiveActivityUITests` shows the compact island before and during a class.
+
