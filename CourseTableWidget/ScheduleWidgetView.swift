@@ -51,6 +51,7 @@ private struct NeedsSetupView: View {
                 Image(systemName: "calendar.badge.plus")
                     .font(.title2)
                     .foregroundStyle(Color.accentColor)
+                    .widgetAccentable()
                 Text("Open Course Table to add your classes.")
                     .font(.footnote)
             }
@@ -187,6 +188,7 @@ private struct SmallScheduleView: View {
                 Text(isCurrent ? String(localized: "Now") : String(localized: "Next"))
                     .font(.caption.bold())
                     .foregroundStyle(session.course.color)
+                    .widgetAccentable()
                 Text(verbatim: session.course.name)
                     .font(.headline)
                     .lineLimit(3)
@@ -281,6 +283,7 @@ private struct WidgetSessionRow: View {
             RoundedRectangle(cornerRadius: 2)
                 .fill(session.course.color)
                 .frame(width: 4, height: 16)
+                .widgetAccentable()
             Text(verbatim: session.start.description)
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(.secondary)

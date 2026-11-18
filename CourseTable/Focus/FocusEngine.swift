@@ -69,9 +69,12 @@ final class FocusEngine {
 
     // MARK: - Session
 
-    func start(now: Date = .now) {
+    /// Starts a session with the setup, or one of `minutes` (the Focus widget) without changing the setup.
+    func start(now: Date = .now, minutes: Int? = nil) {
         stopPreview()
-        let run = FocusRun(goal: goal.trimmingCharacters(in: .whitespacesAndNewlines), plan: plan, startedAt: now)
+        var settings = settings
+        if let minutes { settings.totalMinutes = minutes }
+        let run = FocusRun(goal: goal.trimmingCharacters(in: .whitespacesAndNewlines), plan: FocusPlan(settings), startedAt: now)
         self.run = run
         persist()
         player.play(sound)
@@ -209,6 +212,7 @@ final class FocusEngine {
         } else {
             defaults.removeObject(forKey: Self.runKey)
         }
+        if let planner { WidgetSync.publishPlanner(planner) }
     }
 
     private func save<T: Encodable>(_ value: T, _ key: String) {
@@ -232,7 +236,7 @@ final class FocusEngine {
     }
 }
 
-/// What the focus Live Activity's buttons do, in the app.
+/// What the focus Live Activity's and the Focus widget's buttons do, in the app.
 enum FocusControl {
     static func togglePause() async {
         await MainActor.run { FocusEngine.shared.togglePause() }
@@ -240,6 +244,14 @@ enum FocusControl {
 
     static func stop() async {
         await MainActor.run { FocusEngine.shared.stop() }
+    }
+
+    /// The Focus widget's Start: nothing if a session already runs.
+    static func start(minutes: Int) async {
+        await MainActor.run {
+            guard FocusEngine.shared.run == nil else { return }
+            FocusEngine.shared.start(minutes: minutes)
+        }
     }
 }
 

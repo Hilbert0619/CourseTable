@@ -6,20 +6,27 @@ enum SnapshotStore {
     /// The App Group in the entitlements files, used by Xcode and TestFlight builds.
     static let appGroupID = "group.io.github.hilbert0619.CourseTable"
     static let fileName = "schedule-snapshot.json"
+    /// To-dos and focus time for the To-Dos and Focus widgets (`PlannerSnapshot`).
+    static let plannerFileName = "planner-snapshot.json"
     /// The widget's bundle identifier is the app's plus this suffix.
     static let widgetBundleSuffix = ".Widget"
 
-    /// `nil` when no App Group is available, e.g. in unsigned CI builds.
-    static let defaultURL: URL? = {
+    /// The App Group's folder; `nil` when no App Group is available, e.g. in unsigned CI builds.
+    static let containerURL: URL? = {
         let listedGroups = Bundle.main.object(forInfoDictionaryKey: "ALTAppGroups") as? [String] ?? []
         let candidates = appGroupCandidates(bundleIdentifier: Bundle.main.bundleIdentifier, listedGroups: listedGroups)
         for groupID in candidates {
             if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) {
-                return container.appendingPathComponent(fileName)
+                return container
             }
         }
         return nil
     }()
+
+    /// The timetable snapshot; `nil` without an App Group.
+    static let defaultURL: URL? = containerURL?.appendingPathComponent(fileName)
+    /// The planner snapshot; `nil` without an App Group.
+    static let plannerURL: URL? = containerURL?.appendingPathComponent(plannerFileName)
 
     /// App Group identifiers to try, in order; the first one the app is entitled to wins.
     ///
@@ -49,4 +56,20 @@ enum SnapshotStore {
         guard let url, let data = try? Data(contentsOf: url) else { return nil }
         return try? ScheduleSnapshot.decode(from: data)
     }
+
+    static func write(_ snapshot: PlannerSnapshot, to url: URL) throws {
+        try snapshot.encoded().write(to: url, options: .atomic)
+    }
+
+    static func readPlanner(from url: URL? = SnapshotStore.plannerURL) -> PlannerSnapshot? {
+        guard let url, let data = try? Data(contentsOf: url) else { return nil }
+        return try? PlannerSnapshot.decode(from: data)
+    }
+}
+
+/// The widgets' kinds, for reloading one from the app.
+enum WidgetKinds {
+    static let schedule = "ScheduleWidget"
+    static let todos = "TodoWidget"
+    static let focus = "FocusWidget"
 }

@@ -4,8 +4,9 @@ import SwiftUI
 import WidgetKit
 
 /// A class as a Live Activity: in the Dynamic Island and on the Lock Screen from the reminder time until
-/// the class ends. Before the start it counts down to it; once the class has started (the content's stale
-/// date) it shows "Until 09:40" with a progress bar. Timers update on their own: the app sends no updates.
+/// the class ends. Before the start it counts down to it (the compact island shows the room instead); once the
+/// class has started (the content's stale date) it shows "Until 09:40" with a progress bar (the compact island
+/// a ring). Timers update on their own: the app sends no updates.
 struct ClassActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ClassActivityAttributes.self) { context in
@@ -53,16 +54,31 @@ struct ClassActivityWidget: Widget {
                     .padding(.horizontal, 4)
                 }
             } compactLeading: {
-                Text(verbatim: info.courseName)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(info.color)
-                    .lineLimit(1)
-                    .frame(maxWidth: 88, alignment: .leading)
+                // Users found the countdown too wide beside the camera (0.7.2): before the class a pin and the
+                // room, during it the course and a ring that fills up. The expanded island keeps the timer.
+                if info.started {
+                    Text(verbatim: info.courseName)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(info.color)
+                        .lineLimit(1)
+                        .frame(maxWidth: 88, alignment: .leading)
+                } else {
+                    Image(systemName: "mappin.and.ellipse")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(info.color)
+                }
             } compactTrailing: {
-                info.timer
-                    .font(.caption.monospacedDigit().weight(.semibold))
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 48, alignment: .trailing)
+                if info.started {
+                    info.ring
+                        .frame(width: 20, height: 20)
+                } else {
+                    Text(verbatim: info.place)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(info.color)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: 72, alignment: .trailing)
+                }
             } minimal: {
                 info.ring
             }
@@ -103,6 +119,9 @@ private struct ClassActivityInfo {
     var when: String {
         started ? String(localized: "Until \(attributes.endTime)") : attributes.times
     }
+
+    /// Where to go, for the compact island: the room, or the start time if it has none.
+    var place: String { attributes.room.isEmpty ? attributes.startTime : attributes.room }
 
     /// Room and teacher, e.g. "A101 · Li"; may be empty.
     var details: String { attributes.details }

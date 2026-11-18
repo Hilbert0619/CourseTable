@@ -47,10 +47,8 @@ struct ScheduleProvider: TimelineProvider {
 }
 
 struct ScheduleWidget: Widget {
-    let kind = "ScheduleWidget"
-
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: ScheduleProvider()) { entry in
+        StaticConfiguration(kind: WidgetKinds.schedule, provider: ScheduleProvider()) { entry in
             ScheduleWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
@@ -78,6 +76,8 @@ extension ScheduleEntry {
 struct CourseTableWidgetBundle: WidgetBundle {
     var body: some Widget {
         ScheduleWidget()
+        TodoWidget()
+        FocusWidget()
         ClassActivityWidget()
         FocusActivityWidget()
     }

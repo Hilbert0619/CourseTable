@@ -37,6 +37,9 @@ struct CourseTableApp: App {
         }
         _planner = State(initialValue: planner)
         FocusEngine.shared.planner = planner
+        PlannerModel.active = planner
+        // The widgets get the to-dos and focus time also from before this version.
+        WidgetSync.publishPlanner(planner)
         UNUserNotificationCenter.current().delegate = NotificationPresenter.shared
     }
 

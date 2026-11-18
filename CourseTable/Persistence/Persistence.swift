@@ -1,6 +1,7 @@
 import Foundation
 import OSLog
 import SwiftData
+import UserNotifications
 import WidgetKit
 import CourseKit
 
@@ -63,9 +64,12 @@ enum Persistence {
 enum WidgetSync {
     private static let logger = Logger(subsystem: "io.github.hilbert0619.CourseTable", category: "WidgetSync")
 
+    /// UI tests leave the widgets alone, except the widget screenshots (`-widgetDemo`).
+    private static var isAllowed: Bool { !UITestLaunch.isActive || UITestLaunch.wantsWidgetDemo }
+
     @MainActor
     static func publish(_ timetable: Timetable) {
-        guard !UITestLaunch.isActive else { return }
+        guard isAllowed else { return }
         guard let url = SnapshotStore.defaultURL else {
             logger.notice("App Group unavailable; widget snapshot not written")
             return
@@ -75,6 +79,30 @@ enum WidgetSync {
             WidgetCenter.shared.reloadAllTimelines()
         } catch {
             logger.error("Writing widget snapshot failed: \(error.localizedDescription)")
+        }
+    }
+
+    /// Keeps the To-Dos and Focus widgets' copy of the to-dos and focus time up to date.
+    @MainActor
+    static func publishPlanner(_ planner: PlannerModel) {
+        guard isAllowed, let url = SnapshotStore.plannerURL else { return }
+        do {
+            try SnapshotStore.write(planner.widgetSnapshot(run: FocusEngine.shared.run), to: url)
+            WidgetCenter.shared.reloadTimelines(ofKind: WidgetKinds.todos)
+            WidgetCenter.shared.reloadTimelines(ofKind: WidgetKinds.focus)
+        } catch {
+            logger.error("Writing the planner snapshot failed: \(error.localizedDescription)")
+        }
+    }
+}
+
+/// What the To-Dos widget's checkbox does, in the app (possibly launched in the background for it).
+enum TodoControl {
+    static func setDone(_ id: UUID, _ isDone: Bool) async {
+        await MainActor.run { PlannerModel.active?.setDone(id, isDone) }
+        if isDone {
+            // Ticked off: no reminder for it. Unticked, it comes back with the next sync in the app.
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [TodoReminders.idPrefix + id.uuidString])
         }
     }
 }

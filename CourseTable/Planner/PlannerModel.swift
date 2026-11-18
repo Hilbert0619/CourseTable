@@ -34,6 +34,9 @@ final class PlannerModel {
     let container: ModelContainer
     private var context: ModelContext { container.mainContext }
 
+    /// The app's model (`CourseTableApp` sets it), for the To-Dos widget's checkbox (`TodoControl`).
+    static var active: PlannerModel?
+
     init(container: ModelContainer, storeProblem: String? = nil) {
         self.container = container
         self.storeProblem = storeProblem
@@ -161,6 +164,17 @@ final class PlannerModel {
             Self.logger.error("Saving Planner.store failed: \(error.localizedDescription)")
         }
         reload()
+        WidgetSync.publishPlanner(self)
+    }
+
+    // MARK: - Widgets
+
+    /// What the To-Dos and Focus widgets need: the to-dos, focus time per day and the session in progress.
+    func widgetSnapshot(run: FocusRun?, today: LocalDate = LocalDate(.now)) -> PlannerSnapshot {
+        let cutoff = today.adding(days: -PlannerSnapshot.focusDaysBack).date()
+        let descriptor = FetchDescriptor<FocusSessionRecord>(predicate: #Predicate { $0.startedAt >= cutoff })
+        let sessions = ((try? context.fetch(descriptor)) ?? []).map { (startedAt: $0.startedAt, focusedSeconds: $0.focusedSeconds) }
+        return PlannerSnapshot(todos: todos, focusSessions: sessions, run: run, today: today)
     }
 
     // MARK: - Demo

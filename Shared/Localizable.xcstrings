@@ -287,6 +287,16 @@
         }
       }
     },
+    "%lld days in a row" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连续 %lld 天"
+          }
+        }
+      }
+    },
     "%lld days to the exam" : {
       "localizations" : {
         "en" : {
@@ -339,6 +349,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 段专注 · 共专注 %@ · %@ 结束"
+          }
+        }
+      }
+    },
+    "%lld left" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还剩 %lld 条"
           }
         }
       }
@@ -1089,6 +1109,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全部记录"
+          }
+        }
+      }
+    },
+    "All done for today" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天的待办都完成了"
           }
         }
       }
@@ -3169,6 +3199,16 @@
         }
       }
     },
+    "Left in this phase" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本阶段剩余"
+          }
+        }
+      }
+    },
     "Length" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4017,6 +4057,16 @@
         }
       }
     },
+    "Not Done" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未完成"
+          }
+        }
+      }
+    },
     "Not downloaded yet. Pull down to sync." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4073,6 +4123,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "点“确认”之前不会做任何更改"
+          }
+        }
+      }
+    },
+    "Nothing due today" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天没有待办"
           }
         }
       }
@@ -4213,6 +4273,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开课程表，添加你的课程。"
+          }
+        }
+      }
+    },
+    "Open Course Table to see your to-dos." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开课程表，查看你的待办。"
+          }
+        }
+      }
+    },
+    "Open Course Table to start focusing." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开课程表，开始专注。"
           }
         }
       }
@@ -6311,6 +6391,16 @@
         }
       }
     },
+    "Tick Off To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成待办"
+          }
+        }
+      }
+    },
     "Time" : {
       "localizations" : {
         "zh-Hans" : {
@@ -6381,12 +6471,42 @@
         }
       }
     },
+    "To-Do" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待办"
+          }
+        }
+      }
+    },
+    "To-Dos" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待办"
+          }
+        }
+      }
+    },
     "Today" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天"
+          }
+        }
+      }
+    },
+    "Today's focus time and streak. Start a session right from the Home Screen." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日专注时长和连续天数，在主屏幕上就能开始专注。"
           }
         }
       }
@@ -6407,6 +6527,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日进度"
+          }
+        }
+      }
+    },
+    "Today's to-dos. Tick them off right on the Home Screen." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天的待办，在主屏幕上直接勾选完成。"
           }
         }
       }

@@ -17,6 +17,8 @@ enum UITestLaunch {
     static let wantsAIDemo = isActive && ProcessInfo.processInfo.arguments.contains("-aiDemo")
     /// Photo buttons also offer a drawn sample timetable (`-aiDemoPhoto`), since UI tests can't pick photos.
     static let wantsAIDemoPhoto = isActive && ProcessInfo.processInfo.arguments.contains("-aiDemoPhoto")
+    /// Write the widget snapshots from the demo data, for the widget screenshots (`-widgetDemo`).
+    static let wantsWidgetDemo = isActive && ProcessInfo.processInfo.arguments.contains("-widgetDemo")
     /// Start a demo class Live Activity (`-liveActivityDemo before|during|switch`).
     static let liveActivityDemo = isActive ? UserDefaults.standard.string(forKey: "liveActivityDemo") : nil
     /// The app's appearance, `dark` or `light` (`-uiColorScheme dark`): setting the Simulator's from the test
