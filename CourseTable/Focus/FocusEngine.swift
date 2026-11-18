@@ -72,7 +72,7 @@ final class FocusEngine {
     /// Starts a session with the setup, or one of `minutes` (the Focus widget) without changing the setup.
     func start(now: Date = .now, minutes: Int? = nil) {
         stopPreview()
-        var settings = settings
+        var settings = self.settings
         if let minutes { settings.totalMinutes = minutes }
         let run = FocusRun(goal: goal.trimmingCharacters(in: .whitespacesAndNewlines), plan: FocusPlan(settings), startedAt: now)
         self.run = run

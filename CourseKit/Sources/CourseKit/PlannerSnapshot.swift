@@ -141,6 +141,13 @@ public struct FocusWidgetState: Hashable, Sendable {
     /// The session in progress and where it stands; `nil` when none runs (or it has finished).
     public var run: FocusRun?
     public var status: FocusStatus?
+
+    public init(todaySeconds: Int, streakDays: Int, run: FocusRun? = nil, status: FocusStatus? = nil) {
+        self.todaySeconds = todaySeconds
+        self.streakDays = streakDays
+        self.run = run
+        self.status = status
+    }
 }
 
 extension PlannerSnapshot {

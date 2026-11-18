@@ -177,7 +177,7 @@ private struct RunningFocusView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
-                .tint(.secondary)
+                .tint(Color.secondary)
                 .accessibilityLabel(Text("Stop"))
             }
             .buttonBorderShape(.capsule)

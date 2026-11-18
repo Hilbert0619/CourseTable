@@ -1,3 +1,4 @@
+import ActivityKit
 import AppIntents
 import Foundation
 
